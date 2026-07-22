@@ -1,0 +1,91 @@
+{#layout("layout") }
+
+{#with props}
+	<div class="p-4">
+
+		<div class="flex items-center justify-between">
+			<h1 class="mb-4">{_ ui.title }</h1>
+			<div class="text-sm">{~ js_timestamp_to_locale_string(record.updated_at ?? record.created_at)}</div>
+		</div>
+
+		{#if form_errors}
+			<div class="py-4">
+				<app-banner type="red">{= form_errors }</app-banner>
+			</div>
+		{/if}
+
+		<form method="POST" action="{~ localized_path(action) }" class="grid gap-4 max-w-[60ch]" id="entry-form">
+
+			<!-- CSRF token -->
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+			<!-- crud:fields:start -->
+			__form.input_fields__
+			<!-- crud:fields:end -->
+
+			<!-- Store referrer URL as hidden field -->
+			<input type="hidden" id="return_url" name="_return_url" value="" />
+
+			<!-- Save action: hidden field set by onclick on save buttons -->
+			<input type="hidden" name="_save_action" id="save_action" value="" />
+
+			<div class="flex gap-2 mt-8 items-center">
+				<button id="btn-submit" type="submit" onclick="document.getElementById('save_action').value='stay'">{_ actions.save }</button>
+				<button id="btn-save-close" type="submit" onclick="document.getElementById('save_action').value='close'" class="button secondary">{_ actions.save_close }</button>
+				<button id="btn-cancel" type="button" onclick="history.back()" class="button secondary">{_ actions.cancel}</button>
+
+				{#if (record.id) && enable_delete }
+					<button id="action_delete" type="button" command="show-modal" commandfor="action_delete_dialog" class="ml-auto button tertiary">{_ actions.delete}</button>
+				{/if}
+			</div>
+		</form>
+
+		{#if (record.id) && enable_delete }
+			<form id="delete-form" method="POST" action="{~ localized_path('__route_prefix__/__table.exact__/' + record.__route_param__ + '/edit') }" style="display: none;">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="_action" value="delete" />
+			</form>
+		{/if}
+
+	</div>
+
+	{#if enable_delete }
+		<dialog id="action_delete_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.delete}</h2>
+				<div class="mt-6 flex justify-end gap-2">
+					<button class="px-3 py-1 rounded bg-slate-200" type="button" commandfor="action_delete_dialog" command="close">{_ actions.abort_delete}</button>
+					<button class="px-3 py-1 rounded bg-brand text-white" type="button" command="--confirm" commandfor="action_delete_dialog">{_ actions.confirm_delete}</button>
+				</div>
+			</div>
+		</dialog>
+	{/if}
+	<script src="/dialog-confirm.js?v={= version}"></script>
+	<script src="/form-controller.js?v={= version}" defer></script>
+
+	<script>
+		const return_url_field = $("#return_url");
+		if (return_url_field && document.referrer) {
+			try {
+				const referer_url = new URL(document.referrer);
+				return_url_field.value = referer_url.pathname + referer_url.search;
+			} catch (e) {}
+		}
+		
+		{#if enable_delete }
+		$("#action_delete_dialog").addEventListener("command", (e) => {
+			if (e.command !== "--confirm") return;
+			e.currentTarget.close();
+			$("#delete-form").submit();
+		});
+		{/if}
+		document.addEventListener("DOMContentLoaded", () =>{
+			new FormController({
+				form: "#entry-form",
+				validate_url:
+				"{~ localized_path('__route_prefix__/__table.exact__/validate') }",
+				submitted_text: "{- actions.submitted }",
+			});
+		});
+	</script>
+{/with}

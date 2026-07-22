@@ -1,0 +1,9 @@
+{
+	"mcpServers": {
+		"reepolee": {
+			"command": "bun",
+			"args": ["run", "mcp"],
+			"cwd": "."
+		}
+	}
+}

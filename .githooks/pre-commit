@@ -1,0 +1,39 @@
+#!/bin/sh
+
+echo "Running pre-commit checks..."
+
+# testing on routes, should be complete codebase later as we have the reettier.jsonc which filters files to format
+# run this first for any formatting bugs stopping us later at smoke test
+echo "Running reettier on dirty routes"
+reettier --git
+if [ $? -ne 0 ]; then
+  echo "Formatting check failed. Commit aborted."
+  exit 1
+fi
+git add -u
+
+# Typecheck ratchet - formatting must not introduce new type errors
+# (an old reettier build once stripped generic type parameters).
+echo "Running typecheck ratchet"
+bun run typecheck:ratchet
+if [ $? -ne 0 ]; then
+  echo "Typecheck ratchet failed. Commit aborted."
+  exit 1
+fi
+
+echo "Running bun smoke test"
+timeout 30 bun smoke:integration
+SMOKE_EXIT=$?
+if [ $SMOKE_EXIT -eq 124 ]; then
+  echo "Smoke test timed out after 30s. Commit aborted."
+  exit 1
+fi
+if [ $SMOKE_EXIT -ne 0 ]; then
+  echo "Smoke test failed (exit $SMOKE_EXIT). Commit aborted."
+  exit 1
+fi
+
+
+
+echo "Pre-commit checks passed."
+exit 0

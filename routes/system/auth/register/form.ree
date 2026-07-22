@@ -1,0 +1,65 @@
+{#layout("layout")}
+
+<div class="p-4 grid min-h-screen place-items-center">
+	<div class="min-w-[50ch]">
+		{#if props.form_error}
+			<h1 class="mb-4">{_ ui.invalid_title}</h1>
+			<div class="py-4">
+				<app-banner type="red">{= props.form_error}</app-banner>
+			</div>
+
+		{:else}
+			<h1 class="mb-4">{_ ui.title}</h1>
+
+			<p class="mb-4">
+				{_ ui.registering_as}
+				<strong>{= props.username}</strong>
+				(
+				{= props.email}
+				)
+			</p>
+
+			<form method="POST" action="{~ localized_path(props.action) }" class="grid gap-4 max-w-[60ch]" id="entry-form">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+				{{ const type = props.is_dev ? "text" : "password"; }}
+
+				<field-wrapper class="grid">
+					<label class="px-3" for="name">{_ labels.name} *</label>
+					<input type="text" id="name" name="name" value="{= props.name }" autocomplete="name" minLength="1" required />
+					<validation-error class="mt-1" id="error-name"></validation-error>
+				</field-wrapper>
+
+				<field-wrapper class="grid">
+					<label class="px-3" for="password">{_ labels.password} *</label>
+					<input type="{= type }" id="password" name="password" value="{= props.password }" autocomplete="new-password" required />
+					<validation-error class="mt-1" id="error-password"></validation-error>
+				</field-wrapper>
+
+				<field-wrapper class="grid">
+					<label class="px-3" for="password_confirm">{_ labels.password_confirm}
+						*
+					</label>
+					<input type="{= type }" id="password_confirm" name="password_confirm" value="{= props.password_confirm }" autocomplete="confirm-password" required />
+					<validation-error class="mt-1" id="error-password_confirm"></validation-error>
+				</field-wrapper>
+
+				<div class="flex gap-2 mt-8 items-center">
+					<button type="submit">{_ actions.submit}</button>
+				</div>
+			</form>
+
+			<script src="/form-controller.js?v={= props.version }" defer></script>
+
+			<script>
+				document.addEventListener("DOMContentLoaded", () => {
+					new FormController({
+						form: "#entry-form",
+						validate_url: "{~ localized_path('/register/validate') }",
+						submitted_text: "{- actions.submitted}",
+					});
+				});
+			</script>
+		{/if}
+	</div>
+</div>

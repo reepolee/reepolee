@@ -1,0 +1,20 @@
+{#each props.records as record}
+	<a href="{~ localized_path('/__route_prefix__/__table.exact__/' + record.__route_param__ + '/edit') }"
+		class="col-span-full *:py-2 grid cursor-pointer grid-cols-subgrid border-b border-b-neutral-200 *:px-2 hover:bg-blue-500 hover:text-white">
+
+		{#if props.enable_delete}
+			<div class="grid grid-cols-2 place-items-center p-0! m-0!">
+				<button class="w-6 text-neutral-600 cursor-grab hover:text-white"
+					onclick="event.stopPropagation();event.preventDefault()">
+					<ree-icon name="grip"></ree-icon>
+				</button>
+				<label class="w-full h-full grid place-items-center hover:bg-brand rounded">
+					<input type="checkbox" name="checkboxes[]" value="{= record.id }">
+				</label>
+			</div>
+		{/if}
+
+		<div>{= record.id }</div>
+		__table.cells__
+	</a>
+{/each}

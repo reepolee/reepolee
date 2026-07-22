@@ -1,0 +1,84 @@
+/* Enable automatic view transitions */
+@view-transition {
+	navigation: auto;
+}
+
+/* Mark the element to animate */
+h1 {
+	view-transition-name: page-title;
+}
+
+/* Disable group animation (optional) */
+::view-transition-group(page-title) {
+	@apply animate-none;
+}
+
+/* --------------------------- */
+/* FORWARD (/ → /details) */
+/* Old page title slides out right */
+::view-transition-old(page-title) {
+	animation: slide-out-right 300ms ease-in forwards;
+}
+
+/* New page title slides in from right */
+::view-transition-new(page-title) {
+	animation: slide-in-right 300ms ease-out forwards;
+}
+
+/* --------------------------- */
+/* BACKWARD (/details → /) */
+/* Old page title slides out left */
+:root:active-view-transition-type(backward) ::view-transition-old(page-title) {
+	animation: slide-out-left 300ms ease-in forwards;
+}
+
+/* New page title slides in from left */
+:root:active-view-transition-type(backward) ::view-transition-new(page-title) {
+	animation: slide-in-left 300ms ease-out forwards;
+}
+
+/* --------------------------- */
+/* Keyframes */
+@keyframes slide-in-right {
+	from {
+		@apply opacity-0;
+		transform: translateX(3%);
+	}
+	to {
+		@apply opacity-100;
+		transform: translateX(0%);
+	}
+}
+
+@keyframes slide-out-right {
+	from {
+		@apply opacity-100;
+		transform: translateX(0%);
+	}
+	to {
+		@apply opacity-0;
+		transform: translateX(3%);
+	}
+}
+
+@keyframes slide-in-left {
+	from {
+		@apply opacity-0;
+		transform: translateX(-3%);
+	}
+	to {
+		@apply opacity-100;
+		transform: translateX(0%);
+	}
+}
+
+@keyframes slide-out-left {
+	from {
+		@apply opacity-100;
+		transform: translateX(0%);
+	}
+	to {
+		@apply opacity-0;
+		transform: translateX(-3%);
+	}
+}

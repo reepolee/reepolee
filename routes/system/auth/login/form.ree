@@ -1,0 +1,47 @@
+{#layout("layout")}
+
+<div class="p-4 grid min-h-screen place-items-center">
+	<div class="min-w-[50ch]">
+		<h1 class="mb-4">{_ ui.title}</h1>
+
+		{#if props.form_error}
+			<div class="py-4">
+				<app-banner type="red">{= props.form_error}</app-banner>
+			</div>
+		{/if}
+
+		<form method="POST" action="{~ localized_path(props.action) }" class="grid gap-4 max-w-[60ch]" id="entry-form">
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+			<input type="hidden" name="redirect" value="{= props.redirect }" />
+
+			{{ const type = props.is_dev ? "text" : "password"; }}
+			<field-wrapper class="grid">
+				<label class="px-3" for="username">{_ labels.username_or_email} *</label>
+				<input type="text" id="username" name="username" autocomplete="username" value="{= props.username }" />
+				<validation-error class="mt-1" id="error-username"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid">
+				<label class="px-3" for="password">{_ labels.password}</label>
+				<input type="{= type }" id="password" name="password" autocomplete="current-password" value="{= props.password }" />
+				<validation-error class="mt-1" id="error-password"></validation-error>
+			</field-wrapper>
+
+			<div class="flex gap-2 mt-8 items-center">
+				<button type="submit">{_ actions.submit}</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="/form-controller.js?v={= props.version }" defer></script>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		new FormController({
+			form: "#entry-form",
+			validate_url: "{~ localized_path('/login/validate') }",
+			submitted_text: "{- actions.submitted}",
+		});
+	});
+</script>

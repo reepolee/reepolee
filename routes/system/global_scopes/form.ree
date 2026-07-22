@@ -1,0 +1,249 @@
+{#layout("layout") }
+{#with props}
+
+	<div class="p-4">
+
+		<div class="flex items-center justify-between">
+			<h1 class="mb-4">{_ ui.title}</h1>
+			<div class="text-sm">{~ js_timestamp_to_locale_string(record.updated_at ?? record.created_at)}</div>
+		</div>
+
+		{#if form_errors}
+			<div class="py-4">
+				<app-banner type="red">{= form_errors}</app-banner>
+			</div>
+		{/if}
+
+		<form method="POST" action="{~ localized_path(action) }" class="grid gap-4 max-w-[60ch]" id="entry-form">
+
+			<!-- CSRF token -->
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+			<!-- Store the full namespace for backward compat -->
+			<input type="hidden" name="table_name" value="{= record.table_name}" />
+
+			<!-- crud:fields:start -->
+			<field-wrapper class="grid" data-field="module_code">
+				<label class="px-3" for="module_code">{_ labels.module_code}</label>
+				<select id="module_code" name="module_code">
+					<option value="">{_ selectors.no_module}</option>
+					{#each module_options as m}
+						<option value="{= m.code }" {#if m.code===record.module_code } selected{/if}>{= m.name} ({= m.code})</option>
+					{/each}
+				</select>
+			</field-wrapper>
+
+			<field-wrapper class="grid" data-field="feature_name">
+				<label class="px-3" for="feature_name">{_ labels.feature_name}</label>
+				<input type="text" id="feature_name" name="feature_name" value="{= record.feature_name}" />
+				<validation-error class="mt-1" id="error-feature_name"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid" data-field="table">
+				<label class="px-3" for="table">{_ labels.table}</label>
+				<select id="table" name="table" required>
+					<option value="">{_ selectors.select_table}</option>
+					{#each table_options as option}
+						<option value="{= option.value }" {#if option.value===record.table } selected{/if}>{= option.label}</option>
+					{/each}
+				</select>
+				<validation-error class="mt-1" id="error-table_name"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid" data-field="scope_key">
+				<label class="px-3" for="scope_key">{_ labels.scope_key}</label>
+				<input type="text" id="scope_key" name="scope_key" value="{= record.scope_key}" />
+				<validation-error class="mt-1" id="error-scope_key"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid" data-field="display_name">
+				<label class="px-3" for="display_name">{_ labels.display_name}</label>
+				<input type="text" id="display_name" name="display_name" value="{= record.display_name}" />
+				<validation-error class="mt-1" id="error-display_name"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid" data-field="where_clause">
+				<label class="px-3" for="where_clause">{_ labels.where_clause}</label>
+				<input type="text" id="where_clause" name="where_clause" value="{= record.where_clause}" />
+				<validation-error class="mt-1" id="error-where_clause"></validation-error>
+				{#if session_variables && session_variables.length > 0}
+					<details class="mt-2">
+						<summary class="text-xs text-neutral-500 cursor-pointer hover:text-brand transition-colors">Session variables</summary>
+						<div class="flex flex-wrap gap-1 mt-1">
+							{#each session_variables as var_path}
+								<button
+									type="button"
+									class="text-xs px-2 py-0.5 rounded bg-neutral-100 hover:bg-brand hover:text-white border border-neutral-300 transition-colors cursor-pointer"
+									data-insert-var="{= var_path}"
+									onclick="insert_session_var('{= var_path}')">
+									{= var_path}
+								</button>
+							{/each}
+						</div>
+					</details>
+				{/if}
+
+				<!-- Scope preview: test user → resolved SQL -->
+				<details class="mt-3 border border-neutral-300 rounded p-2">
+					<summary class="text-xs font-medium text-neutral-600 cursor-pointer hover:text-brand transition-colors">Preview resolved SQL</summary>
+					<div class="mt-2 grid gap-2">
+						<label class="text-xs text-neutral-500" for="preview_user">Test with user</label>
+						<select id="preview_user" class="text-sm">
+							<option value="">-- Select a user --</option>
+							{#each user_options as u}
+								<option value="{= u.option_value }">{= u.option_text}</option>
+							{/each}
+						</select>
+						<button id="preview_btn" type="button" class="button secondary text-sm">Preview</button>
+						<pre id="preview_result" class="hidden text-xs bg-neutral-100 border border-neutral-200 rounded p-2 overflow-x-auto whitespace-pre-wrap"></pre>
+					</div>
+				</details>
+			</field-wrapper>
+
+			<field-wrapper class="grid" data-field="sort_order">
+				<label class="px-3" for="sort_order">{_ labels.sort_order}</label>
+				<input type="number" id="sort_order" name="sort_order" value="{= record.sort_order}" />
+				<validation-error class="mt-1" id="error-sort_order"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid" data-field="is_default">
+				<label class="px-3" for="is_default">{_ labels.is_default}</label>
+				<select id="is_default" name="is_default" value="{= record.is_default}">
+					<option value="-1">{_ selectors.select}</option>
+					<option value="0" {#if 0===record.is_default } selected{/if}>{= props.translations.selectors?.["0"]}</option>
+					<option value="1" {#if 1===record.is_default } selected{/if}>{= props.translations.selectors?.["1"]}</option>
+				</select>
+				<validation-error class="mt-1" id="error-is_default"></validation-error>
+			</field-wrapper>
+
+			<!-- crud:fields:end -->
+
+			<!-- Store referrer URL as hidden field -->
+			<input type="hidden" id="return_url" name="_return_url" value="" />
+
+			<div class="flex gap-2 mt-8 items-center">
+				<button id="btn-submit" type="submit">{_ actions.save}</button>
+				<button id="btn-cancel" type="button" onclick="history.back()" class="button secondary">{_ actions.cancel}</button>
+
+				{#if (record.id) && enable_delete}
+					<button id="action_delete" type="button" command="show-modal" commandfor="action_delete_dialog" class="ml-auto button tertiary">{_ actions.delete}</button>
+				{/if}
+			</div>
+		</form>
+
+		{#if (record.id)}
+			<div class="flex items-center gap-2 mt-4 pt-4 border-t border-neutral-200">
+				<form method="POST" action="{~ localized_path(action) }">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<input type="hidden" name="_action" value="generate_scope_translations" />
+					<button type="submit" class="button secondary">{_ actions.scope_translations}</button>
+				</form>
+
+				<a href="{~ localized_path(translations_url) }" role="button" class="button secondary">{_ actions.scope_translations_view}</a>
+			</div>
+		{/if}
+
+		{#if (record.id) && enable_delete}
+			<form id="delete-form" method="POST" action="{~ localized_path('/system/global_scopes/' + record.id + '/edit') }" style="display: none;">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="_action" value="delete" />
+			</form>
+		{/if}
+
+	</div>
+
+	{#if enable_delete}
+		<dialog id="action_delete_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.delete}</h2>
+				<div class="mt-6 flex justify-end gap-2">
+					<button class="px-3 py-1 rounded bg-slate-200" type="button" commandfor="action_delete_dialog" command="close">{_ actions.abort_delete}</button>
+					<button class="px-3 py-1 rounded bg-brand text-white" type="button" command="--confirm" commandfor="action_delete_dialog">{_ actions.confirm_delete}</button>
+				</div>
+			</div>
+		</dialog>
+	{/if}
+	<script src="/dialog-confirm.js?v={= version}"></script>
+	<script src="/form-controller.js?v={= version}" defer></script>
+
+	<script>
+		function insert_session_var(path) {
+			const input = document.getElementById("where_clause");
+			if (!input) return;
+			const start = input.selectionStart ?? input.value.length;
+			const end = input.selectionEnd ?? input.value.length;
+			const prefix = input.value.substring(0, start);
+			const suffix = input.value.substring(end);
+			// Add space before if not at start and prev char isn't already a space
+			const spacer = prefix && !prefix.endsWith(" ") ? " " : "";
+			input.value = `${prefix + spacer}::${path} ${suffix}`;
+			const cursor_pos = (`${prefix + spacer}::${path} `).length;
+			input.setSelectionRange(cursor_pos, cursor_pos);
+			input.focus();
+		}
+
+		// Scope preview: fetch resolved SQL for a test user
+		$("#preview_btn")?.addEventListener("click", async () => {
+			const input = $("#where_clause");
+			const userSelect = $("#preview_user");
+			const resultEl = $("#preview_result");
+			const where_clause = input?.value?.trim();
+			const test_user_id = userSelect?.value;
+
+			if (!where_clause) {
+				resultEl.textContent = "Enter a WHERE clause first.";
+				resultEl.classList.remove("hidden");
+				return;
+			}
+
+			if (!test_user_id) {
+				resultEl.textContent = "Select a test user first.";
+				resultEl.classList.remove("hidden");
+				return;
+			}
+
+			resultEl.textContent = "Loading...";
+			resultEl.classList.remove("hidden");
+
+			try {
+				const csrf_token = document.querySelector('input[name="_csrf_token"]')?.value || "";
+				const res = await fetch("{~ localized_path('/system/global_scopes/test-scope') }", {
+					method: "POST",
+					headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf_token },
+					body: JSON.stringify({ where_clause, test_user_id })
+				});
+
+				const data = await res.json();
+				if (data.error) {
+					resultEl.textContent = `Error: ${data.error}`;
+				} else {
+					resultEl.textContent = data.resolved_clause;
+				}
+			} catch (err) {
+				resultEl.textContent = `Request failed: ${err.message}`;
+			}
+		});
+
+		const return_url_field = $("#return_url");
+		if (return_url_field && document.referrer) {
+			try {
+				const referer_url = new URL(document.referrer);
+				return_url_field.value = referer_url.pathname + referer_url.search;
+			} catch (e) {}
+		}
+		{#if enable_delete}
+			$("#action_delete_dialog").addEventListener("command", (e) => {
+				if (e.command !== "--confirm") return;
+				e.currentTarget.close();
+				$("#delete-form").submit();
+			});
+		{/if}
+		document.addEventListener("DOMContentLoaded", () => {
+			new FormController({
+				form: "#entry-form",
+				validate_url: "{~ localized_path('/system/global_scopes/validate') }",
+				submitted_text: "{- actions.submitted}"
+			});
+		});
+	</script>
+{/with}

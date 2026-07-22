@@ -1,0 +1,46 @@
+{{
+	const attrs = props.attributes || {};
+	const name = attrs.name || "";
+	const value = attrs.value || "";
+	const folder = attrs.folder || "";
+	const label = attrs.label || "";
+	const module = attrs.module || "";
+	const input_id = `${name}_upload`;
+}}
+<div
+	class="image-upload-wrapper"
+	data-name="{= name }"
+	data-folder="{= folder }"
+	data-module="{= module }"
+	data-msg-invalid-type="{_ errors.image_upload_invalid_type }"
+	data-msg-uploaded="{_ messages.image_upload_uploaded }"
+	data-msg-failed="{_ errors.image_upload_failed }">
+	<div class="px-3 flex items-center justify-between gap-2">
+		{#if label}
+			<label class="block text-sm font-medium text-slate-700" for="{= input_id }_dropzone">{= label }</label>
+		{/if}
+		<div class="image-upload-status hidden text-xs" style="color: var(--color-success)"></div>
+	</div>
+
+	<input type="hidden" name="{= name }" class="image-upload-value" value="{= value }" />
+	<input type="hidden" name="_csrf_token" value="{= csrf_token }" class="image-upload-csrf" />
+
+	<div
+		id="{= input_id }_dropzone"
+		class="image-upload-dropzone relative border-2 border-dashed border-slate-300 rounded-lg p-4 text-center cursor-pointer transition-all duration-200 bg-slate-50 hover:border-blue-500 hover:bg-blue-50 mt-1"
+		tabindex="0">
+		<img class="image-upload-preview max-h-40 mx-auto rounded {#if !value}hidden{/if}" src="{= value }" alt="{= label || name }" />
+		<p class="image-upload-placeholder text-slate-500 m-0 text-sm {#if value}hidden{/if}">
+			<strong class="text-blue-600">{_ ui.image_upload_click }</strong>
+			{_ ui.image_upload_or }
+			<strong class="text-blue-600">{_ ui.image_upload_drag_drop }</strong>
+			{_ ui.image_upload_here }
+		</p>
+		<div class="image-upload-spinner absolute inset-0 flex items-center justify-center bg-white/70 hidden">
+			<span class="inline-block w-8 h-8 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></span>
+		</div>
+		<input type="file" class="image-upload-file hidden" accept="image/*" />
+	</div>
+</div>
+
+<script src="/image-upload.js?v={= props.version }" defer></script>

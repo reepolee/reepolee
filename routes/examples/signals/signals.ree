@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Signals</title>
+		<link rel="stylesheet" href='/app{~ props.is_dev ? "-dev" :"" }.css?v={= props.version }' />
+
+		<script type="module">
+			// This is an example of Alien Deepsignals usage. It loads the library
+			// from a CDN so the page is self-contained. To use deepsignals in your
+			// own pages, run `bun get:signals` to vendor it into static/, then import
+			// from "/alien-deepsignals.min.js" instead of the CDN (no runtime CDN).
+			import { deepSignal, watchEffect } from "https://esm.sh/alien-deepsignals@0.4.2";
+			// -----------------
+			// deepsignal implementation for the counter
+			// -----------------
+			const counter = deepSignal({ count: parseInt(counter_input.value, 10) }); // initial value from HTML tag
+			plus_button.onclick = () => counter.count++; // update value
+			watchEffect(() => (counter_input.value = counter.count)); // update input
+			// -----------------
+			// deepsignal implementation - wraps the form fields in a deep signal
+			// -----------------
+			const profile_form = deepSignal({
+				// initial values from HTML tags
+				first_name: first_name_input.value,
+				last_name: last_name_input.value
+			});
+			const pre = document.getElementsByTagName("pre")[0]; // find DEBUG tag
+			pre.innerText = JSON.stringify(profile_form, null, 4); // initial value in DEBUG tag
+			first_name_input.oninput = () => (profile_form.first_name = first_name_input.value); // setter
+			last_name_input.oninput = () => (profile_form.last_name = last_name_input.value); // setter
+			watchEffect(() => (pre.innerText = JSON.stringify(profile_form, null, 4))); // show current state in DEBUG
+		</script>
+	</head>
+
+	<body class="mx-auto flex max-w-[60ch] flex-col gap-4 p-4">
+		<h1>Signals demo</h1>
+
+		<h2 class="text-brand">This page is intentionally not translated and without layout.</h2>
+
+		<a href="/" class="text-primary w-fit underline">Go back home</a>
+
+		<div class="mt-4 flex flex-col gap-2">
+			<h3 class="text-lg font-medium">Counter</h3>
+			<form id="counter_form" class="flex items-center gap-2">
+				<input id="counter_input" name="counter" value="100" disabled />
+				<button type="button" id="plus_button" class="button primary">Add 1</button>
+			</form>
+		</div>
+
+		<div class="mt-4 flex flex-col gap-2">
+			<h3 class="text-lg font-medium">Profile</h3>
+			<form id="profile_form" class="flex gap-2">
+				<input id="first_name_input" name="first_name" value="Aleš" />
+				<input id="last_name_input" name="last_name" value="Vaupotič" />
+			</form>
+		</div>
+
+		<pre class="bg-surface-sunken overflow-auto rounded-md p-4 text-sm"></pre>
+	</body>
+</html>

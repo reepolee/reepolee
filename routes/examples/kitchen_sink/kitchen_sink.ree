@@ -1,0 +1,120 @@
+{#layout("layout")}
+
+<div class="p-4 grid gap-8 max-w-4xl">
+	<section>
+		<h1>{_ ui.title}</h1>
+		<h2>{_ ui.description}</h2>
+	</section>
+
+	<section class="grid gap-4">
+		<h2>{_ labels.form_elements}</h2>
+		<form id="kitchen-sink-form" class="grid gap-4 max-w-lg" onsubmit="return false">
+			<field-wrapper class="grid">
+				<label for="text_input">{_ labels.text_input}</label>
+				<input type="text" id="text_input" name="text_input" placeholder="{_ labels.text_placeholder}" minlength="3" />
+				<validation-error id="error-text_input"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid">
+				<label for="email_input">{_ labels.email_input}</label>
+				<input type="email" id="email_input" name="email_input" placeholder="{_ labels.email_placeholder}" />
+				<validation-error id="error-email_input"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid">
+				<label for="select-input">{_ labels.select_dropdown}</label>
+				<select id="select-input">
+					<option>{_ labels.option} 1</option>
+					<option>{_ labels.option} 2</option>
+					<option>{_ labels.option} 3</option>
+				</select>
+			</field-wrapper>
+
+			<field-wrapper class="grid">
+				<label for="textarea-input">{_ labels.textarea}</label>
+				<textarea id="textarea-input" placeholder="{_ labels.textarea_placeholder}"></textarea>
+			</field-wrapper>
+
+			<field-wrapper class="grid">
+				<label>
+					<input type="checkbox" />
+					{_ labels.checkbox_option}
+				</label>
+			</field-wrapper>
+
+			<field-wrapper class="grid gap-2">
+				<label>{_ labels.radio_options}</label>
+				<label class="flex items-center gap-2">
+					<input type="radio" name="radio-group" />
+					{_ labels.radio}
+					1
+				</label>
+				<label class="flex items-center gap-2">
+					<input type="radio" name="radio-group" />
+					{_ labels.radio}
+					2
+				</label>
+			</field-wrapper>
+		</form>
+	</section>
+
+	<script src="/form-controller.js?v={= props.version }" defer></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+			new FormController({
+				form: "#kitchen-sink-form",
+				validate_url: "{~ localized_path('/examples/kitchen-sink/validate') }",
+			});
+		});
+	</script>
+
+	<section class="grid gap-4">
+		<h2>{_ labels.buttons}</h2>
+		<div class="flex flex-wrap gap-2">
+			<button class="button primary">{_ labels.primary_button}</button>
+			<button class="button">{_ labels.secondary_button}</button>
+			<button class="button" disabled>{_ labels.disabled_button}</button>
+		</div>
+	</section>
+
+	<section class="grid gap-4">
+		<h2>{_ labels.banners}</h2>
+		<app-banner type="green">{_ messages.success}</app-banner>
+		<app-banner type="yellow">{_ messages.warning}</app-banner>
+		<app-banner type="red">{_ messages.error}</app-banner>
+		<app-banner>{_ messages.info}</app-banner>
+	</section>
+
+	<section class="grid gap-4">
+		<h2>{_ labels.cards}</h2>
+		<div class="border rounded-lg p-4 bg-surface-raised">
+			<h3 class="font-bold mb-2">{_ labels.card_section}</h3>
+			<p>{_ descriptions.card}</p>
+		</div>
+	</section>
+
+	<section class="grid gap-4">
+		<h2>{_ labels.typography}</h2>
+		<h1>{_ labels.heading_1}</h1>
+		<h2>{_ labels.heading_2}</h2>
+		<h3>{_ labels.heading_3}</h3>
+		<p>{_ descriptions.typography}</p>
+		<ul class="list-disc pl-5">
+			<li>{_ labels.list_item} 1</li>
+			<li>{_ labels.list_item} 2</li>
+			<li>{_ labels.list_item} 3</li>
+		</ul>
+	</section>
+
+	<section class="grid gap-4">
+		<h2>{_ labels.code_example}</h2>
+		<pre class="bg-surface-sunken p-4 rounded overflow-auto"><code>const greeting = "Hello, Kitchen Sink!";
+				console.log(greeting);
+			</code>
+		</pre>
+	</section>
+
+	<footer class="mt-12 pt-4 border-t text-sm text-surface-dim">
+		<p>{= props.site_name} © Reepolee {= props.year}</p>
+	</footer>
+</div>

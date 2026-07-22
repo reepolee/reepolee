@@ -1,0 +1,12 @@
+{#layout("layout") }
+
+<div class="p-4">
+	<h1>{_ ui.title}</h1>
+
+	<h2>Records from data.json:</h2>
+	<ul class="gap-8 p-4">
+		{#each props.records as record}
+			<li>ID: {= record.id} - {= record.name}</li>
+		{/each}
+	</ul>
+</div>

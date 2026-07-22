@@ -1,0 +1,287 @@
+<!-- crud:children:start -->
+{#if record.id}
+	<div class="child-list mt-8 bg-surface-raised rounded-lg shadow p-4 max-w-max" data-child-section="__child.table__">
+		<h2 class="text-lg font-semibold mb-4">{= props.__child.parent_label__ }</h2>
+		{#if props.__child.records__ && props.__child.records__.length > 0}
+			<div class="grid gap-x-8 items-center font-semibold" __child.grid_cols__>
+				__child.headers__
+				<div class="child-header text-right px-2">{= props.__child.ui__.actions }</div>
+				{#each props.__child.records__ as child}
+					<div class="grid grid-cols-subgrid col-span-full items-center border-t border-slate-100 py-2 hover:bg-slate-200/50 font-normal">
+						__child.cells__
+
+						<div class="flex items-center justify-end gap-2 px-2">
+							<button type="button" class="p-1 rounded hover:bg-neutral-100 transition-transform hover:scale-105 hover:shadow" data-edit-child data-child-id="{= child.id }" title="{= __child.ui__.edit }">📝</button>
+							<button type="button" class="bg-transparent border-0 p-1 rounded cursor-pointer hover:bg-neutral-100 transition-transform hover:scale-105 hover:shadow" data-delete-child data-child-id="{= child.id }" command="show-modal" commandfor="child-delete-dialog-__child.table__" title="{= __child.ui__.delete }"><!-- bare `delete` would break - `delete` is a JS keyword -->🗑️</button>
+						</div>
+					</div>
+				{/each}
+			</div>
+		{:else}
+			<p class="text-slate-400 italic">__ui.empty_text__</p>
+		{/if}
+		<button type="button" class="button primary mt-4 inline-flex items-center gap-1" data-new-child>{= props.__child.ui__.new_button }</button>
+	</div>
+
+	<!-- Child CRUD dialog -->
+	<dialog id="child-dialog-__child.table__" class="p-0 rounded-xl shadow-2xl w-[90vw] max-w-[60ch] max-h-[90vh]">
+		<div class="p-6 overflow-y-auto max-h-[80vh]">
+			<div class="flex items-center justify-between mb-4">
+				<h2 id="child-dialog-title-__child.table__" class="text-lg font-semibold">{= props.__child.ui__.new_title }</h2>
+				<button type="button" class="p-1 rounded hover:bg-neutral-100 text-2xl leading-none" commandfor="child-dialog-__child.table__" command="close">&times;</button>
+			</div>
+
+			<div id="child-form-errors-__child.table__" class="hidden py-4">
+				<app-banner type="red"><span id="child-form-errors-text-__child.table__"></span></app-banner>
+			</div>
+
+			<form id="child-form-__child.table__" class="grid gap-4">
+				{#with props}
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<input type="hidden" name="__child.fk_column__" id="child-parent-fk-__child.table__" value="" />
+
+					<!-- crud:child:fields:start -->
+					__child.input_fields__
+					<!-- crud:child:fields:end -->
+
+					<div class="flex gap-2 mt-6 items-center">
+						<button id="child-btn-submit-__child.table__" type="submit" class="button primary">{_ actions.save}</button>
+						<button type="button" class="button secondary" commandfor="child-dialog-__child.table__" command="close">{_ actions.cancel}</button>
+					</div>
+				{/with}
+			</form>
+		</div>
+	</dialog>
+
+	<!-- Child delete confirmation dialog -->
+	<dialog id="child-delete-dialog-__child.table__" class="p-0 rounded-xl shadow-2xl w-100">
+		<div class="p-6">
+			<h2 class="text-lg font-semibold">{_ actions.delete}</h2>
+			<div class="mt-6 flex justify-end gap-2">
+				<button class="px-3 py-1 rounded bg-slate-200" type="button" commandfor="child-delete-dialog-__child.table__" command="close">{_ actions.cancel}</button>
+				<button id="child-btn-confirm-delete-__child.table__" class="px-3 py-1 rounded bg-brand text-white" type="button" command="--confirm" commandfor="child-delete-dialog-__child.table__">{_ actions.confirm_delete}</button>
+			</div>
+		</div>
+	</dialog>
+
+	<script>
+	(() => {
+		const container = document.querySelector('[data-child-section="__child.table__"]');
+		if (!container) return;
+		const dialog = document.getElementById("child-dialog-__child.table__");
+		const form = document.getElementById("child-form-__child.table__");
+		const title = document.getElementById("child-dialog-title-__child.table__");
+		const errors = document.getElementById("child-form-errors-__child.table__");
+		const errors_text = document.getElementById(
+		"child-form-errors-text-__child.table__",
+		);
+		const parent_fk = document.getElementById("child-parent-fk-__child.table__");
+		const submit_btn = document.getElementById(
+		"child-btn-submit-__child.table__",
+		);
+		// Base path for child CRUD URLs - computed server-side via template scope
+		const child_base_path =
+		"{~ localized_path('/__parent.table__/' + props.record.__parent.route_param__ + '/__child.table__') }";
+		const parent_val = "{= props.record.__parent.route_param__ }";
+	
+		function qs(sel) {
+			return form.querySelector(sel);
+		}
+	
+		function fill_form(record) {
+			__child.form_fill_js__;
+		}
+	
+		function clear_form() {
+			__child.form_clear_js__;
+		}
+	
+		function hide_error() {
+			errors.classList.add("hidden");
+		}
+	
+		function show_error(msg) {
+			errors_text.textContent = msg;
+			errors.classList.remove("hidden");
+		}
+	
+		function clear_field_errors() {
+			const error_fields = [__child.error_field_list__];
+			error_fields.forEach((name) => {
+				const el = document.getElementById(`error-${name}`);
+				if (el) el.innerHTML = "";
+			});
+		}
+	
+		function set_field_errors(errors) {
+			for (const [name, msg] of Object.entries(errors)) {
+				const el = document.getElementById(`error-${name}`);
+				if (el) el.innerHTML = msg;
+			}
+		}
+	
+		// Edit buttons - scoped to this child's container
+		container.querySelectorAll("[data-edit-child]").forEach((btn) => {
+			btn.addEventListener("click", async function() {
+				const child_id = this.dataset.childId;
+				hide_error();
+				clear_field_errors();
+	
+				try {
+					const csrf_token = document.cookie.match(/csrf_token=([^;]+)/)?.[1] || "";
+					const res = await fetch(
+					`${child_base_path}/${child_id}/edit-data`,
+					);
+					const data = await res.json();
+					if (data.error) {
+						show_error(data.error);
+						return;
+					}
+					fill_form(data.record);
+					parent_fk.value = parent_val;
+					form.action = `${child_base_path}/${child_id}/edit`;
+					title.textContent = "{= props.__child.ui__.edit_title }";
+					submit_btn.textContent = "{_ actions.save}";
+					dialog.showModal();
+				} catch (e) {
+					show_error("{= props.__child.ui__.error_loading }");
+				}
+			});
+		});
+	
+		// New button - scoped to this child's container
+		const new_btn = container.querySelector("[data-new-child]");
+		if (new_btn) {
+			new_btn.addEventListener("click", () => {
+				hide_error();
+				clear_field_errors();
+				clear_form();
+				parent_fk.value = parent_val;
+				form.action = child_base_path;
+				title.textContent = "{= props.__child.ui__.new_title }";
+				submit_btn.textContent = "{_ actions.save}";
+				dialog.showModal();
+			});
+		}
+	
+		// Form submit
+		form.addEventListener("submit", async (e) => {
+			e.preventDefault();
+			hide_error();
+			submit_btn.disabled = true;
+			submit_btn.textContent = "{_ actions.submitted}";
+	
+			try {
+				const form_data = new FormData(form);
+				const res = await fetch(form.action, {
+					method: "POST",
+					body: new URLSearchParams(form_data),
+				});
+				const data = await res.json();
+	
+				if (data.success) {
+					dialog.close();
+					window.location.reload();
+				} else {
+					if (data.errors) {
+						set_field_errors(data.errors);
+					}
+					show_error(
+					data.form_errors
+					|| "{= props.__child.ui__.error_saving }",
+					);
+					submit_btn.disabled = false;
+					submit_btn.textContent = "{_ actions.save}";
+				}
+			} catch (e) {
+				show_error("{= props.__child.ui__.error_saving }");
+				submit_btn.disabled = false;
+				submit_btn.textContent = "{_ actions.save}";
+			}
+		}); // Blur validation
+		form.addEventListener("focusout", async (e) => {
+			const el = e.target;
+			if (!el || !el.name || el.tagName === "BUTTON") return;
+	
+			try {
+				const fd = new FormData(form);
+				const values = Object.fromEntries(fd.entries());
+				values.touched = [el.name];
+	
+				const res = await fetch(`${child_base_path}/validate`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(values),
+				});
+				const data = await res.json();
+				if (data.errors) {
+					const error_el = document.getElementById(`error-${el.name}`);
+					if (error_el) error_el.innerHTML = data.errors[el.name] || "";
+				} else {
+					// Clear this field's error if validation passed
+					const error_el = document.getElementById(`error-${el.name}`);
+					if (error_el) error_el.innerHTML = "";
+				}
+			} catch (e) {
+				// Silent fail for blur validation
+			}
+		});
+	
+		// Child delete confirmation dialog
+		const delete_dialog = document.getElementById(
+		"child-delete-dialog-__child.table__",
+		);
+		const delete_confirm_btn = document.getElementById(
+		"child-btn-confirm-delete-__child.table__",
+		);
+		let pending_delete_id = "";
+	
+		if (delete_dialog) {
+			delete_dialog.addEventListener("command", async (e) => {
+				// Trash button opens the dialog - capture which child it targets
+				if (e.command === "show-modal") {
+					pending_delete_id = e.source.dataset.childId;
+					return;
+				}
+				if (e.command !== "--confirm") return;
+				delete_dialog.close();
+				const original_text = delete_confirm_btn.textContent;
+				delete_confirm_btn.disabled = true;
+				delete_confirm_btn.textContent = "{= props.__child.ui__.deleting }";
+	
+				try {
+					const res = await fetch(
+					`${child_base_path}/${pending_delete_id}/edit`,
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/x-www-form-urlencoded",
+							"X-CSRF-Token": csrf_token,
+						},
+						body: new URLSearchParams({
+							_action: "delete",
+							_csrf_token: csrf_token,
+						}),
+					},
+					);
+					const data = await res.json();
+					if (data.success) {
+						window.location.reload();
+					} else {
+						delete_confirm_btn.disabled = false;
+						delete_confirm_btn.textContent = original_text;
+						show_error(
+						data.error || "{= props.__child.ui__.error_deleting }",
+						);
+					}
+				} catch (e) {
+					delete_confirm_btn.disabled = false;
+					delete_confirm_btn.textContent = original_text;
+					show_error("{= props.__child.ui__.error_deleting }");
+				}
+			});
+		}
+	})();
+</script>
+{/if}
+<!-- crud:children:end -->

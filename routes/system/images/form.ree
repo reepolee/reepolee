@@ -1,0 +1,308 @@
+{#layout("layout")}
+{#with props}
+
+	<div class="p-4 max-w-[180ch] mx-auto">
+		<div class="flex items-center justify-between mb-6">
+			<h1>{= title}</h1>
+			<div class="text-sm text-gray-500">
+				{#if record.created_at}
+					{~ js_datetime_to_locale_string(record.created_at)}
+				{/if}
+			</div>
+		</div>
+
+		<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+		<!-- Image Editor (regular HTML, no web component) -->
+
+		<div class="flex flex-col gap-3">
+
+			<!-- Source selector tabs (hidden in edit mode) -->
+			{#if !editor_config.edit_mode}
+				<div id="source-tabs" class="flex border-b border-slate-200">
+					<button class="tab-btn active px-5 py-2 text-xs border border-b-0 rounded-t-lg cursor-pointer bg-white border-slate-200 text-slate-900 font-semibold" data-tab="upload">
+						Upload
+					</button>
+					<button
+						class="tab-btn px-5 py-2 text-xs border border-transparent border-b-0 rounded-t-lg cursor-pointer bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+						data-tab="url">
+						URL
+					</button>
+					<button
+						class="tab-btn px-5 py-2 text-xs border border-transparent border-b-0 rounded-t-lg cursor-pointer bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+						data-tab="paste">
+						Paste
+					</button>
+				</div>
+
+				<div class="source-panel active p-4 bg-white border border-slate-200 border-t-0 rounded-b-lg" data-panel="upload">
+					<div
+						id="drop-zone"
+						class="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center cursor-pointer transition-all duration-200 bg-slate-50 hover:border-blue-500 hover:bg-blue-50">
+						<p class="text-slate-500 m-0">
+							<strong class="text-blue-600">Click</strong>
+							to browse or
+							<strong class="text-blue-600">drag & drop</strong>
+							an image here
+						</p>
+						<input type="file" id="file-input" accept="image/*" class="hidden" />
+					</div>
+				</div>
+
+				<div class="source-panel hidden p-4 bg-white border border-slate-200 border-t-0 rounded-b-lg" data-panel="url">
+					<div class="flex gap-2">
+						<input type="url" id="url-input" placeholder="https://example.com/image.jpg" class="flex-1 px-3 py-2 border border-slate-200 rounded text-sm outline-none focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)]" />
+						<button id="fetch-url-btn" class="px-5 py-2 rounded text-sm font-medium cursor-pointer border-none bg-blue-600 text-white hover:bg-blue-700 font-sans">Fetch</button>
+					</div>
+				</div>
+
+				<div class="source-panel hidden p-4 bg-white border border-slate-200 border-t-0 rounded-b-lg" data-panel="paste">
+					<p class="text-slate-500 m-0 text-sm">
+						Press
+						<strong>Ctrl+V</strong>
+						or
+						<strong>Cmd+V</strong>
+						to paste an image from clipboard
+					</p>
+				</div>
+			{/if}
+
+			<!-- Status bar -->
+			<div id="status-bar" class="hidden"></div>
+
+			<!-- Image area (preview panels always visible, operations form hidden until image loaded) -->
+			<div id="image-area" class="hidden">
+
+				<!-- Side-by-side: original + preview -->
+				<div class="grid grid-cols-2 gap-4 w-full grid-rows-[auto_auto_auto]">
+					<div class="flex items-center justify-between px-2 py-1">
+						<span class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Original</span>
+						<button id="clear-btn" class="text-xs px-2 py-0.5 rounded cursor-pointer bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 font-sans">Clear</button>
+					</div>
+					<div class="text-xs font-semibold uppercase text-slate-500 tracking-wider px-2 py-1">Preview</div>
+
+					<div id="preview-panel-left" class="aspect-square flex items-center justify-center overflow-hidden bg-white border border-slate-200 rounded-lg p-2">
+						<div id="canvas-wrapper" class="relative w-full h-full max-w-full rounded flex items-center justify-center">
+							<canvas id="crop-canvas" class="block cursor-crosshair rounded absolute top-0 left-0"></canvas>
+							<div id="crop-overlay" class="absolute border-2 border-blue-500 bg-blue-500/10 pointer-events-none shadow-[0_0_0_9999px_rgba(0,0,0,0.35)] hidden z-[1]">
+								<div class="crop-handle absolute w-2.5 h-2.5 bg-white border-2 border-blue-500 rounded-sm z-2" style="top:-5px;left:-5px"></div>
+								<div class="crop-handle absolute w-2.5 h-2.5 bg-white border-2 border-blue-500 rounded-sm z-2" style="top:-5px;right:-5px"></div>
+								<div class="crop-handle absolute w-2.5 h-2.5 bg-white border-2 border-blue-500 rounded-sm z-2" style="bottom:-5px;left:-5px"></div>
+								<div class="crop-handle absolute w-2.5 h-2.5 bg-white border-2 border-blue-500 rounded-sm z-2" style="bottom:-5px;right:-5px"></div>
+								<div id="crop-info" class="absolute -bottom-7 left-0 bg-slate-900 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap z-3">0 × 0</div>
+							</div>
+						</div>
+					</div>
+
+					<div id="preview-panel-right" class="relative aspect-square flex items-center justify-center overflow-hidden bg-white border border-slate-200 rounded-lg p-2">
+						<div id="preview-loading" class="absolute inset-0 flex items-center justify-center bg-white/70 hidden">
+							<span class="inline-block w-8 h-8 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></span>
+						</div>
+						<img id="preview-img" alt="Preview" class="max-w-full max-h-full object-contain block rounded hidden" />
+						<div id="preview-empty" class="flex items-center justify-center min-h-[150px] text-slate-400 text-xs">Adjust settings to see preview</div>
+					</div>
+
+					<div id="original-size" class="flex justify-center text-slate-500 px-1"></div>
+					<div id="preview-size" class="flex justify-center text-slate-500 px-1"></div>
+					<div id="original-filename" class="flex justify-center text-slate-500 px-1 text-xs col-span-2 truncate max-w-full"></div>
+				</div>
+
+				<div id="editor-form-panel" class="hidden">
+
+					<!-- Operations panel -->
+					<div class="grid grid-cols-2 gap-4 p-4 bg-slate-50 border border-slate-200 rounded-lg mt-4">
+
+						<div class="col-span-2 flex justify-start items-center gap-8">
+							<span id="output-dim-display" class="text-xs text-slate-500"></span>
+							<span id="crop-display" class="text-xs text-slate-500 "></span>
+						</div>
+
+						<div class="flex flex-col gap-1">
+							<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Format</label>
+
+							<select
+								id="format-select"
+								class="bg-white px-2 py-1.5 border border-slate-200 rounded text-sm font-sans outline-none focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)]">
+								<option value="webp" selected>WebP</option>
+								<option value="jpeg">JPEG</option>
+								<option value="png">PNG</option>
+								<option value="avif">AVIF</option>
+							</select>
+						</div>
+
+						<div class="flex flex-col gap-1">
+							<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Quality</label>
+							<input type="number" id="quality-input" value="85" min="1" max="100" class="bg-white px-2 py-1.5 border border-slate-200 rounded text-sm font-sans outline-none focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)]" />
+						</div>
+
+						<div class="flex flex-col gap-1">
+							<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Resize (optional)</label>
+							<div class="flex gap-2 items-center">
+								<input type="number" id="resize-width" placeholder="W" min="1" max="5000" class="w-20 bg-white px-2 py-1.5 border border-slate-200 rounded text-sm font-sans outline-none focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)]" />
+								<span class="text-slate-500">×</span>
+								<input type="number" id="resize-height" placeholder="H" min="1" max="5000" class="w-20 bg-white px-2 py-1.5 border border-slate-200 rounded text-sm font-sans outline-none focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)]" />
+							</div>
+						</div>
+
+						<div class="flex flex-col gap-1">
+							<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Folder</label>
+							<input type="text" id="image-folder" placeholder="e.g. logo" class="bg-white px-2 py-1.5 border border-slate-200 rounded text-sm font-sans outline-none focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)]" />
+						</div>
+
+						<div class="col-span-2 flex flex-col gap-1">
+							<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Title</label>
+							<input type="text" id="image-title" placeholder="Image title" maxlength="255" class="bg-white px-2 py-1.5 border border-slate-200 rounded text-sm font-sans outline-none focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)]" />
+						</div>
+
+						<div class="col-span-2 flex flex-col gap-1">
+							<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Description</label>
+							<textarea id="image-description" placeholder="Optional description" rows="2" class="bg-white px-2 py-1.5 border border-slate-200 rounded text-sm font-sans outline-none resize-y focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)]">
+							</textarea>
+						</div>
+
+						<div class="col-span-2 flex flex-col gap-1">
+							<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Tags</label>
+							<input type="text" id="image-tags" placeholder="e.g. hero, banner, product" maxlength="500" class="bg-white px-2 py-1.5 border border-slate-200 rounded text-sm font-sans outline-none focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)]" />
+						</div>
+
+						{#if !editor_config.edit_mode}
+							<div id="keep-original-group" class="col-span-2 flex flex-col gap-1">
+								<label class="flex items-center gap-2 text-sm cursor-pointer">
+									<input type="checkbox" id="keep-original" class="w-4 h-4" checked />
+									<span>Do not keep original file after processing</span>
+								</label>
+							</div>
+						{/if}
+					</div>
+					<!-- /operations grid -->
+
+					<!-- Action bar -->
+					<div class="flex gap-3 justify-between items-center mt-2">
+						<a href="{~ localized_path('/system/images') }" class="border-neutral-200 border px-3 py-2 rounded no-underline text-gray-700 text-sm">
+							←
+							{_ actions.back}
+						</a>
+
+						<div class="flex gap-3">
+							<button
+								id="save-btn"
+								disabled
+								class="px-5 py-2 rounded text-sm font-medium cursor-pointer border-none bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 font-sans">
+								<span class="btn-label">💾 Save</span>
+								<span class="btn-spinner hidden">
+									<span class="inline-block w-4 h-4 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></span>
+								</span>
+							</button>
+
+							{#if editor_config.edit_mode}
+								<button id="save-as-copy-btn" class="px-5 py-2 rounded text-sm font-medium cursor-pointer bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 font-sans">
+									<span class="btn-label">📋 Save as copy</span>
+									<span class="btn-spinner hidden">
+										<span class="inline-block w-4 h-4 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></span>
+									</span>
+								</button>
+
+								<button
+									id="action_delete"
+									type="button"
+									command="show-modal"
+									commandfor="action_delete_dialog"
+									class="px-3 py-1 rounded text-xs font-medium cursor-pointer bg-white text-brand border border-red-200 hover:bg-red-50 font-sans">
+									🗑️
+									{_ actions.delete}
+								</button>
+							{/if}
+						</div>
+					</div>
+
+				</div>
+				<!-- /editor-form-panel -->
+			</div>
+		</div>
+
+		{#if editor_config.edit_mode}
+			<form id="delete-form" method="POST" action="{~ localized_path(action) }" style="display: none;">
+				<input type="hidden" name="_action" value="delete" />
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+			</form>
+
+			<dialog id="action_delete_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+				<div class="p-6">
+					<h2 class="text-lg font-semibold">{_ actions.delete}</h2>
+					<div class="mt-6 flex justify-end gap-2">
+						<button class="px-3 py-1 rounded bg-slate-200 text-sm cursor-pointer" type="button" commandfor="action_delete_dialog" command="close">{_ actions.abort_delete}</button>
+						<button class="px-3 py-1 rounded bg-brand text-white text-sm cursor-pointer" type="button" command="--confirm" commandfor="action_delete_dialog">{_ actions.confirm_delete}</button>
+					</div>
+				</div>
+			</dialog>
+
+			<script src="/dialog-confirm.js?v={= version }"></script>
+		{/if}
+
+		<script id="editor-config" type="application/json">
+			{~ editor_config_json }
+		</script>
+
+	</div>
+
+	<style>
+		/* -- Drag-over state for drop zone -- */
+		#drop-zone.drag-over {
+			border-color: #2563eb;
+			background: #eff6ff;
+		}
+
+		/* -- Source tab active state -- */
+		#source-tabs .tab-btn.active {
+			background: #ffffff;
+			border-color: #e2e8f0;
+			color: #0f172a;
+			font-weight: 600;
+		}
+
+		#source-tabs .tab-btn:not(.active) {
+			border-color: transparent;
+			background: #f8fafc;
+			color: #64748b;
+		}
+
+		/* -- Preview panel visibility toggle -- */
+		#preview-panel-right.active {
+			visibility: visible;
+		}
+
+		/* -- Spinner keyframe -- */
+		@keyframes spin {
+			to {
+				transform: rotate(360deg);
+			}
+		}
+
+		.animate-spin {
+			animation: spin 0.6s linear infinite;
+		}
+	</style>
+
+	<script src="/image-editor.js?v={= version }" defer></script>
+	<script src="/helpers-client.js?v={= version }" defer></script>
+
+	<script>
+		// Wait for DOM then init the editor with the embedded config
+		document.addEventListener("DOMContentLoaded", () => {
+			const configEl = document.getElementById("editor-config");
+			if (configEl && window.initImageEditor) {
+				const config = JSON.parse(configEl.textContent);
+				window.initImageEditor(config);
+			}
+		});
+		const delete_dialog = document.getElementById("action_delete_dialog");
+		if (delete_dialog) {
+			delete_dialog.addEventListener("command", (e) => {
+				if (e.command !== "--confirm") return;
+				e.currentTarget.close();
+				const form = document.getElementById("delete-form");
+				if (form) form.requestSubmit();
+			});
+		}
+	</script>
+{/with}

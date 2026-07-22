@@ -1,0 +1,211 @@
+{#layout("layout")}
+{#with props}
+
+	<div class="py-4">
+
+		<!-- TABLE DISPLAY CONTROLLER -->
+		<div class="flex items-center gap-1 justify-between w-full flex-wrap px-4">
+
+			<div class="pagination-info">
+				{#if first_url}
+					<a href="{~ localized_path(first_url) }" role="button">
+						<ree-icon name="chevrons_left"></ree-icon>
+					</a>
+				{:else}
+					<ree-icon name="chevrons_left"></ree-icon>
+				{/if}
+
+				{#if prev_url}
+					<a href="{~ localized_path(prev_url) }" role="button">
+						<ree-icon name="chevron_left"></ree-icon>
+					</a>
+				{:else}
+					<ree-icon name="chevron_left"></ree-icon>
+				{/if}
+
+				{#if total > 0}
+					<div style="width: {= total.toString().length * 3 + 6 }ch; text-align: center">{= offset + 1} - {= Math.min(offset + (limit === 'all' ? total : limit), total)} / {= total}</div>
+				{:else}
+					<div style="width: 9ch; text-align: center">0 / 0</div>
+				{/if}
+				{#if next_url}
+					<a href="{~ localized_path(next_url) }" role="button">
+						<ree-icon name="chevron_right"></ree-icon>
+					</a>
+				{:else}
+					<ree-icon name="chevron_right"></ree-icon>
+				{/if}
+				{#if last_url}
+					<a href="{~ localized_path(last_url) }" role="button">
+						<ree-icon name="chevrons_right"></ree-icon>
+					</a>
+				{:else}
+					<ree-icon name="chevrons_right"></ree-icon>
+				{/if}
+			</div>
+
+			<div class="flex items-center gap-2">
+				<select id="limit" class="w-[20ch]" onchange="navigate_to('limit', this.value)">
+					{#each limit_options as option}
+						<option value="{= option }" {#if option === limit} selected{/if}>
+							{#if option==="all"}
+								{_ selectors.all}
+							{:else}
+								{= option} {_ selectors.per_page}
+							{/if}
+						</option>
+					{/each}
+				</select>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<select id="order_by" class="w-[30ch]" onchange="navigate_to('order_by', this.value)">
+					{#each sort_options as option}
+						<option value="{= option.value }" {#if option.value === order_by} selected{/if}>{= option.label}</option>
+					{/each}
+				</select>
+			</div>
+			<a href="{~ localized_path('/system/images/new') }" role="button" class="primary">
+				+
+				{_ actions.new_image}
+			</a>
+
+			<ree-filters action-url="/system/images"></ree-filters>
+
+		</div>
+
+		{#if (records.length === 0)}
+			<p class="p-4">{_ ui.no_records}</p>
+		{:else}
+			{#if enable_delete}
+				<!-- BULK DELETE -->
+				<div class="flex items-center gap-4 justify-start w-full flex-wrap px-4 my-4">
+					<button id="action" commandfor="action_dialog" command="show-modal" disabled class="button border enabled:border-transparent enabled:bg-brand enabled:text-white">
+						{_ actions.bulk_action}
+					</button>
+				</div>
+			{/if}
+
+			<!-- TABLE GRID -->
+
+			<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-4" style="grid-template-columns: {= grid_cols }">
+
+				<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+					{#if enable_delete}
+						<div class="grid grid-cols-2 place-items-center p-0!">
+							<button id="deselect_all" class="text-brand cursor-pointer">
+								<ree-icon name="x" class="size-6"></ree-icon>
+							</button>
+							<label class="w-full h-full grid place-items-center hover:bg-brand rounded">
+								<input type="checkbox" name="select_all" id="select_all" />
+							</label>
+						</div>
+					{/if}
+					<div>ID</div>
+					<div></div>
+					<div class="{= columns.folder.class }">{= v_labels.folder}</div>
+					<div class="{= columns.filename.class }">{= v_labels.filename}</div>
+					<div class="{= columns.original_filename.class }">{= v_labels.original_filename}</div>
+					<div class="{= columns.title.class }">{= v_labels.title}</div>
+					<div class="{= columns.description.class }">{= v_labels.description}</div>
+					<div class="{= columns.tags.class }">{= v_labels.tags}</div>
+					<div class="{= columns.mime_type.class }">{= v_labels.mime_type}</div>
+					<div class="{= columns.width.class }">{= v_labels.width}</div>
+					<div class="{= columns.height.class }">{= v_labels.height}</div>
+					<div class="{= columns.file_size.class }">{= v_labels.file_size}</div>
+				</div>
+				{#each records as record}
+					<a
+						href="{~ localized_path('/system/images/' + record.id + '/edit') }"
+						class="col-span-full *:py-2 grid cursor-pointer grid-cols-subgrid border-b border-b-neutral-200 *:px-2 hover:bg-blue-500 hover:text-white items-center">
+
+						{#if enable_delete}
+							<div class="grid grid-cols-2 place-items-center p-0!">
+								<button class="w-6 text-neutral-600 cursor-grab hover:text-white" onclick="event.stopPropagation();event.preventDefault()">
+									<ree-icon name="grip"></ree-icon>
+								</button>
+								<label class="w-full h-full grid place-items-center hover:bg-brand rounded">
+									<input type="checkbox" name="checkboxes[]" value="{= record.id }" />
+								</label>
+							</div>
+						{/if}
+
+						<div>{= record.id}</div>
+						<div class="w-full aspect-square">
+							<img src="/{= images_basepath }/{= record.folder }/tn_{~ record.filename }" class="w-full h-full object-contain" />
+						</div>
+						<div class="{= props.columns.folder.class }">{= record.folder}</div>
+						<div class="{= props.columns.filename.class }">{= record.filename}</div>
+						<div class="{= props.columns.original_filename.class }">{= record.original_filename}</div>
+						<div class="{= props.columns.title.class }">{= record.title}</div>
+						<div class="{= props.columns.description.class }">{= record.description}</div>
+						<div class="{= props.columns.tags.class }">{= record.tags}</div>
+						<div class="{= props.columns.mime_type.class }">{= record.mime_type}</div>
+						<div class="{= props.columns.width.class }">{= record.width}</div>
+						<div class="{= props.columns.height.class }">{= record.height}</div>
+						<div class="{= props.columns.file_size.class }">{~ human_bytes(record.file_size)}</div>
+					</a>
+				{/each}
+			</div>
+		{/if}
+	</div>
+
+	{#if enable_delete}
+		<!-- BULK DELETE CONFIRMATION DIALOG -->
+
+		<dialog id="action_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.bulk_action}</h2>
+				<p class="text-slate-600 mt-2">
+					{_ ui.modifying}
+					<span class="font-semibold text-brand" id="action_count">0</span>
+					{_ ui.records}
+					.
+				</p>
+				<div class="mt-6 flex justify-end gap-2">
+					<button class="px-3 py-1 rounded bg-slate-200" commandfor="action_dialog" command="close">{_ actions.cancel}</button>
+					<button class="px-3 py-1 rounded bg-brand text-white" command="--confirm" commandfor="action_dialog">{_ actions.do_it}</button>
+				</div>
+			</div>
+		</dialog>
+
+		<script src="/checkbox-group.js?v={= version }"></script>
+		<script src="/dialog-confirm.js?v={= version }"></script>
+
+		<script>
+		// CheckboxGroup requires #select_all in the DOM - skip when no records
+		const bulkCheckboxes = document.getElementById("select_all") ? new CheckboxGroup({}) : null;
+		$("#action_dialog").addEventListener("command", async (e) => {
+			if (e.command !== "--confirm") return;
+			e.currentTarget.close();
+			const selected = $$('input[name="checkboxes[]"]:checked');
+			const ids = Array.from(selected).map((el) => el.value);
+			try {
+				const response = await fetch("{~ localized_path('/system/images/bulk-delete') }", {
+					method: "POST",
+					headers: { "Content-Type": "application/json", "X-CSRF-Token": "{= csrf_token }" },
+					body: JSON.stringify({ ids })
+				});
+				const body = await response.json().catch(() => null);
+				if (response.ok && body) {
+					// Reload so the server re-renders the correct state (empty message, pagination, etc.)
+					// Toast cookie is set server-side to survive the reload
+					document.getElementById("action_dialog").close();
+					window.location.reload();
+				} else {
+					add_toast({ type: "red", message: body?.error || "Delete failed.", duration: 5000 });
+				}
+			} catch (err) {
+				add_toast({ type: "red", message: `Delete failed: ${err?.message || err}`, duration: 5000 });
+			}
+		});
+		// Update count display when selection changes
+		document.addEventListener("change", (e) => {
+			if (e.target.name === "select_all" || e.target.name === "checkboxes[]") {
+				const selected = $$('input[name="checkboxes[]"]:checked').length;
+				$("#action_count").textContent = selected;
+			}
+		});
+	</script>
+	{/if}
+{/with}

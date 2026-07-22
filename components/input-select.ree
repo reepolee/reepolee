@@ -1,0 +1,10 @@
+<field-wrapper class="grid">
+	<label class="px-3" for="{= props.name }">{= props.label}</label>
+	<select id="{= props.name }" name="{= props.name }">
+		<option value="">-- Select --</option>
+		{#each props.options[props.name] as option}
+			<option value="{= option }" {#if option === props.value} selected{/if}>{= option}</option>
+		{/each}
+	</select>
+	<validation-error class="mt-1" id="error-{= props.name }"></validation-error>
+</field-wrapper>

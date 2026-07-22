@@ -1,0 +1,283 @@
+{{
+	const action_url = props.attributes?.["action-url"] || props.action_url || "";
+}}
+
+<form method="GET" action="{~ localized_path(action_url) }" class="relative flex items-center" data-search-filter-form>
+	<input type="hidden" name="limit" value="{= props.limit || '' }" />
+	<input type="hidden" name="order_by" value="{= props.order_by || '' }" />
+
+	{#if props.scope}
+		<input type="hidden" name="scope" value="{= props.scope }" />
+	{/if}
+
+	<div class="flex items-center gap-0 relative">
+		<div data-search-wrapper class="flex items-center border rounded overflow-hidden" style="view-transition-name: filter-input">
+			<input type="search" name="query" placeholder="{= props.search?.search_term || 'Search...' }" value="{= props.query || '' }" class="border-0 outline-none px-3 py-1.5 min-w-[15ch] max-w-[30ch]" />
+			<button
+				type="button"
+				data-filter-toggle
+				class="w-9 py-1.5 border-l hover:bg-neutral-100 cursor-pointer text-neutral-500 active:bg-neutral-200 transition-colors relative flex items-center justify-center">
+				{#if props.filter_definitions && props.filter_definitions.length > 0}
+					<span data-filter-icon="chevron" class="block w-4 h-4 leading-none text-center transition-transform duration-300 ease-out" style="rotate: 90deg">❯</span>
+					<span data-filter-icon="loupe" class="hidden w-4 h-4">
+						<ree-icon name="search"></ree-icon>
+					</span>
+				{:else}
+					<span class="block w-4 h-4">
+						<ree-icon name="search"></ree-icon>
+					</span>
+				{/if}
+			</button>
+		</div>
+		{#if props.active_filter_count > 0}
+			<span class="absolute -top-2 -right-2 bg-brand text-white rounded-full w-5 h-5 flex items-center justify-center font-bold text-xs">{= props.active_filter_count}</span>
+		{/if}
+	</div>
+
+	<!-- Filter backdrop -->
+	<div data-filter-backdrop class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 hidden opacity-0 transition-all duration-300"></div>
+
+	<!-- Expandable filter panel -->
+	{#if props.filter_definitions && props.filter_definitions.length > 0}
+		<div data-filter-panel class="fixed inset-y-0 right-0 z-50 w-auto bg-white shadow-2xl translate-x-full flex flex-col">
+			<div class="px-4 py-4 bg-neutral-50 shrink-0 flex flex-col gap-2">
+				<div class="flex items-center justify-between">
+					<span class="font-semibold text-neutral-500">
+						{#if props.active_filter_count > 0}
+							{= props.active_filter_count} {= props.ui?.records || 'records'}
+						{:else}
+							{= props.ui?.labels}
+						{/if}
+					</span>
+					<div class="flex items-center gap-8">
+						<button type="button" onclick="clear_all()" class="text-brand hover:underline cursor-pointer">{= props.ui?.clear_all}</button>
+						<button type="button" onclick="close_panel()" class="px-2 py-2 text-xl text-neutral-500 hover:text-neutral-800 cursor-pointer leading-none">✕</button>
+					</div>
+				</div>
+				<div data-sidebar-search class="flex items-center border rounded overflow-hidden shadow-sm invisible">
+					<input type="search" name="query" placeholder="{= props.search?.search_term || 'Search...' }" value="{= props.query || '' }" class="border-0 outline-none px-3 py-1.5 min-w-[15ch] max-w-[30ch]" />
+					<button type="button" class="w-9 py-1.5 border-l text-neutral-400 cursor-default flex items-center justify-center">
+						<span class="block w-4 h-4">
+							<ree-icon name="search"></ree-icon>
+						</span>
+					</button>
+				</div>
+			</div>
+
+			<div class="flex-1 overflow-y-auto">
+				{#each props.filter_definitions as def}
+					<fieldset class="filter-group">
+						<legend class="filter-group-title w-full flex items-center justify-between px-3 font-medium cursor-pointer hover:bg-neutral-50">
+							<span class="flex items-center gap-2">
+								{= def.display_label}
+								<label class="font-semibold cursor-pointer inline-flex items-center gap-1" onclick="event.stopPropagation()">
+									<input type="checkbox" name="filter_not_{= def.key }" value="1" {#if def.is_not} checked{/if} />
+									{= props.ui?.filter_not || 'NOT'}
+								</label>
+							</span>
+							<span class="chevron text-neutral-400">❯</span>
+						</legend>
+						<div class="filter-group-body px-3 py-1">
+							{#if def.type === 'fk' || def.type === 'tags'}
+								{#each def.visible_options as opt}
+									<label class="filter-option flex items-center gap-2 py-0.5">
+										<input type="checkbox" name="filter_{= def.key }" value="{= opt.option_value }" {#if def.checked_values.includes(opt.option_value)} checked{/if} />
+										{= opt.option_text}
+									</label>
+								{/each}
+								{#if def.has_more}
+									<div data-hidden-options="{= def.key }" class="hidden">
+										{#each def.hidden_options as opt}
+											<label class="filter-option flex items-center gap-2 py-0.5">
+												<input type="checkbox" name="filter_{= def.key }" value="{= opt.option_value }" {#if def.checked_values.includes(opt.option_value)} checked{/if} />
+												{= opt.option_text}
+											</label>
+										{/each}
+									</div>
+									<button
+										type="button"
+										data-toggle-more="{= def.key }"
+										data-show-more="{= props.ui?.show_more || 'Show more' }"
+										data-show-less="{= props.ui?.show_less || 'Show less' }"
+										class="cursor-pointer text-brand hover:underline py-0.5"
+										onclick="toggle_options('{= def.key }')">
+										{= props.ui?.show_more || 'Show more'}
+									</button>
+								{/if}
+							{/if}
+							{#if def.type === 'boolean'}
+								<label class="filter-option flex items-center gap-2 py-0.5">
+									<input type="checkbox" name="filter_{= def.key }" value="1" {#if def.current_value === '1'} checked{/if} />
+									{= props.selectors?.["1"] || 'Yes'}
+								</label>
+							{/if}
+							{#if def.type === 'text' || def.type === 'number'}
+								<input type="{= def.type === 'number' ? 'number' : 'text' }" name="filter_{= def.key }" value="{= def.current_value }" placeholder="{= def.display_label }" class="w-full border rounded px-2 py-1" />
+							{/if}
+						</div>
+					</fieldset>
+				{/each}
+			</div>
+
+			<div class="shrink-0 px-4 py-3 bg-white border-t border-neutral-200 flex justify-end gap-2">
+				<button type="submit" class="primary px-4 py-1.5">{= props.ui?.apply_filters || 'Apply'}</button>
+			</div>
+		</div>
+	{/if}
+</form>
+
+<script>
+	function toggle_options(key) {
+		const hidden = document.querySelector(`[data-hidden-options="${CSS.escape(key)}"]`);
+		const btn = document.querySelector(`[data-toggle-more="${CSS.escape(key)}"]`);
+		if (!hidden || !btn) return;
+		const is_expanded = !hidden.classList.contains("hidden");
+		if (is_expanded) {
+			hidden.classList.add("hidden");
+			btn.textContent = btn.dataset.showMore || "Show more";
+		} else {
+			hidden.classList.remove("hidden");
+			btn.textContent = btn.dataset.showLess || "Show less";
+		}
+	}
+	function remove_filter(key, value) {
+		const params = new URLSearchParams(window.location.search);
+		const current = params.get(`filter_${key}`);
+		if (!current) return;
+		const values = current.split(",").filter((v) => v !== value);
+		if (values.length === 0) {
+			params.delete(`filter_${key}`);
+		} else {
+			params.set(`filter_${key}`, values.join(","));
+		}
+		params.delete("after");
+		params.delete("before");
+		params.delete("last");
+		params.delete("offset");
+		window.location.search = params.toString();
+	}
+	// Combined search + filter panel toggle (expand)
+	(() => {
+		const form = document.querySelector("[data-search-filter-form]");
+		if (!form) return;
+		const toggle = form.querySelector("[data-filter-toggle]");
+		const panel = document.querySelector("[data-filter-panel]");
+		const backdrop = document.querySelector("[data-filter-backdrop]");
+		if (!toggle) return;
+		let is_open = false;
+		function toggle_icons(open) {
+			const chevron = toggle.querySelector("[data-filter-icon='chevron']");
+			const loupe = toggle.querySelector("[data-filter-icon='loupe']");
+			if (!chevron || !loupe) return;
+			if (open) {
+				chevron.classList.add("hidden");
+				chevron.style.rotate = "0deg";
+				loupe.classList.remove("hidden");
+			} else {
+				loupe.classList.add("hidden");
+				chevron.classList.remove("hidden");
+				chevron.style.rotate = "90deg";
+			}
+		}
+		function open_panel() {
+			const toolbarSearch = document.querySelector("[data-search-wrapper]");
+			const panelSearch = document.querySelector("[data-sidebar-search]");
+			toggle_icons(true);
+			if (typeof document.startViewTransition === "function") {
+				document.startViewTransition(() => {
+					is_open = true;
+					if (panel) panel.classList.remove("translate-x-full");
+					if (backdrop) backdrop.classList.remove("hidden", "opacity-0");
+					// Swap view-transition-name for morph effect
+					if (toolbarSearch) { toolbarSearch.style.removeProperty("view-transition-name"); }
+					if (panelSearch) {
+						panelSearch.style.setProperty("view-transition-name", "filter-input");
+						panelSearch.classList.remove("invisible");
+					}
+				});
+			} else {
+				is_open = true;
+				if (panel) panel.classList.remove("translate-x-full");
+				if (backdrop) backdrop.classList.remove("hidden", "opacity-0");
+				if (toolbarSearch) { toolbarSearch.style.removeProperty("view-transition-name"); }
+				if (panelSearch) panelSearch.style.visibility = "visible";
+			}
+		}
+		function close_panel() {
+			const toolbarSearch = document.querySelector("[data-search-wrapper]");
+			const panelSearch = document.querySelector("[data-sidebar-search]");
+			toggle_icons(false);
+			if (typeof document.startViewTransition === "function") {
+				document.startViewTransition(() => {
+					is_open = false;
+					if (panel) panel.classList.add("translate-x-full");
+					if (backdrop) backdrop.classList.add("hidden", "opacity-0");
+					// Swap view-transition-name for morph effect
+					if (toolbarSearch) { toolbarSearch.style.setProperty("view-transition-name", "filter-input"); }
+					if (panelSearch) {
+						panelSearch.style.removeProperty("view-transition-name");
+						panelSearch.classList.add("invisible");
+					}
+				});
+			} else {
+				is_open = false;
+				if (panel) panel.classList.add("translate-x-full");
+				if (backdrop) backdrop.classList.add("hidden", "opacity-0");
+				if (toolbarSearch) { toolbarSearch.style.setProperty("view-transition-name", "filter-input"); }
+				if (panelSearch) panelSearch.style.visibility = "hidden";
+			}
+		}
+		toggle.addEventListener("click", (e) => {
+			e.stopPropagation();
+			if (!panel) {
+				form.submit();
+				return;
+			}
+			if (!is_open) {
+				open_panel();
+			} else {
+				close_panel();
+			}
+		});
+		// Close on backdrop click
+		if (backdrop) {
+			backdrop.addEventListener("click", () => {
+				close_panel();
+			});
+		}
+		// Close on Escape
+		document.addEventListener("keydown", (e) => {
+			if (e.key === "Escape" && is_open) { close_panel(); }
+		});
+		// Collapse/expand filter groups on legend click
+		if (panel) {
+			panel.addEventListener("click", (e) => {
+				const legend = e.target.closest(".filter-group-title");
+				if (legend && !e.target.closest("label")) { legend.parentElement.classList.toggle("collapsed"); }
+			});
+		}
+		// Expose close_panel on window so HTML onclick handlers can reach it
+		window.close_panel = close_panel;
+		// Clear all - close sidebar with animation, then navigate
+		window.clear_all = () => {
+			close_panel();
+			window.location.href = "{~ localized_path(action_url) }";
+		};
+		// Enter in search field - preserve existing URL filter params via JS
+		const searchInputs = form.querySelectorAll('[name="query"]');
+		for (const input of searchInputs){
+			input.addEventListener("keydown", function(e) {
+				if (e.key === "Enter") {
+					e.preventDefault();
+					const params = new URLSearchParams(window.location.search);
+					params.set("query", this.value);
+					params.delete("after");
+					params.delete("before");
+					params.delete("last");
+					params.delete("offset");
+					window.location.search = params.toString();
+				}
+			});
+		}
+	})();
+</script>

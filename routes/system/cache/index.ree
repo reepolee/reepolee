@@ -1,0 +1,95 @@
+{#layout("layout")}
+{#with props}
+	<div class="p-6 max-w-4xl">
+		<h1 class="text-2xl font-bold mb-6">{_ ui.title}</h1>
+
+		{#if error}
+			<div class="bg-red-100 border border-red-300 rounded p-4 text-red-800 mb-6">{= error}</div>
+		{/if}
+
+		<!-- Status banner -->
+		<div class="flex items-center gap-3 px-4 py-3 rounded-lg mb-6 {= enabled ? 'bg-green-50 border border-green-300' : 'bg-amber-50 border border-amber-300' }">
+			<span class="w-3 h-3 rounded-full {= enabled ? 'bg-green-500' : 'bg-amber-500' } inline-block shrink-0"></span>
+			<div>
+				<span class="text-sm font-medium {= enabled ? 'text-green-800' : 'text-amber-800' }">
+					{#if enabled}
+						{_ ui.enabled_badge}
+					{:else}
+						{_ ui.disabled_badge} - {_ ui.disabled}
+					{/if}
+				</span>
+				{#if !enabled}
+					<p class="text-xs text-amber-600 mt-1">{_ ui.enable_hint}</p>
+				{/if}
+			</div>
+		</div>
+
+		{#if enabled}
+			{#if status}
+				<!-- Summary stats -->
+				<div class="grid grid-cols-2 gap-4 mb-6">
+					<div class="bg-white border border-neutral-200 rounded p-4">
+						<span class="text-2xl font-bold text-neutral-800">{= status.total_cache_keys}</span>
+						<p class="text-xs text-neutral-500 mt-1">{_ ui.total_keys}</p>
+					</div>
+					<div class="bg-white border border-neutral-200 rounded p-4">
+						<span class="text-2xl font-bold text-neutral-800">{= status.tables.length}</span>
+						<p class="text-xs text-neutral-500 mt-1">{_ ui.tracked_tables}</p>
+					</div>
+				</div>
+
+				<!-- Tables list -->
+				<section class="mb-8">
+					<h2 class="text-lg font-semibold mb-3">{_ ui.tracked_tables}</h2>
+
+					{#if status.tables && status.tables.length > 0}
+						<div class="bg-white border border-neutral-200 rounded overflow-hidden">
+							<!-- Header row -->
+							<div class="grid grid-cols-[1fr_10rem_10rem] gap-2 px-4 py-2 bg-neutral-100 text-xs font-medium text-neutral-600">
+								<span>{_ ui.table_header}</span>
+								<span class="text-right">{_ ui.entries_header}</span>
+								<span class="text-right">{_ ui.actions_header}</span>
+							</div>
+
+							<!-- Table rows -->
+							<div class="divide-y divide-neutral-100">
+								{#each status.tables as table}
+									<details class="group">
+										<summary
+											class="grid grid-cols-[1fr_10rem_10rem] gap-2 px-4 py-3 items-center text-sm cursor-pointer hover:bg-neutral-50 transition-colors list-none [&::-webkit-details-marker]:hidden">
+											<span class="font-mono text-sm text-neutral-700 group-open:text-blue-600 transition-colors">
+												<span class="mr-1 text-neutral-400 group-open:text-blue-400 transition-colors">▸</span>
+												{= table.name}
+											</span>
+											<span class="text-right font-mono text-sm text-neutral-500">{= table.cache_key_count}</span>
+											<div class="flex justify-end">
+												<confirm-dialog trigger-class="px-4 py-2 rounded bg-red-600 text-white text-sm font-medium hover:bg-red-700 active:brightness-90 transition-all cursor-pointer" form-path="/system/cache/invalidate" confirm-class="bg-red-600 text-white" title="{_ ui.invalidate_btn }" trigger-text="{_ ui.invalidate_btn }" message="{_ ui.reset_confirm }" confirm-text="{_ actions.do_it }" cancel-text="{_ actions.cancel }" extra-field-name="table" extra-field-value="{= table.name }">
+												</confirm-dialog>
+											</div>
+										</summary>
+										{#if table.cache_keys && table.cache_keys.length > 0}
+											<div class="px-4 pb-3 pt-1">
+												<div class="bg-neutral-50 border border-neutral-200 rounded p-3 max-h-48 overflow-y-auto">
+													{#each table.cache_keys as key}
+														<div class="text-xs font-mono text-neutral-500 truncate py-0.5 hover:text-neutral-800" title="{= key }">{= key}</div>
+													{/each}
+												</div>
+											</div>
+										{/if}
+									</details>
+								{/each}
+							</div>
+						</div>
+
+					{:else}
+						<div class="bg-neutral-50 border border-neutral-200 rounded p-6 text-neutral-500 text-sm text-center italic">{_ ui.no_tables}</div>
+					{/if}
+				</section>
+				<section>
+					<confirm-dialog trigger-class="px-4 py-2 rounded bg-red-600 text-white text-sm font-medium hover:bg-red-700 active:brightness-90 transition-all cursor-pointer" form-path="/system/cache/reset" confirm-class="bg-red-600 text-white" title="{_ ui.reset_btn }" trigger-text="{_ ui.reset_btn }" message="{_ ui.reset_confirm }" confirm-text="{_ actions.do_it }" cancel-text="{_ actions.cancel }">
+					</confirm-dialog>
+				</section>
+			{/if}
+		{/if}
+	</div>
+{/with}

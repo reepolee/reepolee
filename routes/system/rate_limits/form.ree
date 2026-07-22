@@ -1,0 +1,53 @@
+{#layout("layout")}
+{#with props}
+	<div class="p-6 max-w-4xl">
+		<h1 class="text-2xl font-bold mb-6">{_ ui.title}</h1>
+
+		{#if error}
+			<div class="bg-red-100 border border-red-300 rounded p-4 text-red-800 mb-6">{= error}</div>
+		{/if}
+
+		<section class="mb-8">
+			<h2 class="text-lg font-semibold mb-3">{_ ui.status}</h2>
+			<p class="text-sm text-neutral-500 mb-4">{= total_keys} {_ ui.total_redis_keys}</p>
+
+			{#if scope_list && scope_list.length > 0}
+				<div class="grid gap-4">
+					{#each scope_list as scope}
+						<div class="bg-white border border-neutral-200 rounded overflow-hidden">
+							<div class="flex items-center justify-between px-4 py-3 bg-neutral-50 border-b border-neutral-200">
+								<span class="font-mono font-semibold text-sm">{= scope.name}</span>
+								<span class="text-xs text-neutral-400">
+									{= scope.limit} {_ ui.requests} / {= scope.window_s} {_ ui.seconds}
+								</span>
+							</div>
+
+							<div class="divide-y divide-neutral-100">
+								{#each scope.entries as entry}
+									<div class="flex items-center justify-between px-4 py-2 text-sm">
+										<span class="font-mono text-xs text-neutral-500">{= entry.identity}</span>
+										<div class="flex items-center gap-3 text-xs">
+											<span class="font-mono">{= entry.count} {_ ui.requests}</span>
+											<span class="font-medium {= entry.count > scope.limit ? 'text-red-600' : 'text-green-600' }">{#if entry.count > scope.limit}{_ ui.blocked}{:else}{_ ui.ok}{/if}</span>
+											<span class="text-neutral-400">{_ ui.ttl} {= entry.ttl}{_ ui.seconds}</span>
+										</div>
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/each}
+				</div>
+
+			{:else}
+				<div class="bg-green-50 border border-green-200 rounded p-6 text-green-700 font-medium text-center">{_ ui.no_active_counters}</div>
+			{/if}
+		</section>
+
+		<section>
+			<form method="POST" action="/system/rate-limits/reset">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<button type="submit" class="px-4 py-2 rounded bg-red-600 text-white text-sm font-medium hover:bg-red-700 cursor-pointer">{_ actions.reset_all_counters}</button>
+			</form>
+		</section>
+	</div>
+{/with}

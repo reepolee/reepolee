@@ -1,0 +1,5 @@
+<field-wrapper class="grid" data-field="__field.name__">
+	<label class="px-3" for="__field.name__">{_ labels.__field.name__}</label>
+	<textarea id="__field.name__" name="__field.name__">{= record.__field.name__}</textarea>
+	<validation-error class="mt-1" id="error-__field.name__"></validation-error>
+</field-wrapper>

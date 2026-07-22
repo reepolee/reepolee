@@ -1,0 +1,15 @@
+{{
+	const class_none = "rounded border border-neutral-300";
+	const class_green = "bg-green-600 text-white";
+	const class_yellow = "bg-amber-300 text-black";
+	const class_red = "bg-brand text-white";
+	const class_blue = "bg-blue-600 text-white";
+	const { type = "green", ...rest } = props.attributes ?? {};
+	const { children } = props;
+	let final_class = class_none;
+	if (type === "yellow") final_class = class_yellow;
+	if (type === "red") final_class = class_red;
+	if (type === "green") final_class = class_green;
+	if (type === "blue") final_class = class_blue;
+}}
+<div class="{~ final_class } font-semibold rounded-sm px-3 py-2" ...rest>{~ children}</div>

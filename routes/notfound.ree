@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="{= props.lang }">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{= props.title}</title>
+		<link rel="stylesheet" href="/app.css" />
+	</head>
+
+	<body class="p-12 grid min-h-screen min-w-screen place-items-center">
+		<main id="main">
+			<h1 style="font-size: 4rem; margin: 0; color: #b40000">404</h1>
+			<h2>{_ ui.page_not_found}</h2>
+			<p>{_ ui.page_not_found_description}</p>
+			<a href="/">
+				<b>{_ actions.go_home}</b>
+			</a>
+		</main>
+	</body>
+</html>

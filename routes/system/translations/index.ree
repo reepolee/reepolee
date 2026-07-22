@@ -1,0 +1,384 @@
+{#layout("layout") }
+{#with props}
+
+	<div class="py-4">
+
+		<!-- TABLE DISPLAY CONTROLLER -->
+		<div class="flex items-center gap-1 justify-between w-full flex-wrap px-4">
+
+			<div class="pagination-info">
+				{#if first_url}
+					<a href="{~ localized_path(first_url) }" role="button">
+						<ree-icon name="chevrons_left"></ree-icon>
+					</a>
+				{:else}
+					<ree-icon name="chevrons_left"></ree-icon>
+				{/if}
+
+				{#if prev_url}
+					<a href="{~ localized_path(prev_url) }" role="button">
+						<ree-icon name="chevron_left"></ree-icon>
+					</a>
+				{:else}
+					<ree-icon name="chevron_left"></ree-icon>
+				{/if}
+
+				{#if total > 0}
+					<div style="width: {= total.toString().length * 3 + 4 }ch; text-align: center">{= offset + 1}-{= offset + page_key_count} / {= total}</div>
+				{:else}
+					<div style="width: 7ch; text-align: center">0 / 0</div>
+				{/if}
+
+				{#if next_url}
+					<a href="{~ localized_path(next_url) }" role="button">
+						<ree-icon name="chevron_right"></ree-icon>
+					</a>
+				{:else}
+					<ree-icon name="chevron_right"></ree-icon>
+				{/if}
+				{#if last_url}
+					<a href="{~ localized_path(last_url) }" role="button">
+						<ree-icon name="chevrons_right"></ree-icon>
+					</a>
+				{:else}
+					<ree-icon name="chevrons_right"></ree-icon>
+				{/if}
+			</div>
+
+			<div class="flex items-center gap-2">
+				<select id="limit" class="w-[20ch]" onchange="navigate_to('limit', this.value)">
+					{#each limit_options as option}
+						<option value="{= option }" {#if option === limit } selected{/if}>
+							{#if option==="all"}
+								{_ selectors.all}
+							{:else}
+								{= option} {_ selectors.per_page}
+							{/if}
+						</option>
+					{/each}
+				</select>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<select id="order_by" class="w-[30ch]" onchange="navigate_to('order_by', this.value)">
+					{#each sort_options as option}
+						<option value="{= option.value }" {#if option.value === order_by } selected{/if}>{= option.label}</option>
+					{/each}
+				</select>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<select id="ns_group" class="w-[40ch]" onchange="navigate_to('ns_group', this.value)">
+					<option value="">-- {_ selectors.all} --</option>
+					<option value="__global__" {#if ns_group_value === '__global__' } selected{/if}>{_ ui.global_label}</option>
+					{#each ns_options as opt}
+						<option value="{= opt.value }" {#if opt.value === ns_group_value } selected{/if}>{= opt.label}</option>
+					{/each}
+				</select>
+
+				{#if ns_group_value && ns_group_value !== '__global__'}
+					<button type="button" command="show-modal" commandfor="delete_namespace_dialog" class="button tertiary">{_ actions.delete_namespace}</button>
+				{/if}
+
+				<button type="button" command="show-modal" commandfor="add_group_dialog" class="button">{_ actions.add_group}</button>
+				<button type="button" command="show-modal" commandfor="add_namespace_dialog" class="button primary">
+					+
+					{_ actions.add_namespace}
+				</button>
+			</div>
+
+			<ree-filters action-url="/system/translations"></ree-filters>
+
+			<script>
+				function navigate_to(param, value) {
+					const url = new URL(window.location.href);
+					url.searchParams.set(param, value);
+					// Clean up stale params from old URL format
+					if (param === "ns_group") url.searchParams.delete("namespace");
+					// Reset offset when changing filter/limit/order
+					url.searchParams.delete("offset");
+					window.location.href = url.toString();
+				}
+			</script>
+
+		</div>
+
+		{#if (flat_keys.length === 0)}
+			<p class="p-4">{_ ui.no_records}</p>
+		{:else}
+			<!-- BULK DELETE -->
+			<div class="flex items-center gap-4 justify-start w-full flex-wrap px-4 my-4">
+				<button id="action" commandfor="action_dialog" command="show-modal" disabled class="button border enabled:border-transparent enabled:bg-brand enabled:text-white">
+					{_ actions.bulk_action}
+				</button>
+			</div>
+
+			<!-- TABLE GRID -->
+			<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg" style="grid-template-columns: {= grid_cols }">
+
+				<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+					<div class="grid grid-cols-2 place-items-center p-0!">
+						<button id="deselect_all" class="text-brand cursor-pointer">
+							<ree-icon name="x" class="size-6"></ree-icon>
+						</button>
+						<label class="w-full h-full grid place-items-center hover:bg-brand rounded">
+							<input type="checkbox" name="select_all" id="select_all" />
+						</label>
+					</div>
+					<div>{_ ui.namespace_label}</div>
+					<div>{_ ui.group_label}</div>
+					<div>{_ ui.key_label}</div>
+					{#each languages as lang}
+						<div title="{= lang }">{= props.translations.ui?.language_name?.[lang] || lang}</div>
+					{/each}
+				</div>
+
+				{#each flat_keys as key_row}
+					<div class="col-span-full *:py-2 grid grid-cols-subgrid border-b border-b-neutral-200 *:px-2 group" data-row>
+
+						<div class="grid grid-cols-2 place-items-center p-0! m-0!">
+							<button class="w-6 text-neutral-400 cursor-grab" onclick="event.stopPropagation();event.preventDefault()">
+								<ree-icon name="grip"></ree-icon>
+							</button>
+							<label class="w-full h-full grid place-items-center hover:bg-brand rounded">
+								<input type="checkbox" name="checkboxes[]" value="{= key_row.namespace }::{= key_row.parent_path }" />
+							</label>
+						</div>
+
+						<a
+							href="{~ localized_path('/system/translations/' + urlencode(key_row.namespace || '_') + '/' + urlencode(key_row.parent_path || '_') + '/edit' + (current_query_string ? '?from=' + urlencode(current_query_string) : '')) }"
+							class="font-mono text-sm hover:text-blue-600 underline decoration-dotted underline-offset-2">
+							{= key_row.namespace || "(global)"}
+						</a>
+						<a
+							href="{~ localized_path('/system/translations/' + urlencode(key_row.namespace || '_') + '/' + urlencode(key_row.parent_path || '_') + '/edit' + (current_query_string ? '?from=' + urlencode(current_query_string) : '')) }"
+							class="font-mono text-sm hover:text-blue-600 underline decoration-dotted underline-offset-2">
+							{= key_row.parent_path || "(root)"}
+						</a>
+						<a
+							href="{~ localized_path('/system/translations/' + urlencode(key_row.namespace || '_') + '/' + urlencode(key_row.parent_path || '_') + '/edit' + (current_query_string ? '?from=' + urlencode(current_query_string) : '')) }"
+							class="font-mono text-sm hover:text-blue-600 underline decoration-dotted underline-offset-2">
+							{= key_row.child_key}
+						</a>
+						{#each languages as lang}
+							<input type="text" class="text-sm px-1 py-1 w-full bg-transparent border border-transparent rounded hover:border-neutral-300 focus:border-brand focus:ring-1 focus:ring-brand/30 outline-none transition-colors" value="{= key_row.values[lang] || '' }" data-namespace="{= key_row.namespace }" data-key-path="{= key_row.key_path }" data-lang="{= lang }" placeholder="-" onblur="save_inline(this)" onkeydown="if(event.key==='Enter')this.blur()" />
+						{/each}
+					</div>
+				{/each}
+			</div>
+
+			<script>
+				async function save_inline(input) {
+					const el = input;
+					const value = el.value.trim();
+					const namespace = el.dataset.namespace;
+					const key_path = el.dataset.keyPath;
+					const lang = el.dataset.lang;
+					// Don't save if value didn't change from the original
+					if (value === el.defaultValue) return;
+					// Brief saving indicator
+					el.classList.add("opacity-50");
+					try {
+						const response = await fetch("{~ localized_path('/system/translations/inline-save') }", {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+								"X-CSRF-Token": "{= csrf_token }"
+							},
+							body: JSON.stringify({ namespace, key_path, lang, value })
+						});
+						if (response.ok) {
+							// Update the default value to reflect saved state
+							el.defaultValue = value;
+							el.classList.remove("opacity-50");
+							el.style.borderColor = "rgb(22 163 74)";
+							setTimeout(() => {
+								el.style.borderColor = "";
+							}, 1500);
+						} else {
+							const body = await response.json().catch(() => null);
+							el.classList.remove("opacity-50");
+							add_toast({
+								type: "red",
+								message: body?.error || "Save failed.",
+								duration: 4000
+							});
+							el.focus();
+						}
+					} catch (err) {
+						el.classList.remove("opacity-50");
+						add_toast({
+							type: "red",
+							message: `Save failed: ${err?.message || err}`,
+							duration: 4000
+						});
+						el.focus();
+					}
+				}
+			</script>
+		{/if}
+
+		<!-- BULK ACTION CONFIRMATION DIALOG -->
+
+		<dialog id="action_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.bulk_action}</h2>
+				<p class="text-slate-600 mt-2">
+					{#if props.translations.ui?.modifying}
+						{= props.translations.ui.modifying}
+					{:else}
+						Deleting
+					{/if}
+					<span class="font-semibold text-brand" id="action_count">0</span>
+					{#if props.translations.ui?.records}
+						{= props.translations.ui.records}
+					{:else}
+						group(s).
+					{/if}
+				</p>
+				<div class="mt-6 flex justify-end gap-2">
+					<button class="px-3 py-1 rounded bg-slate-200" commandfor="action_dialog" command="close">{_ actions.cancel}</button>
+					<button class="px-3 py-1 rounded bg-brand text-white" command="--confirm" commandfor="action_dialog">{_ actions.do_it}</button>
+				</div>
+			</div>
+		</dialog>
+
+		<script src="/checkbox-group.js?v={= version}"></script>
+		<script src="/dialog-confirm.js?v={= version}"></script>
+
+		<script>
+			// CheckboxGroup requires #select_all in the DOM - skip when no records
+			const bulkCheckboxes = document.getElementById("select_all") ? new CheckboxGroup({}) : null;
+			$("#action_dialog").addEventListener("command", async (e) => {
+				if (e.command !== "--confirm") return;
+				e.currentTarget.close();
+				const selected = $$('input[name="checkboxes[]"]:checked');
+				const ids = Array.from(selected).map((el) => el.value);
+				try {
+					const response = await fetch("{~ localized_path('/system/translations/bulk-delete') }", {
+						method: "POST",
+						headers: { "Content-Type": "application/json", "X-CSRF-Token": "{= csrf_token }" },
+						body: JSON.stringify({ ids }),
+					});
+					const body = await response.json().catch(() => null);
+					if (response.ok && body) {
+						document.getElementById("action_dialog").close();
+						window.location.reload();
+					} else {
+						add_toast({ type: "red", message: body?.error || "Delete failed.", duration: 5000 });
+					}
+				} catch (err) {
+					add_toast({
+						type: "red",
+						message: `Delete failed: ${err?.message || err}`,
+						duration: 5000,
+					});
+				}
+			});
+			// Update count display when selection changes
+			document.addEventListener("change", (e) => {
+				if (e.target.name === "select_all" || e.target.name === "checkboxes[]") {
+					const selected = $$('input[name="checkboxes[]"]:checked').length;
+					$("#action_count").textContent = selected;
+				}
+			});
+		</script>
+
+		<!-- Add Namespace Dialog -->
+		<dialog id="add_namespace_dialog" class="p-0 rounded-xl shadow-2xl w-[36rem]">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.add_namespace}</h2>
+				<form method="POST" action="{~ localized_path('/system/translations/add-namespace') }" class="mt-4 grid gap-4">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<div class="grid">
+						<label for="add-ns-name" class="text-sm font-medium text-gray-700">{_ ui.namespace_label}</label>
+						<input type="text" id="add-ns-name" name="namespace" placeholder="e.g. system.users" required class="border rounded px-3 py-2 mt-1" />
+					</div>
+
+					{#if namespace_templates && namespace_templates.length > 0}
+						<p class="text-sm text-gray-500">{_ messages.select_templates}</p>
+						<fieldset class="grid grid-cols-2 gap-2">
+							{#each namespace_templates as tpl}
+								<label class="flex items-center gap-2 border rounded px-3 py-2 hover:bg-gray-50 cursor-pointer">
+									<input type="checkbox" name="tpl_{= tpl.id }" />
+									<div>
+										<div class="text-sm font-mono font-medium">{= tpl.label}</div>
+										<div class="text-xs text-gray-500">{= tpl.description}</div>
+									</div>
+								</label>
+							{/each}
+						</fieldset>
+					{/if}
+
+					<div class="flex justify-end gap-2 mt-4">
+						<button type="button" commandfor="add_namespace_dialog" command="close" class="button secondary">{_ actions.cancel}</button>
+						<button type="submit" class="button primary">{_ actions.create}</button>
+					</div>
+				</form>
+			</div>
+		</dialog>
+
+		<!-- Add Group Dialog -->
+		<dialog id="add_group_dialog" class="p-0 rounded-xl shadow-2xl w-[36rem]">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.add_group}</h2>
+				<form method="POST" action="{~ localized_path('/system/translations/add-group') }" class="mt-4 grid gap-4">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<div class="grid grid-cols-2 gap-4">
+						<div class="grid">
+							<label for="add-group-ns" class="text-sm font-medium text-gray-700">{_ ui.namespace_label}</label>
+							<select id="add-group-ns" name="namespace" required class="border rounded px-3 py-2 mt-1">
+								<option value="">--</option>
+								{#each namespaces as ns}
+									<option value="{= ns }" {#if ns === namespace_filter } selected{/if}>{= ns}</option>
+								{/each}
+							</select>
+						</div>
+						<div class="grid">
+							<label for="add-group-name" class="text-sm font-medium text-gray-700">{_ ui.group_label}</label>
+							<input type="text" id="add-group-name" name="group_name" placeholder="e.g. actions" required class="border rounded px-3 py-2 mt-1" />
+						</div>
+					</div>
+					<div class="grid grid-cols-2 gap-4">
+						<div class="grid">
+							<label for="add-group-key" class="text-sm font-medium text-gray-700">{_ ui.key_label}</label>
+							<input type="text" id="add-group-key" name="first_key" placeholder="e.g. save" class="border rounded px-3 py-2 mt-1" />
+						</div>
+					</div>
+					<fieldset class="border rounded p-3">
+						<legend class="text-sm font-medium text-gray-600 px-1">
+							{_ ui.languages_label}
+							:
+						</legend>
+						{#each languages as lang}
+							<div class="flex items-center gap-2 mb-1.5">
+								<span class="text-xs font-mono text-gray-500 w-14 shrink-0">{= lang}:</span>
+								<input type="text" name="value__{= lang }" placeholder="" class="flex-1 border rounded px-2 py-1.5 text-sm" />
+							</div>
+						{/each}
+					</fieldset>
+					<div class="flex justify-end gap-2 mt-4">
+						<button type="button" commandfor="add_group_dialog" command="close" class="button secondary">{_ actions.cancel}</button>
+						<button type="submit" class="button primary">{_ actions.create}</button>
+					</div>
+				</form>
+			</div>
+		</dialog>
+
+		<!-- Delete Namespace Dialog -->
+		{#if namespace_filter}
+			<dialog id="delete_namespace_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+				<div class="p-6">
+					<h2 class="text-lg font-semibold">{_ actions.delete_namespace}</h2>
+					<p class="text-slate-600 mt-2">{_ messages.delete_namespace_confirm}</p>
+					<form method="POST" action="{~ localized_path('/system/translations/delete-namespace') }" class="mt-6 flex justify-end gap-2">
+						<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+						<input type="hidden" name="namespace" value="{= namespace_filter }" />
+						<button type="button" commandfor="delete_namespace_dialog" command="close" class="px-3 py-1 rounded bg-slate-200">{_ actions.cancel}</button>
+						<button type="submit" class="px-3 py-1 rounded bg-red-600 text-white">{_ actions.confirm_delete}</button>
+					</form>
+				</div>
+			</dialog>
+		{/if}
+	</div>
+{/with}

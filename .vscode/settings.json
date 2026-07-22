@@ -1,0 +1,45 @@
+{
+	"[html]": {
+		"editor.defaultFormatter": "vscode.html-language-features"
+	},
+	"[typescript]": {
+		"editor.formatOnSave": false
+	},
+	"[javascript]": {
+		"editor.formatOnSave": false
+	},
+	"scm.defaultViewMode": "tree",
+	"diffEditor.wordWrap": "off",
+	"search.exclude": {
+		"**/*.test.ts": true,
+		"**/*.spec.ts": true
+	},
+	"files.associations": {
+		"*.ree": "ree"
+	},
+	"tailwindCSS.includeLanguages": {
+		"ree": "html"
+	},
+	"emeraldwalk.runonsave": {
+		"commands": [
+			{
+				"match": "\\.(sql)$",
+				"cmd": "cd \"${workspaceFolder}\" && reesql \"${file}\""
+			},
+			{
+				"match": "\\.(js|ts)$",
+				"cmd": "cd \"${workspaceFolder}\" && reettier \"${file}\""
+			}
+		]
+	},
+	"files.exclude": {
+		"**/*.test.ts": true,
+		"**/*.spec.ts": true,
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true,
+		"**/Thumbs.db": true
+	},
+}

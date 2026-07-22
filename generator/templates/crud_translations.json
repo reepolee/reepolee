@@ -1,0 +1,57 @@
+{
+	"actions": {
+		"save": "Save",
+		"save_close": "Save & close",
+		"cancel": "Cancel",
+		"do_it": "Yes, do it",
+		"bulk_action": "Delete selected __translation.plural_label__",
+		"bulk_action_2": "Bulk action 2"
+	},
+	"search": {
+		"search_term": "Search __translation.plural_label__...",
+		"submit": "Search"
+	},
+	"selectors": {
+		"all": "All",
+		"per_page": "per page",
+		"select_table": "-- Select table or route --",
+		"0": "No",
+		"1": "Yes"
+	},
+	"labels": {
+		"table": "Table / Route"
+	},
+	"errors": {
+		"duplicate_key": "A record with this value already exists.",
+		"error_creating_record": "An error occurred while saving the record.",
+		"title_required": "Title is required.",
+		"must_be_selected": "This field is required."
+	},
+	"messages": {
+		"record_updated": "Record updated",
+		"record_created": "Record created",
+		"bulk_deleted": "No __translation.plural_label__ deleted|{count} __translation.singular_label__ deleted|{count} __translation.singular_label__s deleted|{count} __translation.singular_label__s deleted|{count} __translation.singular_label__s deleted",
+		"bulk_errors": "|{count} __translation.singular_label__ failed|{count} __translation.singular_label__s failed|{count} __translation.singular_label__s failed|{count} __translation.singular_label__s failed",
+		"bulk_delete_no_ids": "No __translation.plural_label__ selected.",
+		"bulk_delete_failed": "Bulk delete failed."
+	},
+	"ui": {
+		"loading_count": "Loading…",
+		"clear_all": "Clear all",
+		"apply_filters": "Apply",
+		"filter_not": "NOT"
+	},
+	"child_ui": {
+		"actions": "Actions",
+		"edit": "Edit",
+		"delete": "Delete",
+		"new_button": "+ New __translation.singular_label_cap__",
+		"edit_title": "Edit __translation.singular_label_cap__",
+		"new_title": "New __translation.singular_label_cap__",
+		"deleting": "Deleting…",
+		"empty_text": "No __translation.plural_label__ found.",
+		"error_loading": "Error loading record.",
+		"error_saving": "Error saving record.",
+		"error_deleting": "Error deleting record."
+	}
+}

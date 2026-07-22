@@ -1,0 +1,87 @@
+{#layout("layout") }
+{#with props}
+	<div class="p-4">
+		<div class="flex items-center justify-between">
+			<h1 class="mb-4">{= title || props.translations.ui?.title}</h1>
+			<a href="{~ localized_path(return_url) }" class="button secondary">{_ actions.back}</a>
+		</div>
+
+		<form method="POST" action="{~ localized_path('/system/translations/edit') }" class="max-w-full" id="entry-form">
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+			<input type="hidden" name="namespace" value="{= namespace }" />
+			<input type="hidden" name="parent_path" value="{= parent_path }" />
+			<input type="hidden" name="_return_url" value="{= return_url }" />
+
+			<div class="overflow-x-auto">
+				<table class="w-full border-collapse">
+					<thead>
+						<tr class="bg-neutral-200 text-sm text-left">
+							<th class="px-3 py-2 font-mono text-xs">{_ ui.key_label}</th>
+							{#each languages as lang}
+								<th class="px-3 py-2 font-mono text-xs border-l border-white">{= lang}</th>
+							{/each}
+							<th class="px-3 py-2 w-10"></th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each keys as row}
+							{{ const dialog_id = "delete-dialog-" + row.key_path.replaceAll(".", "-"); }}
+							<tr class="border-b border-neutral-200 hover:bg-gray-50">
+								<td class="px-3 py-2 font-mono text-xs text-gray-700 align-top pt-3">{= row.child_key}</td>
+								{#each languages as lang}
+									<td class="px-1 py-1 border-l border-gray-100">
+										<input type="text" name="value__{= lang }__{= urlencode(row.key_path) }" value="{= row.values[lang] || '' }" placeholder="" class="w-full" />
+									</td>
+								{/each}
+								<td class="px-2 py-2 text-center">
+									<button type="button" class="text-red-500 hover:text-red-700 text-xs" command="show-modal" commandfor="{= dialog_id }">
+										<ree-icon name="x" class="size-4"></ree-icon>
+									</button>
+								</td>
+							</tr>
+						{/each}
+						<!-- New key row -->
+						<tr class="border-t-2 border-dashed border-gray-300 bg-gray-50">
+							<td class="px-3 py-2">
+								<input type="text" name="_new_key__name" placeholder="new_key_name" class="w-full font-mono" />
+							</td>
+							{#each languages as lang}
+								<td class="px-1 py-2 border-l border-gray-100">
+									<input type="text" name="_new_key__value__{= lang }" placeholder="" class="w-full" />
+								</td>
+							{/each}
+							<td class="px-2 py-2"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="flex gap-2 mt-6 items-center">
+				<button type="submit" class="button primary">{_ actions.save}</button>
+				<a href="{~ localized_path(return_url) }" class="button secondary">{_ actions.cancel}</a>
+			</div>
+		</form>
+	</div>
+
+	<!-- Delete Key Dialogs -->
+	{#each keys as row}
+		{{ const dialog_id = "delete-dialog-" + row.key_path.replaceAll(".", "-"); }}
+		<dialog id="{= dialog_id }" class="p-0 rounded-xl shadow-2xl w-100">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.delete}</h2>
+				<p class="text-slate-600 mt-2">
+					Delete "
+					{= row.key_path}
+					" and all its translations?
+				</p>
+				<form method="POST" action="{~ localized_path('/system/translations/delete-key') }" class="mt-6 flex justify-end gap-2">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<input type="hidden" name="namespace" value="{= namespace }" />
+					<input type="hidden" name="key_path" value="{= row.key_path }" />
+					<button type="button" command="close" commandfor="{= dialog_id }" class="px-3 py-1 rounded bg-slate-200">{_ actions.cancel}</button>
+					<button type="submit" class="px-3 py-1 rounded bg-red-600 text-white">{_ actions.confirm_delete}</button>
+				</form>
+			</div>
+		</dialog>
+	{/each}
+{/with}

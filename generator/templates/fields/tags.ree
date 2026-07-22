@@ -1,0 +1,27 @@
+<field-wrapper class="grid" data-field="__field.name__">
+	<label class="px-3 mb-1">{_ labels.__field.name__}</label>
+	<input type="hidden" name="__field.name__" id="__field.name__-input" value="{= record.__field.name__}" />
+	<div class="flex flex-col gap-3 px-3">
+		{#each __field.name___options || [] as tag}
+			<label class="flex items-center gap-1.5 text-sm cursor-pointer">
+				<input type="checkbox" class="__field.name__-checkbox" value="{= tag.tag_key}" {#if record.__field.name__ && record.__field.name__.split(/[\s,]+/).filter(Boolean).includes(tag.tag_key)}checked{/if} />
+				{= __field.name__?.[tag.tag_key] || tag.tag_value}
+			</label>
+		{/each}
+	</div>
+	<validation-error class="mt-1" id="error-__field.name__"></validation-error>
+	<script>
+		(() => {
+			const hidden = document.getElementById("__field.name__-input");
+			const checkboxes = document.querySelectorAll(".__field.name__-checkbox");
+		
+			function updateTags() {
+				const checked = Array.from(checkboxes)
+				.filter((cb) => cb.checked)
+				.map((cb) => cb.value);
+				hidden.value = checked.join(",");
+			}
+			checkboxes.forEach((cb) => cb.addEventListener("change", updateTags));
+		})();
+	</script>
+</field-wrapper>

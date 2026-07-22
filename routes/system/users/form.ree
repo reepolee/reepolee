@@ -1,0 +1,148 @@
+{#layout("layout")}
+{#with props}
+
+	<div class="p-4">
+
+		<div class="flex items-center justify-between">
+			<h1 class="mb-4">{_ ui.title}</h1>
+			<div class="text-sm">{~ js_timestamp_to_locale_string(record.updated_at ?? record.created_at)}</div>
+		</div>
+
+		{#if form_errors}
+			<div class="py-4">
+				<app-banner type="red">{= form_errors}</app-banner>
+			</div>
+		{/if}
+
+		<form method="POST" action="{~ localized_path(action) }" class="grid gap-4 max-w-[60ch]" id="entry-form">
+
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+			<field-wrapper class="grid">
+				<label class="px-3" for="email">{_ labels.email}</label>
+				<input type="text" id="email" name="email" value="{= record.email }" />
+				<validation-error class="mt-1" id="error-email"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid">
+				<label class="px-3" for="name">{_ labels.name}</label>
+				<input type="text" id="name" name="name" value="{= record.name }" />
+				<validation-error class="mt-1" id="error-name"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid">
+				<label class="px-3" for="nickname">{_ labels.nickname}</label>
+				<input type="text" id="nickname" name="nickname" value="{= record.nickname }" />
+				<validation-error class="mt-1" id="error-nickname"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid">
+				<label class="px-3" for="username">{_ labels.username}</label>
+				<input type="text" id="username" name="username" value="{= record.username }" />
+				<validation-error class="mt-1" id="error-username"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid">
+				<label class="px-3" for="avatar_filename">{_ labels.avatar_filename}</label>
+				<input type="text" id="avatar_filename" name="avatar_filename" value="{= record.avatar_filename }" />
+				<validation-error class="mt-1" id="error-avatar_filename"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid">
+				<label class="px-3" for="invitation_code">{_ labels.invitation_code}</label>
+				<input type="text" id="invitation_code" name="invitation_code" value="{= record.invitation_code }" />
+				<validation-error class="mt-1" id="error-invitation_code"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid">
+				<label class="px-3" for="verified_at">{_ labels.verified_at}</label>
+				<input type="datetime-local" id="verified_at" name="verified_at" value="{~ js_datetime_to_iso_string(record.verified_at) }" />
+				<validation-error class="mt-1" id="error-verified_at"></validation-error>
+			</field-wrapper>
+
+			<field-wrapper class="grid">
+				<label class="px-3 mb-1">{_ labels.modules_tags}</label>
+				<input type="hidden" name="modules_tags" id="modules_tags-input" value="{= record.modules_tags }" />
+				<div class="flex flex-col gap-3 px-3">
+					{#each module_options as mod}
+						<label class="flex items-center gap-1.5 text-sm cursor-pointer">
+							<input type="checkbox" class="module-checkbox" value="{= mod.code }" {#if record.modules_tags && record.modules_tags.split(/[\s,]+/).filter(Boolean).includes(mod.code)} checked{/if} />
+							{= props.translations.modules_tags?.[mod.code] || mod.name}
+						</label>
+					{/each}
+				</div>
+				<validation-error class="mt-1" id="error-modules_tags"></validation-error>
+				<script>
+					(() => {
+						const hidden = document.getElementById("modules_tags-input");
+						const checkboxes = document.querySelectorAll(".module-checkbox");
+						function updateModules() {
+							const checked = Array.from(checkboxes).filter((cb) => cb.checked).map((cb) => cb.value);
+							hidden.value = checked.join(",") || "user";
+						}
+						checkboxes.forEach((cb) => cb.addEventListener("change", updateModules));
+					})();
+				</script>
+			</field-wrapper>
+
+			<!-- Store referrer URL as hidden field -->
+			<input type="hidden" id="return_url" name="_return_url" value="" />
+
+			<!-- Save action: hidden field set by onclick on save buttons -->
+			<input type="hidden" name="_save_action" id="save_action" value="" />
+
+			<div class="flex gap-2 mt-8 items-center">
+				<button id="btn-submit" type="submit" onclick="document.getElementById('save_action').value='stay'">{_ actions.save}</button>
+				<button id="btn-save-close" type="submit" onclick="document.getElementById('save_action').value='close'" class="button secondary">{_ actions.save_close}</button>
+				<button id="btn-cancel" type="button" onclick="history.back()" class="button secondary">{_ actions.cancel}</button>
+
+				{#if (record.id)}
+					<button id="action_delete" type="button" command="show-modal" commandfor="action_delete_dialog" class="ml-auto button tertiary">{_ actions.delete}</button>
+				{/if}
+			</div>
+		</form>
+
+		{#if (record.id)}
+			<form id="delete-form" method="POST" action="{~ localized_path('/system/users/' + record.id + '/edit') }" style="display: none;">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="_action" value="delete" />
+			</form>
+		{/if}
+
+	</div>
+
+	<dialog id="action_delete_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+		<div class="p-6">
+			<h2 class="text-lg font-semibold">{_ actions.delete}</h2>
+			<div class="mt-6 flex justify-end gap-2">
+				<button class="px-3 py-1 rounded bg-slate-200" type="button" commandfor="action_delete_dialog" command="close">{_ actions.abort_delete}</button>
+				<button class="px-3 py-1 rounded bg-brand text-white" type="button" command="--confirm" commandfor="action_delete_dialog">{_ actions.confirm_delete}</button>
+			</div>
+		</div>
+	</dialog>
+
+	<script src="/dialog-confirm.js?v={= version }"></script>
+	<script src="/form-controller.js?v={= version }" defer></script>
+
+	<script>
+		const return_url_field = $("#return_url");
+		if (return_url_field && document.referrer) {
+			try {
+				const referer_url = new URL(document.referrer);
+				return_url_field.value = referer_url.pathname + referer_url.search;
+			} catch (_e) {}
+		}
+		$("#action_delete_dialog").addEventListener("command", (e) => {
+			if (e.command !== "--confirm") return;
+			e.currentTarget.close();
+			$("#delete-form").submit();
+		});
+		document.addEventListener("DOMContentLoaded", () => {
+			new FormController({
+				form: "#entry-form",
+				validate_url: "{~ localized_path('/system/users/validate') }",
+				submitted_text: "{- actions.submitted}",
+			});
+		});
+	</script>
+{/with}

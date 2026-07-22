@@ -1,0 +1,46 @@
+@layer base {
+	form {
+		input,
+		textarea,
+		.input {
+			@apply bg-surface-raised rounded-sm border border-border px-3 py-1;
+		}
+
+		textarea {
+			field-sizing: content;
+			@apply min-h-[5lh];
+		}
+
+		button[type="submit"] {
+			@apply primary cursor-pointer rounded-sm px-3 py-2 hover:scale-105;
+			transition: opacity 0.2s, transform 0.15s;
+
+			&:disabled {
+				@apply cursor-not-allowed opacity-60;
+				transform: none;
+			}
+		}
+	}
+
+	validation-error {
+		@apply text-brand ml-3;
+	}
+
+	select {
+		@apply bg-surface-raised rounded-sm border border-border px-3 py-1;
+		appearance: base-select;
+
+		&::picker-icon {
+			content: "❯";
+			transition: 0.3s rotate;
+			rotate: 90deg;
+			width: 1rem;
+			display: grid;
+			place-content: center;
+		}
+
+		&:open::picker-icon {
+			rotate: 270deg;
+		}
+	}
+}

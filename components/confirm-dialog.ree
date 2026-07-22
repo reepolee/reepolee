@@ -1,0 +1,46 @@
+{{
+	const attrs = props.attributes || {};
+	const dialog_id = `confirm-dialog-${Math.random().toString(36).slice(2, 10)}`;
+	const title = attrs.title || "";
+	const trigger_text = attrs["trigger-text"] || attrs.title || "";
+	const message_text = attrs.message || "";
+	const confirm_text = attrs["confirm-text"];
+	const cancel_text = attrs["cancel-text"];
+	const trigger_class = attrs["trigger-class"] || "";
+	const confirm_class = attrs["confirm-class"] || "bg-brand text-white";
+	const width = attrs.width || "w-100";
+	const form_path = attrs["form-path"] || null;
+	const confirm_form_action = form_path ? localized_path(form_path) : null;
+	const csrf = props.csrf_token || "";
+	const extra_field_name = attrs["extra-field-name"] || "";
+	const extra_field_value = attrs["extra-field-value"] || "";
+}}
+{#if trigger_text && dialog_id}
+	<button type="button" command="show-modal" commandfor="{= dialog_id }" class="{= trigger_class }">{= trigger_text}</button>
+{/if}
+
+<dialog id="{= dialog_id }" class="p-0 rounded-xl shadow-2xl {= width }">
+	<div class="p-6">
+		<h2 class="text-lg font-semibold">{= title}</h2>
+		{#if message_text}
+			<p class="text-slate-600 mt-2">{= message_text}</p>
+		{/if}
+		<div class="mt-6 flex justify-end items-center gap-2">
+			<button type="button" class="px-3 py-1 rounded bg-slate-200" commandfor="{= dialog_id }" command="close">{= cancel_text}</button>
+			{#if confirm_form_action}
+				<form method="POST" action="{= confirm_form_action }" class="inline">
+					{#if csrf}
+						<input type="hidden" name="_csrf_token" value="{= csrf }" />
+					{/if}
+					{#if extra_field_name && extra_field_value}
+						<input type="hidden" name="{= extra_field_name }" value="{= extra_field_value }" />
+					{/if}
+					<button type="submit" class="px-3 py-1 rounded {= confirm_class }">{= confirm_text}</button>
+				</form>
+
+			{:else}
+				<button type="button" class="px-3 py-1 rounded {= confirm_class }" command="--confirm" commandfor="{= dialog_id }">{= confirm_text}</button>
+			{/if}
+		</div>
+	</div>
+</dialog>

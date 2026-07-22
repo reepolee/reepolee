@@ -1,0 +1,5 @@
+<field-wrapper class="grid">
+	<label class="px-3" for="{= props.name }">{= props.label}</label>
+	<input type="number" id="{= props.name }" name="{= props.name }" value="{= props.value }" />
+	<validation-error class="mt-1" id="error-{= props.name }"></validation-error>
+</field-wrapper>

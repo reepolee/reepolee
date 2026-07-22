@@ -1,0 +1,12 @@
+// Cloudflare deployment (planned/in-progress).
+// NOTE: reepolee normally runs as a long-lived Bun server (systemd/pm2, see operations/)
+// and does not build a ./dist. This config is here for a future Cloudflare deploy and
+// is not used by the standard server workflow. `assets.directory` will point at the
+// static build output once that path exists.
+{
+	"name": "reepolee",
+	"compatibility_date": "2026-07-15",
+	"assets": {
+		"directory": "./dist"
+	}
+}

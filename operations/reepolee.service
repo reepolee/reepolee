@@ -1,0 +1,15 @@
+[Unit]
+Description=Reepolee App Server
+After=network.target
+
+[Service]
+Type=simple
+User=ales
+WorkingDirectory=/home/ales/reepolee
+ExecStart=/home/ales/.bun/bin/bun --hot /home/ales/reepolee/server.ts --prod
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
