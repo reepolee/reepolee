@@ -1,0 +1,57 @@
+<!-- components/input-rating.ree -->
+
+{{
+	const a = props.attributes;
+}}
+
+<field-wrapper data-rating-input="{= a.name }" class="grid">
+	<label class="px-3">{= a.label }</label>
+
+	<div class="flex gap-1">
+		{#each [1, 2, 3, 4, 5] as n}
+			<button
+				data-rating-star="{= n }"
+				type="button"
+				class="text-2xl leading-none cursor-pointer transition-colors text-neutral-300"
+			>
+				★
+			</button>
+		{/each}
+		<span data-rating-label class="ml-2 self-center text-base text-neutral-500">Not rated</span>
+	</div>
+
+	<input type="hidden" name="{= a.name }" data-rating-hidden value="{= a.value || '0' }" />
+
+	<validation-error class="mt-1" id="error-{= a.name }"></validation-error>
+</field-wrapper>
+
+<script type="module">
+	import { deepSignal, watchEffect } from "/alien-deepsignals.min.js";
+
+	const hidden = document.querySelector('[data-rating-hidden][name="{= a.name }"]');
+	const root = hidden.closest("field-wrapper");
+	const label = root.querySelector("[data-rating-label]");
+	const stars = [...root.querySelectorAll("[data-rating-star]")];
+
+	const state = deepSignal({ value: parseInt(hidden.value, 10) || 0, hover: 0 });
+
+	stars.forEach((btn) => {
+		const n = parseInt(btn.dataset.ratingStar, 10);
+		btn.onclick = () => (state.value = n);
+		btn.onmouseenter = () => (state.hover = n);
+		btn.onmouseleave = () => (state.hover = 0);
+	});
+
+	watchEffect(() => {
+		const v = state.value;
+		const h = state.hover;
+		hidden.value = String(v);
+		label.textContent = v > 0 ? `${v} / 5` : "Not rated";
+		for (const btn of stars) {
+			const n = parseInt(btn.dataset.ratingStar, 10);
+			const lit = h ? n <= h : n <= v;
+			btn.classList.toggle("text-yellow-500", lit);
+			btn.classList.toggle("text-neutral-300", !lit);
+		}
+	});
+</script>

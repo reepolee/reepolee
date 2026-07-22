@@ -55,6 +55,27 @@
 					2
 				</label>
 			</field-wrapper>
+
+
+			<input-color
+				name="primary_color"
+				label="Primary color"
+				value="red"
+			>
+			</input-color>
+
+			<input-color
+				name="accent_color"
+				label="Accent Color"
+				value="pink"
+			>
+			</input-color>
+
+			<star-rating name="rating" label="Rating" value="0"> </star-rating>
+
+			<input-tags name="tags" label="Tags" value="user,admin"></input-tags>
+
+
 		</form>
 	</section>
 

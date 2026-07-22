@@ -1,0 +1,59 @@
+<!-- components/input-tags.ree -->
+{{
+	const a = props.attributes;
+}}
+<field-wrapper data-tag-input="{= a.name }" class="grid">
+	<label class="px-3" for="{= a.name }">{= a.label }</label>
+
+	<div data-tag-list class="flex flex-wrap items-center gap-2 rounded border border-neutral-300 px-3 py-2">
+		<input data-tag-draft type="text" placeholder="Add tag…" class="flex-1 min-w-[8ch] outline-none" />
+	</div>
+
+	<input type="hidden" name="{= a.name }" data-tag-hidden value="{= a.value || '' }" />
+
+	<validation-error class="mt-1" id="error-{= a.name }"></validation-error>
+</field-wrapper>
+
+<script type="module">
+	import { deepSignal, watchEffect } from "/alien-deepsignals.min.js";
+
+	const hidden = document.querySelector('[data-tag-hidden][name="{= a.name }"]');
+	const root = hidden.closest("field-wrapper");
+	const list = root.querySelector("[data-tag-list]");
+	const draft = root.querySelector("[data-tag-draft]");
+
+	const raw_tags = hidden.value.split(",");
+	const trimmed_tags = raw_tags.map((tag) => tag.trim());
+	const initial_tags = trimmed_tags.filter(Boolean);
+	const state = deepSignal({
+		tags: initial_tags,
+	});
+
+	draft.addEventListener("keydown", (e) => {
+		if (e.key !== "Enter" && e.key !== ",") return;
+		e.preventDefault();
+		const t = draft.value.trim();
+		if (t && !state.tags.includes(t)) state.tags = [...state.tags, t];
+		draft.value = "";
+	});
+
+	watchEffect(() => {
+		const current = state.tags;
+		hidden.value = current.join(",");
+		const tag_chips = list.querySelectorAll("[data-tag-chip]");
+		tag_chips.forEach((tag_chip) => tag_chip.remove());
+		for (const t of current) {
+			const chip = document.createElement("span");
+			chip.dataset.tagChip = "";
+			chip.className = "inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-base";
+			chip.textContent = t;
+			const x = document.createElement("button");
+			x.type = "button";
+			x.textContent = "×";
+			x.className = "text-neutral-500 hover:text-red-600";
+			x.onclick = () => (state.tags = state.tags.filter((x) => x !== t));
+			chip.appendChild(x);
+			list.insertBefore(chip, draft);
+		}
+	});
+</script>
