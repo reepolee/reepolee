@@ -125,7 +125,7 @@ export async function sync_single_namespace(namespace: string, translate: boolea
 				const num_keys = count_leaves(clean_lang_obj);
 				console.log(`🌍 Translating ${target_lang_name} → English (${num_keys} keys)...`);
 
-				const translated = await translate_json(clean_lang_obj, "English", { sourceLang: target_lang_name });
+				const translated = await translate_json(clean_lang_obj, "English", { source_lang: target_lang_name });
 				log_translation_result(target_lang_name, "English", translated, clean_lang_obj);
 				const clean_translated = clean_for_translation(translated);
 
@@ -175,7 +175,7 @@ export async function sync_single_namespace(namespace: string, translate: boolea
 				} else {
 					console.log(`   🌍 Translating English → ${target_lang_name} (${remaining} keys)...`);
 					try {
-						const translated = await translate_json(untranslated, target_lang_name, { sourceLang: "English" });
+						const translated = await translate_json(untranslated, target_lang_name, { source_lang: "English" });
 						log_translation_result("English", target_lang_name, translated, untranslated);
 						synced = apply_translations(synced, translated);
 					} catch (err) {

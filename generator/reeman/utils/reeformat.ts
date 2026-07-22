@@ -16,11 +16,11 @@ export function run_reettier(...dirs): void {
 	for (const dir of dirs) {
 		console.log(`  ${dim("reettier")} ${dir}`);
 		try {
-			const { exitCode } = spawnSync({
+			const { exit_code } = spawnSync({
 				cmd: ["reettier", dir],
 				stdio: ["inherit", "inherit", "inherit"],
 			});
-			if (exitCode !== 0) { console.error(`  ${color("reettier exited with code", RED)} ${exitCode}`); }
+			if (exit_code !== 0) { console.error(`  ${color("reettier exited with code", RED)} ${exit_code}`); }
 		} catch (err) {
 			console.error(`  ${color("reettier error:", RED)} ${err instanceof Error ? err.message : err}`);
 		}

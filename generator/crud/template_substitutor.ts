@@ -65,16 +65,16 @@ export function apply_template_detailed(template: string, context: TemplateConte
 	}
 
 	const remaining = result.match(/__[a-zA-Z0-9_.]+__/g);
-	const missingSet = new Set(remaining || []);
-	for (const m of missingSet) {
+	const missing_set = new Set(remaining || []);
+	for (const m of missing_set) {
 		// Extract key from __key__ format
 		const key = m.slice(2, -2);
 		missing.push(key);
 	}
 
-	const usedSet = new Set(used);
-	const allContextKeys = Object.keys(context);
-	const unused = allContextKeys.filter((k) => !usedSet.has(k));
+	const used_set = new Set(used);
+	const all_context_keys = Object.keys(context);
+	const unused = all_context_keys.filter((k) => !used_set.has(k));
 
 	return { result, used, unused, missing };
 }

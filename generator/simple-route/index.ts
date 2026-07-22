@@ -80,21 +80,21 @@ export async function __handler.name__(req: BunRequest): Promise<Response> {
 
 	// Build sort URLs that preserve existing filter params
 	const sort_urls: Record<string, { asc: string; desc: string }> = {};
-	const baseParams = new URLSearchParams();
+	const base_params = new URLSearchParams();
 	for (const [key, value] of url.searchParams) {
 		if (key === "sort" || key === "dir") continue;
-		baseParams.append(key, value);
+		base_params.append(key, value);
 	}
 	for (const field of fields) {
-		const ascParams = new URLSearchParams(baseParams);
-		ascParams.set("sort", field);
-		ascParams.set("dir", "asc");
-		const descParams = new URLSearchParams(baseParams);
-		descParams.set("sort", field);
-		descParams.set("dir", "desc");
+		const asc_params = new URLSearchParams(base_params);
+		asc_params.set("sort", field);
+		asc_params.set("dir", "asc");
+		const desc_params = new URLSearchParams(base_params);
+		desc_params.set("sort", field);
+		desc_params.set("dir", "desc");
 		sort_urls[field] = {
-			asc: `${current_path}?${ascParams.toString()}`,
-			desc: `${current_path}?${descParams.toString()}`,
+			asc: `${current_path}?${asc_params.toString()}`,
+			desc: `${current_path}?${desc_params.toString()}`,
 		};
 	}
 

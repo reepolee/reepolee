@@ -1,14 +1,14 @@
 <!-- components/input-color.ree -->
-{{ const a = props.attributes; }}
+{{ const { name, label, value } = props.attributes ?? {}; }}
 
 <field-wrapper class="grid">
-	<label class="px-3" for="{= a.name }">{= a.label }</label>
+	<label class="px-3" for="{= name }">{= label }</label>
 	<input
 		type="color"
-		id="{= a.name }"
-		name="{= a.name }"
-		value="{= a.value || '#000000' }"
+		id="{= name }"
+		name="{= name }"
+		value="{= value || '#000000' }"
 		class="h-10 w-20 cursor-pointer rounded border border-neutral-300"
 	/>
-	<validation-error class="mt-1" id="error-{= a.name }"></validation-error>
+	<validation-error class="mt-1" id="error-{= name }"></validation-error>
 </field-wrapper>

@@ -216,51 +216,51 @@ export async function reload_translations(): Promise<{ success: boolean; message
 // ---------------------------------------------------------------------------
 
 export async function get_queue_status(): Promise<Record<string, any>> {
-	const redisUrl = Bun.env.REDIS_URL;
-	if (!redisUrl) { return { enabled: false, message: "REDIS_URL not set. Queue is disabled." }; }
+	const redis_url = Bun.env.REDIS_URL;
+	if (!redis_url) { return { enabled: false, message: "REDIS_URL not set. Queue is disabled." }; }
 
 	try {
 		const RedisClient = Bun.RedisClient;
-		const prefix = redisUrl.startsWith("redis://") || redisUrl.startsWith("rediss://") ? "" : "redis://";
-		const conn = new RedisClient(`${prefix}${redisUrl}`);
+		const prefix = redis_url.startsWith("redis://") || redis_url.startsWith("rediss://") ? "" : "redis://";
+		const conn = new RedisClient(`${prefix}${redis_url}`);
 
-		const queueKeysResult = await conn.send("KEYS", ["queue:*"]);
-		const queueKeys: string[] = (queueKeysResult as any[])?.map((k: any) => String(k)) || [];
+		const queue_keys_result = await conn.send("KEYS", ["queue:*"]);
+		const queue_keys: string[] = (queue_keys_result as any[])?.map((k: any) => String(k)) || [];
 
 		const queues: Record<string, any> = {};
-		for (const key of queueKeys) {
+		for (const key of queue_keys) {
 			if (key.includes(":delayed") || key.includes(":failed")) continue;
-			const queueName = key.replace("queue:", "");
+			const queue_name = key.replace("queue:", "");
 			const length = await conn.send("LLEN", [key]);
-			queues[queueName] = { length: Number(length) };
+			queues[queue_name] = { length: Number(length) };
 		}
 
-		for (const key of queueKeys) {
+		for (const key of queue_keys) {
 			if (key.includes(":delayed")) {
-				const queueName = key.replace("queue:", "").replace(":delayed", "");
-				if (!queues[queueName]) queues[queueName] = {};
+				const queue_name = key.replace("queue:", "").replace(":delayed", "");
+				if (!queues[queue_name]) queues[queue_name] = {};
 				const count = await conn.send("ZCARD", [key]);
-				queues[queueName].delayed = Number(count);
+				queues[queue_name].delayed = Number(count);
 			}
 			if (key.includes(":failed")) {
-				const queueName = key.replace("queue:", "").replace(":failed", "");
-				if (!queues[queueName]) queues[queueName] = {};
+				const queue_name = key.replace("queue:", "").replace(":failed", "");
+				if (!queues[queue_name]) queues[queue_name] = {};
 				const count = await conn.send("ZCARD", [key]);
-				queues[queueName].failed = Number(count);
+				queues[queue_name].failed = Number(count);
 			}
 		}
 
-		let runningCount = 0;
-		const runningKeysResult = await conn.send("KEYS", ["queue:running"]);
-		const runningKeys: string[] = (runningKeysResult as any[])?.map((k: any) => String(k)) || [];
-		for (const key of runningKeys) {
+		let running_count = 0;
+		const running_keys_result = await conn.send("KEYS", ["queue:running"]);
+		const running_keys: string[] = (running_keys_result as any[])?.map((k: any) => String(k)) || [];
+		for (const key of running_keys) {
 			const count = await conn.send("SCARD", [key]);
-			runningCount += Number(count);
+			running_count += Number(count);
 		}
 
 		await conn.close();
 
-		return { enabled: true, running_jobs: runningCount, queues };
+		return { enabled: true, running_jobs: running_count, queues };
 	} catch (e: any) {
 		return { enabled: true, error: e.message, message: "Queue status read failed" };
 	}

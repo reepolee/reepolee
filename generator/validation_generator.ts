@@ -22,7 +22,7 @@ export function generate_zod_fields_from_array(fields: FieldDef[], type: "index"
 
 	for (const field of filtered_fields) {
 		const has_fk = foreign_keys?.has(field.name) || field.attributes?.foreign_key;
-		const isMaintenance = MAINTENANCE_FIELDS.includes(field.name.toLowerCase());
+		const is_maintenance = MAINTENANCE_FIELDS.includes(field.name.toLowerCase());
 
 		let schema = "";
 
@@ -92,7 +92,7 @@ export function generate_zod_fields_from_array(fields: FieldDef[], type: "index"
 		// -------------------------
 		// MAINTENANCE OVERRIDE
 		// -------------------------
-		if (isMaintenance && type === "validate" && !schema.includes(".optional()") && field.type !== "date" && field.type !== "datetime" && field.type !== "timestamp") {
+		if (is_maintenance && type === "validate" && !schema.includes(".optional()") && field.type !== "date" && field.type !== "datetime" && field.type !== "timestamp") {
 			schema += ".optional()";
 		}
 

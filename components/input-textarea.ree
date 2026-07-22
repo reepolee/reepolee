@@ -1,5 +1,6 @@
+{{ const { name, label, value } = props.attributes ?? {}; }}
 <field-wrapper class="grid">
-	<label class="px-3" for="{= props.name }">{= props.label}</label>
-	<textarea id="{= props.name }" name="{= props.name }" class="min-h-[5lh]">{= props.value}</textarea>
-	<validation-error class="mt-1" id="error-{= props.name }"></validation-error>
+	<label class="px-3" for="{= name }">{= label}</label>
+	<textarea id="{= name }" name="{= name }" class="min-h-[5lh]">{= value}</textarea>
+	<validation-error class="mt-1" id="error-{= name }"></validation-error>
 </field-wrapper>

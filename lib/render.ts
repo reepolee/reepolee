@@ -38,56 +38,56 @@ export function get_collapsed_nav_modules(cookie_value: string | null): string[]
  * (16.6us vs 6.4us on an 8KB page, 186us vs 56us on 125KB).
  */
 export function move_styles_and_scripts_to_head(html_content: string): string {
-	const styleRegex = /<style\b[^>]*>[\s\S]*?<\/style>/gi;
-	const scriptWithSrcRegex = /<script\b[^>]*\ssrc\s*=[^>]*>[\s\S]*?<\/script>/gi;
-	const linkStylesheetRegex = /<link\b[^>]*rel=["']stylesheet["'][^>]*>/gi;
+	const style_regex = /<style\b[^>]*>[\s\S]*?<\/style>/gi;
+	const script_with_src_regex = /<script\b[^>]*\ssrc\s*=[^>]*>[\s\S]*?<\/script>/gi;
+	const link_stylesheet_regex = /<link\b[^>]*rel=["']stylesheet["'][^>]*>/gi;
 
 	const blocks: string[] = [];
 
-	const headMatch = html_content.match(/<head[^>]*>[\s\S]*?<\/head>/i);
-	const getHeadRange = () => {
-		if (!headMatch || headMatch.index == null) return null;
-		return { start: headMatch.index, end: headMatch.index + headMatch[0].length };
+	const head_match = html_content.match(/<head[^>]*>[\s\S]*?<\/head>/i);
+	const get_head_range = () => {
+		if (!head_match || head_match.index == null) return null;
+		return { start: head_match.index, end: head_match.index + head_match[0].length };
 	};
 
-	const headRange = getHeadRange();
+	const head_range = get_head_range();
 
-	function isInsideHead(offset: number) {
-		if (!headRange) return false;
-		return offset >= headRange.start && offset < headRange.end;
+	function is_inside_head(offset: number) {
+		if (!head_range) return false;
+		return offset >= head_range.start && offset < head_range.end;
 	}
 
 	// styles
-	html_content = html_content.replace(styleRegex, (match, offset) => {
-		if (isInsideHead(offset)) return match;
+	html_content = html_content.replace(style_regex, (match, offset) => {
+		if (is_inside_head(offset)) return match;
 		blocks.push(match);
 		return "";
 	});
 
 	// stylesheet links
-	html_content = html_content.replace(linkStylesheetRegex, (match, offset) => {
-		if (isInsideHead(offset)) return match;
+	html_content = html_content.replace(link_stylesheet_regex, (match, offset) => {
+		if (is_inside_head(offset)) return match;
 		blocks.push(match);
 		return "";
 	});
 
 	// scripts with src
-	html_content = html_content.replace(scriptWithSrcRegex, (match, offset) => {
-		if (isInsideHead(offset)) return match;
+	html_content = html_content.replace(script_with_src_regex, (match, offset) => {
+		if (is_inside_head(offset)) return match;
 		blocks.push(match);
 		return "";
 	});
 
 	if (!blocks.length) return html_content;
 
-	const blocksContent = blocks.join("\n");
+	const blocks_content = blocks.join("\n");
 
 	if (/<head[^>]*>/i.test(html_content)) {
-		html_content = html_content.replace(/<\/head>/i, `${blocksContent}\n</head>`);
+		html_content = html_content.replace(/<\/head>/i, `${blocks_content}\n</head>`);
 	} else if (/<html[^>]*>/i.test(html_content)) {
-		html_content = html_content.replace(/<html[^>]*>/i, (m) => `${m}\n<head>\n${blocksContent}\n</head>`);
+		html_content = html_content.replace(/<html[^>]*>/i, (m) => `${m}\n<head>\n${blocks_content}\n</head>`);
 	} else {
-		html_content = `<head>\n${blocksContent}\n</head>\n${html_content}`;
+		html_content = `<head>\n${blocks_content}\n</head>\n${html_content}`;
 	}
 
 	return html_content;

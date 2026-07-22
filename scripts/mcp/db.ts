@@ -143,9 +143,9 @@ export async function get_table_structure(tableName: string): Promise<{ table: s
 		const raw_cols = (await inspection.unsafe(`PRAGMA table_info(${tableName})`)) as any[];
 		const raw_fks = (await inspection.unsafe(`PRAGMA foreign_key_list(${tableName})`)) as any[];
 
-		const fkMap = new Map();
+		const fk_map = new Map();
 		for (const fk of raw_fks) {
-			fkMap.set(fk.from, { table: fk.table, column: fk.to });
+			fk_map.set(fk.from, { table: fk.table, column: fk.to });
 		}
 
 		const columns: ColumnInfo[] = raw_cols.map((col) => ({
@@ -155,7 +155,7 @@ export async function get_table_structure(tableName: string): Promise<{ table: s
 			primary_key: col.pk > 0,
 			auto_increment: col.pk > 0,
 			default: col.dflt_value,
-			foreign_key: fkMap.get(col.name) || null,
+			foreign_key: fk_map.get(col.name) || null,
 		}));
 
 		return { table: tableName, columns };
@@ -186,9 +186,9 @@ export async function get_table_structure(tableName: string): Promise<{ table: s
 			AND tc.CONSTRAINT_TYPE = 'FOREIGN KEY'
 	`) as any[];
 
-	const fkMap = new Map();
+	const fk_map = new Map();
 	for (const fk of raw_fks) {
-		fkMap.set(fk.COLUMN_NAME, { table: fk.REFERENCED_TABLE_NAME, column: fk.REFERENCED_COLUMN_NAME });
+		fk_map.set(fk.COLUMN_NAME, { table: fk.REFERENCED_TABLE_NAME, column: fk.REFERENCED_COLUMN_NAME });
 	}
 
 	const columns: ColumnInfo[] = raw_cols.map((col) => ({
@@ -198,7 +198,7 @@ export async function get_table_structure(tableName: string): Promise<{ table: s
 		primary_key: col.COLUMN_KEY === "PRI",
 		auto_increment: col.EXTRA?.includes("auto_increment") || false,
 		default: col.COLUMN_DEFAULT,
-		foreign_key: fkMap.get(col.COLUMN_NAME) || null,
+		foreign_key: fk_map.get(col.COLUMN_NAME) || null,
 	}));
 
 	return { table: tableName, columns };
@@ -210,10 +210,10 @@ export async function run_read_only_query(query: string, limit = 100): Promise<{
 	const raw = (await get_inspection_db().unsafe(final_query)) as any[];
 	const rows = raw || [];
 	const truncated = rows.length > safe_limit;
-	const resultRows = rows.slice(0, safe_limit);
-	const columns = resultRows.length > 0 ? Object.keys(resultRows[0]) : [];
+	const result_rows = rows.slice(0, safe_limit);
+	const columns = result_rows.length > 0 ? Object.keys(result_rows[0]) : [];
 
-	return { columns, rows: resultRows, row_count: resultRows.length, truncated };
+	return { columns, rows: result_rows, row_count: result_rows.length, truncated };
 }
 
 // ---------------------------------------------------------------------------

@@ -1,11 +1,11 @@
-<!-- components/input-rating.ree -->
+<!-- components/star-rating.ree -->
 
 {{
-	const a = props.attributes;
+	const { name, label, value } = props.attributes ?? {};
 }}
 
-<field-wrapper data-rating-input="{= a.name }" class="grid">
-	<label class="px-3">{= a.label }</label>
+<field-wrapper data-rating-input="{= name }" class="grid">
+	<label class="px-3">{= label }</label>
 
 	<div class="flex gap-1">
 		{#each [1, 2, 3, 4, 5] as n}
@@ -20,15 +20,15 @@
 		<span data-rating-label class="ml-2 self-center text-base text-neutral-500">Not rated</span>
 	</div>
 
-	<input type="hidden" name="{= a.name }" data-rating-hidden value="{= a.value || '0' }" />
+	<input type="hidden" name="{= name }" data-rating-hidden value="{= value || '0' }" />
 
-	<validation-error class="mt-1" id="error-{= a.name }"></validation-error>
+	<validation-error class="mt-1" id="error-{= name }"></validation-error>
 </field-wrapper>
 
 <script type="module">
 	import { deepSignal, watchEffect } from "/alien-deepsignals.min.js";
 
-	const hidden = document.querySelector('[data-rating-hidden][name="{= a.name }"]');
+	const hidden = document.querySelector('[data-rating-hidden][name="{= name }"]');
 	const root = hidden.closest("field-wrapper");
 	const label = root.querySelector("[data-rating-label]");
 	const stars = [...root.querySelectorAll("[data-rating-star]")];

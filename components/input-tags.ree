@@ -1,23 +1,23 @@
 <!-- components/input-tags.ree -->
 {{
-	const a = props.attributes;
+	const { name, label, value } = props.attributes ?? {};
 }}
-<field-wrapper data-tag-input="{= a.name }" class="grid">
-	<label class="px-3" for="{= a.name }">{= a.label }</label>
+<field-wrapper data-tag-input="{= name }" class="grid">
+	<label class="px-3" for="{= name }">{= label }</label>
 
 	<div data-tag-list class="flex flex-wrap items-center gap-2 rounded border border-neutral-300 px-3 py-2">
 		<input data-tag-draft type="text" placeholder="Add tag…" class="flex-1 min-w-[8ch] outline-none" />
 	</div>
 
-	<input type="hidden" name="{= a.name }" data-tag-hidden value="{= a.value || '' }" />
+	<input type="hidden" name="{= name }" data-tag-hidden value="{= value || '' }" />
 
-	<validation-error class="mt-1" id="error-{= a.name }"></validation-error>
+	<validation-error class="mt-1" id="error-{= name }"></validation-error>
 </field-wrapper>
 
 <script type="module">
 	import { deepSignal, watchEffect } from "/alien-deepsignals.min.js";
 
-	const hidden = document.querySelector('[data-tag-hidden][name="{= a.name }"]');
+	const hidden = document.querySelector('[data-tag-hidden][name="{= name }"]');
 	const root = hidden.closest("field-wrapper");
 	const list = root.querySelector("[data-tag-list]");
 	const draft = root.querySelector("[data-tag-draft]");

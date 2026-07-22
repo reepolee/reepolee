@@ -40,9 +40,9 @@ export async function generate_schema(target: string, options: SchemaOptions = {
 		return false;
 	}
 
-	const typeMapperMap = new Map([["mysql", () => new MySQLTypeMapper()], ["sqlite", () => new SQLiteTypeMapper()]]);
+	const type_mapper_map = new Map([["mysql", () => new MySQLTypeMapper()], ["sqlite", () => new SQLiteTypeMapper()]]);
 
-	const type_mapper = typeMapperMap.get(db_type)?.();
+	const type_mapper = type_mapper_map.get(db_type)?.();
 
 	if (!type_mapper) { throw new Error(`Unsupported db_type: ${db_type}`); }
 

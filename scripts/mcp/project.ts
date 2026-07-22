@@ -113,7 +113,7 @@ export function list_all_ree_files(): Array<{ path: string; type: "route" | "com
 // ---------------------------------------------------------------------------
 
 export async function list_translation_namespaces(): Promise<Record<string, string[]>> {
-	const nsByLang: Record<string, string[]> = {};
+	const ns_by_lang: Record<string, string[]> = {};
 
 	try {
 		const rows = await db`SELECT DISTINCT lang, namespace FROM translations ORDER BY lang, namespace` as { lang: string; namespace: string; }[];
@@ -121,14 +121,14 @@ export async function list_translation_namespaces(): Promise<Record<string, stri
 		for (const row of rows) {
 			const lang = row.lang;
 			const ns = row.namespace || "root";
-			if (!nsByLang[lang]) nsByLang[lang] = [];
-			if (!nsByLang[lang].includes(ns)) { nsByLang[lang].push(ns); }
+			if (!ns_by_lang[lang]) ns_by_lang[lang] = [];
+			if (!ns_by_lang[lang].includes(ns)) { ns_by_lang[lang].push(ns); }
 		}
 	} catch {
 		// translations table may not exist yet
 	}
 
-	return nsByLang;
+	return ns_by_lang;
 }
 
 // ---------------------------------------------------------------------------
@@ -140,7 +140,7 @@ export async function get_project_config(): Promise<Record<string, any>> {
 
 	const conventions = get_project_db_config().conventions;
 	const languages = await list_translation_namespaces();
-	const allLangs = Object.keys(languages).sort();
+	const all_langs = Object.keys(languages).sort();
 
 	return {
 		project: pkg,
@@ -151,9 +151,9 @@ export async function get_project_config(): Promise<Record<string, any>> {
 			...conventions,
 		},
 		languages: {
-			active: allLangs.filter((l) => l !== "root"),
-			all: allLangs,
-			default: allLangs.includes("sl") ? "sl" : allLangs[0] || "en",
+			active: all_langs.filter((l) => l !== "root"),
+			all: all_langs,
+			default: all_langs.includes("sl") ? "sl" : all_langs[0] || "en",
 			names: { en: "English", sl: "Slovenian" },
 			locales: { en: "en-US", sl: "sl-SI" },
 		},
@@ -228,9 +228,9 @@ export function list_generators(): Array<{ name: string; file: string; descripti
 // ---------------------------------------------------------------------------
 
 export async function read_project_file(filePath: string): Promise<string | null> {
-	const absPath = join(PROJECT_ROOT, filePath);
-	if (!existsSync(absPath)) return null;
-	return await file(absPath).text();
+	const abs_path = join(PROJECT_ROOT, filePath);
+	if (!existsSync(abs_path)) return null;
+	return await file(abs_path).text();
 }
 
 // ---------------------------------------------------------------------------
@@ -258,30 +258,30 @@ export function analyze_template(tpl: string): Record<string, any> {
 		hasElse: false,
 	};
 
-	const layoutMatch = tpl.match(/\{#layout\(['"]([^'"]+)['"]/);
-	if (layoutMatch) result.layout = layoutMatch[1];
+	const layout_match = tpl.match(/\{#layout\(['"]([^'"]+)['"]/);
+	if (layout_match) result.layout = layout_match[1];
 
-	const includeRegex = /\{#include\(['"]([^'"]+)['"]/g;
+	const include_regex = /\{#include\(['"]([^'"]+)['"]/g;
 	let m;
-	while ((m = includeRegex.exec(tpl)) !== null) {
+	while ((m = include_regex.exec(tpl)) !== null) {
 		if (!m[1].startsWith("$components/")) { result.includes.push(m[1]); }
 	}
 
-	const compRegex = /<([a-zA-Z][a-zA-Z0-9]*-[a-zA-Z0-9-]*)\b/g;
-	while ((m = compRegex.exec(tpl)) !== null) {
+	const comp_regex = /<([a-zA-Z][a-zA-Z0-9]*-[a-zA-Z0-9-]*)\b/g;
+	while ((m = comp_regex.exec(tpl)) !== null) {
 		result.components.push(m[1]);
 	}
 
-	const ifRegex = /\{#if\s+/g;
-	while (ifRegex.exec(tpl) !== null) result.conditionals++;
-	const elseRegex = /\{:else\s*\}/g;
-	while (elseRegex.exec(tpl) !== null) result.hasElse = true;
+	const if_regex = /\{#if\s+/g;
+	while (if_regex.exec(tpl) !== null) result.conditionals++;
+	const else_regex = /\{:else\s*\}/g;
+	while (else_regex.exec(tpl) !== null) result.hasElse = true;
 
-	const eachRegex = /\{#each\s+/g;
-	while (eachRegex.exec(tpl) !== null) result.loops++;
+	const each_regex = /\{#each\s+/g;
+	while (each_regex.exec(tpl) !== null) result.loops++;
 
-	const varRegex = /\{[=~]\s*([\w.]+(?:\.[\w]+)*)\s*\}/g;
-	while ((m = varRegex.exec(tpl)) !== null) {
+	const var_regex = /\{[=~]\s*([\w.]+(?:\.[\w]+)*)\s*\}/g;
+	while ((m = var_regex.exec(tpl)) !== null) {
 		const ref = m[1];
 		if (!ref.includes("(")) {
 			const parts = ref.split(".");
@@ -289,8 +289,8 @@ export function analyze_template(tpl: string): Record<string, any> {
 		}
 	}
 
-	const propsVarRegex = /\bprops\.([\w]+)\b/g;
-	while ((m = propsVarRegex.exec(tpl)) !== null) {
+	const props_var_regex = /\bprops\.([\w]+)\b/g;
+	while ((m = props_var_regex.exec(tpl)) !== null) {
 		result.variables.add(`props.${m[1]}`);
 	}
 
@@ -302,7 +302,7 @@ export function analyze_template(tpl: string): Record<string, any> {
 // Code search
 // ---------------------------------------------------------------------------
 
-export async function search_code(pattern: string, glob?: string, maxResults = 50): Promise<{ matches: Array<{ file: string; line: number; content: string; }>; total: number; }> {
+export async function search_code(pattern: string, glob?: string, max_results = 50): Promise<{ matches: Array<{ file: string; line: number; content: string; }>; total: number; }> {
 	const matches: Array<{ file: string; line: number; content: string; }> = [];
 	let total = 0;
 
@@ -315,16 +315,16 @@ export async function search_code(pattern: string, glob?: string, maxResults = 5
 	const lines = stdout.split("\n").filter(Boolean);
 
 	for (const line of lines) {
-		if (total >= maxResults) break;
-		const sepIndex = line.indexOf(":");
-		if (sepIndex < 0) continue;
-		const file = line.slice(0, sepIndex);
-		const rest = line.slice(sepIndex + 1);
-		const lineSepIndex = rest.indexOf(":");
-		const lineNum = parseInt(rest.slice(0, lineSepIndex), 10);
-		const content = rest.slice(lineSepIndex + 1);
-		if (!Number.isNaN(lineNum)) {
-			matches.push({ file: file.replace(`${PROJECT_ROOT}/`, ""), line: lineNum, content });
+		if (total >= max_results) break;
+		const sep_index = line.indexOf(":");
+		if (sep_index < 0) continue;
+		const file = line.slice(0, sep_index);
+		const rest = line.slice(sep_index + 1);
+		const line_sep_index = rest.indexOf(":");
+		const line_num = parseInt(rest.slice(0, line_sep_index), 10);
+		const content = rest.slice(line_sep_index + 1);
+		if (!Number.isNaN(line_num)) {
+			matches.push({ file: file.replace(`${PROJECT_ROOT}/`, ""), line: line_num, content });
 			total++;
 		}
 	}
@@ -337,7 +337,7 @@ export async function search_code(pattern: string, glob?: string, maxResults = 5
 // ---------------------------------------------------------------------------
 
 export async function get_route_detail(routeUrl: string): Promise<{ url: string; files: string[]; exists: boolean; }> {
-	const dirPath = resolve_route_dir(routeUrl);
+	const dir_path = resolve_route_dir(routeUrl);
 	const files: string[] = [];
 
 	const patterns = [
@@ -350,8 +350,8 @@ export async function get_route_detail(routeUrl: string): Promise<{ url: string;
 		"schema/validation_server.ts",
 	];
 	for (const p of patterns) {
-		const fullPath = join(dirPath, p);
-		if (existsSync(fullPath)) { files.push(p); }
+		const full_path = join(dir_path, p);
+		if (existsSync(full_path)) { files.push(p); }
 	}
 
 	return { url: routeUrl, files, exists: files.length > 0 };

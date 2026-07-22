@@ -371,9 +371,9 @@ async function inject_parent_form_marker(parent_form_path: string, child_section
 	} else {
 		// No markers yet -> inject after </form>
 		const form_close = "</form>";
-		const formCloseIdx = parent_form.indexOf(form_close);
-		if (formCloseIdx >= 0) {
-			parent_form = `${parent_form.slice(0, formCloseIdx + form_close.length)}\n${child_section}${parent_form.slice(formCloseIdx + form_close.length)}`;
+		const form_close_idx = parent_form.indexOf(form_close);
+		if (form_close_idx >= 0) {
+			parent_form = `${parent_form.slice(0, form_close_idx + form_close.length)}\n${child_section}${parent_form.slice(form_close_idx + form_close.length)}`;
 		}
 		await Bun.write(parent_form_path, parent_form);
 		console.log(`✓ Added inline child list to parent form.ree`);

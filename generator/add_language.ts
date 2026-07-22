@@ -112,7 +112,7 @@ export async function add_language_to_system(lang_code: string, options: AddLang
 			if (translate) {
 				try {
 					console.log(`   🌍 Translating ${namespace || "(global)"} to ${lang_name}...`);
-					translated_content = await translate_json(en_content, lang_name, { sourceLang: "English" });
+					translated_content = await translate_json(en_content, lang_name, { source_lang: "English" });
 					console.log(`   ✓ Translated ${namespace || "(global)"}`);
 				} catch (err) {
 					console.error(`   ❌ Translation failed for ${namespace}:`, err);

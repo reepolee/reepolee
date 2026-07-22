@@ -71,7 +71,7 @@ export class InputCancelled extends Error {
 // ---------------------------------------------------------------------------
 
 function read_line_raw(): Promise<string | null> {
-	const wasRaw = (process.stdin as any).isRaw;
+	const was_raw = (process.stdin as any).isRaw;
 	process.stdin.setRawMode?.(true);
 	process.stdin.resume();
 
@@ -120,7 +120,7 @@ function read_line_raw(): Promise<string | null> {
 
 		function cleanup() {
 			process.stdin.removeListener("data", on_data);
-			process.stdin.setRawMode?.(wasRaw);
+			process.stdin.setRawMode?.(was_raw);
 			process.stdin.pause();
 		}
 
@@ -158,7 +158,7 @@ export async function select_from_list(prompt: string, items: { value: string; l
 	let prev_row_count = 0;
 
 	// Enable raw mode for key-by-key input
-	const wasRaw = (process.stdin as any).isRaw;
+	const was_raw = (process.stdin as any).isRaw;
 	process.stdin.setRawMode?.(true);
 	process.stdin.resume();
 
@@ -233,7 +233,7 @@ export async function select_from_list(prompt: string, items: { value: string; l
 
 			function cleanup() {
 				process.stdin.removeListener("data", on_data);
-				process.stdin.setRawMode?.(wasRaw);
+				process.stdin.setRawMode?.(was_raw);
 				process.stdin.pause();
 				process.stdout.write("\u001b[?25h");
 			}
@@ -257,7 +257,7 @@ export async function multi_select<T>(prompt: string, items: { value: T; label: 
 	let prev_row_count = 0;
 
 	// Enable raw mode for key-by-key input
-	const wasRaw = (process.stdin as any).isRaw;
+	const was_raw = (process.stdin as any).isRaw;
 	process.stdin.setRawMode?.(true);
 	process.stdin.resume();
 
@@ -362,7 +362,7 @@ export async function multi_select<T>(prompt: string, items: { value: T; label: 
 
 			function cleanup() {
 				process.stdin.removeListener("data", on_data);
-				process.stdin.setRawMode?.(wasRaw);
+				process.stdin.setRawMode?.(was_raw);
 				process.stdin.pause();
 				// Show cursor
 				process.stdout.write("\u001b[?25h");
@@ -380,7 +380,7 @@ export async function multi_select<T>(prompt: string, items: { value: T; label: 
 // ---------------------------------------------------------------------------
 
 export async function press_enter(): Promise<void> {
-	const wasRaw = (process.stdin as any).isRaw;
+	const was_raw = (process.stdin as any).isRaw;
 	process.stdin.setRawMode?.(true);
 	process.stdin.resume();
 
@@ -420,7 +420,7 @@ export async function press_enter(): Promise<void> {
 
 		function cleanup() {
 			process.stdin.removeListener("data", on_data);
-			process.stdin.setRawMode?.(wasRaw);
+			process.stdin.setRawMode?.(was_raw);
 			process.stdin.pause();
 		}
 

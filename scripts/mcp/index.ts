@@ -347,8 +347,8 @@ const tools: Array<{ name: string; description: string; inputSchema: Record<stri
 		description: "List available languages and their translation namespaces",
 		inputSchema: { type: "object", properties: {} },
 		handler: async () => {
-			const nsByLang = await list_translation_namespaces();
-			return json_content({ languages: nsByLang });
+			const ns_by_lang = await list_translation_namespaces();
+			return json_content({ languages: ns_by_lang });
 		},
 	},
 	{
@@ -386,20 +386,20 @@ const tools: Array<{ name: string; description: string; inputSchema: Record<stri
 			}
 
 			// No namespace specified - return all namespaces for the language
-			const nsRows = await db`SELECT DISTINCT namespace FROM translations WHERE lang = ${lang} ORDER BY namespace` as { namespace: string; }[];
+			const ns_rows = await db`SELECT DISTINCT namespace FROM translations WHERE lang = ${lang} ORDER BY namespace` as { namespace: string; }[];
 
-			if (nsRows.length === 0) { throw new Error(`No translations found for language "${lang}"`); }
+			if (ns_rows.length === 0) { throw new Error(`No translations found for language "${lang}"`); }
 
 			const result: Record<string, any> = {};
-			for (const { namespace: ns } of nsRows) {
-				const keyRows = await db`SELECT key_path, translation FROM translations WHERE lang = ${lang} AND namespace = ${ns} ORDER BY key_path` as {
+			for (const { namespace: ns } of ns_rows) {
+				const key_rows = await db`SELECT key_path, translation FROM translations WHERE lang = ${lang} AND namespace = ${ns} ORDER BY key_path` as {
 					key_path: string;
 					translation: string;
 				}[];
-				const nsKey = ns || "root";
-				result[nsKey] = {};
-				for (const row of keyRows) {
-					set_nested(result[nsKey], row.key_path, row.translation);
+				const ns_key = ns || "root";
+				result[ns_key] = {};
+				for (const row of key_rows) {
+					set_nested(result[ns_key], row.key_path, row.translation);
 				}
 			}
 
@@ -440,8 +440,8 @@ const tools: Array<{ name: string; description: string; inputSchema: Record<stri
 			required: ["pattern"],
 		},
 		handler: async (args) => {
-			const maxResults = Math.min(args.max_results || 50, 200);
-			const result = await search_code(args.pattern, args.glob, maxResults);
+			const max_results = Math.min(args.max_results || 50, 200);
+			const result = await search_code(args.pattern, args.glob, max_results);
 			return json_content(result);
 		},
 	},
@@ -706,9 +706,9 @@ const tools: Array<{ name: string; description: string; inputSchema: Record<stri
 // Map name -> handler
 const exposed_tools = filter_mcp_tools(tools);
 
-const toolMap = new Map();
+const tool_map = new Map();
 for (const t of exposed_tools) {
-	toolMap.set(t.name, t.handler);
+	tool_map.set(t.name, t.handler);
 }
 
 function get_tool_schemas() { return exposed_tools.map(({ name, description, inputSchema }) => ({ name, description, inputSchema })); }
@@ -750,7 +750,7 @@ async function handle_message(msg: any): Promise<void> {
 		case "tools/call":
 			{
 				const { name, arguments: args } = params || {};
-				const handler = toolMap.get(name);
+				const handler = tool_map.get(name);
 				if (!handler) {
 					process.stdout.write(json_rpc_error(id, -32601, `Tool not found: ${name}`));
 					break;

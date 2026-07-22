@@ -33,7 +33,7 @@ rules live below and in the linked guides - follow them.
 
 - **Bun native APIs only.** Zero runtime dependencies; only `tailwindcss` and `@types/bun` as dev deps.
 - **Fail loudly if an `.env` var is not set. No fallbacks.**
-- **snake_case** for variables, functions, and filenames in server-side `.ts` files. Client files (`.js`) are kebab-case.
+- **snake_case** for variables, functions, and filenames in server-side `.ts` files. Client files (`.js`) are kebab-case. Enforced by `bun naming:check`.
 - **Temp variables for debugging.** If a method chain has more than 1 call, break it up with a temp variable. Return clean vars that can be inspected.
 - **Read complete files before editing** if you haven't seen their current state this session.
 - **Minimal changes** - change only what's asked; do not refactor unrelated code.

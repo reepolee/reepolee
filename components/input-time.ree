@@ -1,5 +1,6 @@
+{{ const { name, label, value } = props.attributes ?? {}; }}
 <field-wrapper class="grid">
-	<label class="px-3" for="{= props.name }">{= props.label}</label>
-	<input type="time" id="{= props.name }" name="{= props.name }" value="{= props.value }" />
-	<validation-error class="mt-1" id="error-{= props.name }"></validation-error>
+	<label class="px-3" for="{= name }">{= label}</label>
+	<input type="time" id="{= name }" name="{= name }" value="{= value }" />
+	<validation-error class="mt-1" id="error-{= name }"></validation-error>
 </field-wrapper>

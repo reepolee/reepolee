@@ -282,8 +282,8 @@ async function hf_batch_translate(texts: string[], source_lang: string, target_l
  * 2. Translate in batches of HF_BATCH_SIZE
  * 3. Reconstruct the JSON with translated values
  */
-export async function hf_translate_json(input: Record<string, any>, source_lang: string, target_lang: string, options: { timeout?: number; maxRetries?: number; } = {}): Promise<any> {
-	const { timeout = HF_DEFAULT_TIMEOUT, maxRetries = 2 } = options;
+export async function hf_translate_json(input: Record<string, any>, source_lang: string, target_lang: string, options: { timeout?: number; max_retries?: number; } = {}): Promise<any> {
+	const { timeout = HF_DEFAULT_TIMEOUT, max_retries = 2 } = options;
 
 	// Flatten to leaf strings
 	const leaves: { path: string[]; text: string; }[] = [];
@@ -301,11 +301,11 @@ export async function hf_translate_json(input: Record<string, any>, source_lang:
 		const batch = leaves.slice(i, i + HF_BATCH_SIZE);
 		const batch_texts = batch.map((l) => l.text);
 
-		let lastError: Error | null = null;
+		let last_error: Error | null = null;
 
-		for (let attempt = 0; attempt <= maxRetries; attempt++) {
+		for (let attempt = 0; attempt <= max_retries; attempt++) {
 			try {
-				if (attempt > 0) { console.log(`🔄 HF retry ${attempt}/${maxRetries}`); }
+				if (attempt > 0) { console.log(`🔄 HF retry ${attempt}/${max_retries}`); }
 
 				const results = await hf_batch_translate(batch_texts, source_lang, target_lang, timeout);
 
@@ -316,19 +316,19 @@ export async function hf_translate_json(input: Record<string, any>, source_lang:
 				}
 				break;
 			} catch (err: any) {
-				lastError = err;
+				last_error = err;
 				const status = err?.status;
 
 				console.warn(`⚠️ HF batch ${Math.floor(i / HF_BATCH_SIZE) + 1} attempt ${attempt + 1} failed:`, err?.message);
 
 				// ❌ do not retry auth/billing errors
-				if (status === 401 || status === 402 || status === 403) { throw lastError; }
+				if (status === 401 || status === 402 || status === 403) { throw last_error; }
 
-				if (attempt < maxRetries) { await new Promise((r) => setTimeout(r, 1000)); }
+				if (attempt < max_retries) { await new Promise((r) => setTimeout(r, 1000)); }
 			}
 		}
 
-		if (lastError) { throw lastError; }
+		if (last_error) { throw last_error; }
 
 		// Small delay between batches
 		if (i + HF_BATCH_SIZE < leaves.length) { await new Promise((r) => setTimeout(r, 300)); }

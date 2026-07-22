@@ -25,7 +25,7 @@ export async function write_table_generated_file(
 		return `  ${col.name}?: ${base_type}${!col.is_nullable ? "" : " | null | undefined"};`;
 	});
 
-	const fieldInterface = `Record<string, FormFieldDef>`;
+	const field_interface = `Record<string, FormFieldDef>`;
 
 	const v_fields = schema_obj.view_columns ? generate_fields_object({
 		type: "view",

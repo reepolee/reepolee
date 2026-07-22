@@ -6,7 +6,7 @@
  * views-root relative paths, and extension-based kind detection.
  */
 
-import path, { dirname, extname, join, resolve as pathResolve } from "node:path";
+import path, { dirname, extname, join, resolve as path_resolve } from "node:path";
 
 import type { ResolveResult } from "./types";
 
@@ -49,9 +49,9 @@ export function resolve_include(current_name: string, include_name: string, view
 		name = name.slice(1);
 	} else if (!is_alias_path && (name.startsWith("./") || name.startsWith("../"))) {
 		// Relative to the current template dir
-		const baseDir = dirname(current_name);
+		const base_dir = dirname(current_name);
 		// Use posix-style joining to keep forward slashes in names
-		const joined = path.posix.join(baseDir.replace(/\\\\/g, "/"), name);
+		const joined = path.posix.join(base_dir.replace(/\\\\/g, "/"), name);
 		name = joined;
 	}
 	// else: treat as already views-root relative (e.g., "components/card") or alias path
@@ -77,8 +77,8 @@ export function resolve_include(current_name: string, include_name: string, view
 			const base_path = is_alias_path ? dirname(views_dir) : views_dir;
 			const raw_file_path = join(base_path, name);
 			// Security: ensure it remains under appropriate directory
-			const resolved = pathResolve(raw_file_path);
-			const base_resolved = pathResolve(base_path);
+			const resolved = path_resolve(raw_file_path);
+			const base_resolved = path_resolve(base_path);
 			if (!resolved.startsWith(base_resolved)) { throw new Error(`Include path escapes base directory: ${include_name}`); }
 			return { kind: "raw", file_path: resolved };
 		}

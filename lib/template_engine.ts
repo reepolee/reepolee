@@ -173,8 +173,8 @@ class TemplateEngine {
 		return await (compiled_fn as any)(props, escape, bound_include, rt_include, current_name);
 	}
 
-	async render_string(templateString: string, props: Record<string, any> = {}): Promise<string> {
-		const compiled_fn = this.compile(templateString);
+	async render_string(template_string: string, props: Record<string, any> = {}): Promise<string> {
+		const compiled_fn = this.compile(template_string);
 		const current_name = ""; // treat render_string as views-root
 		const bound_include = this.include.bind(this);
 		const rt_include = this.include_resolved.bind(this, current_name);

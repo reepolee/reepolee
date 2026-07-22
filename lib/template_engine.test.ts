@@ -351,53 +351,53 @@ describe("TemplateEngine", () => {
 
 	describe("components", () => {
 		test("ReeTag <tag-name> includes from components/ dir", with_temp_dir(async (dir, engine) => {
-			const componentsDir = join(dirname(dir), "components");
-			mkdirSync(componentsDir, { recursive: true });
-			writeFileSync(join(componentsDir, "my-badge.ree"), "<span class='badge'>{= props.attributes.label }</span>");
+			const components_dir = join(dirname(dir), "components");
+			mkdirSync(components_dir, { recursive: true });
+			writeFileSync(join(components_dir, "my-badge.ree"), "<span class='badge'>{= props.attributes.label }</span>");
 			writeFileSync(join(dir, "page.ree"), "<div><my-badge label='New'></my-badge></div>");
 			const result = await engine.render("page");
 			expect(result).toBe("<div><span class='badge'>New</span></div>");
-			rmSync(componentsDir, { recursive: true, force: true });
+			rmSync(components_dir, { recursive: true, force: true });
 		}));
 
 		test("{#include} explicitly resolves a component from components/ dir", with_temp_dir(async (dir, engine) => {
-			const componentsDir = join(dirname(dir), "components");
-			mkdirSync(componentsDir, { recursive: true });
-			writeFileSync(join(componentsDir, "my-badge.ree"), "<span class='badge'>{= props.label }</span>");
+			const components_dir = join(dirname(dir), "components");
+			mkdirSync(components_dir, { recursive: true });
+			writeFileSync(join(components_dir, "my-badge.ree"), "<span class='badge'>{= props.label }</span>");
 			writeFileSync(join(dir, "page.ree"), "{#include(\"$components/my-badge\")}");
 			const result = await engine.render("page", { label: "New" });
 			expect(result).toBe("<span class='badge'>New</span>");
-			rmSync(componentsDir, { recursive: true, force: true });
+			rmSync(components_dir, { recursive: true, force: true });
 		}));
 
 		test("{_ path} inside a ReeTag attribute resolves against props.translations", with_temp_dir(async (dir, engine) => {
-			const componentsDir = join(dirname(dir), "components");
-			mkdirSync(componentsDir, { recursive: true });
-			writeFileSync(join(componentsDir, "my-badge.ree"), "<span class='badge'>{= props.attributes.label }</span>");
+			const components_dir = join(dirname(dir), "components");
+			mkdirSync(components_dir, { recursive: true });
+			writeFileSync(join(components_dir, "my-badge.ree"), "<span class='badge'>{= props.attributes.label }</span>");
 			writeFileSync(join(dir, "page.ree"), "<my-badge label=\"{_ ui.title }\"></my-badge>");
 			const result = await engine.render("page", { translations: { ui: { title: "Kitchen Sink" } } });
 			expect(result).toBe("<span class='badge'>Kitchen Sink</span>");
-			rmSync(componentsDir, { recursive: true, force: true });
+			rmSync(components_dir, { recursive: true, force: true });
 		}));
 
 		test("{_ path} inside a ReeTag attribute renders {last_segment} on a miss", with_temp_dir(async (dir, engine) => {
-			const componentsDir = join(dirname(dir), "components");
-			mkdirSync(componentsDir, { recursive: true });
-			writeFileSync(join(componentsDir, "my-badge.ree"), "<span class='badge'>{= props.attributes.label }</span>");
+			const components_dir = join(dirname(dir), "components");
+			mkdirSync(components_dir, { recursive: true });
+			writeFileSync(join(components_dir, "my-badge.ree"), "<span class='badge'>{= props.attributes.label }</span>");
 			writeFileSync(join(dir, "page.ree"), "<my-badge label=\"{_ ui.title }\"></my-badge>");
 			const result = await engine.render("page", { translations: {} });
 			expect(result).toBe("<span class='badge'>{title}</span>");
-			rmSync(componentsDir, { recursive: true, force: true });
+			rmSync(components_dir, { recursive: true, force: true });
 		}));
 
 		test("{- path} inside a ReeTag attribute resolves against props.translations", with_temp_dir(async (dir, engine) => {
-			const componentsDir = join(dirname(dir), "components");
-			mkdirSync(componentsDir, { recursive: true });
-			writeFileSync(join(componentsDir, "my-badge.ree"), "<span class='badge'>{= props.attributes.label }</span>");
+			const components_dir = join(dirname(dir), "components");
+			mkdirSync(components_dir, { recursive: true });
+			writeFileSync(join(components_dir, "my-badge.ree"), "<span class='badge'>{= props.attributes.label }</span>");
 			writeFileSync(join(dir, "page.ree"), "<my-badge label=\"{- ui.title }\"></my-badge>");
 			const result = await engine.render("page", { translations: { ui: { title: "Kitchen Sink" } } });
 			expect(result).toBe("<span class='badge'>Kitchen Sink</span>");
-			rmSync(componentsDir, { recursive: true, force: true });
+			rmSync(components_dir, { recursive: true, force: true });
 		}));
 	});
 
@@ -410,6 +410,39 @@ describe("TemplateEngine", () => {
 		test("unknown custom element preserves HTML attributes", with_temp_dir(async (_dir, engine) => {
 			const result = await engine.render_string("<toasts-area class=\"foo\" id=\"bar\">content</toasts-area>");
 			expect(result).toBe("<toasts-area class=\"foo\" id=\"bar\">content</toasts-area>");
+		}));
+
+		test("interpolated attribute on a passthrough element is evaluated (regression test)", with_temp_dir(async (_dir, engine) => {
+			// Passthrough tags are emitted from inside a {{ ... }} block, which the main
+			// pass never rescans - the attributes used to render as literal text, so
+			// every component's <validation-error id="error-{= ... }"> was a dead id.
+			const result = await engine.render_string("<validation-error id=\"error-{= props.name }\"></validation-error>", { name: "email" });
+			expect(result).toBe("<validation-error id=\"error-email\"></validation-error>");
+		}));
+
+		test("passthrough element mixes literal and interpolated attributes", with_temp_dir(async (_dir, engine) => {
+			const result = await engine.render_string("<field-wrapper class=\"grid\" data-x=\"{= props.n }\" hidden></field-wrapper>", { n: "7" });
+			expect(result).toBe("<field-wrapper class=\"grid\" data-x=\"7\" hidden></field-wrapper>");
+		}));
+
+		test("interpolated attribute on a passthrough element is HTML-escaped", with_temp_dir(async (_dir, engine) => {
+			const result = await engine.render_string("<my-tag title=\"{= props.v }\"></my-tag>", { v: "a\"b<c" });
+			expect(result).toBe("<my-tag title=\"a&quot;b&lt;c\"></my-tag>");
+		}));
+
+		test("{~ } on a passthrough element attribute is not escaped", with_temp_dir(async (_dir, engine) => {
+			const result = await engine.render_string("<my-tag data-raw=\"{~ props.v }\"></my-tag>", { v: "a&b" });
+			expect(result).toBe("<my-tag data-raw=\"a&b\"></my-tag>");
+		}));
+
+		test("{_ path} on a passthrough element attribute resolves a translation", with_temp_dir(async (_dir, engine) => {
+			const result = await engine.render_string("<my-tag title=\"{_ ui.save }\"></my-tag>", { translations: { ui: { save: "Shrani" } } });
+			expect(result).toBe("<my-tag title=\"Shrani\"></my-tag>");
+		}));
+
+		test("unbalanced brace in a passthrough attribute stays literal", with_temp_dir(async (_dir, engine) => {
+			const result = await engine.render_string("<my-tag title=\"{= props.v \"></my-tag>", { v: "x" });
+			expect(result).toBe("<my-tag title=\"{= props.v \"></my-tag>");
 		}));
 
 		test("deeply nested unknown custom elements do not OOM (regression test)", async () => {
@@ -462,25 +495,25 @@ describe("TemplateEngine", () => {
 			"known component file takes priority over unknown element passthrough",
 			with_temp_dir(async (dir, engine) => {
 				// Create a matching component file
-				const componentsDir = join(dirname(dir), "components");
-				mkdirSync(componentsDir, { recursive: true });
+				const components_dir = join(dirname(dir), "components");
+				mkdirSync(components_dir, { recursive: true });
 				// HTML attributes on the tag are passed as props.attributes.*
-				writeFileSync(join(componentsDir, "my-badge.ree"), "<span class='badge'>{= props.attributes.label }</span>");
+				writeFileSync(join(components_dir, "my-badge.ree"), "<span class='badge'>{= props.attributes.label }</span>");
 				writeFileSync(join(dir, "page.ree"), "<my-badge label='New'>slot</my-badge>");
 				const result = await engine.render("page");
 				expect(result).toBe("<span class='badge'>New</span>");
-				rmSync(componentsDir, { recursive: true, force: true });
+				rmSync(components_dir, { recursive: true, force: true });
 			})
 		);
 
 		test(
 			"<auto-complete> renders component with HTML attributes passed as props.attributes",
 			with_temp_dir(async (dir, engine) => {
-				const componentsDir = join(dirname(dir), "components");
-				mkdirSync(componentsDir, { recursive: true });
+				const components_dir = join(dirname(dir), "components");
+				mkdirSync(components_dir, { recursive: true });
 				// Component echoes its attributes as data-* attrs on a wrapper div
 				writeFileSync(
-					join(componentsDir, "auto-complete.ree"),
+					join(components_dir, "auto-complete.ree"),
 					"<div class=\"ac\" data-field=\"{= props.attributes[\"field-name\"] }\" data-fk-table=\"{= props.attributes[\"fk-table\"] }\" data-fk-column=\"{= props.attributes[\"fk-column\"] }\" data-base-url=\"{= props.attributes[\"base-url\"] }\" data-rows=\"{= props.attributes[\"rows\"] }\"></div>"
 				);
 				writeFileSync(
@@ -493,18 +526,18 @@ describe("TemplateEngine", () => {
 				expect(result).toContain("data-fk-column=\"registration_number\"");
 				expect(result).toContain("data-base-url=\"/partners\"");
 				expect(result).toContain("data-rows=\"15\"");
-				rmSync(componentsDir, { recursive: true, force: true });
+				rmSync(components_dir, { recursive: true, force: true });
 			})
 		);
 
 		test(
 			"<auto-complete> receives parent props (fields, record) via Object.assign",
 			with_temp_dir(async (dir, engine) => {
-				const componentsDir = join(dirname(dir), "components");
-				mkdirSync(componentsDir, { recursive: true });
+				const components_dir = join(dirname(dir), "components");
+				mkdirSync(components_dir, { recursive: true });
 				// Component accesses props.fields and props.record from parent scope
 				writeFileSync(
-					join(componentsDir, "auto-complete.ree"),
+					join(components_dir, "auto-complete.ree"),
 					"<div class=\"ac\" data-field=\"{= props.attributes[\"field-name\"] }\">" + "<span class=\"field-label\">{= props.fields?.[props.attributes[\"field-name\"]]?.label }</span>" + "<span class=\"field-value\">{= props.record?.[props.attributes[\"field-name\"]] }</span>" + "</div>"
 				);
 				writeFileSync(join(dir, "page.ree"), "<auto-complete field-name=\"company_id\"></auto-complete>");
@@ -516,38 +549,79 @@ describe("TemplateEngine", () => {
 				expect(result).toContain("data-field=\"company_id\"");
 				expect(result).toContain("<span class=\"field-label\">Company</span>");
 				expect(result).toContain("<span class=\"field-value\">42</span>");
-				rmSync(componentsDir, { recursive: true, force: true });
+				rmSync(components_dir, { recursive: true, force: true });
 			})
 		);
 
 		test(
 			"multiple <auto-complete> elements on page each render independently",
 			with_temp_dir(async (dir, engine) => {
-				const componentsDir = join(dirname(dir), "components");
-				mkdirSync(componentsDir, { recursive: true });
+				const components_dir = join(dirname(dir), "components");
+				mkdirSync(components_dir, { recursive: true });
 				// Component renders a wrapper with field-name as data-field
-				writeFileSync(join(componentsDir, "auto-complete.ree"), "<div class=\"ac\" data-field=\"{= props.attributes[\"field-name\"] }\"></div>");
+				writeFileSync(join(components_dir, "auto-complete.ree"), "<div class=\"ac\" data-field=\"{= props.attributes[\"field-name\"] }\"></div>");
 				writeFileSync(
 					join(dir, "page.ree"),
 					"<auto-complete field-name=\"company_id\"></auto-complete>" + "<br>" + "<auto-complete field-name=\"partner_id\" rows=\"10\"></auto-complete>"
 				);
 				const result = await engine.render("page");
 				expect(result).toBe("<div class=\"ac\" data-field=\"company_id\"></div>" + "<br>" + "<div class=\"ac\" data-field=\"partner_id\"></div>");
-				rmSync(componentsDir, { recursive: true, force: true });
+				rmSync(components_dir, { recursive: true, force: true });
 			})
 		);
 
 		test(
 			"<auto-complete> slot content is rendered as children prop",
 			with_temp_dir(async (dir, engine) => {
-				const componentsDir = join(dirname(dir), "components");
-				mkdirSync(componentsDir, { recursive: true });
+				const components_dir = join(dirname(dir), "components");
+				mkdirSync(components_dir, { recursive: true });
 				// Component renders children slot content wrapped in a div
-				writeFileSync(join(componentsDir, "auto-complete.ree"), "<div class=\"ac-wrapper\">{~ props.children }</div>");
+				writeFileSync(join(components_dir, "auto-complete.ree"), "<div class=\"ac-wrapper\">{~ props.children }</div>");
 				writeFileSync(join(dir, "page.ree"), "<auto-complete><span class=\"hint\">Type to search</span></auto-complete>");
 				const result = await engine.render("page");
 				expect(result).toBe("<div class=\"ac-wrapper\"><span class=\"hint\">Type to search</span></div>");
-				rmSync(componentsDir, { recursive: true, force: true });
+				rmSync(components_dir, { recursive: true, force: true });
+			})
+		);
+
+		test(
+			"spread ...identifier on a plain (non-hyphenated) element renders attributes",
+			with_temp_dir(async (_dir, engine) => {
+				// Only hyphenated tags used to expand spreads, so a component rendering
+				// a plain <div> (the shipped app-banner) emitted a literal "...rest".
+				const key_values = (rest: any) => Object.entries(rest).map(([k, v]) => v === true ? k : v === false || v == null ? "" : `${k}="${String(v)}"`).filter(Boolean).join(" ");
+				const tmpl = "{{ const attrs = { id: \"bar\", \"data-k\": \"v\" }; }}<div class=\"foo\" ...attrs>content</div>";
+				const result = await engine.render_string(tmpl, { helpers: { key_values } });
+				expect(result).toBe(`<div class="foo" id="bar" data-k="v">content</div>`);
+			})
+		);
+
+		test(
+			"rest-destructuring in a {{ }} block is not mistaken for an attribute spread",
+			with_temp_dir(async (_dir, engine) => {
+				// The app-banner shape: ...rest appears twice, once as JS and once as markup.
+				const key_values = (rest: any) => Object.entries(rest).map(([k, v]) => v === true ? k : v === false || v == null ? "" : `${k}="${String(v)}"`).filter(Boolean).join(" ");
+				const tmpl = "{{ const { type = \"green\", ...rest } = { type: \"red\", id: \"q\" }; }}<div class=\"{= type }\" ...rest>x</div>";
+				const result = await engine.render_string(tmpl, { helpers: { key_values } });
+				expect(result).toBe(`<div class="red" id="q">x</div>`);
+			})
+		);
+
+		test(
+			"JS spread inside a <script> body is left alone",
+			with_temp_dir(async (_dir, engine) => {
+				const tmpl = "<script>const b = [...a, 3];</script>";
+				const result = await engine.render_string(tmpl, {});
+				expect(result).toBe("<script>const b = [...a, 3];</script>");
+			})
+		);
+
+		test(
+			"JS spread inside an interpolated attribute value is left alone",
+			with_temp_dir(async (_dir, engine) => {
+				const tmpl = "{{ const nums = [3, 1]; }}<div data-max=\"{= Math.max(...nums) }\"></div>";
+				const result = await engine.render_string(tmpl, {});
+				expect(result).toBe(`<div data-max="3"></div>`);
 			})
 		);
 
@@ -581,11 +655,11 @@ describe("TemplateEngine", () => {
 		test(
 			"spread ...identifier on ReeTag spreads local object as attributes",
 			with_temp_dir(async (dir, engine) => {
-				const componentsDir = join(dirname(dir), "components");
-				mkdirSync(componentsDir, { recursive: true });
+				const components_dir = join(dirname(dir), "components");
+				mkdirSync(components_dir, { recursive: true });
 				// Component renders each property of props.attributes as data-* attr
 				writeFileSync(
-					join(componentsDir, "my-card.ree"),
+					join(components_dir, "my-card.ree"),
 					"<div class=\"card\" data-title=\"{= props.attributes.title }\" data-count=\"{= props.attributes.count }\">{~ props.children }</div>"
 				);
 				// Template defines a local object and spreads it onto the component
@@ -593,33 +667,33 @@ describe("TemplateEngine", () => {
 				writeFileSync(join(dir, "page.ree"), tmpl);
 				const result = await engine.render("page");
 				expect(result).toBe("<div class=\"card\" data-title=\"Hello\" data-count=\"42\">content</div>");
-				rmSync(componentsDir, { recursive: true, force: true });
+				rmSync(components_dir, { recursive: true, force: true });
 			})
 		);
 
 		test(
 			"explicit attributes override spread properties on ReeTag",
 			with_temp_dir(async (dir, engine) => {
-				const componentsDir = join(dirname(dir), "components");
-				mkdirSync(componentsDir, { recursive: true });
+				const components_dir = join(dirname(dir), "components");
+				mkdirSync(components_dir, { recursive: true });
 				// Component outputs the class attribute
-				writeFileSync(join(componentsDir, "my-card.ree"), "<div class=\"card\" data-class=\"{= props.attributes.class }\">{~ props.children }</div>");
+				writeFileSync(join(components_dir, "my-card.ree"), "<div class=\"card\" data-class=\"{= props.attributes.class }\">{~ props.children }</div>");
 				// Template has spread object with class=\"a\" and explicit class=\"b\" - explicit should win
 				const tmpl = "{{ const attrs = { class: \"from-spread\" }; }}<my-card ...attrs class=\"explicit\">content</my-card>";
 				writeFileSync(join(dir, "page.ree"), tmpl);
 				const result = await engine.render("page");
 				expect(result).toBe("<div class=\"card\" data-class=\"explicit\">content</div>");
-				rmSync(componentsDir, { recursive: true, force: true });
+				rmSync(components_dir, { recursive: true, force: true });
 			})
 		);
 
 		test(
 			"multiple spreads on the same ReeTag",
 			with_temp_dir(async (dir, engine) => {
-				const componentsDir = join(dirname(dir), "components");
-				mkdirSync(componentsDir, { recursive: true });
+				const components_dir = join(dirname(dir), "components");
+				mkdirSync(components_dir, { recursive: true });
 				writeFileSync(
-					join(componentsDir, "my-card.ree"),
+					join(components_dir, "my-card.ree"),
 					"<div class=\"card\" data-title=\"{= props.attributes.title }\" data-count=\"{= props.attributes.count }\" data-mode=\"{= props.attributes.mode }\">{~ props.children }</div>"
 				);
 				// Two spreads: second overrides first for duplicate keys
@@ -627,17 +701,17 @@ describe("TemplateEngine", () => {
 				writeFileSync(join(dir, "page.ree"), tmpl);
 				const result = await engine.render("page");
 				expect(result).toBe("<div class=\"card\" data-title=\"A\" data-count=\"2\" data-mode=\"dark\">content</div>");
-				rmSync(componentsDir, { recursive: true, force: true });
+				rmSync(components_dir, { recursive: true, force: true });
 			})
 		);
 
 		test(
 			"spread with interpolated expression attribute on ReeTag",
 			with_temp_dir(async (dir, engine) => {
-				const componentsDir = join(dirname(dir), "components");
-				mkdirSync(componentsDir, { recursive: true });
+				const components_dir = join(dirname(dir), "components");
+				mkdirSync(components_dir, { recursive: true });
 				writeFileSync(
-					join(componentsDir, "my-card.ree"),
+					join(components_dir, "my-card.ree"),
 					"<div class=\"card\" data-title=\"{= props.attributes.title }\" data-mode=\"{= props.attributes.mode }\">{~ props.children }</div>"
 				);
 				// Spread with interpolated {~ expr } attr should both work
@@ -645,17 +719,17 @@ describe("TemplateEngine", () => {
 				writeFileSync(join(dir, "page.ree"), tmpl);
 				const result = await engine.render("page");
 				expect(result).toBe("<div class=\"card\" data-title=\"FromSpread\" data-mode=\"dynamic\">content</div>");
-				rmSync(componentsDir, { recursive: true, force: true });
+				rmSync(components_dir, { recursive: true, force: true });
 			})
 		);
 
 		test(
 			"spread with boolean attribute on ReeTag",
 			with_temp_dir(async (dir, engine) => {
-				const componentsDir = join(dirname(dir), "components");
-				mkdirSync(componentsDir, { recursive: true });
+				const components_dir = join(dirname(dir), "components");
+				mkdirSync(components_dir, { recursive: true });
 				writeFileSync(
-					join(componentsDir, "my-card.ree"),
+					join(components_dir, "my-card.ree"),
 					"<div class=\"card\" data-title=\"{= props.attributes.title }\" data-disabled=\"{= props.attributes.disabled }\">{~ props.children }</div>"
 				);
 				// Spread object + boolean attribute
@@ -663,17 +737,17 @@ describe("TemplateEngine", () => {
 				writeFileSync(join(dir, "page.ree"), tmpl);
 				const result = await engine.render("page");
 				expect(result).toBe("<div class=\"card\" data-title=\"Hello\" data-disabled=\"true\">content</div>");
-				rmSync(componentsDir, { recursive: true, force: true });
+				rmSync(components_dir, { recursive: true, force: true });
 			})
 		);
 
 		test(
 			"spread within an each loop on ReeTag",
 			with_temp_dir(async (dir, engine) => {
-				const componentsDir = join(dirname(dir), "components");
-				mkdirSync(componentsDir, { recursive: true });
+				const components_dir = join(dirname(dir), "components");
+				mkdirSync(components_dir, { recursive: true });
 				writeFileSync(
-					join(componentsDir, "my-card.ree"),
+					join(components_dir, "my-card.ree"),
 					"<div class=\"card\" data-label=\"{= props.attributes.label }\" data-id=\"{= props.attributes.id }\">{~ props.children }</div>"
 				);
 				// Spread inside an #each loop - each item's attrs spread onto the component.
@@ -683,7 +757,7 @@ describe("TemplateEngine", () => {
 				writeFileSync(join(dir, "page.ree"), tmpl);
 				const result = await engine.render("page");
 				expect(result).toBe("<div class=\"card\" data-label=\"One\" data-id=\"1\">item</div><div class=\"card\" data-label=\"Two\" data-id=\"2\">item</div>");
-				rmSync(componentsDir, { recursive: true, force: true });
+				rmSync(components_dir, { recursive: true, force: true });
 			})
 		);
 	});
@@ -797,10 +871,10 @@ describe("TemplateEngine", () => {
 
 	describe("cache", () => {
 		test("caches compiled file templates when enabled", with_temp_dir(async (dir, _engine) => {
-			const cachedEngine = new TE({ views: dir, cache: true, ext: ".ree" });
+			const cached_engine = new TE({ views: dir, cache: true, ext: ".ree" });
 			writeFileSync(join(dir, "t.ree"), "a");
-			await cachedEngine.render("t");
-			expect(Object.keys(cachedEngine.compiled_cache).length).toBe(1);
+			await cached_engine.render("t");
+			expect(Object.keys(cached_engine.compiled_cache).length).toBe(1);
 		}));
 
 		test("clear_cache empties compiled cache", async () => {

@@ -97,8 +97,8 @@ export class SQLiteIntrospector implements DbIntrospector {
 				referenced_column_name: fk.to,
 			}));
 
-			const viewName = `v_${table_name}`;
-			let has_view = view_set.has(viewName);
+			const view_name = `v_${table_name}`;
+			let has_view = view_set.has(view_name);
 
 			let view_columns: ColumnDef[] | undefined;
 			if (has_view) {
@@ -107,7 +107,7 @@ export class SQLiteIntrospector implements DbIntrospector {
 				// MySQL-only views) throws "no such table". Skip such views
 				// instead of aborting the whole introspection.
 				try {
-					const raw_view_cols = (await this.db.unsafe(`PRAGMA table_xinfo(${viewName})`)) as RawSQLiteColumn[];
+					const raw_view_cols = (await this.db.unsafe(`PRAGMA table_xinfo(${view_name})`)) as RawSQLiteColumn[];
 
 					view_columns = raw_view_cols.filter((col) => col.name !== "id").map((col) => ({
 						name: col.name,
@@ -119,7 +119,7 @@ export class SQLiteIntrospector implements DbIntrospector {
 						is_generated: col.hidden > 0,
 					}));
 				} catch (err) {
-					console.warn(`[introspect] Skipping broken view "${viewName}": ${err instanceof Error ? err.message : err}`);
+					console.warn(`[introspect] Skipping broken view "${view_name}": ${err instanceof Error ? err.message : err}`);
 					has_view = false;
 					view_columns = undefined;
 				}

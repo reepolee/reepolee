@@ -114,9 +114,9 @@ function add_to_user_path(dir: string) {
 	if (PLATFORM === "win32") {
 		const { execSync } = require("node:child_process");
 
-		const userPath = execSync(`powershell -Command "[Environment]::GetEnvironmentVariable('Path','User')"`).toString().trim();
+		const user_path = execSync(`powershell -Command "[Environment]::GetEnvironmentVariable('Path','User')"`).toString().trim();
 
-		if (!userPath.includes(dir)) {
+		if (!user_path.includes(dir)) {
 			execSync(`powershell -Command "[Environment]::SetEnvironmentVariable('Path', $env:Path + ';${dir}', 'User')"`);
 
 			log(`Added to USER PATH: ${dir}`);
@@ -219,13 +219,13 @@ async function install_windows(version: string, get_task: string) {
 		log(`Installed version ${installed_version} differs from requested ${resolved_version}, upgrading...`);
 	}
 
-	const zipPath = path.join(CACHE_DIR, `vips-${resolved_version}-${arch}.zip`);
+	const zip_path = path.join(CACHE_DIR, `vips-${resolved_version}-${arch}.zip`);
 
 	const url = pick_windows_asset(release.assets, arch);
 	log(`Resolved download URL:`);
 	log(url);
 
-	await download(url, zipPath);
+	await download(url, zip_path);
 
 	let src_bin: string | null = null;
 	try {
@@ -233,7 +233,7 @@ async function install_windows(version: string, get_task: string) {
 	} catch {}
 
 	if (!src_bin) {
-		await extract(zipPath, INSTALL_DIR);
+		await extract(zip_path, INSTALL_DIR);
 		src_bin = find_extracted_bin_dir(INSTALL_DIR);
 	}
 

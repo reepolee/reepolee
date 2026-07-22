@@ -62,7 +62,7 @@ export function require_module_mw(module_code: string): Middleware {
  * Parse the lang cookie from a request header.
  */
 function parse_cookie_lang(req: BunRequest): string | null {
-	const cookieHeader = req.headers.get("cookie") ?? "";
-	const match = cookieHeader.match(/lang=([^;]+)/);
+	const cookie_header = req.headers.get("cookie") ?? "";
+	const match = cookie_header.match(/lang=([^;]+)/);
 	return match ? decodeURIComponent(match[1]).toLowerCase() : null;
 }

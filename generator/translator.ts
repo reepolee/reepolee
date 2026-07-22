@@ -3,10 +3,10 @@ import { count_leaves } from "$lib/translation_merge";
 import { chat_query, get_active_provider, hf_translate_json } from "./ai-provider";
 
 interface TranslateOptions {
-	maxRetries?: number;
+	max_retries?: number;
 	timeout?: number;
 	model?: string;
-	sourceLang?: string;
+	source_lang?: string;
 }
 
 /**
@@ -66,9 +66,9 @@ function restore_urls(obj: any, entries: { keys: string[]; url: string; }[]): an
 }
 
 export async function translate_json(input: Record<string, any>, targetLang: string, options: TranslateOptions = {}): Promise<any> {
-	const { maxRetries = 2, timeout = 300000, model, sourceLang } = options;
+	const { max_retries = 2, timeout = 300000, model, source_lang } = options;
 
-	const source_label = sourceLang ? `${sourceLang} → ` : "";
+	const source_label = source_lang ? `${source_lang} → ` : "";
 	console.log(`🌍 translateJSON: ${source_label}${targetLang}`);
 
 	const provider = get_active_provider();
@@ -101,7 +101,7 @@ export async function translate_json(input: Record<string, any>, targetLang: str
 	// HuggingFace path: flatten -> Helsinki-NLP batch translate -> reconstruct
 	if (provider === "huggingface") {
 		const t_start = performance.now();
-		const result = await hf_translate_json(safe_input, sourceLang ?? "English", targetLang, { timeout, maxRetries });
+		const result = await hf_translate_json(safe_input, source_lang ?? "English", targetLang, { timeout, max_retries });
 		const t_elapsed = (performance.now() - t_start).toFixed(0);
 		console.log(`✅ HF translation complete in ${t_elapsed}ms`);
 		return restore_urls(result, url_entries);
@@ -119,22 +119,22 @@ export async function translate_json(input: Record<string, any>, targetLang: str
 		const result = await translate_in_chunks(
 			safe_input,
 			targetLang,
-			sourceLang,
+			source_lang,
 			model,
 			timeout,
-			maxRetries
+			max_retries
 		);
 		return restore_urls(result, url_entries);
 	}
 
-	let lastError: Error | null = null;
+	let last_error: Error | null = null;
 
-	for (let attempt = 0; attempt <= maxRetries; attempt++) {
+	for (let attempt = 0; attempt <= max_retries; attempt++) {
 		try {
-			if (attempt > 0) { console.log(`🔄 Retry attempt ${attempt}/${maxRetries}`); }
+			if (attempt > 0) { console.log(`🔄 Retry attempt ${attempt}/${max_retries}`); }
 
 			const t_start = performance.now();
-			const result = await translate_attempt(safe_input, targetLang, sourceLang, model, timeout);
+			const result = await translate_attempt(safe_input, targetLang, source_lang, model, timeout);
 			const t_elapsed = (performance.now() - t_start).toFixed(0);
 
 			const result_leaves = count_leaves(result);
@@ -142,7 +142,7 @@ export async function translate_json(input: Record<string, any>, targetLang: str
 
 			return restore_urls(result, url_entries);
 		} catch (err: any) {
-			lastError = err;
+			last_error = err;
 
 			const status = err?.status;
 
@@ -152,11 +152,11 @@ export async function translate_json(input: Record<string, any>, targetLang: str
 			if (status === 401 || status === 402 || status === 403) { break; }
 
 			// retry backoff
-			if (attempt < maxRetries) { await new Promise((r) => setTimeout(r, 800)); }
+			if (attempt < max_retries) { await new Promise((r) => setTimeout(r, 800)); }
 		}
 	}
 
-	throw lastError || new Error("Translation failed after retries");
+	throw last_error || new Error("Translation failed after retries");
 }
 
 /**
@@ -165,18 +165,18 @@ export async function translate_json(input: Record<string, any>, targetLang: str
 async function translate_attempt(
 	input: Record<string, any>,
 	targetLang: string,
-	sourceLang: string | undefined,
+	source_lang: string | undefined,
 	model: string,
 	timeout: number,
 ): Promise<any> {
 	const system_prompt = SYSTEM_PROMPT;
-	const user_prompt = `${sourceLang ? `Translate from ${sourceLang} to ${targetLang}.` : `Translate to ${targetLang}.`} Keep structure identical. Only translate leaf values:\n\n${JSON.stringify(
+	const user_prompt = `${source_lang ? `Translate from ${source_lang} to ${targetLang}.` : `Translate to ${targetLang}.`} Keep structure identical. Only translate leaf values:\n\n${JSON.stringify(
 		input,
 		null,
 		2
 	)}`;
 
-	console.log(`📝 Prompt: ${sourceLang ?? "?"} → ${targetLang}, ${user_prompt.length} characters`);
+	console.log(`📝 Prompt: ${source_lang ?? "?"} → ${targetLang}, ${user_prompt.length} characters`);
 
 	const text = await chat_query(system_prompt, user_prompt, "JSON Translator", { model, timeout });
 
@@ -189,20 +189,20 @@ async function translate_attempt(
 async function translate_in_chunks(
 	input: Record<string, any>,
 	targetLang: string,
-	sourceLang: string | undefined,
+	source_lang: string | undefined,
 	model: string | undefined,
 	timeout: number,
-	maxRetries: number,
+	max_retries: number,
 ): Promise<any> {
 	const keys = Object.keys(input);
-	const chunkSize = 20;
+	const chunk_size = 20;
 	const chunks: Record<string, any>[] = [];
 
 	// Split keys into chunks of 20
-	for (let i = 0; i < keys.length; i += chunkSize) {
-		const chunkKeys = keys.slice(i, i + chunkSize);
+	for (let i = 0; i < keys.length; i += chunk_size) {
+		const chunk_keys = keys.slice(i, i + chunk_size);
 		const chunk: Record<string, any> = {};
-		for (const key of chunkKeys) {
+		for (const key of chunk_keys) {
 			chunk[key] = input[key];
 		}
 		chunks.push(chunk);
@@ -210,36 +210,36 @@ async function translate_in_chunks(
 
 	console.log(`📦 Translating ${chunks.length} chunk(s)`);
 
-	const translatedChunks: Record<string, any>[] = [];
+	const translated_chunks: Record<string, any>[] = [];
 
 	for (let i = 0; i < chunks.length; i++) {
 		console.log(`📦 Translating chunk ${i + 1}/${chunks.length} (${Object.keys(chunks[i]).length} keys)`);
 
-		let lastError: Error | null = null;
+		let last_error: Error | null = null;
 
-		for (let attempt = 0; attempt <= maxRetries; attempt++) {
+		for (let attempt = 0; attempt <= max_retries; attempt++) {
 			try {
-				if (attempt > 0) { console.log(`🔄 Retry attempt ${attempt}/${maxRetries} for chunk ${i + 1}`); }
+				if (attempt > 0) { console.log(`🔄 Retry attempt ${attempt}/${max_retries} for chunk ${i + 1}`); }
 
-				const translated = await translate_attempt(chunks[i], targetLang, sourceLang, model, timeout);
-				translatedChunks.push(translated);
+				const translated = await translate_attempt(chunks[i], targetLang, source_lang, model, timeout);
+				translated_chunks.push(translated);
 				break;
 			} catch (err: any) {
-				lastError = err;
+				last_error = err;
 
 				const status = err?.status;
 
 				console.warn(`⚠️ Chunk ${i + 1} attempt ${attempt + 1} failed:`, err?.message);
 
 				// ❌ do not retry auth/billing errors
-				if (status === 401 || status === 402 || status === 403) { throw lastError; }
+				if (status === 401 || status === 402 || status === 403) { throw last_error; }
 
 				// retry backoff
-				if (attempt < maxRetries) { await new Promise((r) => setTimeout(r, 800)); }
+				if (attempt < max_retries) { await new Promise((r) => setTimeout(r, 800)); }
 			}
 		}
 
-		if (lastError && !translatedChunks.includes(lastError as any)) { throw lastError; }
+		if (last_error && !translated_chunks.includes(last_error as any)) { throw last_error; }
 
 		// Small delay between chunks to avoid rate limiting
 		if (i < chunks.length - 1) { await new Promise((r) => setTimeout(r, 300)); }
@@ -247,7 +247,7 @@ async function translate_in_chunks(
 
 	// Merge all translated chunks
 	const result: Record<string, any> = {};
-	for (const chunk of translatedChunks) {
+	for (const chunk of translated_chunks) {
 		Object.assign(result, chunk);
 	}
 

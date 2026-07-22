@@ -34,26 +34,26 @@ export async function send_mail(param_options: SendMailOptions): Promise<void> {
 	const options = { ...smtp_vars, ...param_options };
 
 	const CRLF = "\r\n";
-	const isImplicitTls = options.port === 465;
+	const is_implicit_tls = options.port === 465;
 
 	console.log(`[SMTP] Connecting to ${options.host}:${options.port}`);
 
 	// Helper to normalize email addresses to array
-	const normalizeEmails = (emails: string | string[] | undefined): string[] => {
+	const normalize_emails = (emails: string | string[] | undefined): string[] => {
 		if (!emails) return [];
 		if (Array.isArray(emails)) return emails;
 		return emails.split(",").map((email) => email.trim());
 	};
 
 	// Helper to format email headers (multiple recipients)
-	const formatEmailHeader = (emails: string | string[] | undefined): string => {
+	const format_email_header = (emails: string | string[] | undefined): string => {
 		if (!emails) return "";
-		const emailArray = normalizeEmails(emails);
-		return emailArray.join(", ");
+		const email_array = normalize_emails(emails);
+		return email_array.join(", ");
 	};
 
 	// Helper to read SMTP response with timeout
-	const readResponse = (socket: net.Socket | tls.TLSSocket, timeoutMs = 30000): Promise<{ code: number; message: string; }> => {
+	const read_response = (socket: net.Socket | tls.TLSSocket, timeoutMs = 30000): Promise<{ code: number; message: string; }> => {
 		return new Promise(
 			(resolve, reject) => {
 				let buffer = "";
@@ -62,7 +62,7 @@ export async function send_mail(param_options: SendMailOptions): Promise<void> {
 					reject(new Error(`Timeout waiting for SMTP response after ${timeoutMs}ms`));
 				}, timeoutMs);
 
-				const onData = (data: Buffer) => {
+				const on_data = (data: Buffer) => {
 					buffer += data.toString();
 					const lines = buffer.split(CRLF);
 					for (const line of lines) {
@@ -76,53 +76,53 @@ export async function send_mail(param_options: SendMailOptions): Promise<void> {
 					}
 				};
 
-				const onError = (err: Error) => {
+				const on_error = (err: Error) => {
 					cleanup();
 					reject(err);
 				};
 
 				const cleanup = () => {
 					clearTimeout(timeout);
-					socket.removeListener("data", onData);
-					socket.removeListener("error", onError);
+					socket.removeListener("data", on_data);
+					socket.removeListener("error", on_error);
 				};
 
-				socket.on("data", onData);
-				socket.on("error", onError);
+				socket.on("data", on_data);
+				socket.on("error", on_error);
 			},
 		);
 	};
 
 	// Helper to send command and expect response
-	const sendCommand = async (socket: net.Socket | tls.TLSSocket, command: string, expectedCode?: number): Promise<{ code: number; message: string; }> => {
+	const send_command = async (socket: net.Socket | tls.TLSSocket, command: string, expectedCode?: number): Promise<{ code: number; message: string; }> => {
 		console.log(`[SMTP] Sending: ${command}`);
 		socket.write(command + CRLF);
-		const response = await readResponse(socket);
+		const response = await read_response(socket);
 		if (expectedCode !== undefined && response.code !== expectedCode) { throw new Error(`Expected ${expectedCode} but got ${response.code}: ${response.message}`); }
 		console.log(`[SMTP] Response: ${response.code} ${response.message}`);
 		return response;
 	};
 
 	// Generate boundary for multipart messages
-	const generateBoundary = (): string => { return `----=_Part_${now_epoch_ms()}_${Math.random().toString(36).substring(2)}`; };
+	const generate_boundary = (): string => { return `----=_Part_${now_epoch_ms()}_${Math.random().toString(36).substring(2)}`; };
 
 	// Build email content (supports plain text, HTML, or both)
-	const buildEmailContent = (): string => {
+	const build_email_content = (): string => {
 		const date = now_iso_str();
-		const messageId = `<${now_epoch_ms()}.${Math.random().toString(36).slice(2)}@${options.host}>`;
+		const message_id = `<${now_epoch_ms()}.${Math.random().toString(36).slice(2)}@${options.host}>`;
 
 		// Basic headers
 		const headers = [
 			`From: ${options.from}`,
-			`To: ${formatEmailHeader(options.to)}`,
+			`To: ${format_email_header(options.to)}`,
 			`Subject: ${options.subject}`,
 			`Date: ${date}`,
-			`Message-ID: ${messageId}`,
+			`Message-ID: ${message_id}`,
 			"MIME-Version: 1.0",
 		];
 
 		// Add CC header if present
-		if (options.cc) { headers.push(`Cc: ${formatEmailHeader(options.cc)}`); }
+		if (options.cc) { headers.push(`Cc: ${format_email_header(options.cc)}`); }
 
 		// Note: BCC is not included in the email headers (that's the point of BCC)
 
@@ -131,7 +131,7 @@ export async function send_mail(param_options: SendMailOptions): Promise<void> {
 		// Check if we have HTML content
 		if (options.html && options.body) {
 			// Multipart/alternative (both plain text and HTML)
-			const boundary = generateBoundary();
+			const boundary = generate_boundary();
 			headers.push(`Content-Type: multipart/alternative; boundary="${boundary}"`);
 
 			body = [
@@ -180,31 +180,31 @@ export async function send_mail(param_options: SendMailOptions): Promise<void> {
 		console.log(`[SMTP] TCP connection established`);
 
 		// Read greeting
-		const response = await readResponse(socket);
+		const response = await read_response(socket);
 		if (response.code !== 220) { throw new Error(`Invalid greeting: ${response.code} ${response.message}`); }
 		console.log(`[SMTP] Greeting OK`);
 
 		// Send EHLO
-		let usingEhlo = true;
+		let using_ehlo = true;
 		try {
-			await sendCommand(socket, "EHLO bun", 250);
+			await send_command(socket, "EHLO bun", 250);
 			console.log(`[SMTP] EHLO successful`);
 		} catch {
 			console.log(`[SMTP] EHLO failed, trying HELO...`);
-			usingEhlo = false;
-			await sendCommand(socket, "HELO bun", 250);
+			using_ehlo = false;
+			await send_command(socket, "HELO bun", 250);
 			console.log(`[SMTP] HELO successful`);
 		}
 
 		// STARTTLS if not implicit TLS
-		if (!isImplicitTls && usingEhlo) {
+		if (!is_implicit_tls && using_ehlo) {
 			try {
 				console.log(`[SMTP] Attempting STARTTLS...`);
-				await sendCommand(socket, "STARTTLS", 220);
+				await send_command(socket, "STARTTLS", 220);
 				console.log(`[SMTP] STARTTLS accepted, upgrading to TLS...`);
 
 				// Upgrade to TLS
-				const tlsSocket = tls.connect({
+				const tls_socket = tls.connect({
 					socket: socket,
 					host: options.host,
 					rejectUnauthorized: options.tls?.rejectUnauthorized ?? false,
@@ -212,16 +212,16 @@ export async function send_mail(param_options: SendMailOptions): Promise<void> {
 
 				// Wait for TLS handshake
 				await new Promise((resolve, reject) => {
-					tlsSocket.once("secureConnect", resolve);
-					tlsSocket.once("error", reject);
+					tls_socket.once("secureConnect", resolve);
+					tls_socket.once("error", reject);
 					setTimeout(() => reject(new Error("TLS handshake timeout")), 10000);
 				});
 
-				socket = tlsSocket;
+				socket = tls_socket;
 				console.log(`[SMTP] TLS upgrade complete`);
 
 				// Re-send EHLO after TLS
-				await sendCommand(socket, "EHLO bun", 250);
+				await send_command(socket, "EHLO bun", 250);
 				console.log(`[SMTP] EHLO after TLS successful`);
 			} catch (err) {
 				console.log(`[SMTP] STARTTLS failed:`, err);
@@ -232,64 +232,64 @@ export async function send_mail(param_options: SendMailOptions): Promise<void> {
 		// Authenticate
 		if (options.username && options.password) {
 			console.log(`[SMTP] Authenticating...`);
-			await sendCommand(socket, "AUTH LOGIN", 334);
-			await sendCommand(socket, Buffer.from(options.username).toString("base64"), 334);
-			await sendCommand(socket, Buffer.from(options.password).toString("base64"), 235);
+			await send_command(socket, "AUTH LOGIN", 334);
+			await send_command(socket, Buffer.from(options.username).toString("base64"), 334);
+			await send_command(socket, Buffer.from(options.password).toString("base64"), 235);
 			console.log(`[SMTP] Authentication successful`);
 		}
 
 		// Send MAIL FROM
-		await sendCommand(socket, `MAIL FROM:<${options.from}>`, 250);
+		await send_command(socket, `MAIL FROM:<${options.from}>`, 250);
 		console.log(`[SMTP] Sender accepted`);
 
 		// Send RCPT TO for main recipients
-		const toRecipients = normalizeEmails(options.to);
-		for (const recipient of toRecipients) {
-			await sendCommand(socket, `RCPT TO:<${recipient}>`, 250);
+		const to_recipients = normalize_emails(options.to);
+		for (const recipient of to_recipients) {
+			await send_command(socket, `RCPT TO:<${recipient}>`, 250);
 			console.log(`[SMTP] Recipient (to) accepted: ${recipient}`);
 		}
 
 		// Send RCPT TO for CC recipients
 		if (options.cc) {
-			const ccRecipients = normalizeEmails(options.cc);
-			for (const recipient of ccRecipients) {
-				await sendCommand(socket, `RCPT TO:<${recipient}>`, 250);
+			const cc_recipients = normalize_emails(options.cc);
+			for (const recipient of cc_recipients) {
+				await send_command(socket, `RCPT TO:<${recipient}>`, 250);
 				console.log(`[SMTP] Recipient (cc) accepted: ${recipient}`);
 			}
 		}
 
 		// Send RCPT TO for BCC recipients (these won't appear in headers)
 		if (options.bcc) {
-			const bccRecipients = normalizeEmails(options.bcc);
-			for (const recipient of bccRecipients) {
-				await sendCommand(socket, `RCPT TO:<${recipient}>`, 250);
+			const bcc_recipients = normalize_emails(options.bcc);
+			for (const recipient of bcc_recipients) {
+				await send_command(socket, `RCPT TO:<${recipient}>`, 250);
 				console.log(`[SMTP] Recipient (bcc) accepted: ${recipient}`);
 			}
 		}
 
 		// Send DATA
-		await sendCommand(socket, "DATA", 354);
+		await send_command(socket, "DATA", 354);
 		console.log(`[SMTP] Ready to send message`);
 
 		// Build and send email
-		const emailContent = buildEmailContent();
-		const message = `${emailContent + CRLF}.${CRLF}`;
+		const email_content = build_email_content();
+		const message = `${email_content + CRLF}.${CRLF}`;
 
 		console.log(`[SMTP] Sending email (${message.length} bytes)`);
 		socket.write(message);
 
 		// Wait for acceptance
-		const dataResponse = await readResponse(socket);
-		if (dataResponse.code !== 250) { throw new Error(`Message rejected: ${dataResponse.message}`); }
+		const data_response = await read_response(socket);
+		if (data_response.code !== 250) { throw new Error(`Message rejected: ${data_response.message}`); }
 		console.log(`[SMTP] Message accepted by server`);
 
 		// Send QUIT
-		await sendCommand(socket, "QUIT", 221);
+		await send_command(socket, "QUIT", 221);
 		console.log(`[SMTP] Connection closed gracefully`);
 
 		console.log(`[SMTP] ✅ Email sent successfully!`);
 		console.log(
-			`[SMTP] Summary: To: ${toRecipients.length}, CC: ${options.cc ? normalizeEmails(options.cc).length : 0}, BCC: ${options.bcc ? normalizeEmails(options.bcc).length : 0}`
+			`[SMTP] Summary: To: ${to_recipients.length}, CC: ${options.cc ? normalize_emails(options.cc).length : 0}, BCC: ${options.bcc ? normalize_emails(options.bcc).length : 0}`
 		);
 	} catch (error) {
 		console.error(`[SMTP] ❌ Failed:`, error);

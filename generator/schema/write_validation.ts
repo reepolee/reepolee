@@ -12,10 +12,10 @@ export async function write_validation_file(
 	all_tables_columns?: Map<string, string[]>,
 	all_tables_indexes?: Map<string, Set<string>>,
 ): Promise<void> {
-	let indexSchemaSource: SchemaObject;
+	let index_schema_source: SchemaObject;
 
 	if (schema_obj.view_columns) {
-		indexSchemaSource = {
+		index_schema_source = {
 			type: "view",
 			name: schema_obj.name,
 			columns: schema_obj.view_columns,
@@ -23,12 +23,12 @@ export async function write_validation_file(
 			has_view: false,
 		};
 	} else {
-		indexSchemaSource = schema_obj;
+		index_schema_source = schema_obj;
 	}
 
-	const indexBaseFields = generate_fields_object(indexSchemaSource, type_mapper, all_tables_columns, all_tables_indexes);
+	const index_base_fields = generate_fields_object(index_schema_source, type_mapper, all_tables_columns, all_tables_indexes);
 
-	const indexFieldsObj: Record<string, FormFieldDef> = {
+	const index_fields_obj: Record<string, FormFieldDef> = {
 		id: {
 			name: "id",
 			type: "number",
@@ -37,20 +37,20 @@ export async function write_validation_file(
 			max: undefined,
 			attributes: {},
 		},
-		...indexBaseFields,
+		...index_base_fields,
 	};
 
-	const index_fields_array = Object.values(indexFieldsObj);
+	const index_fields_array = Object.values(index_fields_obj);
 	const { apply_index_nullable } = await import("./field_generator");
 	apply_index_nullable(index_fields_array);
 	const zod_index_fields = generate_zod_fields_from_array(index_fields_array, "index");
 
-	const formBaseFields = generate_fields_object(schema_obj, type_mapper, all_tables_columns, all_tables_indexes);
+	const form_base_fields = generate_fields_object(schema_obj, type_mapper, all_tables_columns, all_tables_indexes);
 
-	const maintenanceFields: Record<string, FormFieldDef> = {};
+	const maintenance_fields: Record<string, FormFieldDef> = {};
 	for (const col of schema_obj.columns) {
 		if (MAINTENANCE_FIELDS.includes(col.name.toLowerCase())) {
-			maintenanceFields[col.name] = {
+			maintenance_fields[col.name] = {
 				name: col.name,
 				type: type_mapper.to_html_input(col.type_string),
 				required: false,
@@ -61,7 +61,7 @@ export async function write_validation_file(
 		}
 	}
 
-	const formFieldsObj: Record<string, FormFieldDef> = {
+	const form_fields_obj: Record<string, FormFieldDef> = {
 		id: {
 			name: "id",
 			type: "number",
@@ -70,17 +70,17 @@ export async function write_validation_file(
 			max: undefined,
 			attributes: {},
 		},
-		...formBaseFields,
-		...maintenanceFields,
+		...form_base_fields,
+		...maintenance_fields,
 	};
 
-	const form_fields_array = Object.values(formFieldsObj);
+	const form_fields_array = Object.values(form_fields_obj);
 	apply_index_nullable(form_fields_array);
 	const zod_form_fields = generate_zod_fields_from_array(form_fields_array, "form");
 
-	const validateBaseFields = generate_fields_object(schema_obj, type_mapper, all_tables_columns, all_tables_indexes);
+	const validate_base_fields = generate_fields_object(schema_obj, type_mapper, all_tables_columns, all_tables_indexes);
 
-	const validateFieldsObj: Record<string, FormFieldDef> = {
+	const validate_fields_obj: Record<string, FormFieldDef> = {
 		id: {
 			name: "id",
 			type: "number",
@@ -89,10 +89,10 @@ export async function write_validation_file(
 			max: undefined,
 			attributes: {},
 		},
-		...validateBaseFields,
+		...validate_base_fields,
 	};
 
-	const validate_fields_array = Object.values(validateFieldsObj);
+	const validate_fields_array = Object.values(validate_fields_obj);
 	apply_index_nullable(validate_fields_array);
 
 	const zod_validate_fields = generate_zod_fields_from_array(validate_fields_array, "validate");

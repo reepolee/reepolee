@@ -1,7 +1,7 @@
 {
 	"name": "reepolee",
 	"project-type": "template",
-	"version": "26.07.57",
+	"version": "26.07.58",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",
@@ -47,6 +47,7 @@
 		"get:reettier": "bun scripts/cli.ts reettier",
 		"get:reesql": "bun scripts/cli.ts reesql",
 		"get:pre": "bun get:zod && bun get:hljs && bun get:temporal && bun get:tw && bun get:conc && bun get:vips && bun get:reettier && bun get:dpu && bun get:reesql",
+		"naming:check": "bun scripts/naming_check.ts",
 		"test": "bun test --parallel",
 		"test:coverage": "bun test --parallel --coverage",
 		"typecheck": "bunx tsc --noEmit",

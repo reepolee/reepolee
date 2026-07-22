@@ -144,7 +144,7 @@ function parse_call(s: string): { name: string; data_expr: string; } | null {
  * Returns the full inner content (after the prefix char) and the index just
  * past the closing brace, or null if no balanced close exists.
  */
-function scan_balanced_tag(s: string, start: number): { content: string; end: number; } | null {
+export function scan_balanced_tag(s: string, start: number): { content: string; end: number; } | null {
 	// s[start] === "{", s[start + 1] is the prefix char
 	let depth = 1;
 	let in_str: string | null = null;
@@ -486,8 +486,8 @@ export function compile_to_code(processed_template: string, slot_fns: CompiledFn
 
 	// Ensure no unclosed blocks
 	if (state.block_stack.length > 0) {
-		const openTypes = state.block_stack.map((b) => b.type).join(", ");
-		throw new Error(`Unclosed block(s): ${openTypes}`);
+		const open_types = state.block_stack.map((b) => b.type).join(", ");
+		throw new Error(`Unclosed block(s): ${open_types}`);
 	}
 
 	// Wrap layout if present

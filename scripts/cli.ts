@@ -14,8 +14,8 @@ switch (command) {
 		}
 	case "vips":
 		{
-			const versionArg = args.find((a) => a.startsWith("--version="));
-			const version = versionArg?.split("=")[1] ?? "latest";
+			const version_arg = args.find((a) => a.startsWith("--version="));
+			const version = version_arg?.split("=")[1] ?? "latest";
 
 			await install_vips({ version, get_task: `get:${command}` });
 			process.exit(0);

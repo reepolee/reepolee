@@ -8,15 +8,15 @@ import { type BunRequest, Cookie } from "bun";
 
 // Minimal cookie reader for a specific cookie name.
 export function get_cookie(req: BunRequest, name: string): string | null {
-	const cookieHeader = req.headers.get("Cookie");
-	if (!cookieHeader) return null;
+	const cookie_header = req.headers.get("Cookie");
+	if (!cookie_header) return null;
 
 	// Split on ';' but be tolerant to whitespace
-	const pairs = cookieHeader.split(";");
+	const pairs = cookie_header.split(";");
 
 	for (const pair of pairs) {
-		const [rawKey, ...rest] = pair.split("=");
-		const key = rawKey?.trim();
+		const [raw_key, ...rest] = pair.split("=");
+		const key = raw_key?.trim();
 		if (!key) continue;
 		try {
 			if (decodeURIComponent(key) !== name) continue;

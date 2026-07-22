@@ -95,10 +95,10 @@ export class MySQLIntrospector implements DbIntrospector {
 						AND tc.CONSTRAINT_TYPE = 'FOREIGN KEY'
 				`) as RawForeignKey[]);
 
-			const viewName = `v_${table.name}`;
+			const view_name = `v_${table.name}`;
 
 			let view_columns: ColumnDef[] | undefined;
-			if (view_set.has(viewName)) {
+			if (view_set.has(view_name)) {
 				// A broken view (referencing dropped tables) can make MariaDB
 				// error on column resolution - skip it rather than abort.
 				try {
@@ -106,7 +106,7 @@ export class MySQLIntrospector implements DbIntrospector {
 						SELECT COLUMN_NAME, COLUMN_TYPE, COLUMN_COMMENT, IS_NULLABLE, COLUMN_KEY, EXTRA
 						FROM INFORMATION_SCHEMA.COLUMNS
 						WHERE TABLE_SCHEMA = DATABASE()
-						AND TABLE_NAME = ${viewName}
+						AND TABLE_NAME = ${view_name}
 					`) as RawMySQLColumn[];
 
 					view_columns = raw_view_cols.map((col) => ({
@@ -119,7 +119,7 @@ export class MySQLIntrospector implements DbIntrospector {
 						is_generated: col.EXTRA.includes("VIRTUAL GENERATED") || col.EXTRA.includes("STORED GENERATED"),
 					}));
 				} catch (err) {
-					console.warn(`[introspect] Skipping broken view "${viewName}": ${err instanceof Error ? err.message : err}`);
+					console.warn(`[introspect] Skipping broken view "${view_name}": ${err instanceof Error ? err.message : err}`);
 					view_columns = undefined;
 				}
 			}
@@ -131,7 +131,7 @@ export class MySQLIntrospector implements DbIntrospector {
 				columns,
 				view_columns,
 				foreign_keys,
-				has_view: view_set.has(viewName),
+				has_view: view_set.has(view_name),
 			});
 		}
 

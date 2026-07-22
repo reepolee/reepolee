@@ -1,12 +1,13 @@
+{{ const { name, label, value, options } = props.attributes ?? {}; }}
 <field-wrapper class="grid">
 	<fieldset class="px-3">
-		<legend>{= props.label}</legend>
-		{#each props.options[props.name] as option}
+		<legend>{= label}</legend>
+		{#each options ?? props.options?.[name] as option}
 			<label class="flex items-center gap-2">
-				<input type="radio" name="{= props.name }" value="{= option.value }" {#if props.value===option.value} checked{/if} />
+				<input type="radio" name="{= name }" value="{= option.value }" {#if value===option.value} checked{/if} />
 				{= option.label}
 			</label>
 		{/each}
 	</fieldset>
-	<validation-error class="mt-1" id="error-{= props.name }"></validation-error>
+	<validation-error class="mt-1" id="error-{= name }"></validation-error>
 </field-wrapper>

@@ -9,10 +9,10 @@ if (!version) {
 
 await Bun.$`git add -A`;
 
-const statusResult = await Bun.$`git status --porcelain --untracked-files=no`.text();
-const hasStagedChanges = statusResult.trim().length > 0;
+const status_result = await Bun.$`git status --porcelain --untracked-files=no`.text();
+const has_staged_changes = status_result.trim().length > 0;
 
-if (!hasStagedChanges) {
+if (!has_staged_changes) {
 	console.log("Nothing to commit, skipping git:commit-push.");
 	process.exit(0);
 }
