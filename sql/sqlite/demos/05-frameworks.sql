@@ -9,8 +9,11 @@ CREATE TABLE authors (
 
 CREATE INDEX authors_name ON authors(name);
 
-CREATE TRIGGER authors_updated_at_trigger AFTER UPDATE ON authors FOR EACH ROW WHEN NEW.updated_at IS OLD.updated_at BEGIN UPDATE authors SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-
+CREATE TRIGGER authors_updated_at_trigger AFTER UPDATE ON authors FOR EACH ROW WHEN NEW.updated_at IS OLD.updated_at BEGIN
+    UPDATE authors
+    SET
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = NEW.id;
 END;
 
 INSERT INTO main.authors (id, name) VALUES
@@ -59,8 +62,11 @@ CREATE TABLE languages (
 
 CREATE INDEX languages_name ON languages(name);
 
-CREATE TRIGGER languages_updated_at_trigger AFTER UPDATE ON languages FOR EACH ROW WHEN NEW.updated_at IS OLD.updated_at BEGIN UPDATE languages SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-
+CREATE TRIGGER languages_updated_at_trigger AFTER UPDATE ON languages FOR EACH ROW WHEN NEW.updated_at IS OLD.updated_at BEGIN
+    UPDATE languages
+    SET
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = NEW.id;
 END;
 
 INSERT INTO main.languages (id, name) VALUES
@@ -88,7 +94,7 @@ CREATE TABLE frameworks (
     author_id       INTEGER   NOT NULL REFERENCES authors(id) ON UPDATE CASCADE,
     reviewer_id     INTEGER   NOT NULL REFERENCES authors(id) ON UPDATE CASCADE,
     language_id     INTEGER   NOT NULL REFERENCES languages(id) ON UPDATE CASCADE,
-    first_commit_at DATE      NOT NULL,
+    first_commit_on DATE      NOT NULL,
     is_javascript   INTEGER   NOT NULL,
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -100,11 +106,14 @@ CREATE INDEX frameworks_language_id ON frameworks(language_id);
 
 CREATE UNIQUE INDEX frameworks_name_unique ON frameworks(name);
 
-CREATE TRIGGER frameworks_updated_at_trigger AFTER UPDATE ON frameworks FOR EACH ROW WHEN NEW.updated_at IS OLD.updated_at BEGIN UPDATE frameworks SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-
+CREATE TRIGGER frameworks_updated_at_trigger AFTER UPDATE ON frameworks FOR EACH ROW WHEN NEW.updated_at IS OLD.updated_at BEGIN
+    UPDATE frameworks
+    SET
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = NEW.id;
 END;
 
-INSERT INTO main.frameworks (id, name, tagline, author_id, reviewer_id, language_id, first_commit_at, is_javascript) VALUES
+INSERT INTO main.frameworks (id, name, tagline, author_id, reviewer_id, language_id, first_commit_on, is_javascript) VALUES
 (1,'reepolee','Zero ceremony',1,6,1,'2026-03-01',1),
 (2,'Echo','Web development for the rest of us',2,1,2,'2016-01-16',0),
 (3,'Vue','The Progressive JavaScript Framework',3,1,3,'2013-07-15',1),
@@ -148,14 +157,17 @@ DROP VIEW IF EXISTS v_frameworks;
 
 CREATE VIEW v_frameworks AS
 SELECT
-    f.id              AS id,
-    f.name            AS name,
-    f.tagline         AS tagline,
-    f.first_commit_at AS first_commit_at,
+    f.id,
+    f.name,
+    f.tagline,
+    f.first_commit_on,
     f.is_javascript,
-    a.name            AS author_name,
-    l.name            AS language_name,
-    a2.name           AS reviewer_name
+    f.author_id,
+    f.language_id,
+    f.reviewer_id,
+    a.name  AS author_name,
+    l.name  AS language_name,
+    a2.name AS reviewer_name
 FROM frameworks f
     LEFT JOIN authors a
         ON a.id = f.author_id

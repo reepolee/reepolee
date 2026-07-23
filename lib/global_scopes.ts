@@ -72,15 +72,41 @@ export async function get_global_scopes(table_name: string, route_name?: string,
 			rows = await db`SELECT scope_key, display_name, is_default FROM global_scopes WHERE table_name = ${table_name} ORDER BY sort_order ASC`;
 		}
 
-		return (rows as any[]).map((row: any) => ({
+		const scopes = (rows as any[]).map((row: any) => ({
 			scope_key: row.scope_key,
 			display_name: row.display_name,
 			is_default: !!row.is_default,
 		}));
+
+		// A single scope is an admin-imposed restriction, not a menu choice - it must
+		// always apply, regardless of whether is_default was set when it was created.
+		if (scopes.length === 1 && scopes[0]) { scopes[0].is_default = true; }
+
+		return scopes;
 	} catch (error) {
 		console.error("Error fetching global scopes:", error);
 		return [];
 	}
+}
+
+/**
+ * Resolve the active scope_key for a request: URL param > cookie > table default.
+ *
+ * The URL param and cookie are both user-controlled input, so either can be
+ * hand-edited to any string. Both are validated against the table's actual
+ * `global_scopes` list here - an unrecognized scope_key must NOT reach
+ * get_scope_clause(), because a scope_key with no matching row resolves to an
+ * empty WHERE clause there (no match found = no filter), which would silently
+ * bypass whatever restriction the admin configured instead of falling back to
+ * the default scope.
+ */
+export function resolve_scope_key(global_scopes: ScopeDef[], url_scope: string, cookie_scope: string | null): string {
+	const known_keys = new Set(global_scopes.map((s) => s.scope_key));
+
+	if (url_scope && known_keys.has(url_scope)) return url_scope;
+	if (cookie_scope && known_keys.has(cookie_scope)) return cookie_scope;
+
+	return global_scopes.find((s) => s.is_default)?.scope_key || "";
 }
 
 /**
@@ -302,7 +328,9 @@ export async function get_available_tables(): Promise<TableOption[]> {
 		const conn_str = (Bun.env.CONNECTION_STRING || "").replace(/^["']|["']$/g, "");
 		const is_sqlite = conn_str.toLowerCase().startsWith("sqlite://") || conn_str.endsWith(".sqlite") || conn_str.endsWith(".db");
 
-		const rows: any[] = is_sqlite ? await (db`SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name` as any) : await (db`SELECT TABLE_NAME as name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME` as any);
+		const rows: any[] = is_sqlite
+			? await (db`SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name` as any)
+			: await (db`SELECT TABLE_NAME as name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME` as any);
 
 		const db_table_names = rows.map((r: any) => String(r.name)).filter(Boolean).filter((t: string) => !t.startsWith(INTERNAL_TABLE_PREFIX)).filter((t: string) => !IGNORE_TABLES.includes(
 			t as any

@@ -27,6 +27,7 @@ A project glossary - captured during design sessions to keep terminology precise
 - **`csrf_mw()`** - Double-submit cookie pattern, skips validation endpoints.
 - **`wrap_all_routes()`** - Applies middleware to all route handlers in the route table. Also adds trailing-slash redirect variants.
 - **`mount_prefix()`** - Mounts a route table under a URL prefix with optional per-route middleware.
+- **`publisher_signal_mw()`** - Per-route middleware attached in `lib/route_builder.ts` (not the global chain). After a route completes a successful mutation (POST/PUT/PATCH/DELETE resolving to 201/204/3xx), it fires a best-effort POST to `REEWEB_PUBLISHER_URL` so a paired Ree-web Publisher can re-render. Implementation in `lib/publisher_signal/index.ts`; 1s timeout, failures are logged and swallowed, never blocking the response. Does nothing when `REEWEB_PUBLISHER_URL` is unset.
 
 ## Redis
 
@@ -114,6 +115,10 @@ The generator branches on this value at codegen time, selecting either the norma
 ## Missing translation rendering
 
 When a translation key is not found or set in the database, the UI renders only the last segment of the dot-separated key path (e.g., `{new_equipment}` instead of `{user.equipment.actions.new_equipment}`). This is done for UI cleanliness during development - the full path is still available in the database and codebase. Fallback rendering happens in `lib/i18n.ts` via `mark_missing_from()`, which extracts the last key segment via `.split(".")` and uses only that portion in the placeholder.
+
+### Ghost-value emit (`emit_translations`)
+
+Translations are DB-backed (the `translations` table), but the ree-templates VS Code extension shows *ghost values* next to `{_ ... }` tags in `.ree` files by reading co-located JSON. `lib/emit_translations.ts` bridges the two: on `bun dev` bootstrap and on `/__reload-translations` (dev only, never production), it dumps the full per-language trees to `.reepolee/i18n/<lang>.json`. These files are a working-folder aid, **not** a source of truth - the DB is. This mirrors how ree-web reads its co-located locale JSONs.
 
 ### How streaming works
 
@@ -321,28 +326,11 @@ Slovenian-named address fields (`Ulica_1`, `Postna_st`, `Posta`, `Drzava`) shoul
 | Domain Type | SQL            | Suffix Convention                          |
 | ----------- | -------------- | ------------------------------------------- |
 | `image`     | `VARCHAR(255)` | `_image` (e.g. `portrait_image`, `logo_image`) |
+| `file`      | `VARCHAR(255)` | `_file` (e.g. `contract_file`, `invoice_file`) |
 
-Stores a browsable path (e.g. `/images/teams/members/xyz.webp`), not the binary itself - see `lib/image_processor/`, `lib/s3.ts`. Rendered as `<image-upload>` in forms and `{~ image_thumbnail(...) }` (100x100) in grids - see [REE_TEMPLATES.md](REE_TEMPLATES.md#image-upload-component). Config constant: `IMAGE_SUFFIXES = ["_image"]`.
+`image` stores a browsable path (e.g. `/images/teams/members/xyz.webp`), not the binary itself - see `lib/image_processor/`, `lib/s3.ts`. Rendered as `<image-upload>` in forms and `{~ image_thumbnail(...) }` (100x100) in grids - see [REE_TEMPLATES.md](REE_TEMPLATES.md#image-upload-component). Config constant: `IMAGE_SUFFIXES = ["_image"]`.
 
-### Migration Gap Inventory
-
-Column types in the actual DB that deviate from the canonical types above and should be migrated:
-
-| Table                 | Column                               | Current Type      | Target Domain Type                                                                           |
-| --------------------- | ------------------------------------ | ----------------- | -------------------------------------------------------------------------------------------- |
-| users                 | id                                   | `INT` (signed)    | `pk_id` → `INT UNSIGNED AUTO_INCREMENT`                                                      |
-| legal_entities        | id                                   | `BIGINT UNSIGNED` | `pk_id` → `INT UNSIGNED AUTO_INCREMENT`\*                                                    |
-| (all \_\* tables)     | id                                   | `INT`             | `pk_id` → `INT UNSIGNED AUTO_INCREMENT`                                                      |
-| financial_settings    | vat_percent                          | `DECIMAL(4,2)`    | `percent` → `DECIMAL(12,4)`                                                                  |
-| (various \_\* tables) | discount_percent                     | `DECIMAL(5,2)`    | `percent` → `DECIMAL(12,4)`                                                                  |
-| products              | percent_agent                        | `DECIMAL(10,3)`   | `percent` → `DECIMAL(12,4)`                                                                  |
-| (various \_\* tables) | price, value, base, vat, for_payment | `DECIMAL(10,2)`   | `currency` → `DECIMAL(18,2)`                                                                 |
-| makers                | created_at, updated_at               | `DATETIME`        | `timestamp` → `TIMESTAMP`                                                                    |
-| frameworks            | first_commit_at                      | `DATE`            | `date_only` → `DATE` (suffix misalignment: `_at` should be `TIMESTAMP`, but type is correct) |
-| confirmations         | email                                | `VARCHAR(150)`    | `email` → `VARCHAR(255)`                                                                     |
-| (various \_\* tables) | phone                                | `VARCHAR(20)`     | `phone` → `VARCHAR(50)`                                                                      |
-
-\*`legal_entities` has 292k rows - verify no IDs exceed `INT UNSIGNED` max (4,294,967,295) before migrating.
+`file` stores a browsable path to an uploaded document (e.g. `/files/contracts/xyz.pdf`), not the binary - see `lib/file_processor/`, `lib/s3.ts`. Rendered as `<file-upload>` in forms (drag-and-drop dropzone, async POST to `/files/save`), width `COL_WIDTH_FILE` in grids. Config constant: `FILE_SUFFIXES = ["_file"]`. The `/system/files` route provides a full CRUD file library over the `files` table; storage keys are namespaced by folder and the `files` bucket is served via `register_s3_mount({ url_prefix: "/files/", … })` (mounted in `lib/bootstrap.ts`, bucket from `S3_FILE_BUCKET`, default `files`).
 
 ## Generated columns (VIRTUAL / STORED)
 

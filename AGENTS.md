@@ -71,6 +71,7 @@ The `translations` table is the source of truth `(lang, namespace, key_path, tra
 - **DO NOT** create or edit `*.json` files in `routes/` to change translations.
 - **DO** edit via SQL `UPDATE/INSERT`, `bun run sync:languages`, or the `/system/translations` admin UI.
 - `public/` JSONs are an exception (static page data, not route translations).
+- `.reepolee/i18n/*.json` are a **read-only export for the VSCode extension** (autocomplete/lookup). They are not loaded at runtime and are not the source of truth - never edit them to change a translation; the DB is authoritative and these files are regenerated from it.
 
 Full merge model, root fallback, and the prune tool: [internals/CONTEXT.md](internals/CONTEXT.md) and `lib/i18n.ts`.
 

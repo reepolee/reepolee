@@ -81,7 +81,7 @@
 							{#if def.type === 'fk' || def.type === 'tags'}
 								{#each def.visible_options as opt}
 									<label class="filter-option flex items-center gap-2 py-0.5">
-										<input type="checkbox" name="filter_{= def.key }" value="{= opt.option_value }" {#if def.checked_values.includes(opt.option_value)} checked{/if} />
+										<input type="checkbox" name="filter_{= def.key }" value="{= opt.option_value }" {#if def.checked_values.includes(String(opt.option_value))} checked{/if} />
 										{= opt.option_text}
 									</label>
 								{/each}
@@ -89,7 +89,7 @@
 									<div data-hidden-options="{= def.key }" class="hidden">
 										{#each def.hidden_options as opt}
 											<label class="filter-option flex items-center gap-2 py-0.5">
-												<input type="checkbox" name="filter_{= def.key }" value="{= opt.option_value }" {#if def.checked_values.includes(opt.option_value)} checked{/if} />
+												<input type="checkbox" name="filter_{= def.key }" value="{= opt.option_value }" {#if def.checked_values.includes(String(opt.option_value))} checked{/if} />
 												{= opt.option_text}
 											</label>
 										{/each}

@@ -1,7 +1,7 @@
 import { default_language } from "$config/supported_languages";
 import { feature_paths, redirect_from_referer, run_bulk_delete } from "$lib/crud_routes";
 import { cache } from "$lib/cache";
-import { get_global_scopes, get_scope_clause } from "$lib/global_scopes";
+import { get_global_scopes, get_scope_clause, resolve_scope_key } from "$lib/global_scopes";
 import { create_toast_cookie, get_cookie } from "$lib/cookies";
 import { get_lang_from_request, localized_url } from "$lib/route";
 import { get_table_name_from_dir } from "$lib/helpers";
@@ -54,7 +54,7 @@ export async function get_modules_index(req: BunRequest): Promise<Response> {
 
 	// Resolve table scopes
 	const global_scopes = await get_global_scopes(TABLE_NAME, "modules", module_code);
-	const scope_key = scope || get_cookie(req, "scope_modules") || global_scopes.find((s) => s.is_default)?.scope_key || "";
+	const scope_key = resolve_scope_key(global_scopes, scope as string, get_cookie(req, "scope_modules"));
 	const scope_clause = scope_key ? await get_scope_clause(
 		TABLE_NAME,
 		scope_key,

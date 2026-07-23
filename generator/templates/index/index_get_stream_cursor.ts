@@ -20,10 +20,7 @@ export async function get___table.exact___index(req: BunRequest): Promise<Respon
 
 	// Resolve table scopes (must complete BEFORE stream opens)
 	const global_scopes = await get_global_scopes(TABLE_NAME, "__table.exact__", module_code);
-	const scope_key = scope
-		|| get_cookie(req, "scope___table.exact__")
-		|| global_scopes.find(s => s.is_default)?.scope_key
-		|| "";
+	const scope_key = resolve_scope_key(global_scopes, scope as string, get_cookie(req, "scope___table.exact__"));
 	const scope_clause = scope_key ? await get_scope_clause(TABLE_NAME, scope_key, ctx, "__table.exact__", module_code) : "";
 
 	// Resolve filter definitions and WHERE clauses from URL params (before stream opens)

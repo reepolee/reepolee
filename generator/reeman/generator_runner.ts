@@ -39,6 +39,74 @@ export function show_summary(params: GeneratorParams): void {
 }
 
 // ---------------------------------------------------------------------------
+// CLI equivalent - reproduce this run later without the interactive menu.
+// ---------------------------------------------------------------------------
+
+export interface PipelineCliParams {
+	table: string;
+	prefix?: string;
+	parent_table?: string;
+	route_name?: string;
+	pagination_method?: "cursor" | "offset";
+	render_strategy?: "stream" | "load";
+	force?: boolean;
+	sync_translate?: boolean;
+}
+
+// crud.ts covers every flag the interactive flow can collect (unlike
+// resource.ts/schema.ts, whose CLI surface is narrower - no --route-name,
+// --pagination, or --render-strategy) so it's the one script guaranteed to
+// reproduce the exact choices made in the menu.
+function crud_args(params: PipelineCliParams): string {
+	const args = [params.table];
+	if (params.prefix) args.push("--prefix", params.prefix);
+	if (params.parent_table) args.push("--parent", params.parent_table);
+	if (params.route_name) args.push("--route-name", params.route_name);
+	if (params.pagination_method) args.push("--pagination", params.pagination_method);
+	if (params.render_strategy) args.push("--render-strategy", params.render_strategy);
+	if (params.sync_translate) args.push("--translate");
+	if (params.force) args.push("--force");
+	return `bun generator/crud.ts ${args.join(" ")}`;
+}
+
+/**
+ * Build the CLI equivalent of run_full_pipeline() (schema + crud) for one table.
+ * Used directly by bulk/nested flows, which run one table at a time.
+ */
+export function build_full_pipeline_cli_tip(params: PipelineCliParams): string {
+	const schema_args = [params.table];
+	if (params.prefix) schema_args.push("--prefix", params.prefix);
+	if (params.parent_table) schema_args.push("--parent", params.parent_table);
+	const schema_cmd = `bun generator/schema.ts ${schema_args.join(" ")}`;
+	const crud_cmd = crud_args(params);
+	return `${schema_cmd} && ${crud_cmd}`;
+}
+
+export function build_cli_tip(params: GeneratorParams): string {
+	if (params.command === "schema") {
+		const args = [params.table!];
+		if (params.prefix) args.push("--prefix", params.prefix);
+		if (params.parent_table) args.push("--parent", params.parent_table);
+		return `bun generator/schema.ts ${args.join(" ")}`;
+	}
+
+	if (params.command === "crud") {
+		return crud_args({ ...params, table: params.table! });
+	}
+
+	if (params.command === "all") {
+		const args: string[] = [];
+		if (params.force) args.push("--force");
+		if (params.sync_translate) args.push("--translate");
+		return `bun generator/resource.ts all${args.length ? ` ${args.join(" ")}` : ""}`;
+	}
+
+	// "full" - crud.ts alone doesn't run schema generation, so the equivalent
+	// is schema.ts followed by crud.ts (mirrors run_full_pipeline's two steps).
+	return build_full_pipeline_cli_tip({ ...params, table: params.table! });
+}
+
+// ---------------------------------------------------------------------------
 // Execute the generator
 // ---------------------------------------------------------------------------
 

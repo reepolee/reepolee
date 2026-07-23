@@ -8,6 +8,15 @@
 	transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
+/* CSS-only dismiss: the close link points to #toast-dismissed, which matches
+   this rule and hides the toast immediately without needing JS. */
+.animate-in-top:target {
+	animation: none;
+	opacity: 0;
+	height: 0;
+	pointer-events: none;
+}
+
 @keyframes toastFadeOut {
 	to {
 		opacity: 0;

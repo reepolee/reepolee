@@ -5,6 +5,7 @@
 
 import { run_bulk_generator } from "../callers/resource_caller";
 import { get_available_modules, get_available_tables } from "../db";
+import { build_full_pipeline_cli_tip } from "../generator_runner";
 import {
 	BOLD,
 	color,
@@ -18,6 +19,7 @@ import {
 	multi_select,
 	RED,
 	select_from_list,
+	show_cli_tips,
 	YELLOW,
 } from "../ui";
 import { discover_existing_crud_tables } from "../utils/route_scan";
@@ -170,6 +172,15 @@ export async function run_bulk_crud_flow(): Promise<boolean> {
 	console.log(`  ${color("Success:", BOLD)} ${color(String(result.success), result.success > 0 ? GREEN : DIM)}`);
 	if (result.fail > 0) { console.log(`  ${color("Failed:", BOLD)} ${color(String(result.fail), RED)}`); }
 	console.log(`${color("-".repeat(50), CYAN)}`);
+
+	const tip_lines = selected_tables.map((table) => build_full_pipeline_cli_tip({
+		table,
+		prefix: bulk_prefix,
+		pagination_method,
+		render_strategy,
+		sync_translate,
+	}));
+	show_cli_tips(tip_lines);
 
 	return true;
 }

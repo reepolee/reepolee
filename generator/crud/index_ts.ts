@@ -98,8 +98,18 @@ async function load_select_imports(foreign_keys: ForeignKeyMap): Promise<string>
 // Filter FK options helpers
 // ---------------------------------------------------------------------------
 
-function generate_filter_fk_loader(fields: FieldDef[]): string {
-	const filter_fks = fields.filter((f) => f.type === "select" && f.attributes?.filter === true && f.attributes?.foreign_key);
+// A column is filterable either via the DDL comment `F` flag (synced into
+// fields[name].attributes.filter at schema-generation time) or via a manual
+// `filter: true` added to the `columns` map in table.ts after generation.
+// Both sources must be checked - table.ts customizations never round-trip
+// back into attributes.filter.
+function is_filterable_fk_field(f: FieldDef, columns?: Record<string, any> | null): boolean {
+	if (f.type !== "select" || !f.attributes?.foreign_key) return false;
+	return f.attributes?.filter === true || columns?.[f.name]?.filter === true;
+}
+
+function generate_filter_fk_loader(fields: FieldDef[], columns?: Record<string, any> | null): string {
+	const filter_fks = fields.filter((f) => is_filterable_fk_field(f, columns));
 
 	if (filter_fks.length === 0) return "";
 
@@ -109,8 +119,8 @@ function generate_filter_fk_loader(fields: FieldDef[]): string {
 	}).join("\n");
 }
 
-function generate_filter_fk_options(fields: FieldDef[]): string {
-	const filter_fks = fields.filter((f) => f.type === "select" && f.attributes?.filter === true && f.attributes?.foreign_key);
+function generate_filter_fk_options(fields: FieldDef[], columns?: Record<string, any> | null): string {
+	const filter_fks = fields.filter((f) => is_filterable_fk_field(f, columns));
 
 	if (filter_fks.length === 0) return "";
 
@@ -129,6 +139,7 @@ export interface GenerateIndexConfig {
 	has_view: boolean;
 	first_field: string;
 	foreign_keys: ForeignKeyMap;
+	columns?: Record<string, any> | null;
 	route_prefix?: string;
 	crud_name?: string;
 	route_param_value?: string;
@@ -144,7 +155,7 @@ export interface GenerateIndexConfig {
 // ---------------------------------------------------------------------------
 
 export async function generate_index_ts(config: GenerateIndexConfig): Promise<string> {
-	const { table_name, fields, sort_options, view_name, has_view, first_field, foreign_keys, route_prefix = "", crud_name = "", route_param_value = "id", is_nested = false, parent_info = null, pagination_strategy = "cursor", render_strategy = "load", route_name = "" } = config;
+	const { table_name, fields, sort_options, view_name, has_view, first_field, foreign_keys, columns = null, route_prefix = "", crud_name = "", route_param_value = "id", is_nested = false, parent_info = null, pagination_strategy = "cursor", render_strategy = "load", route_name = "" } = config;
 	const parts_dir = join(process.cwd(), "generator", "templates", "index");
 	const tmpl = select_templates({ pagination_strategy, render_strategy, is_nested, has_view });
 
@@ -259,8 +270,8 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 			"edit.get_autocomplete_display": has_autocomplete ? `\n\n\tconst autocomplete_display_values: Record<string, string> = {};\n${autocomplete_display_fetch}` : "",
 			"new.autocomplete_display_options": autocomplete_display_options,
 			"edit.autocomplete_display_options": autocomplete_display_options,
-			"filter.fk_loader": generate_filter_fk_loader(fields),
-			"filter.fk_options": generate_filter_fk_options(fields),
+			"filter.fk_loader": generate_filter_fk_loader(fields, columns),
+			"filter.fk_options": generate_filter_fk_options(fields, columns),
 			"import.conditional_helpers": conditional_helpers,
 			"import.crud_routes": crud_routes_import,
 			"import.pagination": pagination_import,

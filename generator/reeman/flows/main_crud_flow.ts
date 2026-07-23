@@ -5,9 +5,9 @@
  */
 
 import { get_available_modules, get_available_tables } from "../db";
-import { run_generator, show_summary } from "../generator_runner";
+import { build_cli_tip, run_generator, show_summary } from "../generator_runner";
 import type { GeneratorParams } from "../types";
-import { ask, BOLD, color, confirm, CYAN, dim, GREEN, header, RED, select_from_list, YELLOW } from "../ui";
+import { ask, BOLD, color, confirm, CYAN, dim, GREEN, header, RED, select_from_list, show_cli_tip, YELLOW } from "../ui";
 
 /**
  * Collect CRUD params and run the generator interactively.
@@ -166,6 +166,8 @@ export async function run_crud_flow(command: string): Promise<boolean> {
 	// scoped to the generated table's namespace - see generator/crud/main.ts)
 	// -------------------------------------------------------------------
 	await run_generator(params);
+
+	show_cli_tip(build_cli_tip(params));
 
 	return true;
 }

@@ -5,6 +5,7 @@
 
 import { run_bulk_nested_generator, run_full_pipeline } from "../callers/resource_caller";
 import { get_available_modules, get_available_tables, get_child_tables } from "../db";
+import { build_full_pipeline_cli_tip } from "../generator_runner";
 import {
 	BOLD,
 	color,
@@ -17,6 +18,7 @@ import {
 	multi_select,
 	RED,
 	select_from_list,
+	show_cli_tips,
 	YELLOW,
 } from "../ui";
 
@@ -168,6 +170,19 @@ export async function run_nested_children_flow(): Promise<boolean> {
 		render_strategy,
 		nested_translate
 	);
+
+	const tip_lines = [
+		build_full_pipeline_cli_tip({ table: parent_table, prefix: nested_prefix, pagination_method, render_strategy }),
+		...selected_children.map((table) => build_full_pipeline_cli_tip({
+			table,
+			prefix: nested_prefix,
+			parent_table,
+			pagination_method,
+			render_strategy,
+			sync_translate: nested_translate,
+		})),
+	];
+	show_cli_tips(tip_lines);
 
 	return true;
 }

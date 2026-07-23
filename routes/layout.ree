@@ -102,16 +102,38 @@
 
 		<main id="main" class="min-w-0">{~ props.body}</main>
 
-		<toasts-area id="toasts-area"></toasts-area>
+		<toasts-area id="toasts-area">
+			<!-- TOASTS (server-rendered, no JS required) -->
+			{#each props.toasts as toast}
+				<div id="toast-{= toast.key }"
+				     class="animate-in-top"
+				     style="--toast-duration:{= toast.duration ?? 3000 }ms">
 
-		<!-- TOASTS	-->
-		{#if props.toasts?.length>0}
-			<script>
-				{#each props.toasts as toast, i}
-					add_toast({~ JSON.stringify(toast)});
-				{/each}
-			</script>
-		{/if}
+					<div class="relative px-3 py-2 mb-3 {~ toast.type === 'green' ? 'bg-green-600/90 text-white' : toast.type === 'red' ? 'bg-brand/90 text-white' : toast.type === 'yellow' ? 'bg-amber-300/90 text-black' : 'bg-white text-black border border-neutral-300' }
+					            font-semibold rounded-sm
+					            min-w-96
+					            pointer-events-auto">
+
+						<div class="pr-6">
+							{= toast.message } {~ toast.user ? `(${toast.user})` : "" }
+						</div>
+
+						<a href="#toast-{= toast.key }"
+						   class="absolute top-1 right-1
+						          h-8 w-8
+						          flex items-center justify-center
+						          text-lg leading-none
+						          opacity-70 hover:opacity-100
+						          hover:bg-black/10
+						          rounded-full no-underline"
+						   aria-label="Close toast">
+							🗙
+						</a>
+
+					</div>
+				</div>
+			{/each}
+		</toasts-area>
 		{#if is_dev}
 			<script>
 				console.info({~ props.toJSON});

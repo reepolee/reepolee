@@ -2,7 +2,7 @@ import type { RouteDefinition } from "$lib/route_builder";
 import { feature_paths } from "$lib/crud_routes";
 import { default_language } from "$config/supported_languages";
 import { cache } from "$lib/cache";
-import { get_global_scopes, get_scope_clause } from "$lib/global_scopes";
+import { get_global_scopes, get_scope_clause, resolve_scope_key } from "$lib/global_scopes";
 import { get_cookie } from "$lib/cookies";
 import { get_lang_from_request, localized_url } from "$lib/route";
 import { get_table_name_from_dir } from "$lib/helpers";
@@ -56,7 +56,7 @@ export async function get_users_index(req: BunRequest): Promise<Response> {
 	const namespace = `${module_code}.${feature}`;
 
 	const global_scopes = await get_global_scopes(TABLE_NAME, "users", module_code);
-	const scope_key = scope || get_cookie(req, "scope_users") || global_scopes.find((s) => s.is_default)?.scope_key || "";
+	const scope_key = resolve_scope_key(global_scopes, scope as string, get_cookie(req, "scope_users"));
 	const scope_clause = scope_key ? await get_scope_clause(TABLE_NAME, scope_key, ctx, "users", module_code) : "";
 
 	const raw_filter_definitions = get_filter_definitions(columns, fields);

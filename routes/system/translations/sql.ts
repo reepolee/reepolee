@@ -1,4 +1,5 @@
 import { db } from "$config/db";
+import { db_type } from "$lib/resolve_db_type";
 import { timed_query } from "$lib/timed_sql";
 
 // db.unsafe() - legacy manual CRUD. Uses dynamic ORDER BY, scope_clause injection, and
@@ -51,12 +52,29 @@ export async function delete_translation(lang: string, namespace: string, key_pa
 	});
 }
 
+// Dialects diverge here and nowhere else in this file: SQLite spells the upsert
+// `ON CONFLICT .. DO UPDATE`, MySQL/MariaDB `ON DUPLICATE KEY UPDATE`.
+async function upsert_translation_sqlite(lang: string, namespace: string, key_path: string, translation: string): Promise<void> {
+	await db`
+		INSERT INTO translations (lang, namespace, key_path, translation)
+		VALUES (${lang}, ${namespace}, ${key_path}, ${translation})
+		ON CONFLICT(lang, namespace, key_path) DO UPDATE SET translation = excluded.translation
+	`;
+}
+
+async function upsert_translation_mysql(lang: string, namespace: string, key_path: string, translation: string): Promise<void> {
+	await db`
+		INSERT INTO translations (lang, namespace, key_path, translation)
+		VALUES (${lang}, ${namespace}, ${key_path}, ${translation})
+		ON DUPLICATE KEY UPDATE translation = VALUES(translation)
+	`;
+}
+
 export async function upsert_translation(lang: string, namespace: string, key_path: string, translation: string): Promise<void> {
-	return await timed_query("translations", "upsert", async () => await db`
-			INSERT INTO translations (lang, namespace, key_path, translation)
-			VALUES (${lang}, ${namespace}, ${key_path}, ${translation})
-			ON DUPLICATE KEY UPDATE translation = VALUES(translation)
-		`);
+	return await timed_query("translations", "upsert", async () => {
+		if (db_type === "sqlite") { return upsert_translation_sqlite(lang, namespace, key_path, translation); }
+		return upsert_translation_mysql(lang, namespace, key_path, translation);
+	});
 }
 
 export async function get_namespaces(): Promise<string[]> {

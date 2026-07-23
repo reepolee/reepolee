@@ -31,11 +31,13 @@
 						<option value="{= m.code }" {#if m.code===record.module_code } selected{/if}>{= m.name} ({= m.code})</option>
 					{/each}
 				</select>
+				<p class="text-xs text-neutral-500 px-3 mt-1">{_ hints.module_code}</p>
 			</field-wrapper>
 
 			<field-wrapper class="grid" data-field="feature_name">
 				<label class="px-3" for="feature_name">{_ labels.feature_name}</label>
 				<input type="text" id="feature_name" name="feature_name" value="{= record.feature_name}" />
+				<p class="text-xs text-neutral-500 px-3 mt-1">{_ hints.feature_name}</p>
 				<validation-error class="mt-1" id="error-feature_name"></validation-error>
 			</field-wrapper>
 
@@ -47,24 +49,28 @@
 						<option value="{= option.value }" {#if option.value===record.table } selected{/if}>{= option.label}</option>
 					{/each}
 				</select>
+				<p class="text-xs text-neutral-500 px-3 mt-1">{_ hints.table}</p>
 				<validation-error class="mt-1" id="error-table_name"></validation-error>
 			</field-wrapper>
 
 			<field-wrapper class="grid" data-field="scope_key">
 				<label class="px-3" for="scope_key">{_ labels.scope_key}</label>
 				<input type="text" id="scope_key" name="scope_key" value="{= record.scope_key}" />
+				<p class="text-xs text-neutral-500 px-3 mt-1">{_ hints.scope_key}</p>
 				<validation-error class="mt-1" id="error-scope_key"></validation-error>
 			</field-wrapper>
 
 			<field-wrapper class="grid" data-field="display_name">
 				<label class="px-3" for="display_name">{_ labels.display_name}</label>
 				<input type="text" id="display_name" name="display_name" value="{= record.display_name}" />
+				<p class="text-xs text-neutral-500 px-3 mt-1">{_ hints.display_name}</p>
 				<validation-error class="mt-1" id="error-display_name"></validation-error>
 			</field-wrapper>
 
 			<field-wrapper class="grid" data-field="where_clause">
 				<label class="px-3" for="where_clause">{_ labels.where_clause}</label>
 				<input type="text" id="where_clause" name="where_clause" value="{= record.where_clause}" />
+				<p class="text-xs text-neutral-500 px-3 mt-1">{_ hints.where_clause}</p>
 				<validation-error class="mt-1" id="error-where_clause"></validation-error>
 				{#if session_variables && session_variables.length > 0}
 					<details class="mt-2">
@@ -103,6 +109,7 @@
 			<field-wrapper class="grid" data-field="sort_order">
 				<label class="px-3" for="sort_order">{_ labels.sort_order}</label>
 				<input type="number" id="sort_order" name="sort_order" value="{= record.sort_order}" />
+				<p class="text-xs text-neutral-500 px-3 mt-1">{_ hints.sort_order}</p>
 				<validation-error class="mt-1" id="error-sort_order"></validation-error>
 			</field-wrapper>
 
@@ -113,6 +120,7 @@
 					<option value="0" {#if 0===record.is_default } selected{/if}>{= props.translations.selectors?.["0"]}</option>
 					<option value="1" {#if 1===record.is_default } selected{/if}>{= props.translations.selectors?.["1"]}</option>
 				</select>
+				<p class="text-xs text-neutral-500 px-3 mt-1">{_ hints.is_default}</p>
 				<validation-error class="mt-1" id="error-is_default"></validation-error>
 			</field-wrapper>
 

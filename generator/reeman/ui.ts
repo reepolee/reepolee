@@ -439,6 +439,18 @@ export function show_cli_tip(cmd: string): void {
 	console.log();
 }
 
+/**
+ * Same as show_cli_tip(), but for a batch of commands (bulk/nested flows) -
+ * one line per command instead of cramming them onto a single "CLI equivalent:" line.
+ */
+export function show_cli_tips(cmds: string[]): void {
+	console.log(`  ${dim("-".repeat(50))}`);
+	console.log(`  ${color("💡", YELLOW)} CLI equivalent (run later to reproduce):`);
+	for (const cmd of cmds) { console.log(`    ${color(BOLD + cmd, CYAN)}`); }
+	console.log(`  ${dim("-".repeat(50))}`);
+	console.log();
+}
+
 // ---------------------------------------------------------------------------
 // Menu
 // ---------------------------------------------------------------------------

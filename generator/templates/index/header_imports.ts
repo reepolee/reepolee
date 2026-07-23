@@ -2,7 +2,7 @@ import { get_cookie } from "$lib/cookies";
 import { get_lang_from_request, localized_url } from "$lib/route";
 import { get_table_name_from_dir } from "$lib/helpers";
 __import.conditional_helpers____import.crud_routes____import.pagination__
-__route.param_imports__import { get_global_scopes, get_scope_clause } from "$lib/global_scopes";
+__route.param_imports__import { get_global_scopes, get_scope_clause, resolve_scope_key } from "$lib/global_scopes";
 import { enrich_filter_definitions, get_filter_definitions, resolve_filters } from "$lib/table_filters";
 import { render, render_to_string } from "$lib/render";
 import { create_ctx } from "$lib/request_context";

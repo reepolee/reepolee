@@ -121,6 +121,7 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 		has_view: !!meta.v_fields,
 		first_field: meta.first_field,
 		foreign_keys: meta.foreign_keys,
+		columns: meta.columns,
 		route_prefix,
 		crud_name: meta.crud_name,
 		route_param_value: meta.route_param_value,

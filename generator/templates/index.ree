@@ -71,6 +71,11 @@
 				</select>
 			</div>
 		{/if}
+		{#if global_scopes && global_scopes.length === 1 }
+			<div class="flex items-center gap-2">
+				{= props.translations.scopes?.[global_scopes[0].scope_key] || global_scopes[0].display_name }
+			</div>
+		{/if}
 
 		<a href="{~ localized_path('__route_prefix__/__table.exact__/new') }" role="button" class="primary">+ {_ actions.new___table.singular.lowercase__}</a>
 
