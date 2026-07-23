@@ -6,6 +6,7 @@
  */
 
 import { active_languages } from "$config/supported_languages";
+import { emit_translations } from "$lib/emit_translations";
 import { translations } from "$lib/i18n";
 import { clients, notify_clients } from "$lib/livereload";
 import { reload_route_maps } from "$lib/route_map";
@@ -28,6 +29,9 @@ export async function handle_reload_translations(req: Request): Promise<Response
 
 	const is_dev = Bun.argv.includes("--dev");
 	if (is_dev) {
+		// Refresh the ree-templates ghost-value files with the reloaded trees.
+		await emit_translations(translations.all);
+
 		const client_count = clients.size;
 		notify_clients();
 		console.log(`[reload] Notified ${client_count} client(s) to reload`);

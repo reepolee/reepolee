@@ -16,6 +16,7 @@ import { unlinkSync } from "node:fs";
 import { join } from "node:path";
 
 import { verify_db_schema } from "$config/db";
+import { emit_translations } from "$lib/emit_translations";
 import { translations } from "$lib/i18n";
 import { notify_clients } from "$lib/livereload";
 import type { RouteTable } from "$lib/middleware/types";
@@ -93,6 +94,10 @@ export async function bootstrap(opts: BootstrapOptions): Promise<void> {
 		load_modules(),
 		translations.initialize(),
 	]);
+
+	// Dump translation trees to .reepolee/i18n/<lang>.json so the ree-templates
+	// extension can show ghost values in .ree files. Dev-only working aid.
+	if (is_dev && !is_test) { await emit_translations(translations.all); }
 
 	console.log(`${description} ${version}`);
 

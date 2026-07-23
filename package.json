@@ -1,7 +1,7 @@
 {
 	"name": "reepolee",
 	"project-type": "template",
-	"version": "26.07.59",
+	"version": "26.07.60",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",
