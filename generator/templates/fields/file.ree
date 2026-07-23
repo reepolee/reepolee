@@ -1,0 +1,4 @@
+<field-wrapper class="grid" data-field="__field.name__">
+	<file-upload name="__field.name__" value="{= record.__field.name__}" folder="__table.exact__" label="{_ labels.__field.name__}"></file-upload>
+	<validation-error class="mt-1" id="error-__field.name__"></validation-error>
+</field-wrapper>

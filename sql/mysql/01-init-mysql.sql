@@ -54,6 +54,25 @@ CREATE TABLE images (
     UNIQUE KEY uk_images_folder_filename(folder, filename)
 ) COMMENT '';
 
+DROP TABLE IF EXISTS files;
+
+CREATE TABLE files (
+    id                INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'ICU',
+    folder            VARCHAR(255) NULL DEFAULT '/' COMMENT 'ICU',
+    filename          VARCHAR(255) NOT NULL COMMENT 'ICU',
+    s3_key            VARCHAR(512) NOT NULL COMMENT '',
+    original_filename VARCHAR(255) NULL DEFAULT '' COMMENT 'ICU',
+    title             VARCHAR(255) NULL DEFAULT '' COMMENT '',
+    description       TEXT         NULL DEFAULT '' COMMENT '',
+    tags              VARCHAR(500) NULL DEFAULT '' COMMENT 'ICU',
+    mime_type         VARCHAR(127) NULL DEFAULT 'application/octet-stream' COMMENT '',
+    file_type         VARCHAR(10)  NULL DEFAULT '' COMMENT 'ICUF',
+    file_size         INT UNSIGNED NULL DEFAULT 0 COMMENT '',
+    created_at        TIMESTAMP    NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP    NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_files_folder_filename(folder, filename)
+) COMMENT '';
+
 DROP VIEW IF EXISTS v_table_counts;
 
 CREATE VIEW v_table_counts AS
@@ -61,7 +80,27 @@ SELECT
     'images',
     '/system/images',
     COUNT(*)
-FROM images UNION ALL SELECT 'modules', NULL, COUNT(*) FROM modules UNION ALL SELECT 'users', '/system/users', COUNT(*) FROM users;
+FROM images UNION ALL SELECT 'files', '/system/files', COUNT(*) FROM files UNION ALL SELECT 'modules', NULL, COUNT(*) FROM modules UNION ALL SELECT 'users', '/system/users', COUNT(*) FROM users;
+
+DROP VIEW IF EXISTS v_files;
+
+CREATE VIEW v_files AS
+SELECT
+    id,
+    folder,
+    filename,
+    s3_key,
+    original_filename,
+    title,
+    description,
+    tags,
+    mime_type,
+    file_type,
+    file_size,
+    created_at,
+    updated_at,
+    CONCAT_WS('__', folder, filename, s3_key, IFNULL(original_filename, ''), IFNULL(title, ''), IFNULL(description, ''), IFNULL(tags, ''), mime_type) AS search_text
+FROM files;
 
 DROP VIEW IF EXISTS v_images;
 

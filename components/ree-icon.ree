@@ -37,6 +37,39 @@
 			extra: 'fill="none"',
 			paths: '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" /><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />',
 		},
+		file: {
+			viewBox: "0 0 24 24",
+			extra: 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"',
+			paths: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" />',
+		},
+		file_pdf: {
+			viewBox: "0 0 24 24",
+			paths: '<path fill="#e2574c" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path fill="#f8b5b0" d="M14 2v6h6z" /><text x="12" y="18" font-size="7" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">PDF</text>',
+		},
+		file_word: {
+			viewBox: "0 0 24 24",
+			paths: '<path fill="#2b579a" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path fill="#a9c2e8" d="M14 2v6h6z" /><text x="12" y="18" font-size="6.5" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">DOC</text>',
+		},
+		file_excel: {
+			viewBox: "0 0 24 24",
+			paths: '<path fill="#21a366" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path fill="#a8e6c1" d="M14 2v6h6z" /><text x="12" y="18" font-size="6.5" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">XLS</text>',
+		},
+		file_powerpoint: {
+			viewBox: "0 0 24 24",
+			paths: '<path fill="#d24726" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path fill="#f4b8a5" d="M14 2v6h6z" /><text x="12" y="18" font-size="6.5" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">PPT</text>',
+		},
+		file_zip: {
+			viewBox: "0 0 24 24",
+			paths: '<path fill="#8a8a8a" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path fill="#d4d4d4" d="M14 2v6h6z" /><text x="12" y="18" font-size="6.5" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">ZIP</text>',
+		},
+		file_text: {
+			viewBox: "0 0 24 24",
+			paths: '<path fill="#6b7280" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path fill="#d1d5db" d="M14 2v6h6z" /><text x="12" y="18" font-size="6.5" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">TXT</text>',
+		},
+		file_csv: {
+			viewBox: "0 0 24 24",
+			paths: '<path fill="#21a366" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path fill="#a8e6c1" d="M14 2v6h6z" /><text x="12" y="18" font-size="6.5" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">CSV</text>',
+		},
 	};
 	const icon = icons[name];
 }}

@@ -3,11 +3,13 @@ import {
 	COL_WIDTH_AUTO,
 	COL_WIDTH_BOOLEAN,
 	COL_WIDTH_DECIMAL,
+	COL_WIDTH_FILE,
 	COL_WIDTH_IMAGE,
 	COL_WIDTH_INTEGER,
 	COL_WIDTH_STRING_MAX_CH,
 	COL_WIDTH_TEMPORAL,
 	CURRENCY_FIELD,
+	FILE_SUFFIXES,
 	IGNORE_INDEX_FIELDS,
 	IMAGE_SUFFIXES,
 	MAINTENANCE_FIELDS,
@@ -105,6 +107,11 @@ export function resolve_domain_type(column_name: string, column_type: string): D
 	if (IMAGE_SUFFIXES.some((suffix) => lower_name.endsWith(suffix))) {
 		const canonical_sql = (dt_map as Record<string, string>).image;
 		return { domain: "image", compliant: normalized_type === normalize_sql(canonical_sql) };
+	}
+
+	if (FILE_SUFFIXES.some((suffix) => lower_name.endsWith(suffix))) {
+		const canonical_sql = (dt_map as Record<string, string>).file;
+		return { domain: "file", compliant: normalized_type === normalize_sql(canonical_sql) };
 	}
 
 	// 3. SQL value match (catch-all for any column whose type matches a canonical SQL)
@@ -300,6 +307,10 @@ export function generate_fields_object(schema_obj: SchemaObject, type_mapper: Ty
 		// in forms and as a thumbnail in grids. Only auto-detect if not explicitly set.
 		if (IMAGE_SUFFIXES.some((suffix) => col.name.toLowerCase().endsWith(suffix)) && !attributes.type) { field_type = "image"; }
 
+		// Detect _file suffix - stores an uploaded document path, rendered via <file-upload>
+		// in forms and as a filename/size link in grids. Only auto-detect if not explicitly set.
+		if (FILE_SUFFIXES.some((suffix) => col.name.toLowerCase().endsWith(suffix)) && !attributes.type) { field_type = "file"; }
+
 		// Parse max length from type_string for string types (e.g. varchar(255))
 		// Only apply when the user hasn't explicitly set max via column comment
 		let max = attributes.max;
@@ -377,6 +388,9 @@ export function compute_initial_width(field: FormFieldDef): string {
 
 	// Image thumbnail - fixed width for the 100x100 preview
 	if (field_type === "image") { return COL_WIDTH_IMAGE; }
+
+	// File link - fixed width for the filename/size link
+	if (field_type === "file") { return COL_WIDTH_FILE; }
 
 	// Try extracting max from varchar/char type_string (e.g. varchar(255), char(10))
 	const varchar_match = column_type.match(/^(?:var)?char\s*\((\d+)\)/);

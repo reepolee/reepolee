@@ -65,6 +65,10 @@ export const DOMAIN_TYPES = {
 	// Media
 	// Stores a browsable path (e.g. "/images/teams/members/xyz.webp"), not the binary itself
 	image: "VARCHAR(255)",
+
+	// Documents
+	// Stores a browsable path (e.g. "/files/contracts/xyz.pdf"), not the binary itself
+	file: "VARCHAR(255)",
 } as const;
 
 // Union of all canonical domain type names (shared across dialects).

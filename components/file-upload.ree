@@ -1,0 +1,60 @@
+{{
+	const attrs = props.attributes || {};
+	const name = attrs.name || "";
+	const value = attrs.value || "";
+	const folder = attrs.folder || "";
+	const folder_input = attrs["folder-input"] || "";
+	const show_folder = attrs["show-folder"] === "true" || attrs["show-folder"] === true;
+	const label = attrs.label || "";
+	const module = attrs.module || "";
+	const input_id = `${name}_upload`;
+	const folder_input_id = show_folder ? `${input_id}_folder` : folder_input;
+	const initial_filename = value ? value.split("/").pop() : "";
+}}
+<div
+	class="file-upload-wrapper grid gap-4"
+	data-name="{= name }"
+	data-folder="{= folder }"
+	data-folder-input="{= folder_input_id }"
+	data-module="{= module }"
+	data-msg-invalid-type="{_ errors.file_upload_invalid_type }"
+	data-msg-uploaded="{_ messages.file_upload_uploaded }"
+	data-msg-failed="{_ errors.file_upload_failed }">
+	{#if show_folder}
+		<field-wrapper class="grid">
+			<label class="px-3" for="{= folder_input_id }">{_ labels.folder }</label>
+			<input type="text" id="{= folder_input_id }" value="{= folder }" class="border border-neutral-300 rounded px-3 py-1.5" />
+		</field-wrapper>
+	{/if}
+
+	<input type="hidden" name="{= name }" class="file-upload-value" value="{= value }" />
+	<input type="hidden" name="_csrf_token" value="{= csrf_token }" class="file-upload-csrf" />
+
+	<field-wrapper class="grid">
+		<div class="px-3 flex items-center justify-between gap-2">
+			{#if label}
+				<label for="{= input_id }_dropzone">{= label }</label>
+			{/if}
+			<div class="file-upload-status hidden text-xs" style="color: var(--color-success)"></div>
+		</div>
+
+		<div
+			id="{= input_id }_dropzone"
+			class="file-upload-dropzone relative border-2 border-dashed border-neutral-300 rounded-lg p-4 text-center cursor-pointer transition-all duration-200 hover:border-blue-500 hover:bg-blue-50"
+			tabindex="0">
+			<p class="file-upload-filename text-slate-700 m-0 text-sm {#if !initial_filename}hidden{/if}">{= initial_filename }</p>
+			<p class="file-upload-placeholder text-slate-500 m-0 text-sm {#if initial_filename}hidden{/if}">
+				<strong class="text-blue-600">{_ ui.file_upload_click }</strong>
+				{_ ui.file_upload_or }
+				<strong class="text-blue-600">{_ ui.file_upload_drag_drop }</strong>
+				{_ ui.file_upload_here }
+			</p>
+			<div class="file-upload-spinner absolute inset-0 flex items-center justify-center bg-white/70 hidden">
+				<span class="inline-block w-8 h-8 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></span>
+			</div>
+			<input type="file" class="file-upload-file hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip" />
+		</div>
+	</field-wrapper>
+</div>
+
+<script src="/file-upload.js?v={= props.version }" defer></script>

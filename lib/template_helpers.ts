@@ -204,6 +204,34 @@ export function image_thumbnail(src: string, size: number = IMAGE_THUMBNAIL_SIZE
 	return `<img src="${src}" alt="" class="object-cover rounded" style="width:${size}px;height:${size}px" />`;
 }
 
+// Extension -> <ree-icon> name for recognized document types. Falls back to "file".
+const FILE_ICON_BY_EXT: Record<string, string> = {
+	pdf: "file_pdf",
+	doc: "file_word",
+	docx: "file_word",
+	xls: "file_excel",
+	xlsx: "file_excel",
+	csv: "file_csv",
+	ppt: "file_powerpoint",
+	pptx: "file_powerpoint",
+	zip: "file_zip",
+	txt: "file_text",
+};
+
+// Resolve the <ree-icon> name for a filename/path based on its extension.
+export function file_icon_name(filename: string): string {
+	const ext = filename.split(".").pop()?.toLowerCase() || "";
+	return FILE_ICON_BY_EXT[ext] || "file";
+}
+
+// Renders a filename/download link for a stored file path (e.g. from <file-upload>).
+// Empty/missing value renders an em-dash so grid rows keep a consistent look.
+export function file_link(src: string): string {
+	if (!src) return `<span class="text-slate-400">-</span>`;
+	const filename = src.split("/").pop() || src;
+	return `<a href="${src}" target="_blank" rel="noopener" class="text-brand underline truncate block" title="${filename}">${filename}</a>`;
+}
+
 export function human_bytes(bytes: number): string {
 	const units = ["B", "KB", "MB", "GB", "TB"];
 	let i = 0;
@@ -267,6 +295,8 @@ export function create_default_helpers(data: any = {}): TemplateHelpers {
 		human_bytes,
 		key_values,
 		image_thumbnail,
+		file_link,
+		file_icon_name,
 	};
 }
 

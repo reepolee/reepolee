@@ -45,6 +45,7 @@
 | `cache/`         | Cache controls                                                    |
 | `queues/`        | Background job queue status                                       |
 | `images/`        | Image upload/processing routes                                   |
+| `files/`         | Document upload/management routes (PDF, DOCX, etc.)              |
 
 ## Generated CRUD folder structure
 

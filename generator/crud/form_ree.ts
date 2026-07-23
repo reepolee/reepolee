@@ -63,6 +63,8 @@ export async function generate_input_field(
 		template_path = join(template_base, "tags.ree");
 	} else if (field.type === "image") {
 		template_path = join(template_base, "image.ree");
+	} else if (field.type === "file") {
+		template_path = join(template_base, "file.ree");
 	} else {
 		template_path = join(template_base, "input.ree");
 	}

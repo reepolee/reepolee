@@ -122,6 +122,12 @@ export async function bootstrap(opts: BootstrapOptions): Promise<void> {
 		key_prefix: "",
 		immutable: true,
 	});
+	register_s3_mount({
+		url_prefix: `/${Bun.env.S3_FILE_BUCKET || "files"}/`,
+		bucket: Bun.env.S3_FILE_BUCKET || "files",
+		key_prefix: "",
+		immutable: true,
+	});
 
 	// Storage sanity check
 	check_storage_config();

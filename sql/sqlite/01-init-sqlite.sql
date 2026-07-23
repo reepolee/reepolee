@@ -65,6 +65,29 @@ CREATE TRIGGER images_updated_at_trigger AFTER UPDATE ON images FOR EACH ROW WHE
 
 END;
 
+DROP TABLE IF EXISTS files;
+
+CREATE TABLE files (
+    id                INTEGER   PRIMARY KEY,
+    folder            TEXT      NOT NULL DEFAULT '/',
+    filename          TEXT      NOT NULL,
+    s3_key            TEXT      NOT NULL,
+    original_filename TEXT      DEFAULT '',
+    title             TEXT      DEFAULT '',
+    description       TEXT      DEFAULT NULL,
+    tags              TEXT      DEFAULT '',
+    mime_type         TEXT      NOT NULL DEFAULT 'application/octet-stream',
+    file_type         TEXT      DEFAULT '',
+    file_size         INTEGER   NOT NULL DEFAULT 0,
+    created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(folder, filename)
+);
+
+CREATE TRIGGER files_updated_at_trigger AFTER UPDATE ON files FOR EACH ROW WHEN NEW.updated_at IS OLD.updated_at BEGIN UPDATE files SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+
+END;
+
 DROP VIEW IF EXISTS v_table_counts;
 
 CREATE VIEW v_table_counts AS
@@ -72,7 +95,7 @@ SELECT
     'images',
     '/system/images',
     COUNT(*)
-FROM images UNION ALL SELECT 'modules', NULL, COUNT(*) FROM modules UNION ALL SELECT 'users', '/system/users', COUNT(*) FROM users;
+FROM images UNION ALL SELECT 'files', '/system/files', COUNT(*) FROM files UNION ALL SELECT 'modules', NULL, COUNT(*) FROM modules UNION ALL SELECT 'users', '/system/users', COUNT(*) FROM users;
 
 DROP VIEW IF EXISTS v_images;
 
@@ -101,6 +124,33 @@ SELECT
     COALESCE(tags, '') || '__' ||
     mime_type AS search_text
 FROM images;
+
+DROP VIEW IF EXISTS v_files;
+
+CREATE VIEW v_files AS
+SELECT
+    id,
+    folder,
+    filename,
+    s3_key,
+    original_filename,
+    title,
+    description,
+    tags,
+    mime_type,
+    file_type,
+    file_size,
+    created_at,
+    updated_at,
+    folder || '__' ||
+    filename || '__' ||
+    s3_key || '__' ||
+    COALESCE(original_filename, '') || '__' ||
+    COALESCE(title, '') || '__' ||
+    COALESCE(description, '') || '__' ||
+    COALESCE(tags, '') || '__' ||
+    mime_type AS search_text
+FROM files;
 
 DROP TABLE IF EXISTS global_scopes;
 

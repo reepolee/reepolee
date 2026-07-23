@@ -6,7 +6,7 @@ export const INTERNAL_TABLE_PREFIX = "_" as const;
 /**
  * Do not generate CRUD routes for the following tables
  */
-export const IGNORE_TABLES = ["modules", "sessions", "email", "images", "users", "translations"] as const satisfies readonly string[];
+export const IGNORE_TABLES = ["modules", "sessions", "email", "images", "files", "users", "translations"] as const satisfies readonly string[];
 
 /**
  * Fields managed by DB, not user input
@@ -32,6 +32,13 @@ export const DATETIME_SUFIXES = ["_at"] as const satisfies readonly string[];
  * and as a 100x100 thumbnail in grids (see lib/template_helpers.ts image_thumbnail)
  */
 export const IMAGE_SUFFIXES = ["_image"] as const satisfies readonly string[];
+
+/**
+ * File fields which end in, like "contract_file", "invoice_file"
+ * store an uploaded document path (PDF, DOCX, etc.) and render via <file-upload>
+ * in forms and as a filename/size link in grids (see lib/template_helpers.ts file_link)
+ */
+export const FILE_SUFFIXES = ["_file"] as const satisfies readonly string[];
 
 /**
  * Fields excluded from index/list schemas
@@ -76,6 +83,9 @@ export const COL_WIDTH_TEMPORAL = "20ch";
 
 // Default width for image thumbnail columns (100x100 preview + padding).
 export const COL_WIDTH_IMAGE = "120px";
+
+// Default width for file link columns (filename + size).
+export const COL_WIDTH_FILE = "20ch";
 
 // Fallback width when no type-specific default applies.
 export const COL_WIDTH_AUTO = "auto";

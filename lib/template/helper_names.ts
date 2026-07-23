@@ -33,4 +33,6 @@ export const DEFAULT_HELPER_NAMES = [
 	"human_bytes",
 	"key_values",
 	"image_thumbnail",
+	"file_link",
+	"file_icon_name",
 ] as const;

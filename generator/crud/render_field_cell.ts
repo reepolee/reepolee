@@ -65,6 +65,8 @@ export function render_field_cell(
 			return `${indent}<div${cls_attr}>{~ js_date_to_locale_string(${record_val}${field.name}) }</div>`;
 		case field.type === "image":
 			return `${indent}<div${cls_attr}>{~ image_thumbnail(${record_val}${field.name}) }</div>`;
+		case field.type === "file":
+			return `${indent}<div${cls_attr}>{~ file_link(${record_val}${field.name}) }</div>`;
 		default:
 			return `${indent}<div${cls_attr}>{= ${record_val}${field.name} }</div>`;
 	}

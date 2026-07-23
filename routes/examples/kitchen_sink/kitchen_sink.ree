@@ -75,6 +75,7 @@
 
 			<input-tags name="tags" label="Tags" value="user,admin"></input-tags>
 
+			<file-upload name="kitchen_sink_file" folder="kitchen-sink" show-folder="false" label="{_ labels.file_upload }"></file-upload>
 
 		</form>
 	</section>

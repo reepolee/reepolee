@@ -2,6 +2,7 @@ import { feature_enabled } from "$lib/helpers";
 import type { RouteDefinition } from "$lib/route_builder";
 
 import { route_definitions as cache_definitions } from "./cache";
+import { route_definitions as files_definitions } from "./files";
 import { route_definitions as global_scopes_definitions } from "./global_scopes";
 import { route_definitions as images_definitions } from "./images";
 import { route_definitions as modules_definitions } from "./modules";
@@ -14,6 +15,7 @@ export const route_definitions: RouteDefinition[] = [
 	...queues_definitions,
 	...users_definitions,
 	...images_definitions,
+	...files_definitions,
 	...global_scopes_definitions,
 	...translations_definitions,
 	...modules_definitions,
