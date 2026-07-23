@@ -1,7 +1,7 @@
 {
 	"name": "reepolee",
 	"project-type": "template",
-	"version": "26.07.60",
+	"version": "26.07.62",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",
@@ -62,7 +62,7 @@
 		"add:user:bob": "bun generator/user bob bob@example.com b --modules user",
 		"db:clone-test": "bun scripts/clone_db.ts",
 		"vendor:check": "bun scripts/vendor_check.ts",
-		"reepolee:install": "git init -q && bun install && bun get:pre && bun scripts/sync_project_meta.ts && bun scripts/init_sqlite_db.ts && bun scripts/clone_db.ts --yes  && bun add:user:bob && bun add:user:alice && git add -A && git commit -q -m \"Initial Reepolee install\""
+		"reepolee:install": "bun scripts/reset_git.ts && git init -q && bun install && bun get:pre && bun scripts/sync_project_meta.ts && bun scripts/init_sqlite_db.ts && bun scripts/clone_db.ts --yes  && bun add:user:bob && bun add:user:alice && git add -A && git commit -q -m \"Initial Reepolee install\""
 	},
 	"devDependencies": {
 		"@types/bun": "1.3.14",

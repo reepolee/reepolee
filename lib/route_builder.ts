@@ -1,5 +1,6 @@
 import { mount_prefix, require_module_mw } from "$lib/middleware";
 import type { Handler, RouteTable } from "$lib/middleware/types";
+import { publisher_signal_mw } from "$lib/publisher_signal";
 
 export type RouteDefinition = {
 	url: string;
@@ -41,7 +42,9 @@ export function build_routes(defs: RouteDefinition[]) {
 						`build_routes: extracted prefix is "/" - CRUD mount would produce "//path"`,
 					);
 				}
-				const mws = d.module ? [require_module_mw(d.module)] : [];
+				const mws = d.module
+					? [require_module_mw(d.module), publisher_signal_mw()]
+					: [publisher_signal_mw()];
 				return mount_prefix(pfx, d.crud, ...mws);
 			}
 			return {};
