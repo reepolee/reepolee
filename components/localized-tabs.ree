@@ -1,0 +1,47 @@
+{{
+	const { localization } = props.attributes;
+	const loc = localization ?? {};
+	const active_locales = loc.active_locales ?? [];
+	const default_locale = loc.default_locale;
+	const locale_names = loc.locale_names ?? {};
+	const default_label = locale_names[default_locale] || default_locale;
+}}
+<div
+	data-localized-editor
+	data-default-locale="{= default_locale }"
+	data-default-label="{= default_label }"
+	data-add-label="{_ localization.add_language }"
+	data-remove-label="{_ localization.remove_translation }"
+	data-open-original-label="{_ localization.open_original }"
+	class="hidden"
+>
+	{#each active_locales as locale}
+		<span data-localized-locale="{= locale }" data-locale-label="{= locale_names[locale] || locale }"></span>
+	{/each}
+</div>
+
+<dialog data-localized-first-language-dialog class="p-0 rounded-xl shadow-2xl w-100">
+	<div class="p-6">
+		<h2 class="text-lg font-semibold">{_ localization.translate_all_title }</h2>
+		<p class="text-slate-600 mt-2">
+			{_ localization.translate_all_message } <strong data-localized-dialog-language></strong>
+		</p>
+		<div class="mt-6 flex justify-end items-center gap-2">
+			<button type="button" class="px-3 py-1 rounded bg-slate-200" data-localized-dialog-field>{_ localization.only_this_field }</button>
+			<button type="button" class="px-3 py-1 rounded bg-brand text-white" data-localized-dialog-all>{_ localization.all_fields }</button>
+		</div>
+	</div>
+</dialog>
+
+<dialog data-localized-remove-dialog class="p-0 rounded-xl shadow-2xl w-100">
+	<div class="p-6">
+		<h2 class="text-lg font-semibold">{_ localization.remove_translation_title }</h2>
+		<p class="text-slate-600 mt-2">
+			{_ localization.remove_translation_message } <strong data-localized-remove-language></strong>
+		</p>
+		<div class="mt-6 flex justify-end items-center gap-2">
+			<button type="button" class="px-3 py-1 rounded bg-slate-200" data-localized-remove-cancel>{_ actions.cancel }</button>
+			<button type="button" class="px-3 py-1 rounded bg-brand text-white" data-localized-remove-confirm>{_ localization.remove_translation }</button>
+		</div>
+	</div>
+</dialog>

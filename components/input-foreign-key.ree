@@ -1,0 +1,16 @@
+{{
+	const { name, label, value, options } = props.attributes ?? {};
+	const fk_options = options ?? [];
+}}
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= name }">
+	<div class="grid">
+		<label class="px-3" for="{= name }">{= label}</label>
+		<select id="{= name }" name="{= name }">
+			<option value="">{_ selectors.select}</option>
+			{#each fk_options as option}
+				<option value="{= option.option_value }" {#if option.option_value == value} selected{/if}>{= option.option_text }</option>
+			{/each}
+		</select>
+		<validation-error class="mt-1" id="error-{= name }"></validation-error>
+	</div>
+</field-wrapper>

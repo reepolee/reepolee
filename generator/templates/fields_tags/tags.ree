@@ -1,0 +1,1 @@
+<input-tags-select name="__field.name__" label="{_ labels.__field.name__}" value="{= record.__field.name__}" options="{= __field.name___options }"></input-tags-select>

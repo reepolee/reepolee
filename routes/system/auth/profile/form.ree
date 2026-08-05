@@ -1,0 +1,61 @@
+{#layout("layout")}
+
+<div class="p-4">
+	<h1 class="mb-4">{_ ui.title}</h1>
+
+	{#if props.form_error}
+		<div class="py-4">
+			<app-banner type="red">{= props.form_error}</app-banner>
+		</div>
+	{/if}
+
+	{#if props.profile_user.avatar_filename}
+		<img src="/avatars/{= props.profile_user.avatar_filename }" alt="Avatar" class="mb-4 size-16 object-cover rounded-full" />
+	{/if}
+
+	<form method="POST" action="{~ localized_path(props.action) }" enctype="multipart/form-data" class="grid gap-4 max-w-[60ch]" id="entry-form">
+		<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+		<field-wrapper class="grid">
+			<label class="px-3" for="name">{_ labels.name}*</label>
+			<input type="text" id="name" name="name" value="{= props.profile_user.name }" autocomplete="name" />
+			<validation-error class="mt-1" id="error-name"></validation-error>
+		</field-wrapper>
+
+		<field-wrapper class="grid">
+			<label class="px-3" for="nickname">{_ labels.nickname}</label>
+			<input type="text" id="nickname" name="nickname" value="{= props.profile_user.nickname }" autocomplete="username" />
+			<validation-error class="mt-1" id="error-nickname"></validation-error>
+		</field-wrapper>
+
+		<field-wrapper class="grid">
+			<label class="px-3" for="avatar">{_ labels.avatar}</label>
+			<input type="file" id="avatar" name="avatar" accept="image/*" />
+			<validation-error class="mt-1" id="error-avatar"></validation-error>
+		</field-wrapper>
+
+		<div class="flex gap-2 mt-8 items-center justify-between">
+			<div class="flex items-center gap-2">
+				<button type="submit">{_ actions.submit}</button>
+				<a href="/" role="button" class="border-neutral-200 border px-3 py-2 rounded">{_ actions.cancel}</a>
+			</div>
+			<a href="{~ localized_path('/password') }" role="button" class="border-neutral-200 border px-3 py-2 rounded">{_ ui.change_password}</a>
+		</div>
+	</form>
+
+	<form method="POST" action="{~ localized_path('/logout') }" class="mt-8">
+		<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+		<button type="submit" class="secondary">{_ ui.logout}</button>
+	</form>
+</div>
+
+<script src="/form-controller.js?v={= props.version }" defer></script>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		new FormController({
+			form: "#entry-form",
+			validate_url: "{~ localized_path('/profile/validate') }",
+			submitted_text: "{- actions.submitted}",
+		});
+	});
+</script>

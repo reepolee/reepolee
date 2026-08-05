@@ -1,0 +1,1 @@
+<input-datetime-local name="__field.name__" label="{_ labels.__field.name__}" value="{~ js_datetime_to_iso_string(record.__field.name__)}"></input-datetime-local>

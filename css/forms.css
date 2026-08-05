@@ -1,0 +1,236 @@
+@layer base {
+	form {
+		input,
+		textarea,
+		.input {
+			@apply bg-surface-raised rounded-sm border border-border px-3 py-1;
+		}
+
+		textarea {
+			field-sizing: content;
+			@apply min-h-[5lh];
+		}
+
+		button[type="submit"] {
+			@apply primary cursor-pointer rounded-sm px-3 py-2 hover:scale-105;
+			transition: opacity 0.2s, transform 0.15s;
+
+			&:disabled {
+				@apply cursor-not-allowed opacity-60;
+				transform: none;
+			}
+		}
+	}
+
+	validation-error {
+		@apply text-brand ml-3;
+	}
+
+	select {
+		@apply bg-surface-raised rounded-sm border border-border px-3 py-1;
+		appearance: base-select;
+
+		&::picker-icon {
+			content: "❯";
+			transition: 0.3s rotate;
+			rotate: 90deg;
+			width: 1rem;
+			display: grid;
+			place-content: center;
+		}
+
+		&:open::picker-icon {
+			rotate: 270deg;
+		}
+	}
+}
+
+/* Generated validation elements carry the mt-1 utility. Keep that spacing for
+   real messages, but do not let an empty row change a field's layout. This is
+   intentionally unlayered so it wins over Tailwind's utilities layer. */
+validation-error:empty {
+	margin-top: 0;
+}
+
+/* Localized editor. Language state belongs to each translatable field; the
+   configured locale list is only exposed inside that field's + menu. */
+
+.localized-form field-wrapper > div,
+.localized-form field-wrapper > p {
+	grid-column: 1 / -1;
+}
+
+.localized-form:not(.localized-ready) [data-localized-field-source] field-wrapper > div > input:not([type="hidden"]),
+.localized-form:not(.localized-ready) [data-localized-field-source] field-wrapper > div > textarea,
+.localized-form:not(.localized-ready) [data-localized-field-source] field-wrapper > div > select {
+	color: transparent;
+	caret-color: transparent;
+}
+
+.localized-form:not(.localized-ready) [data-localized-field-source] markdown-editor .markdown-editor-surface,
+.localized-form:not(.localized-ready) [data-localized-field-source] .image-upload-preview,
+.localized-form:not(.localized-ready) [data-localized-field-source] .image-upload-placeholder {
+	visibility: hidden;
+}
+
+.localized-field-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-bottom: 0.375rem;
+}
+
+.localized-field-controls,
+.localized-languages {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.localized-languages {
+	position: relative;
+}
+
+.localized-languages::before {
+	position: absolute;
+	top: -0.125rem;
+	bottom: -0.125rem;
+	left: var(--localized-language-left);
+	width: var(--localized-language-width);
+	border-radius: var(--radius-sm);
+	background: color-mix(in oklab, var(--color-neutral-500) 16%, transparent);
+	pointer-events: none;
+	content: "";
+	opacity: 0;
+	transition: left 150ms ease, width 150ms ease, opacity 150ms ease;
+}
+
+.localized-languages.has-active-language::before {
+	opacity: 1;
+}
+
+.localized-language-entry {
+	display: inline-flex;
+	align-items: center;
+}
+
+.localized-language,
+.localized-language-picker > summary,
+.localized-original-reference {
+	position: relative;
+	z-index: 1;
+	border: 0;
+	background: transparent;
+	color: var(--color-neutral-500);
+	font-weight: 600;
+	line-height: 1;
+	padding: 0.125rem;
+	cursor: pointer;
+	text-decoration: none;
+	transition: color 150ms ease;
+}
+
+.localized-language {
+	box-sizing: border-box;
+	width: 2rem;
+	text-align: center;
+}
+
+.localized-language.is-active,
+.localized-language:hover,
+.localized-language-picker > summary:hover,
+.localized-original-reference:hover {
+	color: var(--color-brand);
+}
+
+.localized-language-remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 0;
+	background: transparent;
+	color: var(--color-neutral-400);
+	font-size: 0.875rem;
+	height: 1.5rem;
+	line-height: 1;
+	padding: 0 0.125rem;
+	cursor: pointer;
+}
+
+.localized-language-remove:hover {
+	color: var(--color-brand);
+}
+
+.localized-language-picker {
+	position: relative;
+}
+
+.localized-language-picker > summary {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 1.5rem;
+	color: var(--color-primary);
+	font-size: 1.25rem;
+	list-style: none;
+}
+
+.localized-language-picker > summary::-webkit-details-marker {
+	display: none;
+}
+
+.localized-language-picker.is-disabled > summary {
+	color: var(--color-neutral-300);
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
+.localized-language-menu {
+	position: absolute;
+	z-index: 20;
+	top: calc(100% + 0.25rem);
+	right: 0;
+	min-width: 12rem;
+	padding: 0.25rem;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: var(--color-surface-raised);
+	box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+
+.localized-language-menu button {
+	display: block;
+	width: 100%;
+	padding: 0.375rem 0.5rem;
+	border: 0;
+	border-radius: var(--radius-sm);
+	background: transparent;
+	text-align: left;
+	cursor: pointer;
+}
+
+.localized-language-menu button:hover {
+	background: var(--color-neutral-100);
+}
+
+.localized-original-reference {
+	font-size: 0.875rem;
+}
+
+[data-localized-panel][hidden] {
+	display: none !important;
+}
+
+.localized-field-panel > input,
+.localized-field-panel > select,
+.localized-field-panel > textarea,
+.localized-field-panel > markdown-editor {
+	width: 100%;
+}
+
+.localized-stale-notice {
+	border-left: 3px solid var(--color-amber-300, #fcd34d);
+	padding-left: 0.5rem;
+	color: var(--color-neutral-600);
+}

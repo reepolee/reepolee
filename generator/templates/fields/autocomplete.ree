@@ -1,0 +1,14 @@
+<field-wrapper class="grid relative lg:col-span-2 lg:grid-cols-subgrid" data-field="__field.name__">
+	<div class="grid relative">
+		<label class="px-3" for="__field.name___search">{_ labels.__field.name__ }</label>
+		<auto-complete
+		field-name="__field.name__"
+		fk-table="__fk.table__"
+		fk-column="__fk.column__"
+		base-url="__route_prefix__/__table.exact__"
+		rows="__autocomplete.rows__"
+	></auto-complete>
+	<validation-error class="mt-1" id="error-__field.name__"></validation-error>
+	</div>
+	<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"><!-- hints.__field.name__ --></p>
+</field-wrapper>

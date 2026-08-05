@@ -1,0 +1,59 @@
+{#layout("layout") }
+
+<div class="p-4">
+	<h1>{_ ui.title}</h1>
+
+	<!-- FILTER FORM -->
+	<form method="GET" action="{~ localized_path(props.current_path || '') }" class="flex flex-wrap items-end gap-3 mb-6 p-4 rounded-lg bg-surface-raised shadow-sm">
+		{#each props.fields as field}
+			<label class="flex flex-col gap-1 text-sm font-medium">
+				<span>{= field}</span>
+				<input type="text" name="{= field }" value="{= props.query_params[field] || '' }" class="px-3 py-1.5 border rounded text-sm w-40" />
+			</label>
+		{/each}
+		<div class="flex gap-2 items-center">
+			<button type="submit" class="px-4 py-1.5 rounded bg-brand text-white text-sm font-medium">{= props.ui.search ?? "Search"}</button>
+			<a href="{~ localized_path(props.current_path || '') }" class="px-4 py-1.5 rounded border text-sm text-neutral-600 hover:bg-neutral-100">{= props.ui.clear ?? "Clear"}</a>
+		</div>
+	</form>
+
+	<!-- RESULTS -->
+	<div class="overflow-x-auto">
+		<table class="w-full border-collapse">
+			<thead>
+				<tr>
+					{#each props.fields as field}
+						<th class="border-b-2 p-3 text-left font-semibold whitespace-nowrap">
+							{#if props.current_sort === field && props.current_dir === 'asc'}
+								<span class="text-brand font-bold text-xs align-middle">&uarr;</span>
+
+							{:else}
+								<a href="{~ props.sort_urls[field].asc }" class="hover:text-brand text-xs align-middle">&uarr;</a>
+							{/if}
+							<span class="px-1{#if props.current_sort === field} text-brand{/if}">{= field}</span>
+							{#if props.current_sort === field && props.current_dir === 'desc'}
+								<span class="text-brand font-bold text-xs align-middle">&darr;</span>
+
+							{:else}
+								<a href="{~ props.sort_urls[field].desc }" class="hover:text-brand text-xs align-middle">&darr;</a>
+							{/if}
+						</th>
+					{/each}
+				</tr>
+			</thead>
+			<tbody>
+				{#each props.records as record}
+					<tr class="hover:bg-gray-50">
+						{#each props.fields as field}
+							<td class="border-b p-3">{= record[field]}</td>
+						{/each}
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+
+		{#if props.records.length === 0}
+			<p class="p-6 text-center text-neutral-500">{= props.ui.no_records ?? "No records found."}</p>
+		{/if}
+	</div>
+</div>

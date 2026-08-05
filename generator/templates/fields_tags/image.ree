@@ -1,0 +1,1 @@
+<image-upload name="__field.name__" value="{= record.__field.name__}" folder="__table.exact__" label="{_ labels.__field.name__}"></image-upload>

@@ -1,0 +1,33 @@
+{{
+	const { name, label, value, options } = props.attributes ?? {};
+	const tag_options = options ?? [];
+}}
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= name }">
+	<div class="grid">
+		<label class="px-3 mb-1">{= label}</label>
+		<input type="hidden" name="{= name }" id="{= name }-input" value="{= value }" />
+		<div class="flex flex-col gap-3 px-3">
+			{#each tag_options as tag}
+				<label class="flex items-center gap-1.5 text-sm cursor-pointer">
+					<input type="checkbox" class="{= name }-checkbox" value="{= tag.tag_key}" {#if value && value.split(/[\s,]+/).filter(Boolean).includes(tag.tag_key)}checked{/if} />
+					{= tag.tag_value}
+				</label>
+			{/each}
+		</div>
+		<validation-error class="mt-1" id="error-{= name }"></validation-error>
+		<script>
+			(() => {
+				const hidden = document.getElementById("{~ name }-input");
+				const checkboxes = document.querySelectorAll(".{~ name }-checkbox");
+
+				function updateTags() {
+					const checked = Array.from(checkboxes)
+					.filter((cb) => cb.checked)
+					.map((cb) => cb.value);
+					hidden.value = checked.join(",");
+				}
+				checkboxes.forEach((cb) => cb.addEventListener("change", updateTags));
+			})();
+		</script>
+	</div>
+</field-wrapper>

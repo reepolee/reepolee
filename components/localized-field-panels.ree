@@ -1,0 +1,14 @@
+{{
+	const { localization } = props.attributes;
+	const loc = localization ?? {};
+	const active_locales = loc.active_locales ?? [];
+	const default_locale = loc.default_locale;
+	const fields = loc.fields ?? [];
+}}
+{#each fields as field}
+	{#each active_locales as locale}
+		{#if locale !== default_locale}
+			<localized-panel field="{= field }" locale="{= locale }" localization="{= loc }"></localized-panel>
+		{/if}
+	{/each}
+{/each}

@@ -1,0 +1,17 @@
+{{ const { name, label, value, locale, min, max, required } = props.attributes ?? {}; }}
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= name }">
+	<div class="grid">
+		<label class="px-3" for="{= name }">{= label}</label>
+		<date-input
+			id="{= name }"
+			name="{= name }"
+			value="{= value }"
+			locale="{= locale || props.locale }"
+			{#if min}min="{= min }"{/if}
+			{#if max}max="{= max }"{/if}
+			{#if required}required{/if}
+			...props.translations.errors
+			></date-input>
+			<validation-error class="mt-1" id="error-{= name }"></validation-error>
+		</div>
+	</field-wrapper>

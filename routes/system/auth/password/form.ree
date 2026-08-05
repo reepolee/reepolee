@@ -1,0 +1,52 @@
+{#layout("layout")}
+
+<div class="p-4">
+	<h1 class="mb-4">{_ ui.title}</h1>
+
+	{#if props.form_error}
+		<div class="py-4">
+			<app-banner type="red">{= props.form_error}</app-banner>
+		</div>
+	{/if}
+
+	<form method="POST" action="{~ localized_path(props.action) }" class="grid gap-4 max-w-[60ch]" id="entry-form">
+		<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+		{{ const type = props.is_dev ? "text" : "password"; }}
+
+		<field-wrapper class="grid">
+			<label class="px-3" for="current_password">{_ labels.current_password}</label>
+			<input type="{= type }" id="current_password" name="current_password" value="{= props.current_password }" autocomplete="current-password" />
+			<validation-error class="mt-1" id="error-current_password"></validation-error>
+		</field-wrapper>
+
+		<field-wrapper class="grid">
+			<label class="px-3" for="password">{_ labels.password}</label>
+			<input type="{= type }" id="password" name="password" value="{= props.password }" autocomplete="new-password" />
+			<validation-error class="mt-1" id="error-password"></validation-error>
+		</field-wrapper>
+
+		<field-wrapper class="grid">
+			<label class="px-3" for="password_confirm">{_ labels.password_confirm}</label>
+			<input type="{= type }" id="password_confirm" name="password_confirm" value="{= props.password_confirm }" autocomplete="new-password" />
+			<validation-error class="mt-1" id="error-password_confirm"></validation-error>
+		</field-wrapper>
+
+		<div class="flex gap-2 mt-8 items-center">
+			<button type="submit">{_ actions.submit}</button>
+			<a href="{~ localized_path('/profile') }" role="button" class="border-neutral-200 border px-3 py-2 rounded">{_ actions.cancel}</a>
+		</div>
+	</form>
+</div>
+
+<script src="/form-controller.js?v={= props.version }" defer></script>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		new FormController({
+			form: "#entry-form",
+			validate_url: "{~ localized_path('/password/validate') }",
+			submitted_text: "{- actions.submitted}",
+		});
+	});
+</script>

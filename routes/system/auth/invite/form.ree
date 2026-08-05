@@ -1,0 +1,42 @@
+{#layout("layout")}
+
+<div class="p-4">
+	<h1 class="mb-4">{_ ui.title}</h1>
+
+	{#if props.form_error}
+		<div class="py-4">
+			<app-banner type="red">{= props.form_error}</app-banner>
+		</div>
+	{/if}
+
+	<form method="POST" action="{~ localized_path(props.action) }" class="grid gap-4 max-w-[60ch]" id="entry-form">
+		<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+		<field-wrapper class="grid">
+			<label class="px-3" for="username">{_ labels.username} *</label>
+			<input type="text" id="username" name="username" required autocomplete="off" value="{= props.username }" />
+			<validation-error class="mt-1" id="error-username"></validation-error>
+		</field-wrapper>
+
+		<field-wrapper class="grid">
+			<label class="px-3" for="email">{_ labels.email} *</label>
+			<input type="email" id="email" name="email" required autocomplete="off" value="{= props.email }" />
+			<validation-error class="mt-1" id="error-email"></validation-error>
+		</field-wrapper>
+
+		<div class="flex gap-2 mt-8 items-center">
+			<button type="submit">{_ actions.submit}</button>
+		</div>
+	</form>
+</div>
+<script src="/form-controller.js?v={= props.version }" defer></script>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		new FormController({
+			form: "#entry-form",
+			validate_url: "{~ localized_path('/invite/validate') }",
+			submitted_text: "{- actions.submitted}",
+		});
+	});
+</script>

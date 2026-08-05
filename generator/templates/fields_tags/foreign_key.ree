@@ -1,0 +1,1 @@
+<input-foreign-key name="__field.name__" label="{_ labels.__field.name__}" value="{= record.__field.name__}" options="{= __fk.table___options_by___fk.column__ }"></input-foreign-key>

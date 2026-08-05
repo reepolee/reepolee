@@ -1,0 +1,142 @@
+{{
+	const attrs = props.attributes || {};
+	const fieldName = attrs["field-name"] || "";
+	const fkTable = attrs["fk-table"] || "";
+	const fkColumn = attrs["fk-column"] || "";
+	const baseUrl = attrs["base-url"] || "";
+	const rows = parseInt(attrs.rows || "6", 10);
+	const maxHeight = attrs["max-height"] || `${rows * 32}px`;
+	const field = props.fields?.[fieldName] || {};
+	const record = props.record || {};
+	const displayValues = props.autocomplete_display_values || {};
+	const selectLabel = props.selectors?.select || "Select";
+	const inputId = `${fieldName}_search`;
+	const hiddenId = fieldName;
+	const hiddenValue = record[fieldName] || "";
+	const displayValue = displayValues[fieldName] || "";
+}}
+<div
+	class="autocomplete-wrapper relative"
+	data-ac-field="{= fieldName }"
+	data-fk-table="{= fkTable }"
+	data-fk-column="{= fkColumn }"
+	data-base-url="{= baseUrl }"
+	data-rows="{= rows }">
+	<div class="relative flex items-center">
+		<input type="text" id="{= inputId }" class="autocomplete-input w-full rounded border border-neutral-300 bg-surface-raised px-3 py-1.5 pr-8 transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)] focus:outline-none" placeholder="{= selectLabel }" autocomplete="off" value="{= displayValue }" />
+		<button
+			type="button"
+			class="autocomplete-clear absolute right-1 top-1/2 -translate-y-1/2 p-1.5 text-lg leading-none rounded text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors hidden"
+			tabindex="-1"
+			aria-label="Clear">
+			&times;
+		</button>
+		<ree-icon name="spinner" class="autocomplete-spinner absolute right-2 top-1/2 -translate-y-1/2 size-4 text-neutral-400 hidden animate-spin"></ree-icon>
+	</div>
+	<input type="hidden" name="{= fieldName }" id="{= hiddenId }" value="{= hiddenValue }" />
+	<ul class="autocomplete-results absolute z-50 mt-0.5 w-full rounded-lg border border-neutral-200 bg-white shadow-lg overflow-y-auto hidden list-none [&>li]:m-0 divide-y divide-neutral-100" style="max-height: {= maxHeight }">
+	</ul>
+</div>
+<script>
+	(() => {
+		const wrapper = document.querySelector('.autocomplete-wrapper[data-ac-field="{~ fieldName }"]');
+		if (!wrapper || wrapper.dataset.acInit) return;
+		wrapper.dataset.acInit = "1";
+		const input = wrapper.querySelector(".autocomplete-input");
+		const hidden = wrapper.querySelector('input[type="hidden"]');
+		const list = wrapper.querySelector(".autocomplete-results");
+		const clearBtn = wrapper.querySelector(".autocomplete-clear");
+		const spinner = wrapper.querySelector(".autocomplete-spinner");
+		const fkTable = wrapper.dataset.fkTable;
+		const baseUrl = wrapper.dataset.baseUrl;
+		let activeIndex = -1;
+		let debounceTimer = null;
+		function show_clear() {
+			if (hidden.value) {
+				clearBtn.classList.remove("hidden");
+			} else {
+				clearBtn.classList.add("hidden");
+			}
+		}
+		function set_selection(value, title) {
+			hidden.value = String(value);
+			input.value = title;
+			list.classList.add("hidden");
+			show_clear();
+			hidden.dispatchEvent(new Event("input", { bubbles: true }));
+			hidden.dispatchEvent(new Event("focusout", { bubbles: true }));
+		}
+		clearBtn.addEventListener("click", () => {
+			hidden.value = "";
+			input.value = "";
+			input.focus();
+			show_clear();
+			hidden.dispatchEvent(new Event("input", { bubbles: true }));
+		});
+		show_clear();
+		input.addEventListener("input", () => {
+			clearTimeout(debounceTimer);
+			const term = input.value.trim();
+			hidden.value = "";
+			show_clear();
+			if (term.length < 1) {
+				list.classList.add("hidden");
+				spinner.classList.add("hidden");
+				return;
+			}
+			spinner.classList.remove("hidden");
+			debounceTimer = setTimeout(async () => {
+				try {
+					const res = await fetch(`${baseUrl}/options?fk_table=${fkTable}&q=${encodeURIComponent(term)}`);
+					const data = await res.json();
+					list.innerHTML = "";
+					activeIndex = -1;
+					spinner.classList.add("hidden");
+					if (!data.results?.length) {
+						list.classList.remove("hidden");
+						const li = document.createElement("li");
+						li.textContent = "No results found";
+						li.className = "ml-0 px-3 py-2 text-sm text-neutral-400 cursor-default";
+						list.appendChild(li);
+						return;
+					}
+					list.classList.remove("hidden");
+					data.results.forEach((item, i) => {
+						const li = document.createElement("li");
+						li.textContent = item.option_text;
+						li.dataset.value = item.option_value;
+						li.className = "ml-0 px-3 py-2 cursor-pointer transition-colors hover:bg-brand/15 hover:text-brand";
+						li.addEventListener("click", () => set_selection(item.option_value, item.option_text));
+						list.appendChild(li);
+					});
+				} catch {
+					list.classList.add("hidden");
+					spinner.classList.add("hidden");
+				}
+			}, 250);
+		});
+		input.addEventListener("keydown", (e) => {
+			const items = list.querySelectorAll("li:not(.cursor-default)");
+			if (e.key === "ArrowDown") {
+				e.preventDefault();
+				activeIndex = Math.min(activeIndex + 1, items.length - 1);
+			} else if (e.key === "ArrowUp") {
+				e.preventDefault();
+				activeIndex = Math.max(activeIndex - 1, 0);
+			} else if (e.key === "Enter" && items[activeIndex]) {
+				e.preventDefault();
+				items[activeIndex].click();
+			} else if (e.key === "Escape") {
+				list.classList.add("hidden");
+			}
+			items.forEach((li, i) => {
+				li.classList.toggle("bg-brand", i === activeIndex);
+				li.classList.toggle("text-white", i === activeIndex);
+			});
+			if (items[activeIndex]) { items[activeIndex].scrollIntoView({ block: "nearest" }); }
+		});
+		document.addEventListener("click", (e) => {
+			if (!wrapper.contains(e.target)) list.classList.add("hidden");
+		});
+	})();
+</script>

@@ -1,0 +1,7 @@
+<auto-complete
+	field-name="__field.name__"
+	fk-table="__fk.table__"
+	fk-column="__fk.column__"
+	base-url="__route_prefix__/__table.exact__"
+	rows="__autocomplete.rows__"
+></auto-complete>

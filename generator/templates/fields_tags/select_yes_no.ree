@@ -1,0 +1,1 @@
+<input-yes-no name="__field.name__" label="{_ labels.__field.name__}" value="{= record.__field.name__}"></input-yes-no>

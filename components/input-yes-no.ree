@@ -1,0 +1,12 @@
+{{ const { name, label, value } = props.attributes ?? {}; }}
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= name }">
+	<div class="grid">
+		<label class="px-3" for="{= name }">{= label}</label>
+		<select id="{= name }" name="{= name }">
+			<option value="-1">{_ selectors.select }</option>
+			<option value="0" {#if String(value) === "0"} selected{/if}>{_ selectors["0"] }</option>
+			<option value="1" {#if String(value) === "1"} selected{/if}>{_ selectors["1"]}</option>
+		</select>
+		<validation-error class="mt-1" id="error-{= name }"></validation-error>
+	</div>
+</field-wrapper>

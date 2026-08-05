@@ -1,0 +1,10 @@
+{{ const { name, label, value } = props.attributes ?? {}; }}
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= name }">
+	<div class="grid">
+		<label class="px-3 flex items-center gap-2" for="{= name }">
+			<input type="checkbox" id="{= name }" name="{= name }" {#if value} checked{/if} />
+			{= label}
+		</label>
+		<validation-error class="mt-1" id="error-{= name }"></validation-error>
+	</div>
+</field-wrapper>
