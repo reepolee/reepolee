@@ -1,0 +1,7 @@
+{
+	"nav": "Home",
+	"route_name": "home",
+	"ui": {
+		"title": "Pagina iniziale"
+	}
+}

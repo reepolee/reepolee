@@ -1,0 +1,50 @@
+{
+	"actions": {
+		"add": "Agregar",
+		"add_locale": "Añadir idioma",
+		"back_to_locales": "Volver a los idiomas",
+		"cancel": "Cancelar",
+		"do_it": "Hacerlo",
+		"remove": "Quitar",
+		"remove_selected": "Quitar seleccionados",
+		"save": "Guardar cambios",
+		"set_active": "Activar",
+		"set_inactive": "Desactivar",
+		"translate": "Traducir con IA"
+	},
+	"confirm": {
+		"remove_locale": "¿Quitar este idioma? Se eliminarán sus traducciones y tablas de contenido."
+	},
+	"hints": {
+		"alias": "Alias de servicio de cadenas de interfaz: las solicitudes de este idioma muestran las cadenas del idioma de destino",
+		"locale_code": "Código de idioma BCP 47 para añadir (p. ej. de-at)"
+	},
+	"labels": {
+		"active": "Activo",
+		"alias": "Alias",
+		"alias_placeholder": "p. ej. de-at",
+		"available_locales": "Idiomas preparados disponibles",
+		"code": "Código",
+		"default": "Predeterminado",
+		"locale_code": "Código de idioma",
+		"locales": "Idiomas",
+		"name": "Nombre",
+		"name_placeholder": "Nombre para mostrar",
+		"remove": "Quitar"
+	},
+	"nav": "Idiomas",
+	"route_name": "idiomas",
+	"ui": {
+		"add_locale_hint": "Añade el idioma a la configuración, siembra sus traducciones y clona las tablas de contenido (generador add-locale).",
+		"available_locales_hint": "Ya existen traducciones preparadas en disco para estos idiomas - agréguelo con un clic (solo se añade a la configuración, no se activa).",
+		"busy": "Procesando — la página se actualizará al terminar.",
+		"locales_description": "Gestione config/supported_locales.ts: códigos de idioma, nombres para mostrar, alias, lista activa y predeterminado.",
+		"locales_manage_hint": "Añada un idioma para crear sus traducciones + tablas de contenido, o edite la configuración siguiente directamente.",
+		"locales_title": "Idiomas",
+		"modifying": "Está a punto de quitar",
+		"no_records": "No se encontraron idiomas en config/supported_locales.ts.",
+		"records": "idioma(s)",
+		"remove_selected_hint": "Quita los idiomas seleccionados: se eliminan sus traducciones y tablas de contenido.",
+		"save_hint": "Guarda directamente en config/supported_locales.ts. Recargue las rutas para aplicarlo."
+	}
+}

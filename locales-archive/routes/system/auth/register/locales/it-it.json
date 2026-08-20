@@ -1,0 +1,24 @@
+{
+	"actions": {
+		"submit": "Completa la registrazione"
+	},
+	"errors": {
+		"name_required": "Input obbligatorio",
+		"password_confirm_required": "Input obbligatorio",
+		"password_too_short": "La password deve contenere almeno 8 caratteri",
+		"passwords_mismatch": "Le password non corrispondono"
+	},
+	"labels": {
+		"name": "Nome completo",
+		"password": "Password (almeno 8 caratteri)",
+		"password_confirm": "Conferma password"
+	},
+	"route_name": "registrazione",
+	"ui": {
+		"already_used": "Questo invito è già stato utilizzato. Accedi.",
+		"invalid_link": "Questo link non è valido.",
+		"invalid_title": "Invito non valido",
+		"registering_as": "Registrazione come:",
+		"title": "Completa la registrazione"
+	}
+}

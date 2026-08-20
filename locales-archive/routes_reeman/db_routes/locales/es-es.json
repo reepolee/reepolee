@@ -1,0 +1,103 @@
+{
+	"actions": {
+		"add_condition": "Añadir condición",
+		"add_page": "Añadir página simple",
+		"add_table_page": "Añadir página de tabla simple",
+		"bulk_action": "Eliminar rutas de BD seleccionadas",
+		"bulk_action_2": "Acción alternativa",
+		"cancel": "Cancelar",
+		"create": "Crear",
+		"do_it": "Sí, hacerlo",
+		"fields": "Solo campos",
+		"full": "Actualización completa",
+		"new_db_route": "Nueva ruta de BD",
+		"refresh_crud": "Actualizar CRUD",
+		"remove": "Quitar",
+		"remove_route": "Quitar ruta",
+		"save": "Guardar",
+		"save_close": "Guardar y cerrar"
+	},
+	"child_ui": {
+		"actions": "Acciones",
+		"delete": "Eliminar",
+		"deleting": "Eliminando…",
+		"edit": "Editar",
+		"edit_title": "Editar Db_route",
+		"empty_text": "No se encontraron rutas de BD.",
+		"error_deleting": "Error al eliminar el registro.",
+		"error_loading": "Error al cargar el registro.",
+		"error_saving": "Error al guardar el registro.",
+		"new_button": "+ Nueva Db_route",
+		"new_title": "Nueva Db_route"
+	},
+	"errors": {
+		"duplicate_key": "Ya existe un registro con este valor.",
+		"error_creating_record": "Se produjo un error al guardar el registro.",
+		"module_required": "El módulo es obligatorio.",
+		"must_be_selected": "Este campo es obligatorio.",
+		"table_name_required": "El nombre de la tabla es obligatorio.",
+		"title_required": "El título es obligatorio.",
+		"url_required": "La URL es obligatoria.",
+		"value_required_or_use_original": "Introduzca un valor traducido o elimine este idioma."
+	},
+	"hints": {
+		"folder_name": "Letras minúsculas, dígitos, - o _ (p. ej. my_page).",
+		"prefix": "Prefijo de módulo opcional. Déjelo vacío para colocarlo directamente en /routes."
+	},
+	"labels": {
+		"delete_translations": "Eliminar traducciones",
+		"display": "Mostrar",
+		"fields": "Campos",
+		"folder_name": "Nombre de carpeta",
+		"mode": "Modo",
+		"module": "Módulo",
+		"order_by": "Ordenar por",
+		"prefix": "Prefijo",
+		"removable": "Eliminable",
+		"table": "Tabla / Ruta",
+		"table_name": "Nombre de tabla",
+		"template_tags": "Etiquetas de plantilla",
+		"url": "URL",
+		"where": "Dónde"
+	},
+	"messages": {
+		"bulk_delete_failed": "Falló la eliminación masiva.",
+		"bulk_delete_no_ids": "No hay rutas de BD seleccionadas.",
+		"bulk_deleted": "No se eliminaron rutas de BD|{count} ruta de BD eliminada|{count} rutas de BD eliminadas|{count} rutas de BD eliminadas|{count} rutas de BD eliminadas",
+		"bulk_errors": "|{count} ruta de BD con error|{count} rutas de BD con error|{count} rutas de BD con error|{count} rutas de BD con error",
+		"record_created": "Registro creado",
+		"record_updated": "Registro actualizado"
+	},
+	"nav": "Rutas de BD",
+	"route_name": "rutas-bd",
+	"search": {
+		"search_term": "Buscar rutas de BD...",
+		"submit": "Buscar"
+	},
+	"selectors": {
+		"0": "No",
+		"1": "Sí",
+		"all": "Todos",
+		"default": "(mantener actual)",
+		"per_page": "por página",
+		"select_table": "-- Seleccionar tabla o ruta --"
+	},
+	"ui": {
+		"add_page_hint": "Crea una ruta de página estática (sin base de datos) a partir de la plantilla simple-page.",
+		"add_page_title": "Añadir página simple",
+		"add_table_page_hint": "Crea una página de listado de solo lectura respaldada por una tabla de base de datos.",
+		"add_table_page_title": "Añadir página de tabla simple",
+		"apply_filters": "Aplicar",
+		"busy": "Procesando — la página se actualizará al terminar.",
+		"clear_all": "Borrar todo",
+		"filter_not": "NO",
+		"loading_count": "Cargando…",
+		"modifying": "Está a punto de modificar",
+		"no_records": "No se encontraron rutas de BD.",
+		"no_tables": "No se encontraron tablas en la base de datos.",
+		"records": "registro(s)",
+		"remove_route_hint": "Esto elimina la carpeta de la ruta y sus archivos del disco. Esta acción no se puede deshacer.",
+		"select_table_first": "Seleccione una tabla para elegir campos.",
+		"title": "Ruta de BD"
+	}
+}

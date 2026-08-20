@@ -1,0 +1,18 @@
+{
+	"actions": {
+		"submit": "ログイン"
+	},
+	"errors": {
+		"account_not_verified": "アカウントがまだ確認されていません。",
+		"invalid_username_or_password": "ユーザー名またはパスワードが無効です。"
+	},
+	"labels": {
+		"email": "メールアドレス",
+		"password": "パスワード",
+		"username": "ユーザー名（メールアドレス可）"
+	},
+	"route_name": "login",
+	"ui": {
+		"title": "ログイン"
+	}
+}

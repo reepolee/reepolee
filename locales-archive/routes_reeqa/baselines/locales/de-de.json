@@ -1,0 +1,36 @@
+{
+	"actions": {
+		"add_project": "Add a project",
+		"capture": "Capture baseline",
+		"page_sets": "Manage page sets"
+	},
+	"labels": {
+		"baseline_page_set": "View baseline page set",
+		"capture_size": "Capture size",
+		"baseline_pages": "Baseline pages",
+		"baseline_updated": "Baseline captured",
+		"baseline_url": "Baseline base URL",
+		"chrome": "Page capture",
+		"evidence_render": "Evidence video",
+		"image_diff": "Image comparison",
+		"latest_capture_pages": "Pages captured last time",
+		"latest_capture_urls": "URLs captured last time",
+		"pages": "pages",
+		"retained_urls": "Older baseline URLs retained",
+		"voiceover": "Evidence voiceover"
+	},
+	"nav": "Baselines",
+	"route_name": "baselines",
+	"status": {
+		"baseline_ready": "Baseline ready",
+		"no_baseline": "No baseline"
+	},
+	"ui": {
+		"active_run": "Visual run in progress",
+		"capture_hint": "Replaces the saved visual reference with fresh captures of the selected page set.",
+		"description": "Inspect and replace the saved visual reference for the active page set.",
+		"no_page_set": "Select or create a page set before capturing a baseline.",
+		"no_projects": "Register a project before capturing visual baselines.",
+		"title": "Visual baselines"
+	}
+}

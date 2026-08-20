@@ -1,0 +1,14 @@
+{
+	"actions": {
+		"set_repo": "Nastavi repozitorij"
+	},
+	"labels": {
+		"current_repo": "Trenutni repozitorij:",
+		"owner_repo": "Repozitorij GitHub (owner/repo)"
+	},
+	"ui": {
+		"project_description": "Nastavitve projekta.",
+		"project_title": "Projekt",
+		"set_repo_hint": "Poveži ta projekt z repozitorijem GitHub, da prijave napak in metapodatki v package.json kažejo na pravi naslov."
+	}
+}

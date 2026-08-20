@@ -1,0 +1,52 @@
+{
+	"actions": {
+		"abort_delete": "Anuluj",
+		"bulk_action": "Usuń wybrane obrazy",
+		"confirm_delete": "Tak, usuń",
+		"delete": "Usunąć ten obraz na stałe?",
+		"new_image": "Nowy obraz"
+	},
+	"labels": {
+		"description": "Opis",
+		"file_size": "Rozmiar pliku",
+		"filename": "Nazwa pliku",
+		"folder": "Folder",
+		"height": "Wysokość",
+		"mime_type": "Typ MIME",
+		"original_filename": "Oryginalna nazwa pliku",
+		"s3_key": "Klucz S3",
+		"tags": "Tagi",
+		"title": "Tytuł",
+		"width": "Szerokość"
+	},
+	"messages": {
+		"bulk_delete_no_ids": "Nie wybrano obrazów.",
+		"bulk_deleted": "Nie usunięto żadnych obrazów|{count} obraz usunięty|{count} obrazy usunięte|{count} obrazy usunięte|{count} obrazów usuniętych",
+		"bulk_errors": "|{count} obraz nie powiódł się|{count} obrazy nie powiodły się|{count} obrazy nie powiodły się|{count} obrazów nie powiodło się"
+	},
+	"nav": "Obrazy",
+	"route_name": "obrazy",
+	"search": {
+		"search_term": "Szukaj obrazów...",
+		"submit": "Szukaj"
+	},
+	"selectors": {
+		"all": "Wszystkie"
+	},
+	"ui": {
+		"no_records": "Nie znaleziono obrazów.",
+		"title": "Obrazy"
+	},
+	"v_labels": {
+		"description": "Opis",
+		"file_size": "Rozmiar pliku",
+		"filename": "Nazwa pliku",
+		"folder": "Folder",
+		"height": "Wysokość",
+		"mime_type": "Typ MIME",
+		"original_filename": "Oryginalna nazwa pliku",
+		"tags": "Tagi",
+		"title": "Tytuł",
+		"width": "Szerokość"
+	}
+}

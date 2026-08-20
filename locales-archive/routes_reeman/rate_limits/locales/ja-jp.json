@@ -1,0 +1,19 @@
+{
+	"actions": {
+		"reset_all_counters": "すべてのカウンターをリセット"
+	},
+	"nav": "レート制限",
+	"route_name": "rate-limits",
+	"ui": {
+		"blocked": "ブロック済み",
+		"no_active_counters": "アクティブなレート制限カウンターはありません",
+		"ok": "OK",
+		"requests": "リクエスト",
+		"reset_confirm": "アクティブなレート制限カウンターをすべてリセットしますか？この操作は元に戻せません。",
+		"seconds": "秒",
+		"status": "ステータス",
+		"title": "レート制限",
+		"total_redis_keys": "Redisキー合計",
+		"ttl": "TTL"
+	}
+}

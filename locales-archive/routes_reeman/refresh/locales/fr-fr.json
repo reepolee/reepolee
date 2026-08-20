@@ -1,0 +1,27 @@
+{
+	"actions": {
+		"add_locale": "Ajouter une langue",
+		"fields": "Champs uniquement",
+		"full": "Actualisation complète",
+		"refresh_crud": "Actualiser le CRUD",
+		"sync_locale_tables": "Synchroniser les tables de langues",
+		"sync_translations": "Synchroniser les traductions",
+		"translate": "Traduire avec l'IA"
+	},
+	"hints": {
+		"locale_code": "Code de langue BCP 47 à ajouter (p. ex. de-at)"
+	},
+	"labels": {
+		"locale_code": "Code de langue",
+		"route": "Route",
+		"template_tags": "Balises de modèle"
+	},
+	"selectors": {
+		"default": "(par défaut)"
+	},
+	"ui": {
+		"busy": "Traitement — la page se rafraîchira une fois terminé.",
+		"refresh_description": "Synchroniser les traductions, gérer les langues et actualiser les tables de langues.",
+		"refresh_title": "Actualiser et langues"
+	}
+}

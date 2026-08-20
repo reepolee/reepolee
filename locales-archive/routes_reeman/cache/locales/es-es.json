@@ -1,0 +1,20 @@
+{
+	"nav": "Caché",
+	"ui": {
+		"actions_header": "Acciones",
+		"confirm_invalidate": "Vaciar",
+		"disabled": "La caché no está disponible: active CACHE_ENABLED en las variables de entorno",
+		"disabled_badge": "Deshabilitado",
+		"enable_hint": "Establezca CACHE_ENABLED=true en el archivo .env y reinicie el servidor",
+		"enabled_badge": "Activo",
+		"entries_header": "Entradas de caché",
+		"invalidate_btn": "Vaciar",
+		"no_tables": "No hay ninguna tabla en el seguimiento de la caché",
+		"reset_btn": "Vaciar toda la caché",
+		"reset_confirm": "¿Seguro que desea invalidar TODOS los datos almacenados en caché? Esta acción no se puede deshacer.",
+		"table_header": "Tabla",
+		"title": "Caché SQL",
+		"total_keys": "Total de claves de caché",
+		"tracked_tables": "Tablas rastreadas"
+	}
+}

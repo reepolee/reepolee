@@ -1,0 +1,44 @@
+{
+	"actions": {
+		"add_group": "Добавить группу",
+		"add_namespace": "Добавить namespace",
+		"bulk_action": "Удалить выбранные",
+		"close": "Закрыть",
+		"create": "Создать",
+		"delete": "Удалить ключ",
+		"delete_namespace": "Удалить namespace",
+		"do_it": "Удалить",
+		"edit": "Изменить",
+		"save": "Сохранить изменения",
+		"save_close": "Сохранить и закрыть"
+	},
+	"messages": {
+		"delete_namespace_confirm": "Все переводы в \"{namespace}\" будут окончательно удалены.",
+		"no_groups": "Группы переводов не найдены.",
+		"record_updated": "Переводы обновлены",
+		"select_templates": "При необходимости предварительно заполните общими ключами:"
+	},
+	"nav": "Переводы",
+	"route_name": "perevody",
+	"search": {
+		"search_term": "Поиск ключей переводов...",
+		"submit": "Фильтровать"
+	},
+	"selectors": {
+		"all": "-- Все --",
+		"per_page": "на странице"
+	},
+	"ui": {
+		"bulk_delete_warning": "Это окончательно удалит",
+		"bulk_delete_warning_suffix": "группу(ы) ключей — включая каждый вложенный ключ и каждый язык.",
+		"filter_label": "Фильтровать по namespace",
+		"global_label": "(глобальный)",
+		"group_label": "Группа",
+		"key_label": "Ключ",
+		"keys_label": "Ключи",
+		"languages_label": "Языки",
+		"namespace_label": "Namespace",
+		"no_records": "Ключи переводов не найдены.",
+		"title": "Переводы"
+	}
+}

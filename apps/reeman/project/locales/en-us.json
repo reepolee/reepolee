@@ -1,0 +1,14 @@
+{
+	"actions": {
+		"set_repo": "Set repository"
+	},
+	"labels": {
+		"current_repo": "Current repository:",
+		"owner_repo": "GitHub repo (owner/repo)"
+	},
+	"ui": {
+		"project_description": "Project-level settings.",
+		"project_title": "Project",
+		"set_repo_hint": "Link this project to a GitHub repo so issue reports and package.json metadata point at the right place."
+	}
+}
