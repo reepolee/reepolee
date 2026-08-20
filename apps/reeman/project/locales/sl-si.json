@@ -6,6 +6,7 @@
 		"current_repo": "Trenutni repozitorij:",
 		"owner_repo": "Repozitorij GitHub (owner/repo)"
 	},
+	"nav": "Projekt",
 	"ui": {
 		"project_description": "Nastavitve projekta.",
 		"project_title": "Projekt",

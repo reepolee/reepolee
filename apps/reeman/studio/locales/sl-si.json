@@ -47,6 +47,7 @@
 		"delete_view": "Izbriši ta pogled?",
 		"generate_view": "Generiraj pogled za to tabelo?"
 	},
+	"nav": "DDL Studio",
 	"nav_prefix_title": "Studio",
 	"route_name": "studio",
 	"selectors": {

@@ -27,6 +27,7 @@
 		"source_dir": "Upstream source directory",
 		"upstream": "Upstream"
 	},
+	"nav": "Sync",
 	"ui": {
 		"confirm_apply_hint": "This copies the selected files from the upstream source into this project, overwriting local content for modified files.",
 		"ignored_by_pattern": "Ignored by pattern",

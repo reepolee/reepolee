@@ -47,6 +47,7 @@
 		"no_records": "V config/supported_locales.ts ni najdenih jezikov.",
 		"records": "jezik(-e)",
 		"remove_selected_hint": "Odstrani izbrane jezike - njihovi prevodi in vsebinske tabele bodo izbrisani.",
-		"save_hint": "Shrani neposredno v config/supported_locales.ts. Za uveljavitev osvežite poti."
+		"save_hint": "Shrani neposredno v config/supported_locales.ts. Za uveljavitev osvežite poti.",
+		"title": "Jezik"
 	}
 }

@@ -21,6 +21,8 @@ function image_bands(image_path: string): number {
 	return Number(stdout_text.trim());
 }
 
+// Spawns the external vips binary twice; under a full parallel test run the
+// spawns can take longer than the default 5s timeout, so give it headroom.
 test("normalizes Playwright RGBA differences for the annotation renderer", () => {
 	const executable = Bun.which("vips");
 	if (!executable) throw new Error("libvips is required for the visual difference test.");
@@ -42,4 +44,4 @@ test("normalizes Playwright RGBA differences for the annotation renderer", () =>
 	} finally {
 		rmSync(temp_directory, { recursive: true, force: true });
 	}
-});
+}, { timeout: 30_000 });

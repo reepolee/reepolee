@@ -13,28 +13,31 @@ const platform = os.platform();
 const bin_dir = path.join(home_dir, "bin");
 
 async function run_command(command: string, args: string[], inherit_output = true): Promise<command_result> {
-	const stdio = inherit_output ? "inherit" : "pipe";
-	let child: ReturnType<typeof Bun.spawn>;
+	if (!inherit_output) {
+		// Pipe stdio so stdout/stderr come back as streams, not fd numbers.
+		let captured: Bun.Subprocess<"pipe", "pipe", "pipe">;
+		try {
+			captured = Bun.spawn([command, ...args], { stdin: "pipe", stdout: "pipe", stderr: "pipe" });
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			return { code: -1, output: message };
+		}
+		const stdout_promise = new Response(captured.stdout).text();
+		const stderr_promise = new Response(captured.stderr).text();
+		const code = await captured.exited;
+		const parts = await Promise.all([stdout_promise, stderr_promise]);
+		return { code, output: `${parts[0]}${parts[1]}` };
+	}
+
+	let inherited: Bun.Subprocess<"inherit", "inherit", "inherit">;
 	try {
-		child = Bun.spawn([command, ...args], { stdin: stdio, stdout: stdio, stderr: stdio });
+		inherited = Bun.spawn([command, ...args], { stdin: "inherit", stdout: "inherit", stderr: "inherit" });
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		return { code: -1, output: message };
 	}
-	let output = "";
-	let output_promise: Promise<string> | undefined;
-	let error_promise: Promise<string> | undefined;
-	if (!inherit_output) {
-		output_promise = new Response(child.stdout).text();
-		error_promise = new Response(child.stderr).text();
-	}
-
-	const code = await child.exited;
-	if (output_promise && error_promise) {
-		const parts = await Promise.all([output_promise, error_promise]);
-		output = `${parts[0]}${parts[1]}`;
-	}
-	return { code, output };
+	const code = await inherited.exited;
+	return { code, output: "" };
 }
 
 async function delete_file(file_path: string): Promise<void> {

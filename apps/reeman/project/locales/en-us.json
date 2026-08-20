@@ -6,6 +6,7 @@
 		"current_repo": "Current repository:",
 		"owner_repo": "GitHub repo (owner/repo)"
 	},
+	"nav": "Project",
 	"ui": {
 		"project_description": "Project-level settings.",
 		"project_title": "Project",

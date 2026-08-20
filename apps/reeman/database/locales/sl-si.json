@@ -26,6 +26,7 @@
 		"sql_file": "Datoteka SQL",
 		"table_name": "Ime tabele"
 	},
+	"nav": "Podatkovna baza",
 	"selectors": {
 		"select_sql": "-- izberite datoteko .sql --"
 	},

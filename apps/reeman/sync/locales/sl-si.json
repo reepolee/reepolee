@@ -27,6 +27,7 @@
 		"source_dir": "Izvorni imenik",
 		"upstream": "Izvor"
 	},
+	"nav": "Sinhronizacija",
 	"ui": {
 		"confirm_apply_hint": "To bo kopiralo izbrane datoteke iz izvornega imenika v ta projekt in prepisalo lokalno vsebino spremenjenih datotek.",
 		"ignored_by_pattern": "Prezrto po vzorcu",

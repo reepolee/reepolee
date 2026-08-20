@@ -47,6 +47,7 @@
 		"delete_view": "Delete this view?",
 		"generate_view": "Generate a view for this table?"
 	},
+	"nav": "DDL Studio",
 	"nav_prefix_title": "Studio",
 	"route_name": "studio",
 	"selectors": {

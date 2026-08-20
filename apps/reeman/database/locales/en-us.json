@@ -26,6 +26,7 @@
 		"sql_file": "SQL file",
 		"table_name": "Table name"
 	},
+	"nav": "Database",
 	"selectors": {
 		"select_sql": "-- select a .sql file --"
 	},

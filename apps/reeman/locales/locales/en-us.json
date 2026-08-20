@@ -47,6 +47,7 @@
 		"no_records": "No locales found in config/supported_locales.ts.",
 		"records": "locale(s)",
 		"remove_selected_hint": "Removes the selected locales - their translations and content tables are deleted.",
-		"save_hint": "Saves straight to config/supported_locales.ts. Reload routes to apply."
+		"save_hint": "Saves straight to config/supported_locales.ts. Reload routes to apply.",
+		"title": "Locale"
 	}
 }
