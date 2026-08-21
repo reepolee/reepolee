@@ -1,0 +1,21 @@
+{
+	"actions": {
+		"cancel": "Abbrechen",
+		"submit": "Profil speichern"
+	},
+	"labels": {
+		"avatar": "Avatar-Bild",
+		"name": "Vollständiger Name",
+		"nickname": "Spitzname"
+	},
+	"messages": {
+		"successful_save": "Das Profil wurde erfolgreich gespeichert."
+	},
+	"route_name": "profil",
+	"ui": {
+		"avatar_label": "Profilbild",
+		"change_password": "Passwort ändern",
+		"logout": "Abmelden",
+		"title": "Mein Profil"
+	}
+}

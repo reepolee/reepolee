@@ -1,0 +1,95 @@
+{
+	"actions": {
+		"bulk_action": "Eliminar tablas de BD seleccionadas",
+		"bulk_action_2": "Acción alternativa",
+		"cancel": "Cancelar",
+		"do_it": "Sí, hacerlo",
+		"fields": "Solo campos",
+		"force": "Forzar sobrescritura",
+		"full": "Actualización completa",
+		"generate_crud": "Generar CRUD",
+		"new_db_table": "Nueva tabla de BD",
+		"refresh_crud": "Actualizar CRUD",
+		"save": "Guardar",
+		"save_close": "Guardar y cerrar",
+		"schema_only": "Solo esquema",
+		"translate": "Traducir con IA"
+	},
+	"child_ui": {
+		"actions": "Acciones",
+		"delete": "Eliminar",
+		"deleting": "Eliminando…",
+		"edit": "Editar",
+		"edit_title": "Editar Db_table",
+		"empty_text": "No se encontraron tablas de BD.",
+		"error_deleting": "Error al eliminar el registro.",
+		"error_loading": "Error al cargar el registro.",
+		"error_saving": "Error al guardar el registro.",
+		"new_button": "+ Nueva Db_table",
+		"new_title": "Nueva Db_table"
+	},
+	"errors": {
+		"duplicate_key": "Ya existe un registro con este valor.",
+		"error_creating_record": "Se produjo un error al guardar el registro.",
+		"has_crud_required": "Se requiere la indicación de \"Has CRUD\".",
+		"must_be_selected": "Este campo es obligatorio.",
+		"name_required": "El nombre es obligatorio.",
+		"title_required": "El título es obligatorio.",
+		"value_required_or_use_original": "Introduzca un valor traducido o elimine este idioma."
+	},
+	"hints": {
+		"prefix": "Prefijo de ruta de URL opcional para las rutas generadas (p. ej. admin). Déjelo en blanco para montarlo en la raíz.",
+		"route_name": "Nombre de URL opcional que sustituye al nombre de la tabla (p. ej. my-users)"
+	},
+	"labels": {
+		"column_count": "Número de columnas",
+		"display": "Mostrar",
+		"fk_count": "Número de FK",
+		"has_crud": "Tiene CRUD",
+		"index_columns": "Columnas de índice",
+		"mode": "Modo",
+		"name": "Nombre",
+		"pagination": "Paginación",
+		"prefix": "Prefijo",
+		"render_strategy": "Estrategia de renderizado",
+		"route_name": "Nombre de ruta (opcional)",
+		"row_count": "Número de filas",
+		"table": "Tabla / Ruta",
+		"template_tags": "Etiquetas de plantilla"
+	},
+	"messages": {
+		"bulk_delete_failed": "Falló la eliminación masiva.",
+		"bulk_delete_no_ids": "No hay tablas de BD seleccionadas.",
+		"bulk_deleted": "No se eliminaron tablas de BD|{count} tabla de BD eliminada|{count} tablas de BD eliminadas|{count} tablas de BD eliminadas|{count} tablas de BD eliminadas",
+		"bulk_errors": "|{count} tabla de BD con error|{count} tablas de BD con error|{count} tablas de BD con error|{count} tablas de BD con error",
+		"record_created": "Registro creado",
+		"record_updated": "Registro actualizado"
+	},
+	"nav": "Tablas de BD",
+	"route_name": "tablas-bd",
+	"search": {
+		"search_term": "Buscar tablas de BD...",
+		"submit": "Buscar"
+	},
+	"selectors": {
+		"0": "No",
+		"1": "Sí",
+		"all": "Todos",
+		"default": "(mantener actual)",
+		"per_page": "por página",
+		"select_table": "-- Seleccionar tabla o ruta --"
+	},
+	"ui": {
+		"apply_filters": "Aplicar",
+		"busy": "Procesando — la página se actualizará al terminar.",
+		"clear_all": "Borrar todo",
+		"filter_not": "NO",
+		"loading_count": "Cargando…",
+		"modifying": "Está a punto de modificar",
+		"no_records": "No se encontraron tablas de BD.",
+		"no_selectable_columns": "No hay columnas de índice seleccionables: se usarán los valores predeterminados del generador.",
+		"records": "registro(s)",
+		"refresh_skip_hint": "Se omiten las tablas sin CRUD existente.",
+		"title": "Tabla de BD"
+	}
+}

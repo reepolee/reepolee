@@ -1,0 +1,71 @@
+{
+	"actions": {
+		"add_project": "Add a project",
+		"cancel": "Cancel",
+		"clear": "Clear history",
+		"compare": "Compare to baseline",
+		"confirm_clear": "Clear completed",
+		"manage_page_sets": "Manage page sets"
+	},
+	"baseline": {
+		"capture": "Capture baseline",
+		"capture_hint": "Replaces the saved visual reference with fresh captures of the selected page set.",
+		"description": "Capture or replace the saved visual reference for the active page set.",
+		"title": "Visual baseline"
+	},
+	"confirm": {
+		"clear": "Remove all completed visual comparison reports? Saved baselines are kept."
+	},
+	"labels": {
+		"baseline_details": "Baseline details",
+		"baseline_pages": "baseline pages",
+		"baseline_updated": "Baseline captured",
+		"baseline_url": "Baseline base URL",
+		"capture_size": "Capture size",
+		"changed": "changed",
+		"db_snapshot": "DB snapshot",
+		"chrome": "Page capture",
+		"evidence_render": "Evidence video",
+		"image_diff": "Image comparison",
+		"latest_capture_pages": "Pages captured last time",
+		"pages": "pages",
+		"voiceover": "Evidence voiceover"
+	},
+	"nav": "Run & Results",
+	"results": {
+		"history_description": "Visual comparisons, newest first.",
+		"history_title": "Result history",
+		"no_results": "No visual comparisons yet."
+	},
+	"route_name": "run-tests",
+	"schedule": {
+		"add": "Add schedule",
+		"description": "Automatically run the active page set's comparison or baseline capture on an interval.",
+		"every": "every",
+		"hours": "h",
+		"interval": "Interval (hours)",
+		"last_run": "last run",
+		"no_schedules": "No schedules yet.",
+		"operation": "Operation",
+		"remove": "Remove",
+		"title": "Schedule"
+	},
+	"status": {
+		"baseline_ready": "Baseline ready",
+		"no_baseline": "No baseline"
+	},
+	"ui": {
+		"description": "Capture baselines, run visual comparisons, and review results in one place.",
+		"no_page_set": "Select or create a page set before running page tests.",
+		"no_projects": "Register a project before running tests.",
+		"db_snapshot_missing": "This baseline's database snapshot is missing. Recapture the baseline to restore a consistent test database.",
+		"qa_run_active": "QA run in progress",
+		"title": "Run & Results",
+		"visual_run_active": "Visual run in progress"
+	},
+	"visual": {
+		"description": "Compare the active page set's baseline with the currently running site.",
+		"no_baseline_hint": "Capture a baseline for this page set before running a visual comparison.",
+		"title": "Visual comparison"
+	}
+}

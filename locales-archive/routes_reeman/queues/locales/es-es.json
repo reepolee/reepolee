@@ -1,0 +1,47 @@
+{
+	"actions": {
+		"cancel": "Cancelar",
+		"clear_all": "Borrar todo",
+		"clear_pending": "Pendiente",
+		"confirm": "Confirmar",
+		"delete": "Eliminar",
+		"pause": "Pausar trabajador",
+		"resume": "Reanudar trabajador",
+		"retry": "Reintentar"
+	},
+	"labels": {
+		"actions": "Acciones",
+		"attempts": "Intentos",
+		"created": "Creado",
+		"error": "Error",
+		"id": "ID",
+		"last_run": "Última ejecución",
+		"payload": "Carga útil",
+		"pending": "Pendiente",
+		"queue": "Cola",
+		"scheduled": "Programado",
+		"type": "Tipo"
+	},
+	"nav": "Colas",
+	"route_name": "queues",
+	"ui": {
+		"backend": "Backend",
+		"confirm_clear_all": "¿Borrar todos los trabajos de esta cola? Esto no se puede deshacer.",
+		"confirm_clear_pending": "¿Borrar todos los trabajos pendientes de esta cola?",
+		"confirm_delete_job": "¿Eliminar permanentemente este trabajo fallido? Esto no se puede deshacer.",
+		"error_loading": "No se pudieron cargar los datos de la cola",
+		"failed_heading": "Trabajos fallidos",
+		"no_failed": "No hay trabajos fallidos",
+		"no_pending": "No hay trabajos pendientes",
+		"no_queues": "No hay colas activas",
+		"queues_heading": "Colas",
+		"redis_unavailable": "Redis no está disponible - las funciones de cola están deshabilitadas. Los correos se envían directamente vía SMTP en lugar de colocarlos en una cola.",
+		"title": "Gestor de Colas",
+		"worker_draining": "drenando",
+		"worker_offline": "No se detectó trabajador de cola - los trabajos no se procesarán",
+		"worker_online": "El trabajador de cola está en ejecución",
+		"worker_paused": "pausado",
+		"worker_running": "ejecutándose",
+		"worker_stopped": "detenido"
+	}
+}

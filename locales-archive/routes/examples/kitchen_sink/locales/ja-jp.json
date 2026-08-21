@@ -1,0 +1,52 @@
+{
+	"descriptions": {
+		"card": "これは枠線とパディングを持つカード風のセクションです。",
+		"typography": "太字と斜体の書式を持つ通常の段落テキスト。"
+	},
+	"errors": {
+		"min_length_3": "最低3文字が必要です",
+		"text_input_max": "最大100文字まで"
+	},
+	"labels": {
+		"banners": "バナー",
+		"buttons": "ボタン",
+		"card_section": "カードセクション",
+		"cards": "カードとセクション",
+		"checkbox_option": "チェックボックスオプション",
+		"code_example": "コード例",
+		"date_input": "日付入力",
+		"disabled_button": "無効なボタン",
+		"email_input": "メール入力",
+		"email_placeholder": "メールアドレスを入力",
+		"file_upload": "ファイルアップロード",
+		"form_elements": "フォーム要素",
+		"heading_1": "見出し1",
+		"heading_2": "見出し2",
+		"heading_3": "見出し3",
+		"list_item": "リスト項目",
+		"option": "オプション",
+		"primary_button": "プライマリボタン",
+		"radio": "ラジオ",
+		"radio_options": "ラジオオプション",
+		"secondary_button": "セカンダリボタン",
+		"select_dropdown": "セレクトドロップダウン",
+		"selected_date": "選択された日付:",
+		"text_input": "テキスト入力",
+		"text_placeholder": "テキストを入力（最小3文字）",
+		"textarea": "テキストエリア",
+		"textarea_placeholder": "複数行を入力",
+		"typography": "タイポグラフィ"
+	},
+	"messages": {
+		"error": "エラー: 問題が発生しました",
+		"info": "情報: これは情報です",
+		"success": "成功: 操作が正常に完了しました",
+		"warning": "警告: この情報を確認してください"
+	},
+	"nav": "キッチンシンク",
+	"route_name": "kitchen-sink",
+	"ui": {
+		"description": "コンポーネントショーケースと例",
+		"title": "キッチンシンク"
+	}
+}

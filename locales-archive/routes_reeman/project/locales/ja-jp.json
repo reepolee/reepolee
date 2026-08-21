@@ -1,0 +1,18 @@
+{
+	"actions": {
+		"set_repo": "リポジトリを設定"
+	},
+	"labels": {
+		"current_repo": "現在のリポジトリ:",
+		"owner_repo": "GitHubリポジトリ（owner/repo）",
+		"r2_credentials": "R2認証情報"
+	},
+	"ui": {
+		"project_description": "プロジェクトレベルの設定。",
+		"project_title": "プロジェクト",
+		"r2_all_set": "すべてのR2認証情報が設定されています。",
+		"r2_hint": "問題レポーターのスクリーンショットアップロード用のCloudflare R2認証情報。.env で設定してください。",
+		"r2_missing": "R2認証情報がありません — 問題レポートのスクリーンショットはアップロードされません。",
+		"set_repo_hint": "問題レポートとpackage.jsonメタデータが正しい場所を指すように、このプロジェクトをGitHubリポジトリにリンクしてください。"
+	}
+}

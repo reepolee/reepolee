@@ -1,0 +1,52 @@
+{
+	"actions": {
+		"abort_delete": "Cancelar",
+		"bulk_action": "Eliminar imágenes seleccionadas",
+		"confirm_delete": "Sí, eliminar",
+		"delete": "¿Eliminar esta imagen definitivamente?",
+		"new_image": "Nueva imagen"
+	},
+	"labels": {
+		"description": "Descripción",
+		"file_size": "Tamaño del archivo",
+		"filename": "Nombre de archivo",
+		"folder": "Carpeta",
+		"height": "Alto",
+		"mime_type": "Tipo MIME",
+		"original_filename": "Nombre de archivo original",
+		"s3_key": "Clave S3",
+		"tags": "Etiquetas",
+		"title": "Título",
+		"width": "Ancho"
+	},
+	"messages": {
+		"bulk_delete_no_ids": "No hay imágenes seleccionadas.",
+		"bulk_deleted": "No se eliminaron imágenes|{count} imagen eliminada|{count} imágenes eliminadas|{count} imágenes eliminadas|{count} imágenes eliminadas",
+		"bulk_errors": "|{count} imagen con error|{count} imágenes con error|{count} imágenes con error|{count} imágenes con error"
+	},
+	"nav": "Imágenes",
+	"route_name": "imagenes",
+	"search": {
+		"search_term": "Buscar imágenes...",
+		"submit": "Buscar"
+	},
+	"selectors": {
+		"all": "Todos"
+	},
+	"ui": {
+		"no_records": "No se encontraron imágenes.",
+		"title": "Imágenes"
+	},
+	"v_labels": {
+		"description": "Descripción",
+		"file_size": "Tamaño del archivo",
+		"filename": "Nombre de archivo",
+		"folder": "Carpeta",
+		"height": "Alto",
+		"mime_type": "Tipo MIME",
+		"original_filename": "Nombre de archivo original",
+		"tags": "Etiquetas",
+		"title": "Título",
+		"width": "Ancho"
+	}
+}

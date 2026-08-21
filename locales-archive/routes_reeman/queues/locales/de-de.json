@@ -1,0 +1,47 @@
+{
+	"actions": {
+		"cancel": "Abbrechen",
+		"clear_all": "Alle löschen",
+		"clear_pending": "Ausstehend",
+		"confirm": "Bestätigen",
+		"delete": "Löschen",
+		"pause": "Arbeiter pausieren",
+		"resume": "Arbeiter fortsetzen",
+		"retry": "Wiederholen"
+	},
+	"labels": {
+		"actions": "Aktionen",
+		"attempts": "Versuche",
+		"created": "Erstellt",
+		"error": "Fehler",
+		"id": "ID",
+		"last_run": "Letzter Lauf",
+		"payload": "Nutzlast",
+		"pending": "Ausstehend",
+		"queue": "Warteschlange",
+		"scheduled": "Geplant",
+		"type": "Typ"
+	},
+	"nav": "Warteschlangen",
+	"route_name": "queues",
+	"ui": {
+		"backend": "Backend",
+		"confirm_clear_all": "Alle Aufträge aus dieser Warteschlange löschen? Dies kann nicht rückgängig gemacht werden.",
+		"confirm_clear_pending": "Alle ausstehenden Aufträge aus dieser Warteschlange löschen?",
+		"confirm_delete_job": "Diesen fehlgeschlagenen Auftrag dauerhaft löschen? Dies kann nicht rückgängig gemacht werden.",
+		"error_loading": "Fehler beim Laden der Warteschlangendaten",
+		"failed_heading": "Fehlgeschlagene Aufträge",
+		"no_failed": "Keine fehlgeschlagenen Aufträge",
+		"no_pending": "Keine ausstehenden Aufträge",
+		"no_queues": "Keine Warteschlangen aktiv",
+		"queues_heading": "Warteschlangen",
+		"redis_unavailable": "Redis ist nicht verfügbar - Warteschlangenfunktionen sind deaktiviert. E-Mails werden direkt über SMTP gesendet, anstatt in die Warteschlange eingereiht zu werden.",
+		"title": "Queue Manager",
+		"worker_draining": "leer",
+		"worker_offline": "Keinen Warteschlangenarbeiter erkannt - Aufträge werden nicht verarbeitet",
+		"worker_online": "Warteschlangenarbeiter läuft",
+		"worker_paused": "pausiert",
+		"worker_running": "läuft",
+		"worker_stopped": "gestoppt"
+	}
+}

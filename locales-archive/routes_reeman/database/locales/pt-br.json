@@ -1,0 +1,44 @@
+{
+	"actions": {
+		"check_compliance": "Verificar conformidade de domínio",
+		"json_to_sql": "JSON para tabela SQL",
+		"open_in_studio": "Abrir no Studio",
+		"run_sql": "Executar arquivo SQL"
+	},
+	"confirm": {
+		"run_sql": "Executar este arquivo SQL no banco de dados? Esta ação não pode ser desfeita."
+	},
+	"hints": {
+		"json_path": "Caminho do arquivo JSON a converter, relativo à raiz do projeto (ex.: data/recipes.json)",
+		"slug": "Slug em minúsculas opcional para o nome do arquivo SQL gerado. O padrão é o nome da tabela.",
+		"slug_safe_table": "Apenas letras minúsculas e números (usado para o slug do nome do arquivo SQL)"
+	},
+	"labels": {
+		"action": "Ação",
+		"file_count": "arquivos",
+		"file_type": "Tipo",
+		"folder": "Pasta",
+		"folder_summary": "Total de pastas",
+		"json_file": "Arquivo JSON",
+		"json_path": "Caminho do arquivo JSON",
+		"last_updated": "Última atualização",
+		"slug": "Slug (opcional)",
+		"sql_file": "Arquivo SQL",
+		"table_name": "Nome da tabela"
+	},
+	"selectors": {
+		"select_sql": "-- selecionar um arquivo .sql --"
+	},
+	"ui": {
+		"broken_views_hint": "Estas visões referenciam tabelas que não existem mais e foram ignoradas durante a inspeção. Recrie as tabelas ausentes (ex.: via Executar arquivo SQL) e recarregue.",
+		"broken_views_title": "Visões quebradas detectadas",
+		"busy": "Processando — a página será atualizada ao concluir.",
+		"compliance_hint": "Inspeciona o banco de dados ativo e relata colunas que não correspondem aos tipos de domínio canônicos. Somente leitura.",
+		"database_description": "Executar arquivos SQL, importar dados de JSON e verificar conformidade de domínio.",
+		"database_title": "Banco de dados",
+		"json_to_sql_hint": "Envie um arquivo JSON e gere arquivos SQL MySQL e SQLite emparelhados.",
+		"json_upload_hint": "Selecione um arquivo .json antes de iniciar a transformação.",
+		"no_sql_files": "Nenhum arquivo .sql encontrado em sql/{dialect}/.",
+		"sql_files_hint": "Escolha um arquivo SQL para executar no banco de dados atual."
+	}
+}

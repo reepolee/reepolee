@@ -1,0 +1,27 @@
+{
+	"actions": {
+		"add_project": "Add a project",
+		"cancel": "Cancel",
+		"clear": "Clear history",
+		"confirm_clear": "Clear completed",
+		"run_check": "Run check"
+	},
+	"command_checks": {
+		"description": "Run the allowlisted Bun commands defined for this project.",
+		"script_unavailable": "Package script not available",
+		"title": "Command checks"
+	},
+	"confirm": {
+		"clear": "Remove all completed QA run records?"
+	},
+	"nav": "Command Checks",
+	"route_name": "command-checks",
+	"ui": {
+		"active_run": "QA run in progress",
+		"description": "Run and review the allowlisted Bun command checks.",
+		"history_title": "Run history",
+		"no_projects": "Register a project before running command checks.",
+		"no_runs": "No command runs yet.",
+		"title": "Command Checks"
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"actions": {
+		"set_repo": "Repository festlegen"
+	},
+	"labels": {
+		"current_repo": "Aktuelles Repository:",
+		"owner_repo": "GitHub-Repository (owner/repo)",
+		"r2_credentials": "R2-Anmeldeinformationen"
+	},
+	"ui": {
+		"project_description": "Projekteinstellungen.",
+		"project_title": "Projekt",
+		"r2_all_set": "Alle R2-Anmeldeinformationen sind konfiguriert.",
+		"r2_hint": "Cloudflare-R2-Anmeldeinformationen für Screenshot-Uploads des Problemberichts. Legen Sie diese in .env fest.",
+		"r2_missing": "R2-Anmeldeinformationen fehlen — Screenshots in Problemberichten werden nicht hochgeladen.",
+		"set_repo_hint": "Verknüpfen Sie dieses Projekt mit einem GitHub-Repository, damit Problemberichte und package.json-Metadaten auf den richtigen Ort verweisen."
+	}
+}

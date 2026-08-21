@@ -1,0 +1,22 @@
+{
+	"actions": {
+		"cancel": "Abbrechen",
+		"submit": "Passwort ändern"
+	},
+	"errors": {
+		"incorrect_password": "Das aktuelle Passwort ist falsch."
+	},
+	"labels": {
+		"current_password": "Aktuelles Passwort",
+		"password": "Neues Passwort",
+		"password_confirm": "Neues Passwort bestätigen"
+	},
+	"messages": {
+		"successful_save": "Das Passwort wurde erfolgreich geändert."
+	},
+	"route_name": "passwort",
+	"ui": {
+		"no_password_set": "Es wurde kein Passwort festgelegt. Kontaktieren Sie den Administrator.",
+		"title": "Passwort ändern"
+	}
+}
