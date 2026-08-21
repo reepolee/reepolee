@@ -1,0 +1,52 @@
+{
+	"descriptions": {
+		"card": "Esta é uma seção em formato de cartão com borda e espaçamento interno.",
+		"typography": "Texto de parágrafo normal com formatação em negrito e itálico."
+	},
+	"errors": {
+		"min_length_3": "Mínimo de 3 caracteres obrigatório",
+		"text_input_max": "Máximo de 100 caracteres permitido"
+	},
+	"labels": {
+		"banners": "Banners",
+		"buttons": "Botões",
+		"card_section": "Seção de cartão",
+		"cards": "Cartões e seções",
+		"checkbox_option": "Opção de caixa de seleção",
+		"code_example": "Exemplo de código",
+		"date_input": "Campo de data",
+		"disabled_button": "Botão desativado",
+		"email_input": "Campo de e-mail",
+		"email_placeholder": "Digite o e-mail",
+		"file_upload": "Upload de arquivo",
+		"form_elements": "Elementos de formulário",
+		"heading_1": "Cabeçalho 1",
+		"heading_2": "Cabeçalho 2",
+		"heading_3": "Cabeçalho 3",
+		"list_item": "Item da lista",
+		"option": "Opção",
+		"primary_button": "Botão principal",
+		"radio": "Radio",
+		"radio_options": "Opções de radio",
+		"secondary_button": "Botão secundário",
+		"select_dropdown": "Menu suspenso",
+		"selected_date": "Data selecionada:",
+		"text_input": "Campo de texto",
+		"text_placeholder": "Digite texto (mín. 3 caracteres)",
+		"textarea": "Área de texto",
+		"textarea_placeholder": "Digite várias linhas",
+		"typography": "Tipografia"
+	},
+	"messages": {
+		"error": "Erro: Algo deu errado",
+		"info": "Info: Isto é informativo",
+		"success": "Sucesso: A operação foi concluída com sucesso",
+		"warning": "Aviso: Revise estas informações"
+	},
+	"nav": "Pia de cozinha",
+	"route_name": "pia-de-cozinha",
+	"ui": {
+		"description": "Vitrine de componentes e exemplos",
+		"title": "Pia de cozinha"
+	}
+}

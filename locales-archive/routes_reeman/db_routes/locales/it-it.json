@@ -1,0 +1,103 @@
+{
+	"actions": {
+		"add_condition": "Aggiungi condizione",
+		"add_page": "Aggiungi pagina semplice",
+		"add_table_page": "Aggiungi pagina di tabella semplice",
+		"bulk_action": "Elimina le rotte DB selezionate",
+		"bulk_action_2": "Azione alternativa",
+		"cancel": "Annulla",
+		"create": "Crea",
+		"do_it": "Sì, procedi",
+		"fields": "Solo campi",
+		"full": "Aggiornamento completo",
+		"new_db_route": "Nuova rotta DB",
+		"refresh_crud": "Aggiorna CRUD",
+		"remove": "Rimuovi",
+		"remove_route": "Rimuovi rotta",
+		"save": "Salva",
+		"save_close": "Salva e chiudi"
+	},
+	"child_ui": {
+		"actions": "Azioni",
+		"delete": "Elimina",
+		"deleting": "Eliminazione…",
+		"edit": "Modifica",
+		"edit_title": "Modifica Db_route",
+		"empty_text": "Nessuna rotta DB trovata.",
+		"error_deleting": "Errore durante l'eliminazione del record.",
+		"error_loading": "Errore durante il caricamento del record.",
+		"error_saving": "Errore durante il salvataggio del record.",
+		"new_button": "+ Nuova Db_route",
+		"new_title": "Nuova Db_route"
+	},
+	"errors": {
+		"duplicate_key": "Esiste già un record con questo valore.",
+		"error_creating_record": "Si è verificato un errore durante il salvataggio del record.",
+		"module_required": "Il modulo è obbligatorio.",
+		"must_be_selected": "Questo campo è obbligatorio.",
+		"table_name_required": "Il nome della tabella è obbligatorio.",
+		"title_required": "Il titolo è obbligatorio.",
+		"url_required": "L'URL è obbligatoria.",
+		"value_required_or_use_original": "Inserisci un valore tradotto o rimuovi questa lingua."
+	},
+	"hints": {
+		"folder_name": "Lettere minuscole, cifre, - o _ (es. my_page).",
+		"prefix": "Prefisso modulo facoltativo. Lascia vuoto per posizionare direttamente in /routes."
+	},
+	"labels": {
+		"delete_translations": "Elimina traduzioni",
+		"display": "Visualizzazione",
+		"fields": "Campi",
+		"folder_name": "Nome cartella",
+		"mode": "Modalità",
+		"module": "Modulo",
+		"order_by": "Ordina per",
+		"prefix": "Prefisso",
+		"removable": "Rimovibile",
+		"table": "Tabella / Rotta",
+		"table_name": "Nome tabella",
+		"template_tags": "Tag del modello",
+		"url": "URL",
+		"where": "Dove"
+	},
+	"messages": {
+		"bulk_delete_failed": "Eliminazione di massa non riuscita.",
+		"bulk_delete_no_ids": "Nessuna rotta DB selezionata.",
+		"bulk_deleted": "Nessuna rotta DB eliminata|{count} rotta DB eliminata|{count} rotte DB eliminate|{count} rotte DB eliminate|{count} rotte DB eliminate",
+		"bulk_errors": "|{count} rotta DB non riuscita|{count} rotte DB non riuscite|{count} rotte DB non riuscite|{count} rotte DB non riuscite",
+		"record_created": "Record creato",
+		"record_updated": "Record aggiornato"
+	},
+	"nav": "Rotte DB",
+	"route_name": "rotte-db",
+	"search": {
+		"search_term": "Cerca rotte DB...",
+		"submit": "Cerca"
+	},
+	"selectors": {
+		"0": "No",
+		"1": "Sì",
+		"all": "Tutti",
+		"default": "(mantieni corrente)",
+		"per_page": "per pagina",
+		"select_table": "-- Seleziona tabella o rotta --"
+	},
+	"ui": {
+		"add_page_hint": "Crea una rotta di pagina statica (senza database) dal modello simple-page.",
+		"add_page_title": "Aggiungi pagina semplice",
+		"add_table_page_hint": "Crea una pagina di elenco in sola lettura basata su una tabella del database.",
+		"add_table_page_title": "Aggiungi pagina di tabella semplice",
+		"apply_filters": "Applica",
+		"busy": "Elaborazione: la pagina si aggiornerà al termine.",
+		"clear_all": "Cancella tutto",
+		"filter_not": "NO",
+		"loading_count": "Caricamento…",
+		"modifying": "Stai per modificare",
+		"no_records": "Nessuna rotta DB trovata.",
+		"no_tables": "Nessuna tabella trovata nel database.",
+		"records": "record",
+		"remove_route_hint": "Questo elimina la cartella della rotta e i suoi file dal disco. Questa azione non può essere annullata.",
+		"select_table_first": "Seleziona una tabella per scegliere i campi.",
+		"title": "Rotta DB"
+	}
+}

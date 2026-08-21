@@ -1,0 +1,44 @@
+{
+	"actions": {
+		"add_group": "Dodaj grupę",
+		"add_namespace": "Dodaj namespace",
+		"bulk_action": "Usuń zaznaczone",
+		"close": "Zamknij",
+		"create": "Utwórz",
+		"delete": "Usuń klucz",
+		"delete_namespace": "Usuń namespace",
+		"do_it": "Usuń",
+		"edit": "Edytuj",
+		"save": "Zapisz zmiany",
+		"save_close": "Zapisz i zamknij"
+	},
+	"messages": {
+		"delete_namespace_confirm": "Wszystkie tłumaczenia w \"{namespace}\" zostaną trwale usunięte.",
+		"no_groups": "Nie znaleziono grup tłumaczeń.",
+		"record_updated": "Tłumaczenia zaktualizowane",
+		"select_templates": "Opcjonalnie wstępnie uzupełnij typowymi kluczami:"
+	},
+	"nav": "Tłumaczenia",
+	"route_name": "tlumaczenia",
+	"search": {
+		"search_term": "Szukaj kluczy tłumaczeń...",
+		"submit": "Filtruj"
+	},
+	"selectors": {
+		"all": "-- Wszystkie --",
+		"per_page": "na stronę"
+	},
+	"ui": {
+		"bulk_delete_warning": "Spowoduje to trwałe usunięcie",
+		"bulk_delete_warning_suffix": "grupa(y) kluczy - w tym każdy zagnieżdżony klucz i każdy język.",
+		"filter_label": "Filtruj według namespace",
+		"global_label": "(globalny)",
+		"group_label": "Grupa",
+		"key_label": "Klucz",
+		"keys_label": "Klucze",
+		"languages_label": "Języki",
+		"namespace_label": "Namespace",
+		"no_records": "Nie znaleziono kluczy tłumaczeń.",
+		"title": "Tłumaczenia"
+	}
+}

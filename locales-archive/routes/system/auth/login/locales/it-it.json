@@ -1,0 +1,18 @@
+{
+	"actions": {
+		"submit": "Accedi"
+	},
+	"errors": {
+		"account_not_verified": "Il tuo account non è ancora verificato.",
+		"invalid_username_or_password": "Nome utente o password non validi."
+	},
+	"labels": {
+		"email": "Email",
+		"password": "Password",
+		"username": "Nome utente (può essere un'email)"
+	},
+	"route_name": "accesso",
+	"ui": {
+		"title": "Accedi"
+	}
+}

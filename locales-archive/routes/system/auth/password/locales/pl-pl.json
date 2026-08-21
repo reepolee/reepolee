@@ -1,0 +1,22 @@
+{
+	"actions": {
+		"cancel": "Anuluj",
+		"submit": "Zmień hasło"
+	},
+	"errors": {
+		"incorrect_password": "Aktualne hasło jest nieprawidłowe."
+	},
+	"labels": {
+		"current_password": "Aktualne hasło",
+		"password": "Nowe hasło",
+		"password_confirm": "Potwierdź nowe hasło"
+	},
+	"messages": {
+		"successful_save": "Hasło zostało pomyślnie zmienione."
+	},
+	"route_name": "haslo",
+	"ui": {
+		"no_password_set": "Hasło nie jest ustawione. Skontaktuj się z administratorem.",
+		"title": "Zmień hasło"
+	}
+}

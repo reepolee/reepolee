@@ -1,0 +1,44 @@
+{
+	"actions": {
+		"add_group": "グループを追加",
+		"add_namespace": "ネームスペースを追加",
+		"bulk_action": "選択した項目を削除",
+		"close": "閉じる",
+		"create": "作成",
+		"delete": "キーを削除",
+		"delete_namespace": "ネームスペースを削除",
+		"do_it": "削除",
+		"edit": "編集",
+		"save": "変更を保存",
+		"save_close": "保存して閉じる"
+	},
+	"messages": {
+		"delete_namespace_confirm": "\"{namespace}\" 内のすべての翻訳が完全に削除されます。",
+		"no_groups": "翻訳グループが見つかりません。",
+		"record_updated": "翻訳を更新しました",
+		"select_templates": "必要に応じて一般的なキーを事前に入力:"
+	},
+	"nav": "翻訳",
+	"route_name": "translations",
+	"search": {
+		"search_term": "翻訳キーを検索...",
+		"submit": "フィルター"
+	},
+	"selectors": {
+		"all": "-- すべて --",
+		"per_page": "ページあたり"
+	},
+	"ui": {
+		"bulk_delete_warning": "これにより完全に削除されます",
+		"bulk_delete_warning_suffix": "キーグループ - すべてのネストされたキーとすべての言語を含みます。",
+		"filter_label": "ネームスペースでフィルター",
+		"global_label": "(グローバル)",
+		"group_label": "グループ",
+		"key_label": "キー",
+		"keys_label": "キー",
+		"languages_label": "言語",
+		"namespace_label": "ネームスペース",
+		"no_records": "翻訳キーが見つかりません。",
+		"title": "翻訳"
+	}
+}

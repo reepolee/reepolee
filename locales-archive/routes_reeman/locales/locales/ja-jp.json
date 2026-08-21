@@ -1,0 +1,50 @@
+{
+	"actions": {
+		"add": "追加",
+		"add_locale": "言語を追加",
+		"back_to_locales": "言語に戻る",
+		"cancel": "キャンセル",
+		"do_it": "実行",
+		"remove": "削除",
+		"remove_selected": "選択した項目を削除",
+		"save": "変更を保存",
+		"set_active": "有効にする",
+		"set_inactive": "無効にする",
+		"translate": "AIで翻訳"
+	},
+	"confirm": {
+		"remove_locale": "この言語を削除しますか？その翻訳とコンテンツテーブルが削除されます。"
+	},
+	"hints": {
+		"alias": "UI文字列配信エイリアス - この言語へのリクエストは対象言語の文字列を表示します",
+		"locale_code": "追加するBCP 47言語コード（例: de-at）"
+	},
+	"labels": {
+		"active": "有効",
+		"alias": "エイリアス",
+		"alias_placeholder": "例: de-at",
+		"available_locales": "利用可能な準備済み言語",
+		"code": "コード",
+		"default": "デフォルト",
+		"locale_code": "言語コード",
+		"locales": "言語",
+		"name": "名前",
+		"name_placeholder": "表示名",
+		"remove": "削除"
+	},
+	"nav": "言語",
+	"route_name": "locales",
+	"ui": {
+		"add_locale_hint": "言語を設定に追加し、翻訳を初期化してコンテンツテーブルを複製します（ジェネレーター add-locale）。",
+		"available_locales_hint": "これらの言語には準備済みの翻訳がすでにディスク上に存在します - ワンクリックで追加できます（設定に追加されるのみで、有効化はされません）。",
+		"busy": "処理中 — 完了するとページが更新されます。",
+		"locales_description": "config/supported_locales.ts を管理します - 言語コード、表示名、エイリアス、有効なリスト、デフォルト。",
+		"locales_manage_hint": "言語を追加すると、その翻訳とコンテンツテーブルが作成されます。または、以下の設定を直接編集してください。",
+		"locales_title": "言語",
+		"modifying": "削除しようとしています",
+		"no_records": "config/supported_locales.ts に言語が見つかりません。",
+		"records": "言語",
+		"remove_selected_hint": "選択した言語を削除します - その翻訳とコンテンツテーブルが削除されます。",
+		"save_hint": "config/supported_locales.ts に直接保存します。適用するにはルートを再読み込みしてください。"
+	}
+}

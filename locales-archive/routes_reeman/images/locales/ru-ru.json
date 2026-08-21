@@ -1,0 +1,52 @@
+{
+	"actions": {
+		"abort_delete": "Отмена",
+		"bulk_action": "Удалить выбранные изображения",
+		"confirm_delete": "Да, удалить",
+		"delete": "Удалить это изображение навсегда?",
+		"new_image": "Новое изображение"
+	},
+	"labels": {
+		"description": "Описание",
+		"file_size": "Размер файла",
+		"filename": "Имя файла",
+		"folder": "Папка",
+		"height": "Высота",
+		"mime_type": "MIME-тип",
+		"original_filename": "Исходное имя файла",
+		"s3_key": "Ключ S3",
+		"tags": "Теги",
+		"title": "Название",
+		"width": "Ширина"
+	},
+	"messages": {
+		"bulk_delete_no_ids": "Изображения не выбраны.",
+		"bulk_deleted": "Изображения не удалены|{count} изображение удалено|{count} изображения удалены|{count} изображения удалены|{count} изображений удалено",
+		"bulk_errors": "|{count} изображение не удалось|{count} изображения не удались|{count} изображения не удались|{count} изображений не удалось"
+	},
+	"nav": "Изображения",
+	"route_name": "izobrazheniya",
+	"search": {
+		"search_term": "Поиск изображений...",
+		"submit": "Поиск"
+	},
+	"selectors": {
+		"all": "Все"
+	},
+	"ui": {
+		"no_records": "Изображения не найдены.",
+		"title": "Изображения"
+	},
+	"v_labels": {
+		"description": "Описание",
+		"file_size": "Размер файла",
+		"filename": "Имя файла",
+		"folder": "Папка",
+		"height": "Высота",
+		"mime_type": "MIME-тип",
+		"original_filename": "Исходное имя файла",
+		"tags": "Теги",
+		"title": "Название",
+		"width": "Ширина"
+	}
+}

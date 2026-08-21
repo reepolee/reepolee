@@ -1,0 +1,85 @@
+{
+	"actions": {
+		"abort_archive": "Cancel",
+		"abort_restore": "Cancel",
+		"archive": "Archive",
+		"bulk_action": "Archive selected modules",
+		"bulk_action_2": "Bulk action 2",
+		"cancel": "Cancel",
+		"confirm_archive": "Yes, archive",
+		"confirm_restore": "Yes, restore",
+		"do_it": "Yes, do it",
+		"new_module": "New Module",
+		"restore": "Restore",
+		"save": "Save",
+		"save_close": "Save & close"
+	},
+	"child_ui": {
+		"actions": "Actions",
+		"archive": "Archive",
+		"archiving": "Archiving…",
+		"edit": "Edit",
+		"edit_title": "Edit Module",
+		"empty_text": "No modules found.",
+		"error_archiving": "Error archiving record.",
+		"error_loading": "Error loading record.",
+		"error_saving": "Error saving record.",
+		"new_button": "+ New Module",
+		"new_title": "New Module",
+		"restore": "Restore"
+	},
+	"counts": {
+		"archived": "Archived",
+		"live": "Active",
+		"total": "Total"
+	},
+	"errors": {
+		"duplicate_key": "A record with this value already exists.",
+		"error_creating_record": "An error occurred while saving the record.",
+		"must_be_selected": "This field is required.",
+		"title_required": "Title is required."
+	},
+	"labels": {
+		"code": "Code",
+		"description": "Description",
+		"name": "Name",
+		"table": "Table / Path"
+	},
+	"messages": {
+		"bulk_archive_failed": "Bulk archive failed.",
+		"bulk_archive_no_ids": "No modules selected.",
+		"bulk_archived": "No modules archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
+		"bulk_errors": "|{count} module failed|{count} modules failed|{count} modules failed|{count} modules failed",
+		"record_archived": "Record archived",
+		"record_created": "Record created",
+		"record_restored": "Record restored",
+		"record_updated": "Record updated"
+	},
+	"nav": "Modules",
+	"route_name": "modules",
+	"scopes": {
+		"__all": "All",
+		"__archived": "Archived"
+	},
+	"search": {
+		"search_term": "Search modules...",
+		"submit": "Search"
+	},
+	"selectors": {
+		"0": "No",
+		"1": "Yes",
+		"all": "All",
+		"per_page": "per page",
+		"select_table": "-- Select table or path --"
+	},
+	"ui": {
+		"apply_filters": "Apply",
+		"clear_all": "Delete all",
+		"filter_not": "NOT",
+		"loading_count": "Loading…",
+		"modifying": "You are about to modify",
+		"no_records": "No modules found.",
+		"records": "record(s)",
+		"title": "Modules"
+	}
+}

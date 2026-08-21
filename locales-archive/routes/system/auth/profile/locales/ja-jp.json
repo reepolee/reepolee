@@ -1,0 +1,21 @@
+{
+	"actions": {
+		"cancel": "キャンセル",
+		"submit": "プロフィールを保存"
+	},
+	"labels": {
+		"avatar": "アバター画像",
+		"name": "氏名",
+		"nickname": "ニックネーム"
+	},
+	"messages": {
+		"successful_save": "プロフィールが正常に保存されました。"
+	},
+	"route_name": "profile",
+	"ui": {
+		"avatar_label": "プロフィール画像",
+		"change_password": "パスワードを変更",
+		"logout": "ログアウト",
+		"title": "マイプロフィール"
+	}
+}
