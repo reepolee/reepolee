@@ -27,6 +27,7 @@ import {
 	action_bulk_schema,
 	action_check_compliance,
 	action_json_to_sql,
+	action_spreadsheet_to_sql,
 	action_refresh,
 	action_reload_routes,
 	action_run_sql,
@@ -302,17 +303,83 @@ export async function post_run_sql(req: BunRequest): Promise<Response> {
 	return redirect_result(req, "run-sql-file", path, result, return_to);
 }
 
-export async function post_json_to_sql(req: BunRequest): Promise<Response> {
-	const return_to = "/database";
+function import_json_response(data: Record<string, unknown>, status: number = 200): Response {
+	return new Response(JSON.stringify(data), {
+		status,
+		headers: { "Content-Type": "application/json; charset=utf-8" },
+	});
+}
+
+export async function post_inspect_import(req: BunRequest): Promise<Response> {
 	const form_data = await req.formData();
 	const uploaded = form_data.get("json_file");
+	if (!(uploaded instanceof File) || uploaded.size === 0) {
+		return import_json_response({ error: "Select an import file first." }, 400);
+	}
+	const is_spreadsheet = /\.(?:xls|xlsx)$/i.test(uploaded.name);
+	const is_json = uploaded.name.toLowerCase().endsWith(".json");
+	if (!is_json && !is_spreadsheet) {
+		return import_json_response({ error: "Only .json, .xls, and .xlsx files are accepted." }, 400);
+	}
+	const max_upload_size_mb = require_max_upload_size_mb();
+	if (uploaded.size > max_upload_size_mb * 1024 * 1024) {
+		return import_json_response({ error: `The import file must be ${max_upload_size_mb} MB or smaller.` }, 400);
+	}
+
+	const extension = is_spreadsheet ? (uploaded.name.toLowerCase().endsWith(".xlsx") ? ".xlsx" : ".xls") : ".json";
+	const temp_path = join(tmpdir(), `reepolee-inspect-${randomUUID()}${extension}`);
+	try {
+		await Bun.write(temp_path, uploaded);
+		const { extract_rows, read_spreadsheet_sheets, suggest_table_name } = await import("$generator/reeman/data_to_sql");
+		if (is_spreadsheet) {
+			const sheets = await read_spreadsheet_sheets(temp_path);
+			const used_names = new Set<string>();
+			const inspected_sheets = sheets.map((sheet, index) => {
+				const base_name = suggest_table_name(sheet.name);
+				let table_name = base_name;
+				let suffix = 2;
+				while (used_names.has(table_name)) {
+					table_name = `${base_name}_${suffix}`;
+					suffix++;
+				}
+				used_names.add(table_name);
+				return { ...sheet, index, table_name };
+			});
+			return import_json_response({ kind: "spreadsheet", sheets: inspected_sheets });
+		}
+		const parsed = JSON.parse(await Bun.file(temp_path).text());
+		const rows = extract_rows(parsed);
+		const column_names = new Set<string>();
+		for (const row of rows) {
+			for (const column_name of Object.keys(row)) column_names.add(column_name);
+		}
+		return import_json_response({
+			kind: "json",
+			row_count: rows.length,
+			columns: [...column_names],
+			table_name: suggest_table_name(uploaded.name),
+		});
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return import_json_response({ error: message }, 400);
+	} finally {
+		await Bun.file(temp_path).delete();
+	}
+}
+
+export async function post_data_to_sql(req: BunRequest): Promise<Response> {
+	const return_to = "/database";
+	const form_data = await req.formData();
+	const uploaded = form_data.get("json_file") ?? form_data.get("spreadsheet_file");
 	const table = typeof form_data.get("table_name") === "string" ? String(form_data.get("table_name")).trim() : "";
 	const slug = typeof form_data.get("slug") === "string" ? String(form_data.get("slug")).trim() : "";
-	if (!(uploaded instanceof File) || uploaded.size === 0 || !table) {
-		return redirect_result(req, "json-to-sql", "", { ok: false, output: "", error: "A JSON file and table name are required." }, return_to);
+	if (!(uploaded instanceof File) || uploaded.size === 0) {
+		return redirect_result(req, "data-to-sql", "", { ok: false, output: "", error: "An import file is required." }, return_to);
 	}
-	if (!uploaded.name.toLowerCase().endsWith(".json")) {
-		return redirect_result(req, "json-to-sql", "", { ok: false, output: "", error: "Only .json files are accepted." }, return_to);
+	const is_spreadsheet = /\.(?:xls|xlsx)$/i.test(uploaded.name);
+	const is_json = uploaded.name.toLowerCase().endsWith(".json");
+	if (!is_json && !is_spreadsheet) {
+		return redirect_result(req, "data-to-sql", "", { ok: false, output: "Only .json, .xls, and .xlsx files are accepted." }, return_to);
 	}
 	if (await is_busy()) return busy_response(req, return_to);
 
@@ -320,19 +387,42 @@ export async function post_json_to_sql(req: BunRequest): Promise<Response> {
 	// filename as a path because it is untrusted input and may contain traversal.
 	const max_upload_size_mb = require_max_upload_size_mb();
 	if (uploaded.size > max_upload_size_mb * 1024 * 1024) {
-		return redirect_result(req, "json-to-sql", "", { ok: false, output: "", error: `The JSON file must be ${max_upload_size_mb} MB or smaller.` }, return_to);
+		return redirect_result(req, "data-to-sql", "", { ok: false, output: "", error: `The import file must be ${max_upload_size_mb} MB or smaller.` }, return_to);
 	}
 
-	const temp_path = join(tmpdir(), `reepolee-json-${randomUUID()}.json`);
+	const extension = is_spreadsheet ? (uploaded.name.toLowerCase().endsWith(".xlsx") ? ".xlsx" : ".xls") : ".json";
+	const temp_path = join(tmpdir(), `reepolee-import-${randomUUID()}${extension}`);
 	try {
 		await Bun.write(temp_path, uploaded);
-		const result = await action_json_to_sql({
-			json_path: temp_path,
-			table,
-			slug,
-			project_root: process.cwd(),
-		});
-		return redirect_result(req, "json-to-sql", uploaded.name, result, return_to);
+		if (is_spreadsheet) {
+			const raw_selections = form_data.get("sheet_selections");
+			if (typeof raw_selections !== "string") {
+				return redirect_result(req, "spreadsheet-to-sql", uploaded.name, { ok: false, output: "", error: "Select at least one spreadsheet sheet." }, return_to);
+			}
+			let selections: Array<{ sheet: string; table: string; }>;
+			try {
+				const parsed_selections = JSON.parse(raw_selections) as unknown;
+				if (!Array.isArray(parsed_selections)) throw new Error("Invalid sheet selection.");
+				selections = parsed_selections.map((selection) => {
+					if (typeof selection !== "object" || selection === null) throw new Error("Invalid sheet selection.");
+					const sheet = "sheet" in selection && typeof selection.sheet === "string" ? selection.sheet.trim() : "";
+					const selection_table = "table" in selection && typeof selection.table === "string" ? selection.table.trim() : "";
+					if (!sheet || !selection_table) throw new Error("Every selected sheet requires a table name.");
+					return { sheet, table: selection_table };
+				});
+				if (selections.length === 0) throw new Error("Select at least one spreadsheet sheet.");
+			} catch (error) {
+				const message = error instanceof Error ? error.message : String(error);
+				return redirect_result(req, "spreadsheet-to-sql", uploaded.name, { ok: false, output: "", error: message }, return_to);
+			}
+			const result = await action_spreadsheet_to_sql({ spreadsheet_path: temp_path, selections, project_root: process.cwd() });
+			return redirect_result(req, "spreadsheet-to-sql", uploaded.name, result, return_to);
+		}
+		if (!table) {
+			return redirect_result(req, "data-to-sql", uploaded.name, { ok: false, output: "", error: "A table name is required." }, return_to);
+		}
+		const result = await action_json_to_sql({ json_path: temp_path, table, slug, project_root: process.cwd() });
+		return redirect_result(req, "data-to-sql", uploaded.name, result, return_to);
 	} finally {
 		await Bun.file(temp_path).delete();
 	}

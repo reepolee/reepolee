@@ -73,6 +73,8 @@
 			</div>
 
 			<div class="flex items-center gap-2">
+				<a href="{~ localized_path('/locales/export-bundle') }" class="button secondary" download>{_ actions.export_english}</a>
+				<button commandfor="upload_translation_dialog" command="show-modal" class="button secondary">{_ actions.upload_translation}</button>
 				<button id="action" commandfor="add_locale_dialog" command="show-modal" class="button primary">{_ actions.add_locale}</button>
 			</div>
 
@@ -171,6 +173,26 @@
 			<p class="px-4 mt-2 text-sm text-text-secondary">{_ ui.available_locales_hint}</p>
 		{/if}
 
+		{#if archived_locales.length > 0 }
+			<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-8" style="grid-template-columns: 14ch 1fr auto">
+				<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-4 *:py-2">
+					<div class="col-span-full">{_ labels.archived_locales}</div>
+				</div>
+				{#each archived_locales as archived_locale }
+					<div class="col-span-full grid grid-cols-subgrid items-center border-b border-b-neutral-200 *:px-4 *:py-2">
+						<div class="font-mono">{= archived_locale.code }</div>
+						<div>{= archived_locale.name }</div>
+						<form method="POST" action="{~ localized_path('/locales/install-archived') }">
+							<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+							<input type="hidden" name="locale_code" value="{= archived_locale.code }" />
+							<button type="submit" class="button secondary" {#if busy }disabled{/if}>{_ actions.import}</button>
+						</form>
+					</div>
+				{/each}
+			</div>
+			<p class="px-4 mt-2 text-sm text-text-secondary">{_ ui.archived_locales_hint}</p>
+		{/if}
+
 		<!-- ADD LOCALE DIALOG - an add action, not gated on enable_archive. The
 			 toolbar Add button (id=action) targets this dialog, so both live
 			 outside the delete-gated block below. -->
@@ -220,6 +242,19 @@
 					</div>
 				</form>
 			</div>
+		</dialog>
+
+		<dialog id="upload_translation_dialog" class="p-0 rounded-xl shadow-2xl w-120">
+			<form method="POST" action="{~ localized_path('/locales/upload-bundle') }" enctype="multipart/form-data" class="p-6 grid gap-4">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<h2 class="text-lg font-semibold">{_ actions.upload_translation}</h2>
+				<p class="text-sm text-text-secondary">{_ ui.upload_translation_hint}</p>
+				<input type="file" name="translation_bundle" accept=".json,application/json" required />
+				<div class="flex justify-end gap-2">
+					<button type="button" class="button secondary" commandfor="upload_translation_dialog" command="close">{_ actions.cancel}</button>
+					<button type="submit" class="button primary">{_ actions.upload}</button>
+				</div>
+			</form>
 		</dialog>
 
 		<script src="/dialog-confirm.js?v={= version}"></script>

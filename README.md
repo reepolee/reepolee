@@ -290,6 +290,15 @@ To change translations, use one of:
 - `bun reeman sync-translations --translate` - AI-powered sync across namespace files
 - `/translations` admin UI in the reeman app (`bun run dev:reeman`) - manual editing through the app
 
+For external translation services, use the versioned bundle workflow:
+
+- `bun reeman export-translation-bundle translation.json --target-locale de-de` exports every current `en-us.json`, keyed by repository-relative path.
+- Translate only the string leaves in `files.*.translations`; preserve keys, placeholders, hashes, and metadata.
+- `bun reeman import-translation-bundle translation.json` validates and archives it as one `locales-archive/{locale}.json` file.
+- Add `--install` to restore the translated files into their co-located live folders, or import the archived locale from Reeman's Locales page.
+
+Imports accept partial file/key sets and merge them into the existing archived locale. Source paths ending in either `en-us.json` or the target locale filename are normalized. Unknown paths or keys, invalid value types, and damaged placeholders are rejected; omitted translations remain unchanged.
+
 **Translation reload endpoint:** The server exposes `POST /__reload-translations` so generators and the queue worker can push fresh translations to a running server without a restart. It is disabled by default. To enable it, set `INTERNAL_ADMIN_ENDPOINTS=true` and a generated `RELOAD_SECRET` of at least 32 characters in `.env`; callers pass that value in `X-Reload-Secret`.
 
 See [AGENTS.md Translations](AGENTS.md#translations-file-first-authoritative-policy) and [internals/CONTEXT.md](internals/CONTEXT.md) for the full merge model, root fallback semantics, the prune tool, and limitations.

@@ -82,6 +82,7 @@ async function main() {
 	const zod_version = extract_version(scripts["get:zod"] ?? "", "zod");
 	const hljs_version = extract_version(scripts["get:hljs"] ?? "", "highlight.js");
 	const temporal_version = extract_version(scripts["get:temporal"] ?? "", "@js-temporal/polyfill");
+	const xlsx_version = extract_version(scripts["get:xlsx"] ?? "", "xlsx");
 	const tw_version = extract_flag_version(scripts["get:tw"] ?? "", "tailwindcss");
 	const tsc_version = extract_flag_version(scripts["get:tsc"] ?? "", "typescript");
 	const vips_version = extract_flag_version(scripts["get:vips"] ?? "", "vips");
@@ -105,6 +106,13 @@ async function main() {
 			url: `https://cdn.jsdelivr.net/npm/highlight.js@${hljs_version}/+esm`,
 			out: join("vendor", "highlight.min.js"),
 			license_url: `https://cdn.jsdelivr.net/npm/highlight.js@${hljs_version}/LICENSE`,
+		},
+		{
+			label: "xlsx",
+			version: xlsx_version,
+			url: `https://cdn.jsdelivr.net/npm/xlsx@${xlsx_version}/dist/xlsx.full.min.js`,
+			out: join("vendor", "xlsx.full.min.js"),
+			license_url: `https://cdn.jsdelivr.net/npm/xlsx@${xlsx_version}/LICENSE`,
 		},
 		{
 			label: "temporal",

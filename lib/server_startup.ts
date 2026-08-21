@@ -95,7 +95,9 @@ export function log_server_addresses(server: Bun.Server<WebSocketData>, is_agent
 	const display_host_raw = is_agent ? "localhost" : Bun.env.SERVER_NAME || "localhost";
 	const display_host = display_host_raw.toLowerCase();
 	const server_url = `${protocol}://${display_host}:${server.port}/`;
-	console.log(`    \x1b[92m${server_url}\x1b[0m`);
+	const localhost_url = `${protocol}://localhost:${server.port}/`;
+	console.log(`    \x1b[92m${localhost_url}\x1b[0m`);
+	if (display_host !== "localhost") console.log(`    \x1b[92m${server_url}\x1b[0m`);
 	console.log("");
 	if (!is_agent && Bun.argv.includes("--other-ips")) {
 		const nets = os.networkInterfaces();

@@ -75,17 +75,17 @@
 				<button type="submit" class="button primary mt-auto">{_ actions.check_compliance}</button>
 			</form>
 
-			<form method="POST" action="{~ localized_path('/json-to-sql') }" enctype="multipart/form-data" class="flex flex-col gap-3 rounded-md border border-border bg-surface-raised p-4">
+			<form method="POST" action="{~ localized_path('/data-to-sql') }" enctype="multipart/form-data" class="flex flex-col gap-3 rounded-md border border-border bg-surface-raised p-4">
 				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 				<input type="hidden" name="return_to" value="/database" />
 				<div class="flex items-center justify-between gap-2">
-					<h2 class="font-semibold">{_ actions.json_to_sql}</h2>
+					<h2 class="font-semibold">{_ actions.data_to_sql}</h2>
 					<span class="pill-layout bg-neutral-200 text-xs">sql</span>
 				</div>
 				<field-wrapper class="grid" data-field="json_file">
 					<div class="grid">
 						<label class="px-3" for="json-file">{_ labels.json_file}</label>
-						<input id="json-file" type="file" name="json_file" accept=".json,application/json" required />
+						<input id="json-file" type="file" name="json_file" accept=".json,.xls,.xlsx,application/json,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required />
 						<validation-error class="mt-1" id="error-json_file"></validation-error>
 					</div>
 				</field-wrapper>
@@ -105,7 +105,7 @@
 						</div>
 					</field-wrapper>
 				</div>
-				<button type="submit" class="button primary mt-auto">{_ actions.json_to_sql}</button>
+				<button type="submit" class="button primary mt-auto">{_ actions.data_to_sql}</button>
 			</form>
 		</section>
 

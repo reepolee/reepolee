@@ -218,6 +218,15 @@ export async function run_generator(name: string, args: string[] = [], synthetic
 					console.log(`✓ Created user ${created.username} <${email}> modules: ${modules_display}`);
 					return true;
 				}
+			case "spreadsheet_to_sql":
+				{
+					const spreadsheet_path = positional();
+					const table = flag_val("--table");
+					if (!spreadsheet_path) throw new Error("Spreadsheet path is required");
+					if (!table) throw new Error("Table name (--table) is required");
+					const { convert_spreadsheet_to_sql_all } = await import("$generator/reeman/data_to_sql");
+					return await convert_spreadsheet_to_sql_all(spreadsheet_path, table, { slug: flag_val("--slug"), sheet: flag_val("--sheet") });
+				}
 			case "validation":
 				{
 					console.log("Validation generator is a library module, not a CLI command.");

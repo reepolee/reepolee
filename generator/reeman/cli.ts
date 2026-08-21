@@ -21,13 +21,14 @@ import { add_locale_to_system } from "../add_locale";
 import { add_locale_alias_to_system } from "../add_locale_alias";
 import { activate_locales_in_system } from "../activate_locale";
 import { install_locale_from_archive, list_archived_locales } from "../install_locale";
+import { archive_translation_bundle, export_translation_bundle, migrate_legacy_translation_archive } from "../translation_bundle";
 import { remove_locale_from_system } from "../remove_locale";
 import { add_module } from "./add_module";
 import { find_missing_keys, write_missing_translations } from "./insert_translations";
 import { find_orphaned_keys } from "./prune_translations";
 import { install_marketplace_archive } from "./install_archive";
 import { pack_marketplace_folder } from "./pack_archive";
-import { convert_json_to_sql } from "./json_to_sql";
+import { convert_json_to_sql, convert_spreadsheet_to_sql } from "./data_to_sql";
 import { execute_sql_file } from "./run_sql_file";
 import { generate_schema } from "../schema";
 import { create_bread, create_localized_bread } from "../crud/create_bread";
@@ -62,6 +63,9 @@ const KNOWN_SUBCOMMANDS = new Set([
 	"pack",
 	"add-module",
 	"install-locale",
+	"export-translation-bundle",
+	"import-translation-bundle",
+	"migrate-translation-archive",
 	"add-locale",
 	"add-locale-alias",
 	"activate-locales",
@@ -75,6 +79,7 @@ const KNOWN_SUBCOMMANDS = new Set([
 	"set-repo",
 	"run-sql-file",
 	"json-to-sql",
+	"spreadsheet-to-sql",
 	"upload-image",
 	"sync-translations",
 	"check-domain-compliance",
@@ -274,6 +279,50 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 			}
 			const success = await install_locale_from_archive(locale_code, { activate: Boolean(values.activate) });
 			process.exit(success ? 0 : 1);
+		}
+
+		case "export-translation-bundle": {
+			const { values, positionals } = parseArgs({
+				args: rest,
+				options: { "target-locale": { type: "string" } },
+				allowPositionals: true,
+				strict: false,
+			});
+			const output_file = positionals[0] !== undefined ? String(positionals[0]) : "translation-bundle-en-us.json";
+			const target_locale = values["target-locale"] ? String(values["target-locale"]) : null;
+			const bundle = await export_translation_bundle(output_file, target_locale);
+			console.log(`${color("✓", GREEN)} Exported ${Object.keys(bundle.files).length} English translation file(s) to ${output_file}.`);
+			process.exit(0);
+		}
+
+		case "import-translation-bundle": {
+			const { values, positionals } = parseArgs({
+				args: rest,
+				options: {
+					install: { type: "boolean", default: false },
+					activate: { type: "boolean", default: false },
+				},
+				allowPositionals: true,
+				strict: false,
+			});
+			const bundle_file = positionals[0] !== undefined ? String(positionals[0]) : "";
+			if (!bundle_file) {
+				console.error("Usage: bun reeman import-translation-bundle <file.json> [--install] [--activate]");
+				process.exit(1);
+			}
+			const bundle = await archive_translation_bundle(bundle_file);
+			console.log(`${color("✓", GREEN)} Archived translated bundle as locales-archive/${bundle.target_locale}.json.`);
+			if (values.install) {
+				const success = await install_locale_from_archive(bundle.target_locale!, { activate: Boolean(values.activate) });
+				process.exit(success ? 0 : 1);
+			}
+			process.exit(0);
+		}
+
+		case "migrate-translation-archive": {
+			const written = await migrate_legacy_translation_archive();
+			console.log(`${color("✓", GREEN)} Migrated ${written.length} archived locale bundle(s).`);
+			process.exit(0);
 		}
 
 		case "add-locale": {
@@ -498,12 +547,14 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 			process.exit(success ? 0 : 1);
 		}
 
-		case "json-to-sql": {
+		case "json-to-sql":
+		case "spreadsheet-to-sql": {
 			const { values, positionals } = parseArgs({
 				args: rest,
 				options: {
 					table: { type: "string" },
 					slug: { type: "string" },
+					sheet: { type: "string" },
 				},
 				allowPositionals: true,
 				strict: false,
@@ -511,19 +562,20 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 			const json_path = positionals[0] !== undefined ? String(positionals[0]) : undefined;
 			const table = values.table ? String(values.table) : undefined;
 			if (!json_path || !table) {
-				console.error("Usage: bun reeman json-to-sql <path> --table <name> [--slug <slug>]");
+				console.error(`Usage: bun reeman ${subcommand} <path> --table <name> [--slug <slug>] [--sheet <name>]`);
 				process.exit(1);
 			}
 			try {
-				const result = await convert_json_to_sql(json_path, table, {
-					slug: values.slug ? String(values.slug) : undefined,
-				});
+				const slug = values.slug ? String(values.slug) : undefined;
+				const result = subcommand === "spreadsheet-to-sql"
+					? await convert_spreadsheet_to_sql(json_path, table, { slug, sheet: values.sheet ? String(values.sheet) : undefined })
+					: await convert_json_to_sql(json_path, table, { slug });
 				console.log(`${color("✓", GREEN)} Wrote ${result.mysql_path}`);
 				console.log(`${color("✓", GREEN)} Wrote ${result.sqlite_path}`);
 				console.log(`${result.row_count} row(s) seeded.`);
 				await log_command(
-					`bun reeman json-to-sql ${json_path} --table ${table}${values.slug ? ` --slug ${values.slug}` : ""}`,
-					`Converted JSON to SQL: ${result.mysql_path}`
+					`bun reeman ${subcommand} ${json_path} --table ${table}${values.slug ? ` --slug ${values.slug}` : ""}${values.sheet ? ` --sheet "${values.sheet}"` : ""}`,
+					`Converted import to SQL: ${result.mysql_path}`
 				);
 				process.exit(0);
 			} catch (err) {

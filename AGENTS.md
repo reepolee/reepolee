@@ -67,7 +67,8 @@ Co-located `{locale}.json` files are the source of truth for UI translations.
 - Root fallback strings live in repository-root `{locale}.json` files.
 - Edit through the JSON file, `bun reeman sync-translations`, MCP, the inspector, or the `/system/translations` admin UI.
 - Keep files sorted, tab-indented, and terminated by a newline. The file helpers enforce this for generated edits.
-- The co-located `{locale}.json` files are the only translation artifact; nothing derived is emitted.
+- Co-located `{locale}.json` files are the only runtime translation artifact; no merged runtime file is emitted.
+- Versioned `locales-archive/{locale}.json` bundles are transport and inactive-locale archive artifacts. They combine all namespaces under repository-relative `en-us.json` path keys, but do not replace co-located runtime files.
 
 Full merge model, root fallback, and the prune tool: [internals/CONTEXT.md](internals/CONTEXT.md) and `lib/i18n.ts`.
 

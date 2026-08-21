@@ -17,7 +17,7 @@ import { run_add_module } from "./add_module";
 import { check_domain_compliance } from "./check_domain_compliance";
 import { get_available_tables } from "./db";
 import { run_bulk_crud_flow } from "./flows/bulk_crud_flow";
-import { run_json_to_sql } from "./json_to_sql";
+import { run_data_to_sql } from "./data_to_sql";
 import { run_crud_flow } from "./flows/main_crud_flow";
 import { run_create_bread_flow } from "./flows/create_bread_flow";
 import { run_nested_children_flow } from "./flows/nested_children_flow";
@@ -158,9 +158,9 @@ export async function main() {
 						description: "Select and execute a .sql file (seed, init, etc.) against the database",
 					},
 					{
-						cmd: "json_to_sql",
-						label: "JSON to SQL table",
-						description: "Convert a JSON file into a new table (paired MySQL/SQLite .sql files, seeded from the data)",
+						cmd: "data_to_sql",
+						label: "DATA to SQL",
+						description: "Convert JSON, XLS, or XLSX into a new table with canonical domain types (paired MySQL/SQLite .sql files)",
 					},
 					{
 						cmd: "upload_image",
@@ -303,7 +303,7 @@ export async function main() {
 				sync_translations: "Sync translations",
 				prune_translations: "Prune unused translations",
 				insert_translations: "Insert missing translations",
-				json_to_sql: "JSON to SQL table",
+				data_to_sql: "DATA to SQL",
 			};
 			console.log(`  ${color("✓", GREEN)} Selected: ${color(BOLD + (cmd_labels[command] ?? command), CYAN)}`);
 
@@ -352,8 +352,8 @@ export async function main() {
 				continue;
 			}
 
-			if (command === "json_to_sql") {
-				await run_json_to_sql();
+			if (command === "data_to_sql") {
+				await run_data_to_sql();
 				await press_enter();
 				continue;
 			}

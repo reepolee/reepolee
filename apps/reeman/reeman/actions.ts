@@ -306,6 +306,13 @@ export async function action_add_seeded_locale(params: { locale_code: string; })
 	});
 }
 
+export async function action_install_archived_locale(params: { locale_code: string; }): Promise<ActionResult> {
+	return run_captured_action("install-archived-locale", params.locale_code, async () => {
+		const { install_locale_from_archive } = await import("$generator/install_locale");
+		return await install_locale_from_archive(params.locale_code);
+	});
+}
+
 export async function action_activate_locales(params: { locale_codes: string[]; }): Promise<ActionResult> {
 	return run_captured_action("activate-locales", params.locale_codes.join(", "), async () => {
 		const { activate_locales_in_system } = await import("$generator/activate_locale");
@@ -327,7 +334,7 @@ export async function action_remove_locale(params: { locale_code: string; }): Pr
 export async function action_json_to_sql(params: { json_path: string; table: string; slug?: string; project_root?: string; }): Promise<ActionResult> {
 	const target = `${params.json_path} → ${params.table}`;
 	return run_captured_action("json-to-sql", target, async () => {
-		const { convert_json_to_sql } = await import("$generator/reeman/json_to_sql");
+		const { convert_json_to_sql } = await import("$generator/reeman/data_to_sql");
 		const result = await convert_json_to_sql(params.json_path, params.table, {
 			slug: params.slug?.trim() || undefined,
 			project_root: params.project_root,
@@ -335,6 +342,34 @@ export async function action_json_to_sql(params: { json_path: string; table: str
 		console.log(`Wrote ${result.mysql_path}`);
 		console.log(`Wrote ${result.sqlite_path}`);
 		console.log(`${result.row_count} row(s) seeded.`);
+		return true;
+	});
+}
+
+export async function action_spreadsheet_to_sql(params: { spreadsheet_path: string; table?: string; slug?: string; project_root?: string; selections?: Array<{ sheet: string; table: string; }>; }): Promise<ActionResult> {
+	const target_tables = params.selections?.map((selection) => selection.table).join(", ") || params.table || "";
+	const target = `${params.spreadsheet_path} → ${target_tables}`;
+	return run_captured_action("spreadsheet-to-sql", target, async () => {
+		const { convert_spreadsheet_selections_to_sql, convert_spreadsheet_to_sql } = await import("$generator/reeman/data_to_sql");
+		if (params.selections) {
+			const result = await convert_spreadsheet_selections_to_sql(params.spreadsheet_path, params.selections, {
+				project_root: params.project_root,
+			});
+			for (const table of result.tables) {
+				console.log(`Wrote ${table.mysql_path}`);
+				console.log(`Wrote ${table.sqlite_path}`);
+				console.log(`${table.row_count} row(s) seeded from ${table.sheet} into ${table.table}.`);
+			}
+			return true;
+		}
+		if (!params.table) throw new Error("A table name is required.");
+		const result = await convert_spreadsheet_to_sql(params.spreadsheet_path, params.table, {
+			slug: params.slug?.trim() || undefined,
+			project_root: params.project_root,
+		});
+		console.log(`Wrote ${result.mysql_path}`);
+		console.log(`Wrote ${result.sqlite_path}`);
+		console.log(`${result.row_count} row(s) seeded from ${result.sheets.join(", ")}.`);
 		return true;
 	});
 }

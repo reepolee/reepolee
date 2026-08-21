@@ -1,7 +1,7 @@
 {
 	"actions": {
 		"check_compliance": "Check domain compliance",
-		"json_to_sql": "JSON to SQL table",
+		"data_to_sql": "DATA to SQL",
 		"open_in_studio": "Open in Studio",
 		"run_sql": "Run SQL file"
 	},
@@ -15,13 +15,17 @@
 	},
 	"labels": {
 		"action": "Action",
+		"columns": "Columns",
 		"file_count": "files",
 		"file_type": "Type",
 		"folder": "Folder",
 		"folder_summary": "Folder total",
+		"import_file": "JSON, XLS, or XLSX file",
 		"json_file": "JSON file",
 		"json_path": "JSON file path",
 		"last_updated": "Last updated",
+		"rows": "rows",
+		"sheets": "Sheets to import",
 		"slug": "Slug (optional)",
 		"sql_file": "SQL file",
 		"table_name": "Table name"
@@ -37,9 +41,13 @@
 		"compliance_hint": "Introspects the live DB and reports columns that do not match the canonical domain types. Read-only.",
 		"database_description": "Run SQL files, seed data from JSON and check domain compliance.",
 		"database_title": "Database",
-		"json_to_sql_hint": "Upload a JSON file and generate paired MySQL and SQLite SQL files.",
-		"json_upload_hint": "Select a .json file before starting the transformation.",
+		"empty_sheet": "empty sheet",
+		"inspection_error": "Could not inspect this file.",
+		"inspecting_file": "Inspecting file...",
+		"data_to_sql_hint": "Upload JSON, XLS, or XLSX data and generate paired MySQL and SQLite SQL files.",
+		"json_upload_hint": "Select a file to inspect its contents before choosing what to import.",
 		"no_sql_files": "No .sql files found in sql/{dialect}/.",
+		"sheet_selection_hint": "Select one or more sheets and review the suggested table names.",
 		"sql_files_hint": "Choose a SQL file to run against the current database."
 	}
 }

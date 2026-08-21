@@ -77,7 +77,7 @@
 						<input type="hidden" name="next" value="{= props.reeqa_project_selector.next }" />
 						<label class="grid gap-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
 							<span class="ml-3">{= props.reeqa_project_selector.label }</span>
-							<select name="project_id" class="w-full" onchange="this.form.submit()">
+							<select name="project_id" class="text-base w-full" onchange="this.form.submit()">
 								{#each props.reeqa_project_selector.projects as project}
 									<option value="{= project.id }" {#if project.id === props.reeqa_project_selector.active_project_id}selected{/if}>{= project.name }</option>
 								{/each}
@@ -92,7 +92,7 @@
 						<input type="hidden" name="next" value="{= props.reeqa_page_set_selector.next }" />
 						<label class="grid gap-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
 							<span class="ml-3">{= props.reeqa_page_set_selector.label }</span>
-							<select name="page_set_id" class="w-full" onchange="this.form.submit()">
+							<select name="page_set_id" class="text-base w-full" onchange="this.form.submit()">
 								{#each props.reeqa_page_set_selector.page_sets as page_set}
 									<option value="{= page_set.id }" {#if page_set.id === props.reeqa_page_set_selector.active_page_set_id}selected{/if}>{= page_set.name } ({= page_set.page_count }) · {= page_set.capture_width }px</option>
 								{/each}
@@ -152,7 +152,7 @@
 							{/each}
 						</div>
 					{:else}
-						<select aria-label="Language" onchange="location.href=this.value" class="text-xs w-36 px-2 py-1">
+						<select aria-label="Language" onchange="location.href=this.value" class="text-base w-36 px-2 py-1">
 							{#each props.active_locales as locale}
 								<option value="?locale={= locale }" {#if props.locale === locale}selected{/if}>{= props.locale_names?.[locale] || locale}</option>
 							{/each}

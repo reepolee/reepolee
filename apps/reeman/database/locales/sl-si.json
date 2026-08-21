@@ -1,7 +1,7 @@
 {
 	"actions": {
 		"check_compliance": "Preveri domensko skladnost",
-		"json_to_sql": "JSON v tabelo SQL",
+		"data_to_sql": "PODATKI v SQL",
 		"open_in_studio": "Odpri v Studiu",
 		"run_sql": "Zaženi datoteko SQL"
 	},
@@ -15,13 +15,17 @@
 	},
 	"labels": {
 		"action": "Dejanje",
+		"columns": "Stolpci",
 		"file_count": "datotek",
 		"file_type": "Vrsta",
 		"folder": "Mapa",
 		"folder_summary": "Skupaj v mapi",
+		"import_file": "Datoteka JSON, XLS ali XLSX",
 		"json_file": "Datoteka JSON",
 		"json_path": "Pot do datoteke JSON",
 		"last_updated": "Nazadnje posodobljeno",
+		"rows": "vrstic",
+		"sheets": "Listi za uvoz",
 		"slug": "Slug (neobvezno)",
 		"sql_file": "Datoteka SQL",
 		"table_name": "Ime tabele"
@@ -37,9 +41,13 @@
 		"compliance_hint": "Pregleda živo bazo in poroča o stolpcih, ki ne ustrezajo kanoničnim domenskim vrstam. Samo za branje.",
 		"database_description": "Zaženi SQL datoteke, uvozi podatke iz JSON in preveri skladnost.",
 		"database_title": "Podatkovna baza",
-		"json_to_sql_hint": "Naložite datoteko JSON in ustvarite datoteki SQL za MySQL in SQLite.",
-		"json_upload_hint": "Pred začetkom pretvorbe izberite datoteko .json.",
+		"empty_sheet": "prazen list",
+		"inspection_error": "Datoteke ni bilo mogoče pregledati.",
+		"inspecting_file": "Pregledovanje datoteke...",
+		"data_to_sql_hint": "Naložite podatke JSON, XLS ali XLSX in ustvarite datoteki SQL za MySQL in SQLite.",
+		"json_upload_hint": "Izberite datoteko, preglejte njeno vsebino in nato določite uvoz.",
 		"no_sql_files": "V mapi sql/{dialect}/ ni datotek .sql.",
+		"sheet_selection_hint": "Izberite enega ali več listov in preverite predlagana imena tabel.",
 		"sql_files_hint": "Izberite datoteko SQL za zagon v trenutni bazi."
 	}
 }

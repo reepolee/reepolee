@@ -26,6 +26,41 @@ export const operations_tools: Tool[] = [
 		},
 	},
 	{
+		name: "spreadsheet_sheets",
+		description: "Read an XLS or XLSX workbook and list its sheets, row counts, and detected column names. Read-only - does not write SQL or modify the database.",
+		inputSchema: {
+			type: "object",
+			properties: {
+				path: { type: "string", description: "Path to an .xls or .xlsx workbook" },
+			},
+			required: ["path"],
+		},
+		handler: async (args) => {
+			const result = await import("$generator/reeman/data_to_sql").then(({ read_spreadsheet_sheets }) => read_spreadsheet_sheets(args.path));
+			return json_content(result);
+		},
+	},
+	{
+		name: "spreadsheet_to_sql",
+		description: "Convert every non-empty sheet, or one named sheet, from an XLS or XLSX workbook into separate tables with paired MySQL/SQLite SQL files. Table names use the supplied base name plus a sheet-name suffix.",
+		inputSchema: {
+			type: "object",
+			properties: {
+				path: { type: "string", description: "Path to an .xls or .xlsx workbook" },
+				table: { type: "string", description: "Destination snake_case table name" },
+				slug: { type: "string", description: "Optional SQL filename slug" },
+				sheet: { type: "string", description: "Optional exact worksheet name; omit to convert all non-empty sheets" },
+			},
+			required: ["path", "table"],
+		},
+		handler: async (args) => {
+			const { assert_mcp_mutation_enabled } = await import("./capabilities");
+			assert_mcp_mutation_enabled();
+			const result = await import("$generator/reeman/data_to_sql").then(({ convert_spreadsheet_to_sql_all }) => convert_spreadsheet_to_sql_all(args.path, args.table, { slug: args.slug, sheet: args.sheet }));
+			return json_content(result);
+		},
+	},
+	{
 		name: "run_tests",
 		description: "Run project tests with bun test. Optionally filter by test name pattern. Results include stdout and stderr.",
 		inputSchema: {

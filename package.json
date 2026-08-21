@@ -21,7 +21,7 @@
 		],
 		"issue_repo": "reepolee/reepolee-dev"
 	},
-	"version": "26.08.125",
+	"version": "26.08.127",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",
@@ -64,6 +64,7 @@
 		"get:zod": "mkdir -p vendor && curl -fsSL https://cdn.jsdelivr.net/npm/zod@4.4.3/+esm -o vendor/zod.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/zod@4.4.3/LICENSE -o vendor/zod.min.js.LICENSE.txt",
 		"get:zod-types": "bun scripts/cli.ts zod-types",
 		"get:hljs": "mkdir -p vendor && curl -fsSL https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/+esm -o vendor/highlight.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/LICENSE -o vendor/highlight.min.js.LICENSE.txt",
+		"get:xlsx": "mkdir -p vendor && curl -fsSL https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js -o vendor/xlsx.full.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/xlsx@0.18.5/LICENSE -o vendor/xlsx.full.min.js.LICENSE.txt",
 		"get:temporal": "mkdir -p vendor && curl -fsSL https://esm.sh/@js-temporal/polyfill@0.5.1/es2022/polyfill.bundle.mjs -o vendor/temporal.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/@js-temporal/polyfill@0.5.1/LICENSE -o vendor/temporal.min.js.LICENSE.txt",
 		"get:signals": "mkdir -p static && curl -L https://esm.sh/alien-deepsignals@0.4.3/es2022/alien-deepsignals.bundle.mjs -o static/alien-deepsignals.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/alien-deepsignals@0.4.3/LICENSE -o static/alien-deepsignals.min.js.LICENSE.txt",
 		"get:dpu": "mkdir -p static && curl -fsSL https://raw.githubusercontent.com/GoogleChromeLabs/html-setters-polyfill/main/index.min.js -o static/dpu.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/html-setters-polyfill/LICENSE -o static/dpu.min.js.LICENSE.txt",

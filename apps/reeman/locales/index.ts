@@ -47,6 +47,23 @@ async function params_of(req: BunRequest): Promise<URLSearchParams> {
 }
 
 // ---------------------------------------------------------------------------
+// GET /locales/export-bundle - Download current English translation sources
+// ---------------------------------------------------------------------------
+
+export async function get_locales_export_bundle(): Promise<Response> {
+	const { create_translation_bundle } = await import("$generator/translation_bundle");
+	const bundle = await create_translation_bundle();
+	const body = `${JSON.stringify(bundle, null, "\t")}\n`;
+	return new Response(body, {
+		headers: {
+			"Cache-Control": "no-store",
+			"Content-Disposition": 'attachment; filename="reepolee-en-us-translations.json"',
+			"Content-Type": "application/json; charset=utf-8",
+		},
+	});
+}
+
+// ---------------------------------------------------------------------------
 // GET /locales - Locale grid (mirrors db_tables index)
 // ---------------------------------------------------------------------------
 
@@ -94,6 +111,8 @@ export async function get_locales_index(req: BunRequest): Promise<Response> {
 	const inactive_supported_locales = await get_inactive_supported_locales();
 	const { list_available_seed_locales } = await import("$generator/activate_locale");
 	const available_seed_locales = await list_available_seed_locales();
+	const { list_installable_archived_locales } = await import("$generator/install_locale");
+	const archived_locales = await list_installable_archived_locales();
 
 	return render("index", {
 		data: {
@@ -101,6 +120,7 @@ export async function get_locales_index(req: BunRequest): Promise<Response> {
 			records: result.records,
 			inactive_supported_locales,
 			available_seed_locales,
+			archived_locales,
 			query: query || "",
 			limit,
 			offset,
@@ -236,6 +256,48 @@ export async function post_locales_add_seeded(req: BunRequest): Promise<Response
 }
 
 // ---------------------------------------------------------------------------
+// POST /locales/install-archived - Restore one curated locale from the archive
+// to its mirrored live paths and register it as supported but inactive.
+// ---------------------------------------------------------------------------
+
+export async function post_locales_install_archived(req: BunRequest): Promise<Response> {
+	const params = await params_of(req);
+	const locale_code = params.get("locale_code")?.trim() || "";
+	if (!locale_code) return toast_redirect(req, "Reeman: no archived locale selected.", "red");
+	if (await is_busy()) return toast_redirect(req, "Reeman: another action is already running. Wait for it to finish.", "yellow");
+
+	const { action_install_archived_locale } = await import("../reeman/actions");
+	const result = await action_install_archived_locale({ locale_code });
+	return toast_redirect(
+		req,
+		result.ok ? `Reeman: imported ${locale_code} from the locale archive.` : `Reeman: failed to import ${locale_code}${result.error ? ` - ${result.error}` : ""}.`,
+		result.ok ? "green" : "red",
+	);
+}
+
+// ---------------------------------------------------------------------------
+// POST /locales/upload-bundle - Validate and archive an externally translated
+// bundle. Installation remains an explicit second step in the archive list.
+// ---------------------------------------------------------------------------
+
+export async function post_locales_upload_bundle(req: BunRequest): Promise<Response> {
+	try {
+		const form_data = await req.formData();
+		const uploaded = form_data.get("translation_bundle");
+		if (!(uploaded instanceof File) || uploaded.size === 0) return toast_redirect(req, "Reeman: select a translated JSON bundle.", "red");
+		if (uploaded.size > 20 * 1024 * 1024) return toast_redirect(req, "Reeman: translation bundle exceeds the 20 MB limit.", "red");
+
+		const input = JSON.parse(await uploaded.text());
+		const { archive_translation_bundle_data } = await import("$generator/translation_bundle");
+		const bundle = await archive_translation_bundle_data(input);
+		return toast_redirect(req, `Reeman: uploaded and validated ${bundle.target_locale}.`, "green");
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return toast_redirect(req, `Reeman: translation bundle rejected - ${message}`, "red");
+	}
+}
+
+// ---------------------------------------------------------------------------
 // POST /locales/activate - Turn on one or more already-supported locales
 // (translations already generated - just run their init SQL + flip the flag)
 // ---------------------------------------------------------------------------
@@ -334,8 +396,11 @@ export async function post_locales_bulk_set_active(req: BunRequest): Promise<Res
 
 export const locales_crud = {
 	"/locales": { GET: get_locales_index },
+	"/locales/export-bundle": { GET: get_locales_export_bundle },
 	"/locales/add": { POST: post_locales_add },
 	"/locales/add-seeded": { POST: post_locales_add_seeded },
+	"/locales/upload-bundle": { POST: post_locales_upload_bundle },
+	"/locales/install-archived": { POST: post_locales_install_archived },
 	"/locales/activate": { POST: post_locales_activate },
 	"/locales/remove": { POST: post_locales_remove },
 	"/locales/bulk-remove": { POST: post_locales_bulk_remove },

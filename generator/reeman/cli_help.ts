@@ -99,10 +99,13 @@ ${color("Database & config:", GREEN)}
       Execute a .sql file against the configured database.
 
   json-to-sql <path> --table <name> [--slug <slug>]
-      Convert a JSON file ({"data": [...]} or a bare [...] array) into a new
-      table - writes paired sql/mysql/NN-<slug>.sql + sql/sqlite/NN-<slug>.sql
-      with system columns (id, display, created_at, updated_at) and INSERT
-      statements seeded from the rows.
+      Convert a JSON file ({"data": [...]} or a bare [...] array) into a new table.
+
+  spreadsheet-to-sql <path.xls|path.xlsx> --table <name> [--slug <slug>] [--sheet <name>]
+      Convert a named worksheet, or the first non-empty worksheet when --sheet is
+      omitted, from an XLS/XLSX file into a new table.
+      Both commands write paired MySQL/SQLite SQL files, normalize imported columns
+      through the canonical DOMAIN_TYPES taxonomy, and seed INSERT statements.
 
   upload-image <table> <id> <column> <path|url> [--folder <name>] [--format webp|jpeg|png|avif] [--quality <1-100>]
       Process a local file or remote URL through the image pipeline (crop-free,
@@ -137,6 +140,18 @@ ${color("Languages:", GREEN)}
       Runs automatically after crud/refresh-crud and after add-locale/remove-locale.
 
 ${color("Translations:", GREEN)}
+  export-translation-bundle [output.json] [--target-locale <locale_code>]
+      Export every active en-us.json file into one versioned translation bundle.
+      File paths are top-level keys and only leaf values should be translated.
+
+  import-translation-bundle <file.json> [--install] [--activate]
+      Validate a translated bundle against current English files and archive it
+      as locales-archive/<locale>.json. --install also restores its translations
+      to the co-located live files; --activate serves the locale immediately.
+
+  migrate-translation-archive
+      Convert the legacy locales-archive directory tree into one bundle per locale.
+
   sync-translations [namespace...] [--translate]
       Sync translation structure across languages. With --translate, scans every
       namespace and fills in missing translations via the configured AI provider. Without it,

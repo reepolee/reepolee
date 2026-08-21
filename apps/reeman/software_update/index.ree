@@ -62,12 +62,13 @@
 			<section class="rounded-md border border-border bg-surface-raised p-4 space-y-3">
 				<p class="text-sm"><span class="font-semibold">{_ labels.upstream}:</span> <code class="text-xs">{= snapshot.source_root }</code></p>
 				<p class="text-sm"><span class="font-semibold">{_ labels.project}:</span> <code class="text-xs">{= snapshot.project_root }</code></p>
-				<div id="commit-info" class="text-sm text-text-secondary mt-2"></div>
+				<div id="commit-info" data-source-root="{= snapshot.source_root }" class="text-sm text-text-secondary mt-2"></div>
 			</section>
 			<script>
 				(async () => {
 					try {
-						const res = await fetch(`/software-update/commit-info?source=${encodeURIComponent('{= snapshot.source_root }')}`);
+						const source_root = document.getElementById('commit-info').dataset.sourceRoot;
+						const res = await fetch(`/software-update/commit-info?source=${encodeURIComponent(source_root)}`);
 						const data = await res.json();
 						if (data.commit_info) {
 							const el = document.getElementById('commit-info');

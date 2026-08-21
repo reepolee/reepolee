@@ -58,7 +58,7 @@ export type StorageMode = "local" | "s3";
 /**
  * Upload size limit in MB, read from MAX_UPLOAD_SIZE_MB (positive integer).
  * No fallback: missing, blank, "N/A", or a non-positive-integer value fails
- * loud. Shared by image uploads and the json-to-sql tool.
+ * loud. Shared by image uploads and the data-to-sql tool.
  */
 export function require_max_upload_size_mb(): number {
 	const name = "MAX_UPLOAD_SIZE_MB";

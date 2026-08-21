@@ -26,6 +26,24 @@ export interface RemoveLocaleOptions {
 	new_default?: string;
 }
 
+function remove_record_entries(config_content: string, record_name: string, locale_code: string, remove_matching_value: boolean = false): string {
+	const record_pattern = new RegExp(`(export const ${record_name}: Record<string, string> = \\{)([\\s\\S]*?)(\\n\\};)`);
+	return config_content.replace(record_pattern, (_, open: string, body: string, close: string) => {
+		const kept_lines = body.split("\n").filter((line) => {
+			const entry = /^\s*"([^"]+)":\s*"([^"]*)",?\s*$/.exec(line);
+			if (!entry) return true;
+			return entry[1] !== locale_code && (!remove_matching_value || entry[2] !== locale_code);
+		});
+		return `${open}${kept_lines.join("\n")}${close}`;
+	});
+}
+
+export function remove_locale_metadata(config_content: string, locale_code: string): string {
+	let updated = remove_record_entries(config_content, "locale_names", locale_code);
+	updated = remove_record_entries(updated, "locale_aliases", locale_code, true);
+	return updated;
+}
+
 /**
  * Remove a language from the system.
  *
@@ -146,13 +164,9 @@ export async function remove_locale_from_system(locale_code: string, options: Re
 	// Update default_locale if needed
 	if (new_default !== current_default) { new_config = new_config.replace(/(export const default_locale\s*=\s*)"([^"]+)"/, `$1"${new_default}"`); }
 
-	// Remove from locale_names record
-	const lang_name_regex = new RegExp(`^\\t${locale_code}:\\s*"[^"]*",\\s*$`, "m");
-	new_config = new_config.replace(lang_name_regex, "");
-
-	// Remove from language_locales record
-	const lang_locale_regex = new RegExp(`^\\t${locale_code}:\\s*"[^"]*",\\s*$`, "m");
-	new_config = new_config.replace(lang_locale_regex, "");
+	// Remove the locale's display name and any alias that uses it as either
+	// source or target. Config records always use quoted keys.
+	new_config = remove_locale_metadata(new_config, locale_code);
 
 	// Clean up any blank lines left inside record blocks
 	new_config = new_config.replace(/(\{\n)(\n)+/g, "$1");

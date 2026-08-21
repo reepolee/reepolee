@@ -64,7 +64,7 @@
 					<input type="hidden" name="return_to" value="/logs" />
 					<button type="submit" class="button primary" {#if busy}disabled{/if}>+ {_ actions.check_compliance }</button>
 				</form>
-				<button type="button" command="show-modal" commandfor="json-to-sql-dialog" class="button primary" {#if busy}disabled{/if}>+ {_ actions.json_to_sql }</button>
+				<button type="button" command="show-modal" commandfor="data-to-sql-dialog" class="button primary" {#if busy}disabled{/if}>+ {_ actions.data_to_sql }</button>
 			</div>
 
 			<!-- Search is intentionally provided by the shared control. SQL files do
@@ -149,34 +149,40 @@
 			</div>
 		{/if}
 
-		<!-- Upload is intentionally dialog-first: no transformation starts until a
-		     user selects a JSON file and supplies the target table name. -->
-		<dialog id="json-to-sql-dialog" class="p-0 rounded-xl shadow-2xl w-[min(95vw,42rem)]">
-			<form method="POST" action="{~ localized_path('/json-to-sql') }" enctype="multipart/form-data" class="p-6 grid gap-4">
-				<h2 class="text-lg font-semibold">{_ actions.json_to_sql}</h2>
+		<dialog id="data-to-sql-dialog" class="p-0 rounded-xl shadow-2xl w-[min(95vw,42rem)]">
+			<form id="import-to-sql-form" method="POST" action="{~ localized_path('/data-to-sql') }" enctype="multipart/form-data" class="p-6 grid gap-4" data-inspect-url="{~ localized_path('/inspect-import') }" data-inspecting-label="{_ ui.inspecting_file}" data-rows-label="{_ labels.rows}" data-columns-label="{_ labels.columns}" data-empty-label="{_ ui.empty_sheet}" data-inspection-error="{_ ui.inspection_error}">
+				<h2 class="text-lg font-semibold">{_ actions.data_to_sql}</h2>
 				<p class="text-sm text-text-secondary">{_ ui.json_upload_hint}</p>
 				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 				<input type="hidden" name="return_to" value="/database" />
 				<label class="grid gap-1">
-					<span class="font-medium">{_ labels.json_file}</span>
-					<input type="file" name="json_file" accept=".json,application/json" required />
+					<span class="font-medium">{_ labels.import_file}</span>
+					<input type="file" name="json_file" accept=".json,.xls,.xlsx,application/json,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required />
 				</label>
-				<div class="grid grid-cols-2 gap-3">
+				<p id="import-inspection-status" class="text-sm text-text-secondary" aria-live="polite"></p>
+				<div id="json-import-options" class="grid grid-cols-2 gap-3" hidden>
 					<label class="grid gap-1">
 						<span class="font-medium">{_ labels.table_name}</span>
-						<input name="table_name" required pattern="[a-z][a-z0-9_]*" title="{_ hints.slug_safe_table }" />
+						<input name="table_name" pattern="[a-z][a-z0-9_]*" title="{_ hints.slug_safe_table }" />
 					</label>
 					<label class="grid gap-1">
 						<span class="font-medium">{_ labels.slug}</span>
 						<input name="slug" pattern="[a-z][a-z0-9\-]*" title="{_ hints.slug }" />
 					</label>
 				</div>
+				<fieldset id="spreadsheet-import-options" class="grid gap-3" hidden>
+					<legend class="font-medium mb-1">{_ labels.sheets}</legend>
+					<p class="text-sm text-text-secondary">{_ ui.sheet_selection_hint}</p>
+					<div id="spreadsheet-sheet-list" class="grid gap-2"></div>
+				</fieldset>
+				<input type="hidden" name="sheet_selections" value="[]" />
 				<div class="flex justify-end gap-2 mt-2">
-					<button type="button" class="button secondary" commandfor="json-to-sql-dialog" command="close">{_ actions.cancel}</button>
-					<button type="submit" class="button primary">{_ actions.json_to_sql}</button>
+					<button type="button" class="button secondary" commandfor="data-to-sql-dialog" command="close">{_ actions.cancel}</button>
+					<button type="submit" class="button primary" disabled>{_ actions.data_to_sql}</button>
 				</div>
 			</form>
 		</dialog>
 		<script src="/dialog-confirm.js?v={= version}"></script>
+		<script src="/import-to-sql.js?v={= version}" defer></script>
 	</div>
 {/with}

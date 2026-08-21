@@ -204,4 +204,38 @@ describe("layout presentation-boundary metadata", () => {
 		expect(switcher).toContain('title="English"');
 		expect(switcher).toContain('title="Slovenščina"');
 	});
+
+	test("uses base text in sidebar dropdowns", async () => {
+		const sidebar_data = {
+			...render_data,
+			active_locales: ["sl-si", "en-us", "de-de", "fr-fr", "it-it", "hr-hr"],
+			locale_names: {
+				"en-us": "English",
+				"sl-si": "Slovenščina",
+				"de-de": "Deutsch",
+				"fr-fr": "Français",
+				"it-it": "Italiano",
+				"hr-hr": "Hrvatski",
+			},
+			csrf_token: "test-token",
+			reeqa_project_selector: {
+				action: "/reeqa/project",
+				next: "/",
+				label: "Project",
+				projects: [{ id: 1, name: "Demo" }],
+				active_project_id: 1,
+			},
+			reeqa_page_set_selector: {
+				action: "/reeqa/page-set",
+				next: "/",
+				label: "Page set",
+				page_sets: [{ id: 1, name: "Default", page_count: 1, capture_width: 1280 }],
+				active_page_set_id: 1,
+			},
+		};
+		const html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...sidebar_data, helpers: create_template_helpers(sidebar_data) });
+
+		expect(html.match(/class="text-base w-full"/g)?.length).toBe(2);
+		expect(html).toContain('aria-label="Language" onchange="location.href=this.value" class="text-base w-36 px-2 py-1"');
+	});
 });

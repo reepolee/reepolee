@@ -49,12 +49,12 @@
 
 			<div class="top flex flex-col">
 				<a href="/" class="px-4 mb-4">
-					<img src="{= props.dark_mode ? '/logo-light.svg' : '/logo-dark.svg' }" alt="Reepolee logo" />
+					<img class="w-24" src="{= props.dark_mode ? '/logo-light.svg' : '/logo-dark.svg' }" alt="Reepolee logo" />
 				</a>
 				<form method="GET" action="{~ localized_path('/studio') }" class="px-4 mb-6">
 					<label class="grid gap-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
 						<span class="ml-3">{_ labels.file}</span>
-						<select name="path" class="w-full" onchange="this.form.submit()">
+						<select name="path" class="text-base w-full" onchange="this.form.submit()">
 							<option value="">{_ selectors.select_file}</option>
 							{#each props.file_groups as file_group}
 								<optgroup label="{= file_group.group }">
@@ -110,7 +110,7 @@
 							{/each}
 						</div>
 					{:else}
-						<select aria-label="Language" onchange="location.href=this.value" class="text-xs w-36 px-2 py-1">
+						<select aria-label="Language" onchange="location.href=this.value" class="text-base w-36 px-2 py-1">
 							{#each props.active_locales as locale}
 								<option value="?locale={= locale }" {#if props.locale === locale}selected{/if}>{= props.locale_names?.[locale] || locale}</option>
 							{/each}

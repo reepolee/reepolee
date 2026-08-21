@@ -239,6 +239,16 @@ export function list_generators(): Array<{ name: string; file: string; descripti
 			description: "Create a new user with hashed password (positional username, email, password, --modules)",
 		},
 		{
+			name: "spreadsheet_sheets",
+			file: "generator/reeman/data_to_sql.ts",
+			description: "List worksheet names, row counts, and columns in an XLS or XLSX workbook (positional path)",
+		},
+		{
+			name: "spreadsheet_to_sql",
+			file: "generator/reeman/data_to_sql.ts",
+			description: "Convert every non-empty sheet, or one named sheet, in an XLS or XLSX workbook into separate tables with paired MySQL/SQLite SQL files (positional path, --table, --slug, --sheet)",
+		},
+		{
 			name: "validation",
 			file: "generator/validation_generator.ts",
 			description: "Zod validation schema library module (not a runnable CLI command)",

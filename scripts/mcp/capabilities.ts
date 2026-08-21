@@ -8,6 +8,7 @@ const MUTATION_TOOL_NAMES = new Set([
 	"prune_translations",
 	"insert_translations",
 	"sync_translations",
+	"spreadsheet_to_sql",
 	"run_sql_dev",
 ]);
 
