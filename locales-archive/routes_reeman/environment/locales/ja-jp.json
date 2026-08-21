@@ -1,0 +1,30 @@
+{
+	"actions": {
+		"cancel": "キャンセル",
+		"confirm_delete": "削除",
+		"delete_selected": "選択した項目を削除",
+		"hide_values": "値を非表示",
+		"save": "保存",
+		"search": "検索",
+		"show_values": "値を表示"
+	},
+	"confirm": {
+		"delete_selected": "選択した環境変数を削除しますか？"
+	},
+	"hints": {
+		"description": "説明は .env.example から取得され、ここでは編集できません。",
+		"value": "等号の後に表示される通りのdotenv値を正確に入力してください。値は1行に収まる必要があります。"
+	},
+	"labels": {
+		"description": "説明",
+		"key": "キー",
+		"native_order": "ネイティブな.env順序",
+		"selected": "選択済み",
+		"value": "値"
+	},
+	"nav": "環境",
+	"ui": {
+		"edit_title": "環境変数を編集",
+		"no_records": "環境変数が見つかりません。"
+	}
+}

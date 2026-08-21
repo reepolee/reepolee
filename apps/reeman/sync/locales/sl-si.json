@@ -1,0 +1,43 @@
+{
+	"actions": {
+		"apply": "Uporabi",
+		"cancel": "Prekliči",
+		"do_it": "Izvedi",
+		"ignore": "Prezri",
+		"scan": "Preglej",
+		"select_all": "Izberi vse",
+		"unignore": "Ne prezri več",
+		"view_diff": "Prikaži razlike"
+	},
+	"errors": {
+		"source_contains_project": "Izvorni imenik ne more biti nadrejeni imenik tega projekta.",
+		"source_empty": "Vnesi izvorni imenik za pregled.",
+		"source_equals_project": "Izvorni imenik ne more biti ta projekt sam.",
+		"source_nested_in_project": "Izvorni imenik ne more biti znotraj tega projekta.",
+		"source_not_directory": "Ta pot obstaja, vendar ni imenik.",
+		"source_not_found": "Tega imenika ni bilo mogoče najti."
+	},
+	"labels": {
+		"ignored": "Prezrto",
+		"modified": "Spremenjeno",
+		"new": "Novo",
+		"project": "Projekt",
+		"project_only": "Samo v projektu",
+		"selected": "Izbrano",
+		"source_dir": "Izvorni imenik",
+		"upstream": "Izvor"
+	},
+	"nav": "Sinhronizacija",
+	"ui": {
+		"confirm_apply_hint": "To bo kopiralo izbrane datoteke iz izvornega imenika v ta projekt in prepisalo lokalno vsebino spremenjenih datotek.",
+		"ignored_by_pattern": "Prezrto po vzorcu",
+		"ignored_exact": "Prezrto",
+		"loading": "Nalaganje …",
+		"no_changes": "Ni razlik med izvornim imenikom in tem projektom.",
+		"project_only_hint": "Obstaja samo v tem projektu. Reesync tega nikoli ne izbriše.",
+		"scan_expired": "Ta pregled je potekel. Znova preglej izvorni imenik.",
+		"sync_description": "Selektivno prevzemanje izvornih datotek: primerjaj vsako drugačno datoteko z lokalnim izvornim izvodom, nato prekopiraj v projekt samo izbrane datoteke.",
+		"sync_never_deletes": "Datoteke, ki obstajajo samo v projektu, so informativne in se nikoli ne izbrišejo.",
+		"sync_title": "Sinhronizacija"
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"actions": {
+		"submit": "Iniciar sesión"
+	},
+	"errors": {
+		"account_not_verified": "Su cuenta aún no está verificada.",
+		"invalid_username_or_password": "Nombre de usuario o contraseña no válidos."
+	},
+	"labels": {
+		"email": "Correo electrónico",
+		"password": "Contraseña",
+		"username": "Nombre de usuario (puede ser correo electrónico)"
+	},
+	"route_name": "iniciar-sesion",
+	"ui": {
+		"title": "Iniciar sesión"
+	}
+}

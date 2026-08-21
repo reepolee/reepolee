@@ -1,0 +1,19 @@
+{
+	"actions": {
+		"reset_all_counters": "Restablecer todos los contadores"
+	},
+	"nav": "Límites de tasa",
+	"route_name": "limites-de-tasa",
+	"ui": {
+		"blocked": "BLOQUEADO",
+		"no_active_counters": "No hay contadores de límite de tasa activos",
+		"ok": "Aceptar",
+		"requests": "peticiones",
+		"reset_confirm": "¿Restablecer todos los contadores de límite de tasa activos? Esta acción no se puede deshacer.",
+		"seconds": "s",
+		"status": "Estado",
+		"title": "Límites de tasa",
+		"total_redis_keys": "total de claves Redis",
+		"ttl": "TTL"
+	}
+}

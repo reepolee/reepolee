@@ -1,0 +1,50 @@
+{
+	"actions": {
+		"add": "Adicionar",
+		"add_locale": "Adicionar idioma",
+		"back_to_locales": "Voltar aos idiomas",
+		"cancel": "Cancelar",
+		"do_it": "Fazer",
+		"remove": "Remover",
+		"remove_selected": "Remover selecionados",
+		"save": "Salvar alterações",
+		"set_active": "Ativar",
+		"set_inactive": "Desativar",
+		"translate": "Traduzir com IA"
+	},
+	"confirm": {
+		"remove_locale": "Remover este idioma? Suas traduções e tabelas de conteúdo serão excluídas."
+	},
+	"hints": {
+		"alias": "Alias de exibição de strings de UI - solicitações para este idioma renderizam as strings do idioma de destino",
+		"locale_code": "Código de idioma BCP 47 para adicionar (ex.: de-at)"
+	},
+	"labels": {
+		"active": "Ativo",
+		"alias": "Alias",
+		"alias_placeholder": "ex.: de-at",
+		"available_locales": "Idiomas preparados disponíveis",
+		"code": "Código",
+		"default": "Padrão",
+		"locale_code": "Código do idioma",
+		"locales": "Idiomas",
+		"name": "Nome",
+		"name_placeholder": "Nome de exibição",
+		"remove": "Remover"
+	},
+	"nav": "Idiomas",
+	"route_name": "idiomas",
+	"ui": {
+		"add_locale_hint": "Adiciona o idioma à configuração, inicializa suas traduções e clona tabelas de conteúdo (gerador add-locale).",
+		"available_locales_hint": "Já existem traduções preparadas em disco para esses idiomas - adicione um com um clique (adicionado apenas à configuração, não ativado).",
+		"busy": "Processando — a página será atualizada ao concluir.",
+		"locales_description": "Gerencie config/supported_locales.ts - códigos de idioma, nomes de exibição, aliases, lista ativa e padrão.",
+		"locales_manage_hint": "Adicione um idioma para criar suas traduções + tabelas de conteúdo, ou edite a configuração abaixo diretamente.",
+		"locales_title": "Idiomas",
+		"modifying": "Você está prestes a remover",
+		"no_records": "Nenhum idioma encontrado em config/supported_locales.ts.",
+		"records": "idioma(s)",
+		"remove_selected_hint": "Remove os idiomas selecionados - suas traduções e tabelas de conteúdo são excluídas.",
+		"save_hint": "Salva diretamente em config/supported_locales.ts. Recarregue as rotas para aplicar."
+	}
+}

@@ -1,0 +1,52 @@
+{
+	"descriptions": {
+		"card": "Esta es una sección tipo tarjeta con borde y relleno.",
+		"typography": "Texto de párrafo normal con formato de negrita y cursiva."
+	},
+	"errors": {
+		"min_length_3": "Se requieren como mínimo 3 caracteres",
+		"text_input_max": "Se permiten como máximo 100 caracteres"
+	},
+	"labels": {
+		"banners": "Banners",
+		"buttons": "Botones",
+		"card_section": "Sección de tarjeta",
+		"cards": "Tarjetas y secciones",
+		"checkbox_option": "Opción de casilla",
+		"code_example": "Ejemplo de código",
+		"date_input": "Campo de fecha",
+		"disabled_button": "Botón deshabilitado",
+		"email_input": "Campo de correo",
+		"email_placeholder": "Introduzca el correo",
+		"file_upload": "Subida de archivos",
+		"form_elements": "Elementos de formulario",
+		"heading_1": "Encabezado 1",
+		"heading_2": "Encabezado 2",
+		"heading_3": "Encabezado 3",
+		"list_item": "Elemento de lista",
+		"option": "Opción",
+		"primary_button": "Botón principal",
+		"radio": "Radio",
+		"radio_options": "Opciones de radio",
+		"secondary_button": "Botón secundario",
+		"select_dropdown": "Menú desplegable",
+		"selected_date": "Fecha seleccionada:",
+		"text_input": "Campo de texto",
+		"text_placeholder": "Introduzca texto (mín. 3 caracteres)",
+		"textarea": "Área de texto",
+		"textarea_placeholder": "Introduzca varias líneas",
+		"typography": "Tipografía"
+	},
+	"messages": {
+		"error": "Error: Algo salió mal",
+		"info": "Información: Esto es informativo",
+		"success": "Éxito: La operación se completó correctamente",
+		"warning": "Advertencia: Revise esta información"
+	},
+	"nav": "Fregadero",
+	"route_name": "fregadero",
+	"ui": {
+		"description": "Escaparate de componentes y ejemplos",
+		"title": "Fregadero"
+	}
+}

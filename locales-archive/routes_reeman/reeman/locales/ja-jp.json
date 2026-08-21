@@ -1,0 +1,34 @@
+{
+	"actions": {
+		"reload_routes": "ルートを再読み込み",
+		"view_all": "すべて表示"
+	},
+	"confirm": {
+		"reload_routes": "今すぐルートを再読み込みしますか？再起動なしで新しいルートファイルと翻訳を取得します。"
+	},
+	"labels": {
+		"columns": "カラム",
+		"crud": "CRUD",
+		"foreign_keys": "FK",
+		"schema": "スキーマ",
+		"table": "テーブル",
+		"tables": "テーブル",
+		"view": "ビュー"
+	},
+	"nav": "Reeman",
+	"nav_prefix_title": "Reeman",
+	"route_name": "reeman",
+	"ui": {
+		"busy": "処理中 — 完了するとページが更新されます。",
+		"description": "ReepoleeリソースマネージャーのWebインターフェース",
+		"last_runs": "最近の実行",
+		"no_runs": "まだ実行がありません - 上のアクションを選択してください。",
+		"no_tables": "テーブルが見つかりません。データベースは初期化されていますか？",
+		"reload_routes_hint": "ディスクからルートテーブルとナビをホット再構築し、翻訳を更新します。開発ではサーバー再起動は不要です。",
+		"stats_crud": "CRUDあり",
+		"stats_locales": "言語",
+		"stats_modules": "モジュール",
+		"stats_tables": "テーブル",
+		"title": "Reeman"
+	}
+}
