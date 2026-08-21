@@ -1,0 +1,103 @@
+{
+	"actions": {
+		"add_condition": "Add condition",
+		"add_page": "Add simple page",
+		"add_table_page": "Add simple table page",
+		"bulk_action": "Delete selected DB routes",
+		"bulk_action_2": "Bulk action 2",
+		"cancel": "Cancel",
+		"create": "Create",
+		"do_it": "Yes, do it",
+		"fields": "Fields only",
+		"full": "Full refresh",
+		"new_db_route": "New DB route",
+		"refresh_crud": "Refresh CRUD",
+		"remove": "Remove",
+		"remove_route": "Remove route",
+		"save": "Save",
+		"save_close": "Save & close"
+	},
+	"child_ui": {
+		"actions": "Actions",
+		"delete": "Delete",
+		"deleting": "Deleting…",
+		"edit": "Edit",
+		"edit_title": "Edit Db_route",
+		"empty_text": "No DB routes found.",
+		"error_deleting": "Error deleting record.",
+		"error_loading": "Error loading record.",
+		"error_saving": "Error saving record.",
+		"new_button": "+ New Db_route",
+		"new_title": "New Db_route"
+	},
+	"errors": {
+		"duplicate_key": "A record with this value already exists.",
+		"error_creating_record": "An error occurred while saving the record.",
+		"module_required": "Module is required.",
+		"must_be_selected": "This field is required.",
+		"table_name_required": "Table name is required.",
+		"title_required": "Title is required.",
+		"url_required": "Url is required.",
+		"value_required_or_use_original": "Enter a translated value or remove this language."
+	},
+	"hints": {
+		"folder_name": "Lowercase letters, digits, - or _ (e.g. my_page).",
+		"prefix": "Optional module prefix. Leave empty to place directly under /routes."
+	},
+	"labels": {
+		"delete_translations": "Delete translations",
+		"display": "Display",
+		"fields": "Fields",
+		"folder_name": "Folder name",
+		"mode": "Mode",
+		"module": "Module",
+		"order_by": "Order by",
+		"prefix": "Prefix",
+		"removable": "Removable",
+		"table": "Table / Route",
+		"table_name": "Table Name",
+		"template_tags": "Template tags",
+		"url": "Url",
+		"where": "Where"
+	},
+	"messages": {
+		"bulk_delete_failed": "Bulk delete failed.",
+		"bulk_delete_no_ids": "No DB routes selected.",
+		"bulk_deleted": "No DB routes deleted|{count} db_route deleted|{count} db_routes deleted|{count} db_routes deleted|{count} db_routes deleted",
+		"bulk_errors": "|{count} db_route failed|{count} db_routes failed|{count} db_routes failed|{count} db_routes failed",
+		"record_created": "Record created",
+		"record_updated": "Record updated"
+	},
+	"nav": "DB routes",
+	"route_name": "db_routes",
+	"search": {
+		"search_term": "Search DB routes...",
+		"submit": "Search"
+	},
+	"selectors": {
+		"0": "No",
+		"1": "Yes",
+		"all": "All",
+		"default": "(keep current)",
+		"per_page": "per page",
+		"select_table": "-- Select table or route --"
+	},
+	"ui": {
+		"add_page_hint": "Creates a static page route (no database) from the simple-page template.",
+		"add_page_title": "Add simple page",
+		"add_table_page_hint": "Creates a read-only listing page backed by a database table.",
+		"add_table_page_title": "Add simple table page",
+		"apply_filters": "Apply",
+		"busy": "Processing — the page will refresh when complete.",
+		"clear_all": "Clear all",
+		"filter_not": "NOT",
+		"loading_count": "Loading…",
+		"modifying": "You are about to modify",
+		"no_records": "No DB routes found.",
+		"no_tables": "No tables found in the database.",
+		"records": "record(s)",
+		"remove_route_hint": "This deletes the route folder and its files on disk. This cannot be undone.",
+		"select_table_first": "Select a table to choose fields.",
+		"title": "DB route"
+	}
+}

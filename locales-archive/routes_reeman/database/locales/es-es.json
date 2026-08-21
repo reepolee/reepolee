@@ -1,0 +1,44 @@
+{
+	"actions": {
+		"check_compliance": "Comprobar cumplimiento de dominio",
+		"json_to_sql": "JSON a tabla SQL",
+		"open_in_studio": "Abrir en Studio",
+		"run_sql": "Ejecutar archivo SQL"
+	},
+	"confirm": {
+		"run_sql": "¿Ejecutar este archivo SQL contra la base de datos? Esta acción no se puede deshacer."
+	},
+	"hints": {
+		"json_path": "Ruta del archivo JSON a convertir, relativa a la raíz del proyecto (p. ej. data/recipes.json)",
+		"slug": "Slug opcional en minúsculas para el nombre de archivo SQL generado. Por defecto usa el nombre de la tabla.",
+		"slug_safe_table": "Solo letras minúsculas y números (se usa para el slug del nombre de archivo SQL)"
+	},
+	"labels": {
+		"action": "Acción",
+		"file_count": "archivos",
+		"file_type": "Tipo",
+		"folder": "Carpeta",
+		"folder_summary": "Total de carpetas",
+		"json_file": "Archivo JSON",
+		"json_path": "Ruta del archivo JSON",
+		"last_updated": "Última actualización",
+		"slug": "Slug (opcional)",
+		"sql_file": "Archivo SQL",
+		"table_name": "Nombre de tabla"
+	},
+	"selectors": {
+		"select_sql": "-- seleccionar un archivo .sql --"
+	},
+	"ui": {
+		"broken_views_hint": "Estas vistas hacen referencia a tablas que ya no existen y se omitieron durante la inspección. Recrea las tablas que faltan (p. ej. mediante Ejecutar archivo SQL) y vuelve a cargar.",
+		"broken_views_title": "Vistas rotas detectadas",
+		"busy": "Procesando — la página se actualizará al terminar.",
+		"compliance_hint": "Inspecciona la base de datos en vivo e informa de las columnas que no coinciden con los tipos de dominio canónicos. Solo lectura.",
+		"database_description": "Ejecutar archivos SQL, sembrar datos desde JSON y comprobar el cumplimiento de dominio.",
+		"database_title": "Base de datos",
+		"json_to_sql_hint": "Suba un archivo JSON y genere archivos SQL de MySQL y SQLite emparejados.",
+		"json_upload_hint": "Seleccione un archivo .json antes de iniciar la transformación.",
+		"no_sql_files": "No se encontraron archivos .sql en sql/{dialect}/.",
+		"sql_files_hint": "Elija un archivo SQL para ejecutarlo contra la base de datos actual."
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"nav": "Pamięć podręczna",
+	"ui": {
+		"actions_header": "Akcje",
+		"confirm_invalidate": "Wyczyść",
+		"disabled": "Pamięć podręczna jest niedostępna - włącz CACHE_ENABLED w zmiennych środowiskowych",
+		"disabled_badge": "Wyłączony",
+		"enable_hint": "Ustaw CACHE_ENABLED=true w pliku .env i uruchom ponownie serwer",
+		"enabled_badge": "Aktywny",
+		"entries_header": "Wpisy pamięci podręcznej",
+		"invalidate_btn": "Wyczyść",
+		"no_tables": "Żadna tabela nie jest śledzona przez pamięć podręczną",
+		"reset_btn": "Wyczyść całą pamięć podręczną",
+		"reset_confirm": "Czy na pewno chcesz unieważnić WSZYSTKIE dane w pamięci podręcznej? Tej operacji nie można cofnąć.",
+		"table_header": "Tabela",
+		"title": "Pamięć podręczna SQL",
+		"total_keys": "Łączna liczba kluczy pamięci podręcznej",
+		"tracked_tables": "Śledzone tabele"
+	}
+}
