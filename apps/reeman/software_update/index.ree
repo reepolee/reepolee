@@ -59,7 +59,7 @@
 		</script>
 
 		{#if snapshot }
-			<section class="rounded-md border border-border bg-surface-raised p-4 space-y-1">
+			<section class="rounded-md border border-border bg-surface-raised p-4 space-y-3">
 				<p class="text-sm"><span class="font-semibold">{_ labels.upstream}:</span> <code class="text-xs">{= snapshot.source_root }</code></p>
 				<p class="text-sm"><span class="font-semibold">{_ labels.project}:</span> <code class="text-xs">{= snapshot.project_root }</code></p>
 				<div id="commit-info" class="text-sm text-text-secondary mt-2"></div>
@@ -108,7 +108,7 @@
 							{_ actions.hide_ignored}
 						</label>
 					</div>
-					<div class="mb-4 flex gap-2">
+					<div class="mb-3 flex gap-2">
 						<button type="button" id="open_apply_dialog" commandfor="apply_dialog" command="show-modal" class="button primary" disabled>{_ actions.apply}</button>
 						<button type="button" id="open_ignore_dialog" commandfor="ignore_dialog" command="show-modal" class="button tertiary" disabled>{_ actions.ignore_selected}</button>
 					</div>
