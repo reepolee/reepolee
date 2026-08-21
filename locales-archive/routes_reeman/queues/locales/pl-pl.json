@@ -1,0 +1,47 @@
+{
+	"actions": {
+		"cancel": "Anuluj",
+		"clear_all": "Wyczyść wszystkie",
+		"clear_pending": "Oczekujące",
+		"confirm": "Potwierdź",
+		"delete": "Usuń",
+		"pause": "Pauza pracownika",
+		"resume": "Wznów pracownika",
+		"retry": "Ponów"
+	},
+	"labels": {
+		"actions": "Akcje",
+		"attempts": "Próby",
+		"created": "Utworzono",
+		"error": "Błąd",
+		"id": "ID",
+		"last_run": "Ostatnie uruchomienie",
+		"payload": "Payload",
+		"pending": "Oczekujące",
+		"queue": "Kolejka",
+		"scheduled": "Zaplanowano",
+		"type": "Typ"
+	},
+	"nav": "Kolejki",
+	"route_name": "queues",
+	"ui": {
+		"backend": "Backend",
+		"confirm_clear_all": "Wyczyścić wszystkie zadania z tej kolejki? To nie może zostać cofnięte.",
+		"confirm_clear_pending": "Wyczyścić wszystkie oczekujące zadania z tej kolejki?",
+		"confirm_delete_job": "Usunąć to nieudane zadanie na stałe? To nie może zostać cofnięte.",
+		"error_loading": "Nie udało się załadować danych kolejki",
+		"failed_heading": "Nieudane zadania",
+		"no_failed": "Brak nieudanych zadań",
+		"no_pending": "Brak oczekujących zadań",
+		"no_queues": "Brak aktywnych kolejek",
+		"queues_heading": "Kolejki",
+		"redis_unavailable": "Redis nie jest dostępny - funkcje kolejki są wyłączone. Emaile są wysyłane bezpośrednio przez SMTP zamiast by były kolejkowane.",
+		"title": "Menedżer Kolejki",
+		"worker_draining": "wyczerpywanie",
+		"worker_offline": "Nie wykryto pracownika kolejki - zadania nie będą przetwarzane",
+		"worker_online": "Pracownik kolejki jest uruchomiony",
+		"worker_paused": "wstrzymany",
+		"worker_running": "uruchomiony",
+		"worker_stopped": "zatrzymany"
+	}
+}

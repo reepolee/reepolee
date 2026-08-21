@@ -1,0 +1,24 @@
+{
+	"actions": {
+		"submit": "Завершить регистрацию"
+	},
+	"errors": {
+		"name_required": "Обязательное поле",
+		"password_confirm_required": "Обязательное поле",
+		"password_too_short": "Пароль должен содержать не менее 8 символов",
+		"passwords_mismatch": "Пароли не совпадают"
+	},
+	"labels": {
+		"name": "Полное имя",
+		"password": "Пароль (не менее 8 символов)",
+		"password_confirm": "Подтвердите пароль"
+	},
+	"route_name": "registraciya",
+	"ui": {
+		"already_used": "Это приглашение уже использовано. Войдите.",
+		"invalid_link": "Эта ссылка недействительна.",
+		"invalid_title": "Недействительное приглашение",
+		"registering_as": "Регистрация как:",
+		"title": "Завершить регистрацию"
+	}
+}

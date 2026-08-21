@@ -1,0 +1,43 @@
+{
+	"actions": {
+		"bulk_action": "Usuń wybranych użytkowników",
+		"bulk_action_2": "Alternatywna akcja",
+		"new_user": "Nowy użytkownik"
+	},
+	"labels": {
+		"avatar_filename": "Nazwa pliku awatara",
+		"email": "E-mail",
+		"hashed_password": "Zahashowane hasło",
+		"invitation_code": "Kod zaproszenia",
+		"modules_tags": "Moduły",
+		"name": "Nazwa",
+		"previous_hashed_password": "Poprzednie zahashowane hasło",
+		"username": "Nazwa użytkownika",
+		"verified_at": "Zweryfikowano"
+	},
+	"messages": {
+		"bulk_delete_no_ids": "Nie wybrano użytkowników.",
+		"bulk_deleted": "Nie usunięto żadnych użytkowników|{count} użytkownik usunięty|{count} użytkowników usuniętych|{count} użytkowników usuniętych|{count} użytkowników usuniętych",
+		"bulk_errors": "|{count} użytkownik nie powiódł się|{count} użytkowników nie powiodło się|{count} użytkowników nie powiodło się|{count} użytkowników nie powiodło się"
+	},
+	"modules_tags": {
+		"admin": "Administrator",
+		"default": "Domyślny",
+		"examples": "Przykłady",
+		"system": "System",
+		"user": "Użytkownik"
+	},
+	"nav": "Użytkownicy",
+	"route_name": "uzytkownicy",
+	"search": {
+		"search_term": "Szukaj użytkowników...",
+		"submit": "Szukaj"
+	},
+	"selectors": {
+		"all": "Wszystkie"
+	},
+	"ui": {
+		"no_records": "Nie znaleziono użytkowników.",
+		"title": "Użytkownicy"
+	}
+}

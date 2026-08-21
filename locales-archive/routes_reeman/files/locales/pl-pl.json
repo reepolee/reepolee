@@ -1,0 +1,51 @@
+{
+	"actions": {
+		"abort_delete": "Anuluj",
+		"back": "Wstecz",
+		"bulk_action": "Usuń wybrane pliki",
+		"cancel": "Anuluj",
+		"confirm_delete": "Tak, usuń",
+		"delete": "Usunąć ten plik na stałe?",
+		"do_it": "Zrób to",
+		"new_file": "Nowy plik",
+		"save": "Zapisz",
+		"save_close": "Zapisz i zamknij"
+	},
+	"labels": {
+		"description": "Opis",
+		"file_size": "Rozmiar pliku",
+		"file_type": "Typ pliku",
+		"filename": "Nazwa pliku",
+		"folder": "Folder",
+		"mime_type": "Typ MIME",
+		"original_filename": "Oryginalna nazwa pliku",
+		"s3_key": "Klucz S3",
+		"tags": "Tagi",
+		"title": "Tytuł"
+	},
+	"nav": "Pliki",
+	"route_name": "pliki",
+	"selectors": {
+		"all": "Wszystkie",
+		"per_page": "na stronę"
+	},
+	"ui": {
+		"file": "Plik",
+		"file_type": "Typ",
+		"modifying": "Modyfikowanie",
+		"no_records": "Nie znaleziono plików.",
+		"records": "rekordy",
+		"title": "Pliki"
+	},
+	"v_labels": {
+		"description": "Opis",
+		"file_size": "Rozmiar pliku",
+		"file_type": "Typ pliku",
+		"filename": "Nazwa pliku",
+		"folder": "Folder",
+		"mime_type": "Typ MIME",
+		"original_filename": "Oryginalna nazwa pliku",
+		"tags": "Tagi",
+		"title": "Tytuł"
+	}
+}

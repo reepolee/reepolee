@@ -1,0 +1,89 @@
+{
+	"actions": {
+		"abort_archive": "Cancel",
+		"abort_restore": "Cancel",
+		"archive": "Archive",
+		"bulk_action": "Archive selected global scopes",
+		"bulk_action_2": "Bulk action 2",
+		"confirm_archive": "Yes, archive",
+		"confirm_restore": "Yes, restore",
+		"new_global_scope": "New global filter",
+		"restore": "Restore",
+		"scope_translations": "Create filter translations",
+		"scope_translations_view": "View filter translations"
+	},
+	"child_ui": {
+		"actions": "Actions",
+		"archive": "Archive",
+		"archiving": "Archiving…",
+		"edit": "Edit",
+		"edit_title": "Edit global filter",
+		"empty_text": "No global filters found.",
+		"error_archiving": "Error archiving record.",
+		"error_loading": "Error loading record.",
+		"error_saving": "Error saving record.",
+		"new_button": "+ New global filter",
+		"new_title": "New global filter",
+		"restore": "Restore"
+	},
+	"counts": {
+		"archived": "Archived",
+		"live": "Active",
+		"total": "Total"
+	},
+	"errors": {
+		"duplicate_key": "Record with this value already exists.",
+		"error_creating_record": "An error occurred while saving the record.",
+		"must_be_selected": "This field is required.",
+		"title_required": "Title is required."
+	},
+	"hints": {
+		"display_name": "Label shown to users in the filter dropdown on the list page.",
+		"feature_name": "The route name (e.g. a named route's route_name), not the table. Scopes this filter to one specific route when several routes share the same table.",
+		"is_default": "When set, this filter is applied automatically on the list page until the user picks a different one.",
+		"module_code": "Restricts this filter to routes belonging to the selected module. Leave unset to make it available module-wide.",
+		"scope_key": "Translation key. Not shown to users - keep it short and stable once in use.",
+		"sort_order": "Position in the filter dropdown, lowest first. Filters sharing a table/route are listed by this value ascending.",
+		"table": "The database table this filter applies to. Determines which index/edit pages show it in the filter dropdown.",
+		"where_clause": "Raw SQL condition appended after WHERE when this filter is active (e.g. status = 'active'). Use the ::session.* tokens below to reference the logged-in user. Unauthenticated access to a clause using them resolves to 1=0."
+	},
+	"labels": {
+		"display_name": "Display name",
+		"feature_name": "Feature name",
+		"is_default": "Is default",
+		"module_code": "Module code",
+		"scope_key": "Filter key",
+		"sort_order": "Sort order",
+		"table": "Table",
+		"table_name": "Table name",
+		"where_clause": "WHERE clause"
+	},
+	"messages": {
+		"bulk_archive_no_ids": "No global filters selected.",
+		"bulk_archived": "No global scopes archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
+		"bulk_errors": "|{count} global filter failed to delete|{count} global filters failed to delete|{count} global filters failed to delete|{count} global filters failed to delete",
+		"record_archived": "Record archived",
+		"record_restored": "Record restored",
+		"record_updated": "Record updated"
+	},
+	"nav": "Global filters",
+	"parent_label": "Global filters",
+	"route_name": "global_filters",
+	"scopes": {
+		"__all": "All",
+		"__archived": "Archived"
+	},
+	"search": {
+		"search_term": "Search global filters...",
+		"submit": "Search"
+	},
+	"selectors": {
+		"all": "All",
+		"no_module": "-- Without module (root) --",
+		"select_table": "-- Select table --"
+	},
+	"ui": {
+		"no_records": "No global scopes found.",
+		"title": "Global Scopes"
+	}
+}

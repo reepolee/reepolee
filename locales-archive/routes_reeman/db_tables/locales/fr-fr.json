@@ -1,0 +1,95 @@
+{
+	"actions": {
+		"bulk_action": "Supprimer les tables de BD sélectionnées",
+		"bulk_action_2": "Action alternative",
+		"cancel": "Annuler",
+		"do_it": "Oui, procéder",
+		"fields": "Champs uniquement",
+		"force": "Forcer l'écrasement",
+		"full": "Actualisation complète",
+		"generate_crud": "Générer le CRUD",
+		"new_db_table": "Nouvelle table de BD",
+		"refresh_crud": "Actualiser le CRUD",
+		"save": "Enregistrer",
+		"save_close": "Enregistrer et fermer",
+		"schema_only": "Schéma uniquement",
+		"translate": "Traduire avec l'IA"
+	},
+	"child_ui": {
+		"actions": "Actions",
+		"delete": "Supprimer",
+		"deleting": "Suppression…",
+		"edit": "Modifier",
+		"edit_title": "Modifier Db_table",
+		"empty_text": "Aucune table de BD trouvée.",
+		"error_deleting": "Erreur lors de la suppression de l'enregistrement.",
+		"error_loading": "Erreur lors du chargement de l'enregistrement.",
+		"error_saving": "Erreur lors de l'enregistrement de l'enregistrement.",
+		"new_button": "+ Nouvelle Db_table",
+		"new_title": "Nouvelle Db_table"
+	},
+	"errors": {
+		"duplicate_key": "Un enregistrement avec cette valeur existe déjà.",
+		"error_creating_record": "Une erreur s'est produite lors de l'enregistrement.",
+		"has_crud_required": "L'indication « Has CRUD » est requise.",
+		"must_be_selected": "Ce champ est obligatoire.",
+		"name_required": "Le nom est requis.",
+		"title_required": "Le titre est requis.",
+		"value_required_or_use_original": "Saisissez une valeur traduite ou supprimez cette langue."
+	},
+	"hints": {
+		"prefix": "Préfixe de chemin d'URL facultatif pour les routes générées (p. ex. admin). Laissez vide pour monter à la racine.",
+		"route_name": "Nom d'URL facultatif qui remplace le nom de la table (p. ex. my-users)"
+	},
+	"labels": {
+		"column_count": "Nombre de colonnes",
+		"display": "Affichage",
+		"fk_count": "Nombre de FK",
+		"has_crud": "A un CRUD",
+		"index_columns": "Colonnes d'index",
+		"mode": "Mode",
+		"name": "Nom",
+		"pagination": "Pagination",
+		"prefix": "Préfixe",
+		"render_strategy": "Stratégie de rendu",
+		"route_name": "Nom de route (facultatif)",
+		"row_count": "Nombre de lignes",
+		"table": "Table / Route",
+		"template_tags": "Balises de modèle"
+	},
+	"messages": {
+		"bulk_delete_failed": "Échec de la suppression en masse.",
+		"bulk_delete_no_ids": "Aucune table de BD sélectionnée.",
+		"bulk_deleted": "Aucune table de BD supprimée|{count} table de BD supprimée|{count} tables de BD supprimées|{count} tables de BD supprimées|{count} tables de BD supprimées",
+		"bulk_errors": "|{count} table de BD en échec|{count} tables de BD en échec|{count} tables de BD en échec|{count} tables de BD en échec",
+		"record_created": "Enregistrement créé",
+		"record_updated": "Enregistrement mis à jour"
+	},
+	"nav": "Tables de BD",
+	"route_name": "tables-bd",
+	"search": {
+		"search_term": "Rechercher des tables de BD...",
+		"submit": "Rechercher"
+	},
+	"selectors": {
+		"0": "Non",
+		"1": "Oui",
+		"all": "Tous",
+		"default": "(conserver l'actuel)",
+		"per_page": "par page",
+		"select_table": "-- Sélectionner une table ou une route --"
+	},
+	"ui": {
+		"apply_filters": "Appliquer",
+		"busy": "Traitement — la page se rafraîchira une fois terminé.",
+		"clear_all": "Tout effacer",
+		"filter_not": "NON",
+		"loading_count": "Chargement…",
+		"modifying": "Vous êtes sur le point de modifier",
+		"no_records": "Aucune table de BD trouvée.",
+		"no_selectable_columns": "Aucune colonne d'index sélectionnable : les valeurs par défaut du générateur seront utilisées.",
+		"records": "enregistrement(s)",
+		"refresh_skip_hint": "Les tables sans CRUD existant sont ignorées.",
+		"title": "Table de BD"
+	}
+}

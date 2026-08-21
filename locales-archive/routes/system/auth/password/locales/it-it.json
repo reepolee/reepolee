@@ -1,0 +1,22 @@
+{
+	"actions": {
+		"cancel": "Annulla",
+		"submit": "Cambia password"
+	},
+	"errors": {
+		"incorrect_password": "La password attuale non è corretta."
+	},
+	"labels": {
+		"current_password": "Password attuale",
+		"password": "Nuova password",
+		"password_confirm": "Conferma nuova password"
+	},
+	"messages": {
+		"successful_save": "La password è stata modificata con successo."
+	},
+	"route_name": "password",
+	"ui": {
+		"no_password_set": "Nessuna password impostata. Contatta l'amministratore.",
+		"title": "Cambia password"
+	}
+}

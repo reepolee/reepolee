@@ -1,0 +1,12 @@
+{
+	"labels": {
+		"id": "ID",
+		"last_checked": "Nazadnje preverjeno",
+		"method": "Metoda",
+		"owner": "Lastnik",
+		"path": "Pot",
+		"status": "Status"
+	},
+	"nav": "Predloga indeksa",
+	"route_name": "predloga-indeksa"
+}
