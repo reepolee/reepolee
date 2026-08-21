@@ -13,7 +13,7 @@
 		"status": "Stanje",
 		"suite": "Sklop"
 	},
-	"nav": "Nadzorna plošča",
+	"nav": "ReeQA",
 	"route_name": "nadzorna-plosca",
 	"ui": {
 		"active_project": "Aktivni projekt",

@@ -13,7 +13,7 @@
 		"status": "Status",
 		"suite": "Suite"
 	},
-	"nav": "Dashboard",
+	"nav": "ReeQA",
 	"route_name": "dashboard",
 	"ui": {
 		"active_project": "Active project",
