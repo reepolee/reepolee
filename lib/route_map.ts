@@ -125,6 +125,8 @@ export function build_route_maps(translations: Record<string, any>, routes: Rout
 	}
 
 	for (const canonical_path of canonical_paths) {
+		// The root route is always localized as "/". A route_name on a root
+		// translation is misleading metadata and must not create an alias.
 		if (canonical_path === "/") continue;
 
 		const segments = canonical_path.split("/").filter(Boolean);

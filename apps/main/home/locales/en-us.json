@@ -1,6 +1,5 @@
 {
 	"nav": "Home",
-	"route_name": "home",
 	"ui": {
 		"title": "Home Page"
 	}

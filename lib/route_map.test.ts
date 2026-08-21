@@ -39,6 +39,19 @@ describe("route_map", () => {
 			}
 		});
 
+		test("root route_name does not create a localized root alias", () => {
+			const root_translations = {
+				en: { dashboard: { route_name: "dashboard" } },
+				sl: { dashboard: { route_name: "nadzorna-plosca" } },
+			};
+			rm.build_route_maps(root_translations, { "/": {} }, ["en", "sl"]);
+
+			expect(rm.resolve_localized_path("/", "en")).toBe("/");
+			expect(rm.resolve_localized_path("/", "sl")).toBe("/");
+			expect(rm.resolve_localized_path("/dashboard", "sl")).toBeNull();
+			expect(rm.resolve_localized_path("/nadzorna-plosca", "en")).toBeNull();
+		});
+
 		test("maps translated paths for each locale", () => {
 			rm.build_route_maps(translations, routes, locales);
 			const maps = rm.get_route_maps();

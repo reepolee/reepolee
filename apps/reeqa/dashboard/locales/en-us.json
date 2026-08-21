@@ -14,7 +14,6 @@
 		"suite": "Suite"
 	},
 	"nav": "ReeQA",
-	"route_name": "dashboard",
 	"ui": {
 		"active_project": "Active project",
 		"active_run": "Active run",

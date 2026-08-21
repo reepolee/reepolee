@@ -21,7 +21,6 @@
 	},
 	"nav": "Reeman",
 	"nav_prefix_title": "Reeman",
-	"route_name": "reeman",
 	"ui": {
 		"busy": "Processing — the page will refresh when complete.",
 		"description": "Web interface for the Reepolee resource manager",

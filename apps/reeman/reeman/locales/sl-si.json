@@ -21,7 +21,6 @@
 	},
 	"nav": "Reeman",
 	"nav_prefix_title": "Reeman",
-	"route_name": "reeman",
 	"ui": {
 		"busy": "Obdelava v teku — stran se bo osvežila, ko bo končano.",
 		"description": "Spletni vmesnik za Reepolee resource manager",
