@@ -1,0 +1,103 @@
+{
+	"actions": {
+		"add_condition": "Ajouter une condition",
+		"add_page": "Ajouter une page simple",
+		"add_table_page": "Ajouter une page de table simple",
+		"bulk_action": "Supprimer les routes de BD sélectionnées",
+		"bulk_action_2": "Action alternative",
+		"cancel": "Annuler",
+		"create": "Créer",
+		"do_it": "Oui, procéder",
+		"fields": "Champs uniquement",
+		"full": "Actualisation complète",
+		"new_db_route": "Nouvelle route de BD",
+		"refresh_crud": "Actualiser le CRUD",
+		"remove": "Supprimer",
+		"remove_route": "Supprimer la route",
+		"save": "Enregistrer",
+		"save_close": "Enregistrer et fermer"
+	},
+	"child_ui": {
+		"actions": "Actions",
+		"delete": "Supprimer",
+		"deleting": "Suppression…",
+		"edit": "Modifier",
+		"edit_title": "Modifier Db_route",
+		"empty_text": "Aucune route de BD trouvée.",
+		"error_deleting": "Erreur lors de la suppression de l'enregistrement.",
+		"error_loading": "Erreur lors du chargement de l'enregistrement.",
+		"error_saving": "Erreur lors de l'enregistrement de l'enregistrement.",
+		"new_button": "+ Nouvelle Db_route",
+		"new_title": "Nouvelle Db_route"
+	},
+	"errors": {
+		"duplicate_key": "Un enregistrement avec cette valeur existe déjà.",
+		"error_creating_record": "Une erreur s'est produite lors de l'enregistrement.",
+		"module_required": "Le module est requis.",
+		"must_be_selected": "Ce champ est obligatoire.",
+		"table_name_required": "Le nom de la table est requis.",
+		"title_required": "Le titre est requis.",
+		"url_required": "L'URL est requise.",
+		"value_required_or_use_original": "Saisissez une valeur traduite ou supprimez cette langue."
+	},
+	"hints": {
+		"folder_name": "Lettres minuscules, chiffres, - ou _ (p. ex. my_page).",
+		"prefix": "Préfixe de module facultatif. Laissez vide pour le placer directement sous /routes."
+	},
+	"labels": {
+		"delete_translations": "Supprimer les traductions",
+		"display": "Affichage",
+		"fields": "Champs",
+		"folder_name": "Nom du dossier",
+		"mode": "Mode",
+		"module": "Module",
+		"order_by": "Trier par",
+		"prefix": "Préfixe",
+		"removable": "Supprimable",
+		"table": "Table / Route",
+		"table_name": "Nom de table",
+		"template_tags": "Balises de modèle",
+		"url": "URL",
+		"where": "Où"
+	},
+	"messages": {
+		"bulk_delete_failed": "Échec de la suppression en masse.",
+		"bulk_delete_no_ids": "Aucune route de BD sélectionnée.",
+		"bulk_deleted": "Aucune route de BD supprimée|{count} route de BD supprimée|{count} routes de BD supprimées|{count} routes de BD supprimées|{count} routes de BD supprimées",
+		"bulk_errors": "|{count} route de BD en échec|{count} routes de BD en échec|{count} routes de BD en échec|{count} routes de BD en échec",
+		"record_created": "Enregistrement créé",
+		"record_updated": "Enregistrement mis à jour"
+	},
+	"nav": "Routes de BD",
+	"route_name": "routes-bd",
+	"search": {
+		"search_term": "Rechercher des routes de BD...",
+		"submit": "Rechercher"
+	},
+	"selectors": {
+		"0": "Non",
+		"1": "Oui",
+		"all": "Tous",
+		"default": "(conserver l'actuel)",
+		"per_page": "par page",
+		"select_table": "-- Sélectionner une table ou une route --"
+	},
+	"ui": {
+		"add_page_hint": "Crée une route de page statique (sans base de données) à partir du modèle simple-page.",
+		"add_page_title": "Ajouter une page simple",
+		"add_table_page_hint": "Crée une page de liste en lecture seule adossée à une table de base de données.",
+		"add_table_page_title": "Ajouter une page de table simple",
+		"apply_filters": "Appliquer",
+		"busy": "Traitement — la page se rafraîchira une fois terminé.",
+		"clear_all": "Tout effacer",
+		"filter_not": "NON",
+		"loading_count": "Chargement…",
+		"modifying": "Vous êtes sur le point de modifier",
+		"no_records": "Aucune route de BD trouvée.",
+		"no_tables": "Aucune table trouvée dans la base de données.",
+		"records": "enregistrement(s)",
+		"remove_route_hint": "Cela supprime le dossier de la route et ses fichiers sur le disque. Cette action est irréversible.",
+		"select_table_first": "Sélectionnez une table pour choisir les champs.",
+		"title": "Route de BD"
+	}
+}

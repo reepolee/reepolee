@@ -1,0 +1,67 @@
+{
+	"actions": {
+		"bulk_action": "Supprimer les modules sélectionnés",
+		"bulk_action_2": "Action alternative",
+		"cancel": "Annuler",
+		"do_it": "Oui, procéder",
+		"new_module": "Nouveau module",
+		"save": "Enregistrer",
+		"save_close": "Enregistrer et fermer"
+	},
+	"child_ui": {
+		"actions": "Actions",
+		"delete": "Supprimer",
+		"deleting": "Suppression…",
+		"edit": "Modifier",
+		"edit_title": "Modifier le module",
+		"empty_text": "Aucun module trouvé.",
+		"error_deleting": "Erreur lors de la suppression de l'enregistrement.",
+		"error_loading": "Erreur lors du chargement de l'enregistrement.",
+		"error_saving": "Erreur lors de l'enregistrement de l'enregistrement.",
+		"new_button": "+ Nouveau module",
+		"new_title": "Nouveau module"
+	},
+	"errors": {
+		"duplicate_key": "Un enregistrement avec cette valeur existe déjà.",
+		"error_creating_record": "Une erreur s'est produite lors de l'enregistrement.",
+		"must_be_selected": "Ce champ est obligatoire.",
+		"title_required": "Le titre est requis."
+	},
+	"labels": {
+		"code": "Code",
+		"description": "Description",
+		"name": "Nom",
+		"table": "Table / Chemin"
+	},
+	"messages": {
+		"bulk_delete_failed": "Échec de la suppression en masse.",
+		"bulk_delete_no_ids": "Aucun module sélectionné.",
+		"bulk_deleted": "Aucun module supprimé|{count} module supprimé|{count} modules supprimés|{count} modules supprimés|{count} modules supprimés",
+		"bulk_errors": "|{count} module en échec|{count} modules en échec|{count} modules en échec|{count} modules en échec",
+		"record_created": "Enregistrement créé",
+		"record_updated": "Enregistrement mis à jour"
+	},
+	"nav": "Modules",
+	"route_name": "modules",
+	"search": {
+		"search_term": "Rechercher des modules...",
+		"submit": "Rechercher"
+	},
+	"selectors": {
+		"0": "Non",
+		"1": "Oui",
+		"all": "Tous",
+		"per_page": "par page",
+		"select_table": "-- Sélectionner une table ou un chemin --"
+	},
+	"ui": {
+		"apply_filters": "Appliquer",
+		"clear_all": "Tout supprimer",
+		"filter_not": "NON",
+		"loading_count": "Chargement…",
+		"modifying": "Vous êtes sur le point de modifier",
+		"no_records": "Aucun module trouvé.",
+		"records": "enregistrement(s)",
+		"title": "Modules"
+	}
+}

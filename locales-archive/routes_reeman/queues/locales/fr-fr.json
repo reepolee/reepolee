@@ -1,0 +1,47 @@
+{
+	"actions": {
+		"cancel": "Annuler",
+		"clear_all": "Tout effacer",
+		"clear_pending": "En attente",
+		"confirm": "Confirmer",
+		"delete": "Supprimer",
+		"pause": "Mettre en pause le travailleur",
+		"resume": "Reprendre le travailleur",
+		"retry": "Réessayer"
+	},
+	"labels": {
+		"actions": "Actions",
+		"attempts": "Tentatives",
+		"created": "Créé",
+		"error": "Erreur",
+		"id": "ID",
+		"last_run": "Dernière exécution",
+		"payload": "Charge utile",
+		"pending": "En attente",
+		"queue": "File d'attente",
+		"scheduled": "Planifié",
+		"type": "Type"
+	},
+	"nav": "Files d'attente",
+	"route_name": "files-dattente",
+	"ui": {
+		"backend": "Backend",
+		"confirm_clear_all": "Tout effacer les emplois de cette file d'attente ? Cette action ne peut pas être annulée.",
+		"confirm_clear_pending": "Tout effacer les emplois en attente de cette file d'attente ?",
+		"confirm_delete_job": "Supprimer définitivement cet emploi échoué ? Cette action ne peut pas être annulée.",
+		"error_loading": "Échec du chargement des données de la file d'attente",
+		"failed_heading": "Emplois échoués",
+		"no_failed": "Aucun emploi échoué",
+		"no_pending": "Aucun emploi en attente",
+		"no_queues": "Aucune file d'attente active",
+		"queues_heading": "Files d'attente",
+		"redis_unavailable": "Redis n'est pas disponible - les fonctionnalités de file d'attente sont désactivées. Les e-mails sont envoyés directement via SMTP au lieu d'être mis en file d'attente.",
+		"title": "Gestionnaire de files d'attente",
+		"worker_draining": "vidange",
+		"worker_offline": "Aucun travailleur de file d'attente détecté - les emplois ne seront pas traités",
+		"worker_online": "Le travailleur de file d'attente est en cours d'exécution",
+		"worker_paused": "mis en pause",
+		"worker_running": "en cours d'exécution",
+		"worker_stopped": "arrêté"
+	}
+}

@@ -1,0 +1,31 @@
+{
+	"actions": {
+		"submit": "Enviar invitación"
+	},
+	"email": {
+		"body": "Hola {username},\n\nHas sido invitado. Completa tu registro aquí:\n{url}",
+		"subject": "Has sido invitado"
+	},
+	"errors": {
+		"email_exists": "Ya existe un usuario con esta dirección de correo electrónico.",
+		"email_required": "Se requiere una dirección de correo electrónico.",
+		"invitation_not_found": "No se encontró la invitación."
+	},
+	"labels": {
+		"email": "Correo del invitado",
+		"username": "Nombre de usuario"
+	},
+	"route_name": "invitacion",
+	"ui": {
+		"confirm_title": "Invitación enviada",
+		"created_field": "Creado",
+		"email_field": "Correo electrónico",
+		"email_label": "Correo del invitado",
+		"link_label": "Enlace de registro:",
+		"send_another": "Enviar otra invitación",
+		"success_message": "La invitación se ha creado correctamente.",
+		"success_send_this_link": "Envíe este enlace al invitado:",
+		"title": "Invitar usuario",
+		"username_field": "Nombre de usuario"
+	}
+}

@@ -1,0 +1,43 @@
+{
+	"actions": {
+		"bulk_action": "Excluir usuários selecionados",
+		"bulk_action_2": "Ação alternativa",
+		"new_user": "Novo usuário"
+	},
+	"labels": {
+		"avatar_filename": "Nome do arquivo de avatar",
+		"email": "E-mail",
+		"hashed_password": "Senha com hash",
+		"invitation_code": "Código de convite",
+		"modules_tags": "Módulos",
+		"name": "Nome",
+		"previous_hashed_password": "Senha com hash anterior",
+		"username": "Nome de usuário",
+		"verified_at": "Verificado em"
+	},
+	"messages": {
+		"bulk_delete_no_ids": "Nenhum usuário selecionado.",
+		"bulk_deleted": "Nenhum usuário excluído|{count} usuário excluído|{count} usuários excluídos|{count} usuários excluídos|{count} usuários excluídos",
+		"bulk_errors": "|{count} usuário falhou|{count} usuários falharam|{count} usuários falharam|{count} usuários falharam"
+	},
+	"modules_tags": {
+		"admin": "Administrador",
+		"default": "Padrão",
+		"examples": "Exemplos",
+		"system": "Sistema",
+		"user": "Usuário"
+	},
+	"nav": "Usuários",
+	"route_name": "usuarios",
+	"search": {
+		"search_term": "Pesquisar usuários...",
+		"submit": "Pesquisar"
+	},
+	"selectors": {
+		"all": "Todos"
+	},
+	"ui": {
+		"no_records": "Nenhum usuário encontrado.",
+		"title": "Usuários"
+	}
+}

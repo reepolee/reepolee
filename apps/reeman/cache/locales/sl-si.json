@@ -1,0 +1,20 @@
+{
+	"nav": "Predpomnilnik",
+	"ui": {
+		"actions_header": "Dejanja",
+		"confirm_invalidate": "Izprazni",
+		"disabled": "Predpomnilnik ni na voljo - omogočite CACHE_ENABLED v okoljskih spremenljivkah",
+		"disabled_badge": "Onemogočeno",
+		"enable_hint": "Nastavite CACHE_ENABLED=true v .env datoteki in ponovno zaženite strežnik",
+		"enabled_badge": "Aktivno",
+		"entries_header": "Vnosov v predpomnilnik",
+		"invalidate_btn": "Počisti",
+		"no_tables": "Nobena tabela ni v sledenju predpomnilnika",
+		"reset_btn": "Počisti celoten predpomnilnik",
+		"reset_confirm": "Ali ste prepričani, da želite izničiti VSE predpomnjene podatke? Tega ni mogoče razveljaviti.",
+		"table_header": "Tabela",
+		"title": "Predpomnilnik SQL",
+		"total_keys": "Skupaj ključev predpomnilnika",
+		"tracked_tables": "Spremljane tabele"
+	}
+}

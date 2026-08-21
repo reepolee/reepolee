@@ -1,0 +1,18 @@
+{
+	"actions": {
+		"submit": "Entrar"
+	},
+	"errors": {
+		"account_not_verified": "Sua conta ainda não foi verificada.",
+		"invalid_username_or_password": "Nome de usuário ou senha inválidos."
+	},
+	"labels": {
+		"email": "E-mail",
+		"password": "Senha",
+		"username": "Nome de usuário (pode ser e-mail)"
+	},
+	"route_name": "entrar",
+	"ui": {
+		"title": "Entrar"
+	}
+}

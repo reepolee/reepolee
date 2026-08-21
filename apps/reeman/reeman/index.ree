@@ -1,0 +1,135 @@
+{#layout("layout")}
+{#with props}
+	<div class="w-full py-4 space-y-6">
+
+		<!-- HEADER -->
+		<header class="flex flex-wrap items-center justify-between gap-3 px-4">
+			<div>
+				<h1 class="text-xl font-bold">{_ ui.title}</h1>
+				<p class="text-sm text-text-secondary mt-1">{_ ui.description}</p>
+			</div>
+			<div class="flex flex-wrap items-center gap-2">
+				<span class="pill-layout bg-neutral-200 font-semibold">{= db_summary.type }</span>
+				<code class="text-xs bg-surface-sunken border border-border rounded px-2 py-1" title="{= db_summary.display }">{= db_summary.display }</code>
+			</div>
+		</header>
+
+		{#if form_error}
+			<app-banner type="red" class="mx-4">{= form_error}</app-banner>
+		{/if}
+
+		{#if busy}
+			<app-banner type="yellow" class="mx-4">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
+		{/if}
+
+		<!-- STATS -->
+		<section class="grid gap-3 px-4" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr))">
+			<a href="{~ localized_path('/tables') }" class="block rounded-md border border-border bg-surface-raised p-4 transition-colors hover:border-brand">
+				<div class="text-2xl font-bold">{= tables.length }</div>
+				<div class="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ ui.stats_tables}</div>
+			</a>
+			<a href="{~ localized_path('/tables') }" class="block rounded-md border border-border bg-surface-raised p-4 transition-colors hover:border-brand">
+				<div class="text-2xl font-bold">{= crud_count }</div>
+				<div class="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ ui.stats_crud}</div>
+			</a>
+			<div class="rounded-md border border-border bg-surface-raised p-4">
+				<div class="text-2xl font-bold">{= modules.length }</div>
+				<div class="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ ui.stats_modules}</div>
+			</div>
+			<div class="rounded-md border border-border bg-surface-raised p-4">
+				<div class="text-2xl font-bold">{= locales_info.list.length }</div>
+				<div class="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ ui.stats_locales}</div>
+			</div>
+		</section>
+
+		<!-- QUICK LINKS -->
+		<section class="grid gap-3 px-4" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr))">
+			{{
+				const quick_links = [
+					{ url: "/tables", title: props.translations?.ui?.tables_title || "Tables", description: props.translations?.ui?.tables_description || "" },
+					{ url: "/refresh", title: props.translations?.ui?.refresh_title || "Refresh", description: props.translations?.ui?.refresh_description || "" },
+					{ url: "/database", title: props.translations?.ui?.database_title || "Database", description: props.translations?.ui?.database_description || "" },
+					{ url: "/routes", title: props.translations?.ui?.routes_title || "Routes", description: props.translations?.ui?.routes_description || "" },
+					{ url: "/logs", title: props.translations?.ui?.logs_title || "Logs", description: props.translations?.ui?.logs_description || "" },
+				];
+			}}
+			{#each quick_links as link}
+				<a href="{~ localized_path(link.url) }" class="group rounded-md border border-border bg-surface-raised p-4 transition-colors hover:border-brand">
+					<div class="text-sm font-bold group-hover:text-brand">{= link.title }</div>
+					<div class="mt-1 text-xs text-text-secondary">{= link.description }</div>
+				</a>
+			{/each}
+
+			<div class="rounded-md border border-dashed border-border bg-surface-raised p-4 transition-colors hover:border-brand">
+				<div class="text-sm font-bold">{_ actions.reload_routes}</div>
+				<p class="mt-1 text-xs text-text-secondary">{_ ui.reload_routes_hint}</p>
+				<confirm-dialog trigger-class="button primary mt-3 text-xs" form-path="/reload-routes" title="{_ actions.reload_routes}" trigger-text="{_ actions.reload_routes}" message="{_ confirm.reload_routes}" confirm-text="{_ actions.do_it}" cancel-text="{_ actions.cancel}" extra-field-name="return_to" extra-field-value="/"></confirm-dialog>
+			</div>
+		</section>
+
+		<!-- TABLES -->
+		<section class="space-y-3">
+			<div class="flex items-center justify-between px-4">
+				<h2 class="font-semibold">{_ labels.tables}</h2>
+				<span class="text-xs text-text-secondary">{= tables.length }</span>
+			</div>
+			{#if tables.length === 0}
+				<p class="text-sm text-text-secondary px-4">{_ ui.no_tables}</p>
+			{:else}
+				<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-4" style="grid-template-columns: auto 15ch 15ch 15ch 15ch 1fr">
+					<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+						<div>{_ labels.table}</div>
+						<div class="text-center">{_ labels.columns}</div>
+						<div class="text-center">{_ labels.foreign_keys}</div>
+						<div class="text-center">{_ labels.view}</div>
+						<div class="text-center">{_ labels.crud}</div>
+						<!-- filler cell for the trailing 1fr grid track -->
+						<div class="grid-filler"></div>
+					</div>
+					{#each tables as table}
+						<div class="col-span-full *:py-2 grid grid-cols-subgrid border-b border-b-neutral-200 *:px-2 hover:bg-surface-raised last:border-b-0">
+							<div class="font-mono">{= table.name }{#if table.comment} <span class="text-xs text-text-tertiary">— {= table.comment }</span>{/if}</div>
+							<div class="text-center">{= table.column_count }</div>
+							<div class="text-center">{= table.fk_count }</div>
+							<div class="text-center">{#if table.has_view}<span class="pill-layout bg-neutral-200 text-xs">{_ labels.view}</span>{:else}<span class="text-text-tertiary">-</span>{/if}</div>
+							<div class="text-center">{#if table.has_crud}<span class="pill-layout pill-yes text-xs">{_ labels.crud}</span>{:else}<span class="pill-layout bg-neutral-200 text-xs">{_ labels.schema}</span>{/if}</div>
+							<!-- filler cell for the trailing 1fr grid track -->
+							<div class="grid-filler"></div>
+						</div>
+					{/each}
+				</div>
+			{/if}
+		</section>
+
+		<!-- RECENT RUNS (compact - full log lives on /logs) -->
+		<section class="space-y-3">
+			<div class="flex items-center justify-between px-4">
+				<h2 class="font-semibold">{_ ui.last_runs}</h2>
+				<a href="{~ localized_path('/logs') }" class="text-sm font-semibold text-brand hover:underline">{_ actions.view_all}</a>
+			</div>
+
+			{#if runs.length === 0}
+				<p class="text-sm text-text-secondary px-4">{_ ui.no_runs}</p>
+			{:else}
+				<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-4" style="grid-template-columns: 10ch auto 1fr 15ch">
+					<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+						<div class="text-center">{_ labels.status}</div>
+						<div>{_ labels.action}</div>
+						<div>{_ labels.target}</div>
+						<div class="text-right">{_ labels.finished}</div>
+					</div>
+					{#each runs.slice(0, 5) as r}
+						<div class="col-span-full *:py-2 grid grid-cols-subgrid border-b border-b-neutral-200 *:px-2 hover:bg-surface-raised last:border-b-0">
+							<div class="text-center"><span class="pill-layout text-xs font-bold {= r.ok ? 'pill-yes' : 'bg-brand text-white' }">{= r.ok ? '✓' : '✗' }</span></div>
+							<div><code class="text-sm font-semibold">{= r.action }</code></div>
+							<div>{#if r.target}<code class="text-xs text-text-secondary">{= r.target }</code>{/if}</div>
+							<div class="text-right text-xs text-text-secondary">{= js_datetime_to_locale_string(r.finished) }</div>
+						</div>
+					{/each}
+				</div>
+			{/if}
+		</section>
+	</div>
+
+	<script src="/dialog-confirm.js?v={= version}"></script>
+{/with}

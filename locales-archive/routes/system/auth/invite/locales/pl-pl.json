@@ -1,0 +1,31 @@
+{
+	"actions": {
+		"submit": "Wyślij zaproszenie"
+	},
+	"email": {
+		"body": "Cześć {username},\n\nZostałeś zaproszony. Ukończ swoją rejestrację tutaj:\n{url}",
+		"subject": "Zostałeś zaproszony"
+	},
+	"errors": {
+		"email_exists": "Użytkownik z tym adresem e-mail już istnieje.",
+		"email_required": "Adres e-mail jest wymagany.",
+		"invitation_not_found": "Nie znaleziono zaproszenia."
+	},
+	"labels": {
+		"email": "E-mail zaproszonej osoby",
+		"username": "Nazwa użytkownika"
+	},
+	"route_name": "zaproszenie",
+	"ui": {
+		"confirm_title": "Zaproszenie wysłane",
+		"created_field": "Utworzono",
+		"email_field": "E-mail",
+		"email_label": "E-mail zaproszonej osoby",
+		"link_label": "Link rejestracyjny:",
+		"send_another": "Wyślij kolejne zaproszenie",
+		"success_message": "Zaproszenie zostało pomyślnie utworzone.",
+		"success_send_this_link": "Wyślij ten link zaproszonej osobie:",
+		"title": "Zaproś użytkownika",
+		"username_field": "Nazwa użytkownika"
+	}
+}

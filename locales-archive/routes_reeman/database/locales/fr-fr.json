@@ -1,0 +1,44 @@
+{
+	"actions": {
+		"check_compliance": "Vérifier la conformité de domaine",
+		"json_to_sql": "JSON en table SQL",
+		"open_in_studio": "Ouvrir dans Studio",
+		"run_sql": "Exécuter le fichier SQL"
+	},
+	"confirm": {
+		"run_sql": "Exécuter ce fichier SQL sur la base de données ? Cette action est irréversible."
+	},
+	"hints": {
+		"json_path": "Chemin du fichier JSON à convertir, relatif à la racine du projet (p. ex. data/recipes.json)",
+		"slug": "Slug en minuscules facultatif pour le nom de fichier SQL généré. Par défaut, le nom de la table est utilisé.",
+		"slug_safe_table": "Lettres minuscules et chiffres uniquement (utilisé pour le slug du nom de fichier SQL)"
+	},
+	"labels": {
+		"action": "Action",
+		"file_count": "fichiers",
+		"file_type": "Type",
+		"folder": "Dossier",
+		"folder_summary": "Total des dossiers",
+		"json_file": "Fichier JSON",
+		"json_path": "Chemin du fichier JSON",
+		"last_updated": "Dernière mise à jour",
+		"slug": "Slug (facultatif)",
+		"sql_file": "Fichier SQL",
+		"table_name": "Nom de table"
+	},
+	"selectors": {
+		"select_sql": "-- sélectionner un fichier .sql --"
+	},
+	"ui": {
+		"broken_views_hint": "Ces vues référencent des tables qui n'existent plus et ont été ignorées lors de l'inspection. Recréez les tables manquantes (p. ex. via Exécuter le fichier SQL), puis rechargez.",
+		"broken_views_title": "Vues cassées détectées",
+		"busy": "Traitement — la page se rafraîchira une fois terminé.",
+		"compliance_hint": "Inspecte la base de données en direct et signale les colonnes qui ne correspondent pas aux types de domaine canoniques. Lecture seule.",
+		"database_description": "Exécuter des fichiers SQL, initialiser des données depuis JSON et vérifier la conformité de domaine.",
+		"database_title": "Base de données",
+		"json_to_sql_hint": "Envoyez un fichier JSON et générez des fichiers SQL MySQL et SQLite appariés.",
+		"json_upload_hint": "Sélectionnez un fichier .json avant de démarrer la transformation.",
+		"no_sql_files": "Aucun fichier .sql trouvé dans sql/{dialect}/.",
+		"sql_files_hint": "Choisissez un fichier SQL à exécuter sur la base de données actuelle."
+	}
+}
