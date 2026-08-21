@@ -1,0 +1,67 @@
+{
+	"actions": {
+		"bulk_action": "選択したモジュールを削除",
+		"bulk_action_2": "代替アクション",
+		"cancel": "キャンセル",
+		"do_it": "はい、実行します",
+		"new_module": "新しいモジュール",
+		"save": "保存",
+		"save_close": "保存して閉じる"
+	},
+	"child_ui": {
+		"actions": "アクション",
+		"delete": "削除",
+		"deleting": "削除中…",
+		"edit": "編集",
+		"edit_title": "モジュールを編集",
+		"empty_text": "モジュールが見つかりません。",
+		"error_deleting": "レコードの削除中にエラーが発生しました。",
+		"error_loading": "レコードの読み込み中にエラーが発生しました。",
+		"error_saving": "レコードの保存中にエラーが発生しました。",
+		"new_button": "+ 新しいモジュール",
+		"new_title": "新しいモジュール"
+	},
+	"errors": {
+		"duplicate_key": "この値のレコードは既に存在します。",
+		"error_creating_record": "レコードの保存中にエラーが発生しました。",
+		"must_be_selected": "このフィールドは必須です。",
+		"title_required": "タイトルが必要です。"
+	},
+	"labels": {
+		"code": "コード",
+		"description": "説明",
+		"name": "名前",
+		"table": "テーブル / パス"
+	},
+	"messages": {
+		"bulk_delete_failed": "一括削除に失敗しました。",
+		"bulk_delete_no_ids": "モジュールが選択されていません。",
+		"bulk_deleted": "削除されたモジュールはありません|{count} モジュールを削除しました|{count} モジュールを削除しました|{count} モジュールを削除しました|{count} モジュールを削除しました",
+		"bulk_errors": "|{count} モジュールでエラーが発生しました|{count} モジュールでエラーが発生しました|{count} モジュールでエラーが発生しました|{count} モジュールでエラーが発生しました",
+		"record_created": "レコードを作成しました",
+		"record_updated": "レコードを更新しました"
+	},
+	"nav": "モジュール",
+	"route_name": "modules",
+	"search": {
+		"search_term": "モジュールを検索...",
+		"submit": "検索"
+	},
+	"selectors": {
+		"0": "いいえ",
+		"1": "はい",
+		"all": "すべて",
+		"per_page": "ページあたり",
+		"select_table": "-- テーブルまたはパスを選択 --"
+	},
+	"ui": {
+		"apply_filters": "適用",
+		"clear_all": "すべて削除",
+		"filter_not": "NOT",
+		"loading_count": "読み込み中…",
+		"modifying": "変更しようとしています",
+		"no_records": "モジュールが見つかりません。",
+		"records": "レコード",
+		"title": "モジュール"
+	}
+}

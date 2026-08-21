@@ -1,0 +1,52 @@
+{
+	"actions": {
+		"abort_delete": "Abbrechen",
+		"bulk_action": "Ausgewählte Bilder löschen",
+		"confirm_delete": "Ja, löschen",
+		"delete": "Dieses Bild dauerhaft löschen?",
+		"new_image": "Neues Bild"
+	},
+	"labels": {
+		"description": "Beschreibung",
+		"file_size": "Dateigröße",
+		"filename": "Dateiname",
+		"folder": "Ordner",
+		"height": "Höhe",
+		"mime_type": "MIME-Typ",
+		"original_filename": "Ursprünglicher Dateiname",
+		"s3_key": "S3-Schlüssel",
+		"tags": "Tags",
+		"title": "Titel",
+		"width": "Breite"
+	},
+	"messages": {
+		"bulk_delete_no_ids": "Keine Bilder ausgewählt.",
+		"bulk_deleted": "Keine Bilder gelöscht|{count} Bild gelöscht|{count} Bilder gelöscht|{count} Bilder gelöscht|{count} Bilder gelöscht",
+		"bulk_errors": "|{count} Bild fehlgeschlagen|{count} Bilder fehlgeschlagen|{count} Bilder fehlgeschlagen|{count} Bilder fehlgeschlagen"
+	},
+	"nav": "Bilder",
+	"route_name": "bilder",
+	"search": {
+		"search_term": "Bilder suchen...",
+		"submit": "Suchen"
+	},
+	"selectors": {
+		"all": "Alle"
+	},
+	"ui": {
+		"no_records": "Keine Bilder gefunden.",
+		"title": "Bilder"
+	},
+	"v_labels": {
+		"description": "Beschreibung",
+		"file_size": "Dateigröße",
+		"filename": "Dateiname",
+		"folder": "Ordner",
+		"height": "Höhe",
+		"mime_type": "MIME-Typ",
+		"original_filename": "Ursprünglicher Dateiname",
+		"tags": "Tags",
+		"title": "Titel",
+		"width": "Breite"
+	}
+}

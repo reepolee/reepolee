@@ -1,0 +1,30 @@
+{
+	"actions": {
+		"cancel": "Annulla",
+		"confirm_delete": "Elimina",
+		"delete_selected": "Elimina selezionati",
+		"hide_values": "Nascondi valori",
+		"save": "Salva",
+		"search": "Cerca",
+		"show_values": "Mostra valori"
+	},
+	"confirm": {
+		"delete_selected": "Eliminare le chiavi di ambiente selezionate?"
+	},
+	"hints": {
+		"description": "Le descrizioni provengono da .env.example e non possono essere modificate qui.",
+		"value": "Inserisci il valore dotenv esattamente come deve apparire dopo il segno di uguale. I valori devono stare su una riga."
+	},
+	"labels": {
+		"description": "Descrizione",
+		"key": "Chiave",
+		"native_order": "Ordine nativo .env",
+		"selected": "Selezionato",
+		"value": "Valore"
+	},
+	"nav": "Ambiente",
+	"ui": {
+		"edit_title": "Modifica variabile di ambiente",
+		"no_records": "Nessuna variabile di ambiente trovata."
+	}
+}

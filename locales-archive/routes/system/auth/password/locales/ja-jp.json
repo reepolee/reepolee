@@ -1,0 +1,22 @@
+{
+	"actions": {
+		"cancel": "キャンセル",
+		"submit": "パスワードを変更"
+	},
+	"errors": {
+		"incorrect_password": "現在のパスワードが正しくありません。"
+	},
+	"labels": {
+		"current_password": "現在のパスワード",
+		"password": "新しいパスワード",
+		"password_confirm": "新しいパスワードを確認"
+	},
+	"messages": {
+		"successful_save": "パスワードが正常に変更されました。"
+	},
+	"route_name": "password",
+	"ui": {
+		"no_password_set": "パスワードが設定されていません。管理者に連絡してください。",
+		"title": "パスワードを変更"
+	}
+}

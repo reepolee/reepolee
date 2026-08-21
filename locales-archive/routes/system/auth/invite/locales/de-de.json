@@ -1,0 +1,31 @@
+{
+	"actions": {
+		"submit": "Einladung senden"
+	},
+	"email": {
+		"body": "Hallo {username},\n\nSie wurden eingeladen. Schließen Sie Ihre Registrierung hier ab:\n{url}",
+		"subject": "Sie wurden eingeladen"
+	},
+	"errors": {
+		"email_exists": "Ein Benutzer mit dieser E-Mail-Adresse existiert bereits.",
+		"email_required": "E-Mail-Adresse ist erforderlich.",
+		"invitation_not_found": "Einladung nicht gefunden."
+	},
+	"labels": {
+		"email": "E-Mail des Eingeladenen",
+		"username": "Benutzername"
+	},
+	"route_name": "einladung",
+	"ui": {
+		"confirm_title": "Einladung gesendet",
+		"created_field": "Erstellt",
+		"email_field": "E-Mail",
+		"email_label": "E-Mail des Eingeladenen",
+		"link_label": "Registrierungslink:",
+		"send_another": "Weitere Einladung senden",
+		"success_message": "Die Einladung wurde erfolgreich erstellt.",
+		"success_send_this_link": "Senden Sie diesen Link an den Eingeladenen:",
+		"title": "Benutzer einladen",
+		"username_field": "Benutzername"
+	}
+}

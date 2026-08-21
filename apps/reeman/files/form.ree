@@ -1,0 +1,155 @@
+{#layout("layout")}
+{#with props}
+
+	<div class="p-4 max-w-[120ch] mx-auto">
+		<div class="flex items-center justify-between mb-6">
+			<h1>{= title}</h1>
+			<div class="text-sm text-gray-500">
+				{#if record.created_at}
+					{~ js_datetime_to_locale_string(record.created_at)}
+				{/if}
+			</div>
+		</div>
+
+		<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+		{#if !edit_mode}
+			<file-upload name="s3_key" folder="{= record.folder }" show-folder="true" label="{_ ui.file }"></file-upload>
+		{:else}
+			<form id="metadata-form" method="POST" action="{~ localized_path(action) }" class="flex flex-col gap-4">
+				<input type="hidden" name="_action" value="update" />
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="_save_action" id="save_action" value="" />
+
+				<div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+					<a href="/{= files_basepath }/{= record.s3_key }" target="_blank" rel="noopener" class="text-brand underline">{= record.original_filename || record.filename}</a>
+					<span class="text-slate-500 text-sm ml-2">{~ human_bytes(record.file_size)}</span>
+				</div>
+
+				{#if form_errors}
+					<div class="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">{= form_errors}</div>
+				{/if}
+
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider">{_ labels.folder}</label>
+					<input type="text" value="{= record.folder }" disabled class="bg-slate-100 px-2 py-1.5 border border-slate-200 rounded text-sm outline-none text-slate-500" />
+				</div>
+
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider">{_ labels.title}</label>
+					<input type="text" name="title" value="{= record.title }" maxlength="255" class="bg-white px-2 py-1.5 border border-slate-200 rounded text-sm outline-none focus:border-blue-500" />
+				</div>
+
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider">{_ labels.description}</label>
+					<textarea name="description" rows="2" class="bg-white px-2 py-1.5 border border-slate-200 rounded text-sm outline-none resize-y focus:border-blue-500">{= record.description }</textarea>
+				</div>
+
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider">{_ labels.tags}</label>
+					<input type="text" name="tags" value="{= record.tags }" maxlength="500" class="bg-white px-2 py-1.5 border border-slate-200 rounded text-sm outline-none focus:border-blue-500" />
+				</div>
+
+				<div class="flex gap-3 justify-between items-center mt-2">
+					<a href="{~ localized_path('/files') }" class="button secondary text-sm">
+						←
+						{_ actions.back}
+					</a>
+
+					<div class="flex gap-3">
+						{#if record.archived_at}
+							<button
+								id="action_restore"
+								type="button"
+								command="show-modal"
+								commandfor="action_restore_dialog"
+								class="button secondary text-xs">
+								{_ actions.restore}
+							</button>
+						{/if}
+
+						<button
+							id="action_archive"
+							type="button"
+							command="show-modal"
+							commandfor="action_archive_dialog"
+							class="button tertiary text-xs">
+							{_ actions.archive}
+						</button>
+
+						<button type="submit" onclick="document.getElementById('save_action').value='stay'" class="button primary">
+							{_ actions.save}
+						</button>
+
+						<button type="submit" onclick="document.getElementById('save_action').value='close'" class="button secondary">
+							{_ actions.save_close}
+						</button>
+					</div>
+				</div>
+			</form>
+		{/if}
+
+		{#if edit_mode}
+			<form id="restore-form" method="POST" action="{~ localized_path(action) }" style="display: none;">
+				<input type="hidden" name="_action" value="restore" />
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+			</form>
+
+			<dialog id="action_restore_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+				<div class="p-6">
+					<h2 class="text-lg font-semibold">{_ actions.restore}</h2>
+					<div class="mt-6 flex justify-end gap-2">
+						<button class="button secondary" type="button" commandfor="action_restore_dialog" command="close">{_ actions.abort_restore}</button>
+						<button class="button primary" type="button" command="--confirm" commandfor="action_restore_dialog">{_ actions.confirm_restore}</button>
+					</div>
+				</div>
+			</dialog>
+
+			<form id="archive-form" method="POST" action="{~ localized_path(action) }" style="display: none;">
+				<input type="hidden" name="_action" value="archive" />
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+			</form>
+
+			<dialog id="action_archive_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+				<div class="p-6">
+					<h2 class="text-lg font-semibold">{_ actions.archive}</h2>
+					<div class="mt-6 flex justify-end gap-2">
+						<button class="button secondary" type="button" commandfor="action_archive_dialog" command="close">{_ actions.abort_archive}</button>
+						<button class="button danger" type="button" command="--confirm" commandfor="action_archive_dialog">{_ actions.confirm_archive}</button>
+					</div>
+				</div>
+			</dialog>
+
+			<script src="/dialog-confirm.js?v={= version }"></script>
+		{/if}
+	</div>
+
+	<script>
+		const restore_dialog = document.getElementById("action_restore_dialog");
+		if (restore_dialog) {
+			restore_dialog.addEventListener("command", (e) => {
+				if (e.command !== "--confirm") return;
+				e.currentTarget.close();
+				document.getElementById("restore-form").submit();
+			});
+		}
+		const archive_dialog = document.getElementById("action_archive_dialog");
+		if (archive_dialog) {
+			archive_dialog.addEventListener("command", (e) => {
+				if (e.command !== "--confirm") return;
+				e.currentTarget.close();
+				const form = document.getElementById("archive-form");
+				if (form) form.requestSubmit();
+			});
+		}
+
+		// After a fresh upload, jump to the edit page so folder/title/description/tags can be saved.
+		const new_file_hidden = document.querySelector('.file-upload-value[name="s3_key"]');
+		if (new_file_hidden) {
+			new_file_hidden.addEventListener("change", () => {
+				const db_id = new_file_hidden.dataset.dbId;
+				if (db_id) window.location.href = "{~ localized_path('/files/') }" + db_id + "/edit";
+			});
+		}
+	</script>
+{/with}

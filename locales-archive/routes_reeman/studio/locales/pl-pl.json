@@ -1,0 +1,63 @@
+{
+	"actions": {
+		"adapt_schema": "Dopasuj schemat",
+		"add_column": "Dodaj kolumnę",
+		"add_foreign_key": "Dodaj klucz obcy",
+		"cancel": "Anuluj",
+		"copy": "Kopiuj",
+		"create": "Utwórz",
+		"delete": "Usuń",
+		"delete_column": "Usuń kolumnę",
+		"favorite": "Ulubione",
+		"generate": "Generuj",
+		"generate_view": "Wygeneruj widok",
+		"hide_system": "Ukryj kolumny systemowe",
+		"new_table": "Nowa tabela",
+		"save": "Zapisz",
+		"undo": "Cofnij"
+	},
+	"labels": {
+		"all_types": "Wszystkie typy",
+		"auto_increment": "Auto inkrementacja",
+		"current": "bieżący",
+		"ddl_preview": "Podgląd DDL",
+		"default": "Domyślny",
+		"domain_type": "Typ domenowy",
+		"domain_types": "Typy domenowe",
+		"expected_type": "Oczekiwany typ",
+		"file": "Plik",
+		"generated": "Wygenerowano",
+		"name": "Nazwa",
+		"nonstandard_sql": "Niestandardowy SQL",
+		"nullability": "Nullowalność",
+		"other_fields": "Inne pola",
+		"sql_type": "Typ SQL",
+		"suggested": "sugerowany",
+		"table": "Tabela",
+		"table_ids": "ID tabel",
+		"tables": "Tabele",
+		"unique": "Unikalny",
+		"view": "Widok",
+		"views": "Widoki"
+	},
+	"messages": {
+		"adapt_schema": "Dopasować schemat do bieżącego modelu?",
+		"delete_column": "Usunąć tę kolumnę?",
+		"delete_table": "Usunąć tę tabelę?",
+		"delete_view": "Usunąć ten widok?",
+		"generate_view": "Wygenerować widok dla tej tabeli?"
+	},
+	"nav_prefix_title": "Studio",
+	"route_name": "studio",
+	"selectors": {
+		"custom": "Niestandardowy",
+		"select_file": "Wybierz plik"
+	},
+	"ui": {
+		"description": "Wizualny edytor modeli SQL",
+		"empty_text": "Otwórz plik z listy, aby rozpocząć edycję.",
+		"empty_title": "Nie załadowano modelu",
+		"no_objects": "Wybierz tabelę lub widok",
+		"title": "Studio"
+	}
+}

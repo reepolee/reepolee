@@ -1,0 +1,67 @@
+{
+	"actions": {
+		"bulk_action": "Ausgewählte Module löschen",
+		"bulk_action_2": "Alternative Aktion",
+		"cancel": "Abbrechen",
+		"do_it": "Ja, ausführen",
+		"new_module": "Neues Modul",
+		"save": "Speichern",
+		"save_close": "Speichern & schließen"
+	},
+	"child_ui": {
+		"actions": "Aktionen",
+		"delete": "Löschen",
+		"deleting": "Wird gelöscht…",
+		"edit": "Bearbeiten",
+		"edit_title": "Modul bearbeiten",
+		"empty_text": "Keine Module gefunden.",
+		"error_deleting": "Fehler beim Löschen des Datensatzes.",
+		"error_loading": "Fehler beim Laden des Datensatzes.",
+		"error_saving": "Fehler beim Speichern des Datensatzes.",
+		"new_button": "+ Neues Modul",
+		"new_title": "Neues Modul"
+	},
+	"errors": {
+		"duplicate_key": "Ein Datensatz mit diesem Wert existiert bereits.",
+		"error_creating_record": "Beim Speichern des Datensatzes ist ein Fehler aufgetreten.",
+		"must_be_selected": "Dieses Feld ist erforderlich.",
+		"title_required": "Titel ist erforderlich."
+	},
+	"labels": {
+		"code": "Code",
+		"description": "Beschreibung",
+		"name": "Name",
+		"table": "Tabelle / Pfad"
+	},
+	"messages": {
+		"bulk_delete_failed": "Massenlöschung fehlgeschlagen.",
+		"bulk_delete_no_ids": "Keine Module ausgewählt.",
+		"bulk_deleted": "Keine Module gelöscht|{count} Modul gelöscht|{count} Module gelöscht|{count} Module gelöscht|{count} Module gelöscht",
+		"bulk_errors": "|{count} Modul fehlgeschlagen|{count} Module fehlgeschlagen|{count} Module fehlgeschlagen|{count} Module fehlgeschlagen",
+		"record_created": "Datensatz erstellt",
+		"record_updated": "Datensatz aktualisiert"
+	},
+	"nav": "Module",
+	"route_name": "module",
+	"search": {
+		"search_term": "Module suchen...",
+		"submit": "Suchen"
+	},
+	"selectors": {
+		"0": "Nein",
+		"1": "Ja",
+		"all": "Alle",
+		"per_page": "pro Seite",
+		"select_table": "-- Tabelle oder Pfad auswählen --"
+	},
+	"ui": {
+		"apply_filters": "Anwenden",
+		"clear_all": "Alle löschen",
+		"filter_not": "NICHT",
+		"loading_count": "Wird geladen…",
+		"modifying": "Sie sind dabei zu ändern",
+		"no_records": "Keine Module gefunden.",
+		"records": "Datensatz/Datensätze",
+		"title": "Module"
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"nav": "Cache",
+	"ui": {
+		"actions_header": "Aktionen",
+		"confirm_invalidate": "Leeren",
+		"disabled": "Cache ist nicht verfügbar - aktivieren Sie CACHE_ENABLED in den Umgebungsvariablen",
+		"disabled_badge": "Deaktiviert",
+		"enable_hint": "Setzen Sie CACHE_ENABLED=true in der .env-Datei und starten Sie den Server neu",
+		"enabled_badge": "Aktiv",
+		"entries_header": "Cache-Einträge",
+		"invalidate_btn": "Leeren",
+		"no_tables": "Keine Tabelle wird vom Cache verfolgt",
+		"reset_btn": "Gesamten Cache leeren",
+		"reset_confirm": "Möchten Sie wirklich ALLE zwischengespeicherten Daten ungültig machen? Dies kann nicht rückgängig gemacht werden.",
+		"table_header": "Tabelle",
+		"title": "SQL-Cache",
+		"total_keys": "Cache-Schlüssel insgesamt",
+		"tracked_tables": "Verfolgte Tabellen"
+	}
+}

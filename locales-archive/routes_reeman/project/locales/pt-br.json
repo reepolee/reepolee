@@ -1,0 +1,18 @@
+{
+	"actions": {
+		"set_repo": "Definir repositório"
+	},
+	"labels": {
+		"current_repo": "Repositório atual:",
+		"owner_repo": "Repositório GitHub (owner/repo)",
+		"r2_credentials": "Credenciais R2"
+	},
+	"ui": {
+		"project_description": "Configurações no nível do projeto.",
+		"project_title": "Projeto",
+		"r2_all_set": "Todas as credenciais R2 estão configuradas.",
+		"r2_hint": "Credenciais Cloudflare R2 para uploads de capturas de tela do relator de problemas. Defina-as no .env.",
+		"r2_missing": "Credenciais R2 ausentes — capturas de tela em relatórios de problemas não serão enviadas.",
+		"set_repo_hint": "Vincule este projeto a um repositório GitHub para que relatórios de problemas e metadados do package.json apontem para o lugar certo."
+	}
+}

@@ -1,0 +1,63 @@
+{
+	"actions": {
+		"adapt_schema": "Adaptar esquema",
+		"add_column": "Adicionar coluna",
+		"add_foreign_key": "Adicionar chave estrangeira",
+		"cancel": "Cancelar",
+		"copy": "Copiar",
+		"create": "Criar",
+		"delete": "Excluir",
+		"delete_column": "Excluir coluna",
+		"favorite": "Favorito",
+		"generate": "Gerar",
+		"generate_view": "Gerar visão",
+		"hide_system": "Ocultar colunas do sistema",
+		"new_table": "Nova tabela",
+		"save": "Salvar",
+		"undo": "Desfazer"
+	},
+	"labels": {
+		"all_types": "Todos os tipos",
+		"auto_increment": "Auto incremento",
+		"current": "atual",
+		"ddl_preview": "Pré-visualização de DDL",
+		"default": "Padrão",
+		"domain_type": "Tipo de domínio",
+		"domain_types": "Tipos de domínio",
+		"expected_type": "Tipo esperado",
+		"file": "Arquivo",
+		"generated": "Gerado",
+		"name": "Nome",
+		"nonstandard_sql": "SQL não padrão",
+		"nullability": "Anulabilidade",
+		"other_fields": "Outros campos",
+		"sql_type": "Tipo SQL",
+		"suggested": "sugerido",
+		"table": "Tabela",
+		"table_ids": "IDs de tabela",
+		"tables": "Tabelas",
+		"unique": "Único",
+		"view": "Visão",
+		"views": "Visões"
+	},
+	"messages": {
+		"adapt_schema": "Adaptar o esquema ao modelo atual?",
+		"delete_column": "Excluir esta coluna?",
+		"delete_table": "Excluir esta tabela?",
+		"delete_view": "Excluir esta visão?",
+		"generate_view": "Gerar uma visão para esta tabela?"
+	},
+	"nav_prefix_title": "Studio",
+	"route_name": "studio",
+	"selectors": {
+		"custom": "Personalizado",
+		"select_file": "Selecionar um arquivo"
+	},
+	"ui": {
+		"description": "Editor visual de modelos SQL",
+		"empty_text": "Abra um arquivo da lista para começar a editar.",
+		"empty_title": "Nenhum modelo carregado",
+		"no_objects": "Selecione uma tabela ou visão",
+		"title": "Studio"
+	}
+}
