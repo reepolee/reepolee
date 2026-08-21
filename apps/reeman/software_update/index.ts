@@ -1,6 +1,5 @@
 /**
  * Reesync: selective upstream adoption for a diverged Reepolee project.
- * See .agents/PLAN_reesync_ui.md for the product contract and safety model.
  */
 
 import { readdirSync, statSync } from "node:fs";
