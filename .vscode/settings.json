@@ -20,6 +20,7 @@
 		"editor.formatOnSave": false
 	},
 	"scm.defaultViewMode": "tree",
+	"terminal.integrated.cwd": "${workspaceFolder}",
 	"diffEditor.wordWrap": "off",
 	"search.exclude": {
 		"**/*.test.ts": true,
