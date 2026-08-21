@@ -1,0 +1,68 @@
+{
+	"actions": {
+		"add": "Add project",
+		"cancel": "Cancel",
+		"delete": "Remove project",
+		"do_it": "Remove",
+		"duplicate": "Duplicate project",
+		"save": "Save project"
+	},
+	"confirm": {
+		"delete": "Remove this project from ReeQA? Existing run records are kept."
+	},
+	"labels": {
+		"base_url": "Running site URL",
+		"name": "Project name",
+		"path": "Absolute project path"
+	},
+	"nav": "Project",
+	"page_sets": {
+		"actions": {
+			"add": "Add page set",
+			"cancel": "Cancel",
+			"clear": "Clear selection",
+			"confirm_delete": "Remove",
+			"create": "Create page set",
+			"delete": "Remove page set",
+			"only_selected": "Only selected",
+			"save": "Save changes",
+			"select_visible": "Select visible",
+			"sort_alpha": "Sort: A–Z",
+			"sort_newest": "Sort: Newest first"
+		},
+		"confirm": {
+			"delete": "Remove this saved page set? Existing reports are kept."
+		},
+		"labels": {
+			"auto_evidence": "Automatically record evidence for failed runs",
+			"auto_recording": "Also record clean video for passing runs",
+			"baseline_pages": "baseline pages",
+			"capture_size": "Capture size",
+			"filter": "Filter sitemap pages",
+			"name": "Page set name",
+			"pages": "pages"
+		},
+		"status": {
+			"no_baseline": "No baseline"
+		},
+		"ui": {
+			"active": "Active",
+			"auto_evidence_hint": "Records a narrated video for every changed or new page after each compare run, instead of requiring a manual click.",
+			"auto_recording_hint": "Not implemented yet. Will record a plain, un-annotated video for pages that didn't change - the only way to get a video for a passing dynamic test.",
+			"edited_today": "Today",
+			"no_sets": "No saved page sets yet. Create one to start running tests.",
+			"saved_sets": "Page sets",
+			"sitemap_error": "Could not load the project sitemap:",
+			"stale_pages": "saved page(s) are no longer in the current sitemap. Save the set to remove them."
+		}
+	},
+	"route_name": "projects",
+	"ui": {
+		"active": "Active",
+		"base_url_hint": "ReeQA reads sitemap.xml and captures pages from this URL.",
+		"description": "Manage the active QA project and its page sets.",
+		"no_projects": "No QA projects registered.",
+		"path_hint": "The directory must contain package.json. Suite commands remain controlled by ReeQA.",
+		"title": "Project"
+	}
+}

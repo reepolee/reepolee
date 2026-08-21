@@ -1,0 +1,41 @@
+{
+	"actions": {
+		"add_project": "Add project",
+		"capture_baselines": "Capture baselines",
+		"create_page_set": "Create page set",
+		"run_tests": "Run tests",
+		"view_all": "View all"
+	},
+	"labels": {
+		"duration": "Duration",
+		"pages": "pages",
+		"started": "Started",
+		"status": "Status",
+		"suite": "Suite"
+	},
+	"nav": "ReeQA",
+	"route_name": "dashboard",
+	"ui": {
+		"active_project": "Active project",
+		"active_run": "Active run",
+		"baselines_description": "Inspect and replace the saved visual references.",
+		"baselines_title": "Visual baselines",
+		"description": "Quality assurance for the Reepolee application and its tooling.",
+		"no_runs": "No QA runs yet.",
+		"page_sets_description": "Save named selections of baseline pages for focused runs.",
+		"page_sets_title": "Page sets",
+		"projects_description": "Register the Bun project directories ReeQA can run against.",
+		"projects_title": "QA projects",
+		"recent_runs": "Recent runs",
+		"results_description": "Review visual comparisons, command logs, videos, and GitHub issues.",
+		"results_title": "Results",
+		"run_tests_description": "Run visual comparisons and allowlisted command checks.",
+		"run_tests_title": "Run tests",
+		"stats_failed": "Failed",
+		"stats_passed": "Passed",
+		"stats_projects": "Projects",
+		"stats_results": "Results",
+		"stats_suites": "Command checks",
+		"title": "ReeQA"
+	}
+}

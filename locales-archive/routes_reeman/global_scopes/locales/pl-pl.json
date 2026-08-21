@@ -1,0 +1,71 @@
+{
+	"actions": {
+		"bulk_action": "Usunięcie wybranych filtrów globalnych",
+		"bulk_action_2": "Alternatywna akcja",
+		"new_global_scope": "Nowy filtr globalny",
+		"scope_translations": "Utwórz tłumaczenia filtra",
+		"scope_translations_view": "Pokaż tłumaczenia filtra"
+	},
+	"child_ui": {
+		"actions": "Akcje",
+		"delete": "Usuń",
+		"deleting": "Usuwanie…",
+		"edit": "Edytuj",
+		"edit_title": "Edytuj filtr globalny",
+		"empty_text": "Nie znaleziono filtrów globalnych.",
+		"error_deleting": "Błąd podczas usuwania rekordu.",
+		"error_loading": "Błąd podczas ładowania rekordu.",
+		"error_saving": "Błąd podczas zapisywania rekordu.",
+		"new_button": "+ Nowy filtr globalny",
+		"new_title": "Nowy filtr globalny"
+	},
+	"errors": {
+		"duplicate_key": "Rekord z tą wartością już istnieje.",
+		"error_creating_record": "Wystąpił błąd podczas zapisywania rekordu.",
+		"must_be_selected": "To pole jest wymagane.",
+		"title_required": "Tytuł jest wymagany."
+	},
+	"hints": {
+		"display_name": "Etykieta wyświetlana użytkownikom na liście rozwijanej filtrów na stronie listy.",
+		"feature_name": "Nazwa trasy (np. route_name trasy nazwanej), nie tabeli. Ogranicza ten filtr do jednej konkretnej trasy, gdy kilka tras korzysta z tej samej tabeli.",
+		"is_default": "Po ustawieniu ten filtr jest automatycznie stosowany na stronie listy, dopóki użytkownik nie wybierze innego.",
+		"module_code": "Ogranicza ten filtr do tras należących do wybranego modułu. Pozostaw nieustawione, aby był dostępny w całym module.",
+		"scope_key": "Klucz tłumaczenia. Niewyświetlany użytkownikom - utrzymuj go krótkim i stabilnym po rozpoczęciu użycia.",
+		"sort_order": "Pozycja na liście rozwijanej filtrów, najniższa pierwsza. Filtry współdzielące tabelę/trasę są wyświetlane według tej wartości rosnąco.",
+		"table": "Tabela bazy danych, do której odnosi się ten filtr. Określa, które strony indeksu/edycji pokazują go na liście rozwijanej filtrów.",
+		"where_clause": "Surowe warunki SQL dodawane po WHERE, gdy ten filtr jest aktywny (np. status = 'active'). Użyj poniższych tokenów ::session.*, aby odwołać się do zalogowanego użytkownika. Nieuwierzytelniony dostęp do klauzuli ich używającej jest rozwiązywany jako 1=0."
+	},
+	"labels": {
+		"display_name": "Nazwa wyświetlana",
+		"feature_name": "Nazwa funkcji",
+		"is_default": "Jest domyślny",
+		"module_code": "Kod modułu",
+		"scope_key": "Klucz filtra",
+		"sort_order": "Kolejność sortowania",
+		"table": "Tabela",
+		"table_name": "Nazwa tabeli",
+		"where_clause": "Klauzula WHERE"
+	},
+	"messages": {
+		"bulk_delete_no_ids": "Nie wybrano filtrów globalnych.",
+		"bulk_deleted": "Nie usunięto żadnych filtrów globalnych|{count} filtr globalny usunięty|{count} filtry globalne usunięte|{count} filtry globalne usunięte|{count} filtrów globalnych usuniętych",
+		"bulk_errors": "|{count} filtr globalny nie został usunięty|{count} filtry globalne nie zostały usunięte|{count} filtry globalne nie zostały usunięte|{count} filtrów globalnych nie zostało usuniętych",
+		"record_updated": "Rekord zaktualizowany"
+	},
+	"nav": "Filtry globalne",
+	"parent_label": "Filtry globalne",
+	"route_name": "filtry-globalne",
+	"search": {
+		"search_term": "Szukaj filtrów globalnych...",
+		"submit": "Szukaj"
+	},
+	"selectors": {
+		"all": "Wszystkie",
+		"no_module": "-- Bez modułu (główny) --",
+		"select_table": "-- Wybierz tabelę --"
+	},
+	"ui": {
+		"no_records": "Nie znaleziono zakresów globalnych.",
+		"title": "Zakresy globalne"
+	}
+}

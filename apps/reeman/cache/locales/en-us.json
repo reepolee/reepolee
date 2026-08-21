@@ -1,0 +1,20 @@
+{
+	"nav": "Cache",
+	"ui": {
+		"actions_header": "Actions",
+		"confirm_invalidate": "Clear",
+		"disabled": "Cache is not available - enable CACHE_ENABLED in environment variables",
+		"disabled_badge": "Disabled",
+		"enable_hint": "Set CACHE_ENABLED=true in .env file and restart the server",
+		"enabled_badge": "Active",
+		"entries_header": "Cache entries",
+		"invalidate_btn": "Clear",
+		"no_tables": "No table is in the cache tracking",
+		"reset_btn": "Clear entire cache",
+		"reset_confirm": "Are you sure you want to invalidate ALL cached data? This cannot be undone.",
+		"table_header": "Table",
+		"title": "SQL Cache",
+		"total_keys": "Total cache keys",
+		"tracked_tables": "Tracked tables"
+	}
+}

@@ -1,0 +1,44 @@
+{
+	"actions": {
+		"check_compliance": "Verifica conformità di dominio",
+		"json_to_sql": "JSON in tabella SQL",
+		"open_in_studio": "Apri in Studio",
+		"run_sql": "Esegui file SQL"
+	},
+	"confirm": {
+		"run_sql": "Eseguire questo file SQL sul database? Questa azione non può essere annullata."
+	},
+	"hints": {
+		"json_path": "Percorso del file JSON da convertire, relativo alla radice del progetto (es. data/recipes.json)",
+		"slug": "Slug in minuscolo facoltativo per il nome del file SQL generato. Per impostazione predefinita usa il nome della tabella.",
+		"slug_safe_table": "Solo lettere minuscole e numeri (usato per lo slug del nome del file SQL)"
+	},
+	"labels": {
+		"action": "Azione",
+		"file_count": "file",
+		"file_type": "Tipo",
+		"folder": "Cartella",
+		"folder_summary": "Totale cartelle",
+		"json_file": "File JSON",
+		"json_path": "Percorso del file JSON",
+		"last_updated": "Ultimo aggiornamento",
+		"slug": "Slug (facoltativo)",
+		"sql_file": "File SQL",
+		"table_name": "Nome tabella"
+	},
+	"selectors": {
+		"select_sql": "-- seleziona un file .sql --"
+	},
+	"ui": {
+		"broken_views_hint": "Queste viste fanno riferimento a tabelle che non esistono più e sono state saltate durante l'ispezione. Ricrea le tabelle mancanti (es. tramite Esegui file SQL), poi ricarica.",
+		"broken_views_title": "Viste danneggiate rilevate",
+		"busy": "Elaborazione: la pagina si aggiornerà al termine.",
+		"compliance_hint": "Ispeziona il database live e segnala le colonne che non corrispondono ai tipi di dominio canonici. Solo lettura.",
+		"database_description": "Esegui file SQL, importa dati da JSON e verifica la conformità di dominio.",
+		"database_title": "Database",
+		"json_to_sql_hint": "Carica un file JSON e genera file SQL MySQL e SQLite accoppiati.",
+		"json_upload_hint": "Seleziona un file .json prima di iniziare la trasformazione.",
+		"no_sql_files": "Nessun file .sql trovato in sql/{dialect}/.",
+		"sql_files_hint": "Scegli un file SQL da eseguire sul database corrente."
+	}
+}

@@ -1,0 +1,52 @@
+{
+	"actions": {
+		"abort_delete": "Cancelar",
+		"bulk_action": "Excluir imagens selecionadas",
+		"confirm_delete": "Sim, excluir",
+		"delete": "Excluir esta imagem permanentemente?",
+		"new_image": "Nova imagem"
+	},
+	"labels": {
+		"description": "Descrição",
+		"file_size": "Tamanho do arquivo",
+		"filename": "Nome do arquivo",
+		"folder": "Pasta",
+		"height": "Altura",
+		"mime_type": "Tipo MIME",
+		"original_filename": "Nome do arquivo original",
+		"s3_key": "Chave S3",
+		"tags": "Tags",
+		"title": "Título",
+		"width": "Largura"
+	},
+	"messages": {
+		"bulk_delete_no_ids": "Nenhuma imagem selecionada.",
+		"bulk_deleted": "Nenhuma imagem excluída|{count} imagem excluída|{count} imagens excluídas|{count} imagens excluídas|{count} imagens excluídas",
+		"bulk_errors": "|{count} imagem falhou|{count} imagens falharam|{count} imagens falharam|{count} imagens falharam"
+	},
+	"nav": "Imagens",
+	"route_name": "imagens",
+	"search": {
+		"search_term": "Pesquisar imagens...",
+		"submit": "Pesquisar"
+	},
+	"selectors": {
+		"all": "Todos"
+	},
+	"ui": {
+		"no_records": "Nenhuma imagem encontrada.",
+		"title": "Imagens"
+	},
+	"v_labels": {
+		"description": "Descrição",
+		"file_size": "Tamanho do arquivo",
+		"filename": "Nome do arquivo",
+		"folder": "Pasta",
+		"height": "Altura",
+		"mime_type": "Tipo MIME",
+		"original_filename": "Nome do arquivo original",
+		"tags": "Tags",
+		"title": "Título",
+		"width": "Largura"
+	}
+}

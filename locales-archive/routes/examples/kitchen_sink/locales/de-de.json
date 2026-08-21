@@ -1,0 +1,52 @@
+{
+	"descriptions": {
+		"card": "Dies ist ein kartenähnlicher Abschnitt mit Rahmen und Innenabstand.",
+		"typography": "Normaler Absatztext mit fetter und kursiver Formatierung."
+	},
+	"errors": {
+		"min_length_3": "Mindestens 3 Zeichen erforderlich",
+		"text_input_max": "Höchstens 100 Zeichen zulässig"
+	},
+	"labels": {
+		"banners": "Banner",
+		"buttons": "Buttons",
+		"card_section": "Kartenabschnitt",
+		"cards": "Karten & Abschnitte",
+		"checkbox_option": "Checkbox-Option",
+		"code_example": "Codebeispiel",
+		"date_input": "Datumsfeld",
+		"disabled_button": "Deaktivierter Button",
+		"email_input": "E-Mail-Feld",
+		"email_placeholder": "E-Mail eingeben",
+		"file_upload": "Datei-Upload",
+		"form_elements": "Formularelemente",
+		"heading_1": "Überschrift 1",
+		"heading_2": "Überschrift 2",
+		"heading_3": "Überschrift 3",
+		"list_item": "Listenelement",
+		"option": "Option",
+		"primary_button": "Primärer Button",
+		"radio": "Radio",
+		"radio_options": "Radio-Optionen",
+		"secondary_button": "Sekundärer Button",
+		"select_dropdown": "Auswahl-Dropdown",
+		"selected_date": "Ausgewähltes Datum:",
+		"text_input": "Textfeld",
+		"text_placeholder": "Text eingeben (mind. 3 Zeichen)",
+		"textarea": "Textbereich",
+		"textarea_placeholder": "Mehrzeilig eingeben",
+		"typography": "Typografie"
+	},
+	"messages": {
+		"error": "Fehler: Etwas ist schiefgelaufen",
+		"info": "Info: Dies ist informativ",
+		"success": "Erfolg: Der Vorgang wurde erfolgreich abgeschlossen",
+		"warning": "Warnung: Bitte prüfen Sie diese Informationen"
+	},
+	"nav": "Kitchen Sink",
+	"route_name": "kuechenspuele",
+	"ui": {
+		"description": "Komponenten-Showcase und Beispiele",
+		"title": "Kitchen Sink"
+	}
+}

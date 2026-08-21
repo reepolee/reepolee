@@ -1,0 +1,30 @@
+{
+	"actions": {
+		"cancel": "Anuluj",
+		"confirm_delete": "Usuń",
+		"delete_selected": "Usuń zaznaczone",
+		"hide_values": "Ukryj wartości",
+		"save": "Zapisz",
+		"search": "Szukaj",
+		"show_values": "Pokaż wartości"
+	},
+	"confirm": {
+		"delete_selected": "Usunąć wybrane klucze środowiskowe?"
+	},
+	"hints": {
+		"description": "Opisy pochodzą z .env.example i nie można ich tutaj edytować.",
+		"value": "Wprowadź wartość dotenv dokładnie tak, jak ma się pojawić po znaku równości. Wartości muszą mieścić się w jednej linii."
+	},
+	"labels": {
+		"description": "Opis",
+		"key": "Klucz",
+		"native_order": "Natywna kolejność .env",
+		"selected": "Wybrane",
+		"value": "Wartość"
+	},
+	"nav": "Środowisko",
+	"ui": {
+		"edit_title": "Edytuj zmienną środowiskową",
+		"no_records": "Nie znaleziono zmiennych środowiskowych."
+	}
+}

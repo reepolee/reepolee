@@ -1,0 +1,95 @@
+{
+	"actions": {
+		"bulk_action": "Usuń wybrane tabele DB",
+		"bulk_action_2": "Alternatywna akcja",
+		"cancel": "Anuluj",
+		"do_it": "Tak, zrób to",
+		"fields": "Tylko pola",
+		"force": "Wymuś nadpisanie",
+		"full": "Pełne odświeżenie",
+		"generate_crud": "Generuj CRUD",
+		"new_db_table": "Nowa tabela DB",
+		"refresh_crud": "Odśwież CRUD",
+		"save": "Zapisz",
+		"save_close": "Zapisz i zamknij",
+		"schema_only": "Tylko schemat",
+		"translate": "Tłumacz przez AI"
+	},
+	"child_ui": {
+		"actions": "Akcje",
+		"delete": "Usuń",
+		"deleting": "Usuwanie…",
+		"edit": "Edytuj",
+		"edit_title": "Edytuj Db_table",
+		"empty_text": "Nie znaleziono tabel DB.",
+		"error_deleting": "Błąd podczas usuwania rekordu.",
+		"error_loading": "Błąd podczas ładowania rekordu.",
+		"error_saving": "Błąd podczas zapisywania rekordu.",
+		"new_button": "+ Nowa Db_table",
+		"new_title": "Nowa Db_table"
+	},
+	"errors": {
+		"duplicate_key": "Rekord z tą wartością już istnieje.",
+		"error_creating_record": "Wystąpił błąd podczas zapisywania rekordu.",
+		"has_crud_required": "Wskazanie „Has CRUD\" jest wymagane.",
+		"must_be_selected": "To pole jest wymagane.",
+		"name_required": "Nazwa jest wymagana.",
+		"title_required": "Tytuł jest wymagany.",
+		"value_required_or_use_original": "Wpisz przetłumaczoną wartość lub usuń ten język."
+	},
+	"hints": {
+		"prefix": "Opcjonalny prefiks ścieżki URL dla generowanych tras (np. admin). Pozostaw puste, aby zamontować w katalogu głównym.",
+		"route_name": "Opcjonalna nazwa URL zastępująca nazwę tabeli (np. my-users)"
+	},
+	"labels": {
+		"column_count": "Liczba kolumn",
+		"display": "Wyświetlanie",
+		"fk_count": "Liczba FK",
+		"has_crud": "Ma CRUD",
+		"index_columns": "Kolumny indeksu",
+		"mode": "Tryb",
+		"name": "Nazwa",
+		"pagination": "Paginacja",
+		"prefix": "Prefiks",
+		"render_strategy": "Strategia renderowania",
+		"route_name": "Nazwa trasy (opcjonalna)",
+		"row_count": "Liczba wierszy",
+		"table": "Tabela / Trasa",
+		"template_tags": "Tagi szablonu"
+	},
+	"messages": {
+		"bulk_delete_failed": "Masowe usuwanie nie powiodło się.",
+		"bulk_delete_no_ids": "Nie wybrano tabel DB.",
+		"bulk_deleted": "Nie usunięto żadnych tabel DB|{count} tabela DB usunięta|{count} tabele DB usunięte|{count} tabele DB usunięte|{count} tabel DB usuniętych",
+		"bulk_errors": "|{count} tabela DB nie powiodła się|{count} tabele DB nie powiodły się|{count} tabele DB nie powiodły się|{count} tabel DB nie powiodło się",
+		"record_created": "Rekord utworzony",
+		"record_updated": "Rekord zaktualizowany"
+	},
+	"nav": "Tabele DB",
+	"route_name": "tabele-db",
+	"search": {
+		"search_term": "Szukaj tabel DB...",
+		"submit": "Szukaj"
+	},
+	"selectors": {
+		"0": "Nie",
+		"1": "Tak",
+		"all": "Wszystkie",
+		"default": "(zachowaj bieżący)",
+		"per_page": "na stronę",
+		"select_table": "-- Wybierz tabelę lub trasę --"
+	},
+	"ui": {
+		"apply_filters": "Zastosuj",
+		"busy": "Przetwarzanie — strona odświeży się po zakończeniu.",
+		"clear_all": "Wyczyść wszystko",
+		"filter_not": "NIE",
+		"loading_count": "Ładowanie…",
+		"modifying": "Zamierzasz zmodyfikować",
+		"no_records": "Nie znaleziono tabel DB.",
+		"no_selectable_columns": "Brak możliwych do wybrania kolumn indeksu - zostaną użyte wartości domyślne generatora.",
+		"records": "rekord(y)",
+		"refresh_skip_hint": "Tabele bez istniejącego CRUD są pomijane.",
+		"title": "Tabela DB"
+	}
+}

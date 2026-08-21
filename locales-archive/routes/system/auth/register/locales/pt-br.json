@@ -1,0 +1,24 @@
+{
+	"actions": {
+		"submit": "Concluir cadastro"
+	},
+	"errors": {
+		"name_required": "Entrada obrigatória",
+		"password_confirm_required": "Entrada obrigatória",
+		"password_too_short": "A senha deve conter pelo menos 8 caracteres",
+		"passwords_mismatch": "As senhas não coincidem"
+	},
+	"labels": {
+		"name": "Nome completo",
+		"password": "Senha (pelo menos 8 caracteres)",
+		"password_confirm": "Confirmar senha"
+	},
+	"route_name": "cadastro",
+	"ui": {
+		"already_used": "Este convite já foi utilizado. Entre.",
+		"invalid_link": "Este link é inválido.",
+		"invalid_title": "Convite inválido",
+		"registering_as": "Cadastrando como:",
+		"title": "Concluir cadastro"
+	}
+}
