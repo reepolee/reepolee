@@ -57,28 +57,13 @@ export function set_route_table(table: RouteTable): void {
 	state().version++;
 }
 
-export function get_nav_routes(): NavRoute[] { return state().nav_routes; }
-
 export function set_nav_routes(nav: NavRoute[]): void { state().nav_routes = nav; }
-
-export function get_nav_groups(): NavGroup[] { return state().nav_groups; }
 
 export function set_nav_groups(groups: NavGroup[]): void { state().nav_groups = groups; }
 
 export function get_base_data(): Record<string, any> { return state().base_data; }
 
 export function set_base_data(data: Record<string, any>): void { state().base_data = data; }
-
-export function get_version(): number { return state().version; }
-
-// @internal - for testing only
-export function get_state(): RouteState { return state(); }
-
-/**
- * Reset all route state to defaults.
- * Useful for testing - ensures a clean slate.
- */
-export function reset_state(): void { globalThis.__reepolee_route_state = default_state(); }
 
 // ---------------------------------------------------------------------------
 // Check if this is the first run or a --hot re-evaluation
