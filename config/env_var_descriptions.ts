@@ -113,6 +113,11 @@ export const ENV_VAR_DESCRIPTIONS: Record<string, string> = {
 	AGENT_REEQA_SERVER_PORT: "Dedicated port for the ReeQA app's agent mode. \"N/A\" = agent mode off.",
 	AGENT_SECRET: "Optional shared secret for agent-mode auth, as defense in depth. \"N/A\" requires no secret.",
 	AGENT_USER_USERNAME: "Username agent mode authenticates as when acting on behalf of a real account.",
+
+	// -- Cloudflare D1 (optional) --
+	CF_API_TOKEN: "Cloudflare API token with D1 read access. \"N/A\" disables the D1 client.",
+	CF_ACCOUNT_ID: "Cloudflare account id hosting the D1 database. \"N/A\" disables the D1 client.",
+	CF_D1_DATABASE_ID: "D1 database id to query (the edge registration database). \"N/A\" disables the D1 client.",
 };
 
 /** Description for `name`, or an empty string when the variable has none. */

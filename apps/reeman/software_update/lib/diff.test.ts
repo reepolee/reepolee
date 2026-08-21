@@ -77,10 +77,13 @@ describe("diff_directories", () => {
 	test("annotates ignored entries from .reesyncignore without excluding them", async () => {
 		const { source, project, cleanup } = await make_project();
 		try {
-			await writeFile(join(project, ".reesyncignore"), "ignored.txt\nsrc/**\n");
+			await writeFile(join(project, ".reesyncignore"), "ignored.txt\nignored-local.txt\nsrc/**\n");
 			await writeFile(join(source, "ignored.txt"), "x");
 			await mkdir(join(source, "src"), { recursive: true });
+			await mkdir(join(project, "src"), { recursive: true });
 			await writeFile(join(source, "src", "file.ts"), "x");
+			await writeFile(join(project, "ignored-local.txt"), "x");
+			await writeFile(join(project, "src", "local.ts"), "x");
 
 			const entries = await diff_directories(source, project);
 			const by_path = new Map(entries.map((e) => [e.rel_path, e]));
@@ -89,6 +92,8 @@ describe("diff_directories", () => {
 			expect(by_path.get("ignored.txt")?.is_exact_ignore).toBe(true);
 			expect(by_path.get("src/file.ts")?.ignored).toBe(true);
 			expect(by_path.get("src/file.ts")?.ignore_pattern).toBe("src/**");
+			expect(by_path.get("ignored-local.txt")?.ignored).toBe(true);
+			expect(by_path.get("src/local.ts")?.ignored).toBe(true);
 		} finally {
 			await cleanup();
 		}

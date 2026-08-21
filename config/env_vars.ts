@@ -124,6 +124,11 @@ export const KNOWN_ENV_VARS: readonly string[] = [
 	"AGENT_REEQA_SERVER_PORT",
 	"AGENT_SECRET",
 	"AGENT_USER_USERNAME",
+
+	// -- Cloudflare D1 (optional) --
+	"CF_API_TOKEN",
+	"CF_ACCOUNT_ID",
+	"CF_D1_DATABASE_ID",
 ];
 
 /**

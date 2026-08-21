@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { diff_directories } from "./diff";
-import { apply_sync } from "./sync";
+import { apply_software_update } from "./software_update";
 import type { ScanSnapshot } from "./types";
 
 async function make_project(): Promise<{ source: string; project: string; cleanup: () => Promise<void> }> {
@@ -21,7 +21,7 @@ async function scan(source: string, project: string): Promise<ScanSnapshot> {
 	return { scan_id: "s1", source_root: source, project_root: project, created_at: new Date().toISOString(), entries };
 }
 
-describe("apply_sync", () => {
+describe("apply_software_update", () => {
 	test("copies new and modified files, creating parent dirs", async () => {
 		const { source, project, cleanup } = await make_project();
 		try {
@@ -31,7 +31,7 @@ describe("apply_sync", () => {
 			await writeFile(join(project, "changed.txt"), "local");
 
 			const snapshot = await scan(source, project);
-			const result = await apply_sync(snapshot, ["nested/new.txt", "changed.txt"]);
+			const result = await apply_software_update(snapshot, ["nested/new.txt", "changed.txt"]);
 
 			expect(result.copied.sort()).toEqual(["changed.txt", "nested/new.txt"]);
 			expect(await readFile(join(project, "nested", "new.txt"), "utf8")).toBe("hello");
@@ -48,7 +48,7 @@ describe("apply_sync", () => {
 			const snapshot = await scan(source, project);
 			await writeFile(join(source, "a.txt"), "v2 - changed after scan");
 
-			const result = await apply_sync(snapshot, ["a.txt"]);
+			const result = await apply_software_update(snapshot, ["a.txt"]);
 			expect(result.copied).toEqual([]);
 			expect(result.stale[0]?.reason).toBe("stale-source");
 		} finally {
@@ -64,7 +64,7 @@ describe("apply_sync", () => {
 			const snapshot = await scan(source, project);
 			await writeFile(join(project, "a.txt"), "local v2 - changed after scan");
 
-			const result = await apply_sync(snapshot, ["a.txt"]);
+			const result = await apply_software_update(snapshot, ["a.txt"]);
 			expect(result.copied).toEqual([]);
 			expect(result.stale[0]?.reason).toBe("stale-dest");
 		} finally {
@@ -80,7 +80,7 @@ describe("apply_sync", () => {
 			await writeFile(join(project, "only-local.txt"), "x");
 
 			const snapshot = await scan(source, project);
-			const result = await apply_sync(snapshot, ["skip.txt", "only-local.txt"]);
+			const result = await apply_software_update(snapshot, ["skip.txt", "only-local.txt"]);
 
 			expect(result.copied).toEqual([]);
 			expect(result.failed.map((f) => f.rel_path).sort()).toEqual(["only-local.txt", "skip.txt"]);
@@ -97,7 +97,7 @@ describe("apply_sync", () => {
 			const snapshot = await scan(source, project);
 			await writeFile(join(source, "stale.txt"), "v2");
 
-			const result = await apply_sync(snapshot, ["stale.txt", "ok.txt"]);
+			const result = await apply_software_update(snapshot, ["stale.txt", "ok.txt"]);
 			expect(result.copied).toEqual(["ok.txt"]);
 			expect(result.stale.map((s) => s.rel_path)).toEqual(["stale.txt"]);
 		} finally {
@@ -109,7 +109,7 @@ describe("apply_sync", () => {
 		const { source, project, cleanup } = await make_project();
 		try {
 			const snapshot = await scan(source, project);
-			const result = await apply_sync(snapshot, ["never-scanned.txt"]);
+			const result = await apply_software_update(snapshot, ["never-scanned.txt"]);
 			expect(result.copied).toEqual([]);
 			expect(result.failed[0]?.reason).toBe("not-selectable");
 		} finally {

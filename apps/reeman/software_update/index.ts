@@ -3,6 +3,10 @@
  * See .agents/PLAN_reesync_ui.md for the product contract and safety model.
  */
 
+import { readdirSync, statSync } from "node:fs";
+import { join } from "node:path";
+import { execFileSync } from "node:child_process";
+
 import { render } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
 import { make_toast } from "$lib/cookies";
@@ -16,16 +20,16 @@ import { record_run } from "$reeman/reeman/lib/state";
 import { diff_directories, rehash } from "./lib/diff";
 import { add_exact, load_ignore_list, remove_exact } from "./lib/ignore_list";
 import { read_last_source, write_last_source } from "./lib/last_source";
-import { is_contained, validate_source_dir } from "./lib/paths";
+import { is_contained, is_sibling, validate_source_dir } from "./lib/paths";
 import { delete_snapshot, find_entry, generate_scan_id, load_snapshot, prune_expired_snapshots, save_snapshot } from "./lib/snapshot";
-import { apply_sync } from "./lib/sync";
+import { apply_software_update } from "./lib/software_update";
 import { build_diff, build_preview } from "./lib/text_diff";
 import type { ScanEntry, ScanSnapshot, ScanSummary } from "./lib/types";
 
-const BASE_PATH = "/sync";
+const BASE_PATH = "/software-update";
 const PROJECT_ROOT = process.cwd();
 
-export type Sync_runtime = {
+export type Software_update_runtime = {
 	snapshot_dir?: string;
 	run_log_file?: string;
 	busy_file?: string;
@@ -64,7 +68,7 @@ function group_by_folder(entries: ScanEntry[]): { folder: string; entries: ScanE
 function toast_redirect(req: BunRequest, message: string, type: "green" | "red" | "yellow" = "green", target = BASE_PATH): Response {
 	const locale = resolve_locale(req);
 	const headers = new Headers({ Location: localized_url(target, locale) });
-	headers.append("Set-Cookie", make_toast("toast-sync", { message, type, duration: 6000 }).toString());
+	headers.append("Set-Cookie", make_toast("toast-software-update", { message, type, duration: 6000 }).toString());
 	return new Response(null, { status: 303, headers });
 }
 
@@ -73,10 +77,10 @@ async function params_of(req: BunRequest): Promise<URLSearchParams> {
 }
 
 // ---------------------------------------------------------------------------
-// GET /sync
+// GET /software-update
 // ---------------------------------------------------------------------------
 
-export async function get_sync_page(req: BunRequest, form_error = "", runtime: Sync_runtime = {}): Promise<Response> {
+export async function get_software_update_page(req: BunRequest, form_error = "", runtime: Software_update_runtime = {}): Promise<Response> {
 	const ctx = await create_ctx(req, import.meta.dir);
 	const url = new URL(req.url);
 	const scan_id = url.searchParams.get("scan") || "";
@@ -84,10 +88,12 @@ export async function get_sync_page(req: BunRequest, form_error = "", runtime: S
 	const last_source = await read_last_source(runtime.last_source_file);
 	const snapshot = scan_id ? await load_snapshot(scan_id, runtime.snapshot_dir) : null;
 	const form_error_message = form_error ? (ctx.translations?.errors?.[form_error] ?? form_error) : "";
+	const current_source_head = snapshot ? get_git_head(snapshot.source_root) : null;
+	const source_changed = Boolean(snapshot?.source_head && current_source_head && snapshot.source_head !== current_source_head);
 
 	if (!snapshot) {
 		return render("index", {
-			data: { form_error: form_error_message, last_source, snapshot: null, expired: Boolean(scan_id) },
+			data: { form_error: form_error_message, last_source, snapshot: null, source_changed: false, expired: Boolean(scan_id) },
 			ctx,
 		});
 	}
@@ -101,6 +107,7 @@ export async function get_sync_page(req: BunRequest, form_error = "", runtime: S
 			scan_id: snapshot.scan_id,
 			summary: summarize(snapshot.entries),
 			groups,
+			source_changed,
 			expired: false,
 		},
 		ctx,
@@ -108,16 +115,16 @@ export async function get_sync_page(req: BunRequest, form_error = "", runtime: S
 }
 
 // ---------------------------------------------------------------------------
-// POST /sync/scan
+// POST /software-update/scan
 // ---------------------------------------------------------------------------
 
-export async function post_sync_scan(req: BunRequest, runtime: Sync_runtime = {}): Promise<Response> {
+export async function post_software_update_scan(req: BunRequest, runtime: Software_update_runtime = {}): Promise<Response> {
 	const params = await params_of(req);
 	const raw_source = params.get("source_dir") ?? "";
 
 	const validation = await validate_source_dir(raw_source, PROJECT_ROOT);
 	if (!validation.ok) {
-		return get_sync_page(req, `source_${validation.error.replaceAll("-", "_")}`, runtime);
+		return get_software_update_page(req, `source_${validation.error.replaceAll("-", "_")}`, runtime);
 	}
 
 	await prune_expired_snapshots(runtime.snapshot_dir);
@@ -127,6 +134,7 @@ export async function post_sync_scan(req: BunRequest, runtime: Sync_runtime = {}
 		scan_id: generate_scan_id(),
 		source_root: validation.canonical,
 		project_root: PROJECT_ROOT,
+		source_head: get_git_head(validation.canonical),
 		created_at: new Date().toISOString(),
 		entries,
 	};
@@ -138,10 +146,10 @@ export async function post_sync_scan(req: BunRequest, runtime: Sync_runtime = {}
 }
 
 // ---------------------------------------------------------------------------
-// POST /sync/ignore - toggle an exact .reesyncignore entry, then rescan
+// POST /software-update/ignore - toggle an exact .reesyncignore entry, then rescan
 // ---------------------------------------------------------------------------
 
-export async function post_sync_ignore(req: BunRequest, runtime: Sync_runtime = {}): Promise<Response> {
+export async function post_software_update_ignore(req: BunRequest, runtime: Software_update_runtime = {}): Promise<Response> {
 	const params = await params_of(req);
 	const scan_id = params.get("scan") ?? "";
 	const rel_path = params.get("rel_path") ?? "";
@@ -170,10 +178,43 @@ export async function post_sync_ignore(req: BunRequest, runtime: Sync_runtime = 
 }
 
 // ---------------------------------------------------------------------------
-// POST /sync/apply - stale-checked bounded copy
+// POST /software-update/ignore-selected - bulk ignore selected files, then rescan
 // ---------------------------------------------------------------------------
 
-export async function post_sync_apply(req: BunRequest, runtime: Sync_runtime = {}): Promise<Response> {
+export async function post_software_update_ignore_selected(req: BunRequest, runtime: Software_update_runtime = {}): Promise<Response> {
+	const params = await params_of(req);
+	const scan_id = params.get("scan") ?? "";
+	const selected = params.getAll("selected");
+
+	const snapshot = await load_snapshot(scan_id, runtime.snapshot_dir);
+	if (!snapshot) return toast_redirect(req, "Reesync: scan expired. Rescan the source directory.", "red");
+	if (selected.length === 0) return toast_redirect(req, "Reesync: no files selected to ignore.", "yellow", `${BASE_PATH}?scan=${scan_id}`);
+
+	let list = await load_ignore_list(snapshot.project_root);
+	for (const rel_path of selected) {
+		list = await add_exact(list, rel_path);
+	}
+
+	const entries = await diff_directories(snapshot.source_root, snapshot.project_root);
+	const rescanned: ScanSnapshot = {
+		scan_id: generate_scan_id(),
+		source_root: snapshot.source_root,
+		project_root: snapshot.project_root,
+		created_at: new Date().toISOString(),
+		entries,
+	};
+	await save_snapshot(rescanned, runtime.snapshot_dir);
+	await delete_snapshot(snapshot.scan_id, runtime.snapshot_dir);
+
+	const locale = resolve_locale(req);
+	return Response.redirect(`${localized_url(BASE_PATH, locale)}?scan=${rescanned.scan_id}`, 303);
+}
+
+// ---------------------------------------------------------------------------
+// POST /software-update/apply - stale-checked bounded copy
+// ---------------------------------------------------------------------------
+
+export async function post_software_update_apply(req: BunRequest, runtime: Software_update_runtime = {}): Promise<Response> {
 	const params = await params_of(req);
 	const scan_id = params.get("scan") ?? "";
 	const selected = params.getAll("selected");
@@ -182,14 +223,14 @@ export async function post_sync_apply(req: BunRequest, runtime: Sync_runtime = {
 	if (!snapshot) return toast_redirect(req, "Reesync: scan expired. Rescan the source directory.", "red");
 	if (selected.length === 0) return toast_redirect(req, "Reesync: no files selected.", "yellow", `${BASE_PATH}?scan=${scan_id}`);
 
-	const acquired = await set_busy(GLOBAL_BUSY_KEY, { action: "sync-apply", target: snapshot.source_root }, runtime.busy_file);
+	const acquired = await set_busy(GLOBAL_BUSY_KEY, { action: "software_update_apply", target: snapshot.source_root }, runtime.busy_file);
 	if (!acquired) return toast_redirect(req, "Reeman: another action is already running. Wait for it to finish.", "yellow", `${BASE_PATH}?scan=${scan_id}`);
 
 	try {
-		const result = await apply_sync(snapshot, selected);
+		const result = await apply_software_update(snapshot, selected);
 
 		await record_run({
-			action: "sync-apply",
+			action: "software_update_apply",
 			target: snapshot.source_root,
 			ok: result.failed.length === 0 && result.stale.length === 0,
 			output: `copied=${result.copied.length} stale=${result.stale.length} failed=${result.failed.length}`,
@@ -210,7 +251,7 @@ export async function post_sync_apply(req: BunRequest, runtime: Sync_runtime = {
 }
 
 // ---------------------------------------------------------------------------
-// GET /sync/diff - lazy, per-file diff/preview fragment
+// GET /software-update/diff - lazy, per-file diff/preview fragment
 // ---------------------------------------------------------------------------
 
 const ESCAPE_MAP: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
@@ -248,7 +289,7 @@ function render_diff_fragment(entry: ScanEntry, source_bytes: Uint8Array | null,
 	return `<div class="border border-border rounded overflow-x-auto">${rows}</div>`;
 }
 
-export async function get_sync_diff(req: BunRequest, runtime: Sync_runtime = {}): Promise<Response> {
+export async function get_software_update_diff(req: BunRequest, runtime: Software_update_runtime = {}): Promise<Response> {
 	const url = new URL(req.url);
 	const scan_id = url.searchParams.get("scan") || "";
 	const rel_path = url.searchParams.get("path") || "";
@@ -289,19 +330,92 @@ function join_contained(root: string, rel_path: string): string | null {
 // Route registration
 // ---------------------------------------------------------------------------
 
-export const sync_crud = {
-	"/sync": { GET: get_sync_page },
-	"/sync/scan": { POST: post_sync_scan },
-	"/sync/ignore": { POST: post_sync_ignore },
-	"/sync/apply": { POST: post_sync_apply },
-	"/sync/diff": { GET: get_sync_diff },
+export const software_update_crud = {
+	"/software-update": { GET: get_software_update_page },
+	"/software-update/scan": { POST: post_software_update_scan },
+	"/software-update/ignore": { POST: post_software_update_ignore },
+	"/software-update/ignore-selected": { POST: post_software_update_ignore_selected },
+	"/software-update/apply": { POST: post_software_update_apply },
+	"/software-update/diff": { GET: get_software_update_diff },
+	"/software-update/browse": { GET: get_software_update_browse },
+	"/software-update/commit-info": { GET: get_software_update_commit_info },
 };
+
+// ---------------------------------------------------------------------------
+// GET /software-update/browse - list sibling directories for folder selector
+// ---------------------------------------------------------------------------
+
+function list_sibling_dirs(project_root: string): string[] {
+	const parent = join(project_root, "..");
+	try {
+		const entries = readdirSync(parent, { withFileTypes: true });
+		return entries
+			.filter((entry) => entry.isDirectory() && !entry.name.startsWith(".") && entry.name !== "node_modules")
+			.map((entry) => join(parent, entry.name))
+			.filter((dir) => is_sibling(dir, project_root))
+			.sort();
+	} catch {
+		return [];
+	}
+}
+
+export async function get_software_update_browse(_req: BunRequest, _runtime: Software_update_runtime = {}): Promise<Response> {
+	const dirs = list_sibling_dirs(PROJECT_ROOT);
+	return Response.json({ dirs, project_root: PROJECT_ROOT });
+}
+
+// ---------------------------------------------------------------------------
+// GET /software-update/commit-info - get git commit info from upstream source
+// ---------------------------------------------------------------------------
+
+function get_git_commit_info(source_root: string): { hash: string; message: string; author: string; date: string } | null {
+	try {
+		// Check if this is a git repository
+		statSync(join(source_root, ".git"));
+		// Get the latest commit info
+		const result = execFileSync(
+			"git",
+			["-C", source_root, "log", "-1", "--format=%H|%s|%an|%ai"],
+			{ encoding: "utf8", timeout: 5000 }
+		);
+		const [hash, message, author, date] = result.trim().split("|");
+		return { hash, message, author, date };
+	} catch {
+		return null;
+	}
+}
+
+function get_git_head(source_root: string): string | null {
+	try {
+		statSync(join(source_root, ".git"));
+		return execFileSync("git", ["-C", source_root, "rev-parse", "HEAD"], { encoding: "utf8", timeout: 5000, stdio: ["ignore", "pipe", "ignore"] }).trim() || null;
+	} catch {
+		return null;
+	}
+}
+
+export async function get_software_update_commit_info(req: BunRequest, runtime: Software_update_runtime = {}): Promise<Response> {
+	const url = new URL(req.url);
+	const source = url.searchParams.get("source") || "";
+
+	if (!source) {
+		return Response.json({ error: "No source directory specified" }, { status: 400 });
+	}
+
+	const validation = await validate_source_dir(source, PROJECT_ROOT);
+	if (!validation.ok) {
+		return Response.json({ error: "Invalid source directory" }, { status: 400 });
+	}
+
+	const commit_info = get_git_commit_info(validation.canonical);
+	return Response.json({ commit_info });
+}
 
 export const route_definitions: RouteDefinition[] = [
 	{
-		url: "/sync",
-		crud: sync_crud,
-		nav_title_key: "reeman.sync",
+		url: "/software-update",
+		crud: software_update_crud,
+		nav_title_key: "reeman.software_update",
 		module: "system",
 		nav_module: null,
 	},

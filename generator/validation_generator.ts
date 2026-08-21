@@ -18,7 +18,7 @@ export function read_fields(fields: FieldDef[], include_maintenance = true): Fie
 
 export function entry_fields(fields: FieldDef[], include_maintenance = true): FieldDef[] {
 	const readable_fields = read_fields(fields, include_maintenance);
-	return readable_fields.filter((f) => f.name !== "display" && f.name !== "option_display");
+	return readable_fields.filter((f) => f.name !== "display" && f.name !== "option_display" && f.name !== "archived_by_user_display");
 }
 
 export function generate_zod_fields_from_array(fields: FieldDef[], type: "index" | "form" | "validate", foreign_keys?: Map<string, any>): string {

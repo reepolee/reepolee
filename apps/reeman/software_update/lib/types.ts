@@ -1,5 +1,12 @@
 export type FileState = "new" | "modified" | "project-only";
 
+export type SourceCommitInfo = {
+	hash: string;
+	message: string;
+	author: string;
+	date: string;
+};
+
 export type ScanEntry = {
 	/** project-relative path, forward-slash normalized */
 	rel_path: string;
@@ -8,6 +15,7 @@ export type ScanEntry = {
 	dest_hash: string | null;
 	source_size: number | null;
 	dest_size: number | null;
+	commit_info: SourceCommitInfo | null;
 	ignored: boolean;
 	ignore_pattern: string | null;
 	is_exact_ignore: boolean;
@@ -17,6 +25,7 @@ export type ScanSnapshot = {
 	scan_id: string;
 	source_root: string;
 	project_root: string;
+	source_head?: string | null;
 	created_at: string;
 	entries: ScanEntry[];
 };

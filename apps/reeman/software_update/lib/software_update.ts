@@ -18,7 +18,7 @@ import type { ApplyResult, ScanSnapshot } from "./types";
  * (new/modified, not project-only, not ignored) in the snapshot. Re-resolves
  * containment and re-hashes both sides immediately before each copy.
  */
-export async function apply_sync(snapshot: ScanSnapshot, selected_rel_paths: string[]): Promise<ApplyResult> {
+export async function apply_software_update(snapshot: ScanSnapshot, selected_rel_paths: string[]): Promise<ApplyResult> {
 	const result: ApplyResult = { copied: [], stale: [], failed: [] };
 	const entry_by_path = new Map(snapshot.entries.map((entry) => [entry.rel_path, entry]));
 	const selected = new Set(selected_rel_paths);

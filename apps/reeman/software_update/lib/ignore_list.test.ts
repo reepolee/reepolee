@@ -71,6 +71,18 @@ describe("ignore_list", () => {
 		}
 	});
 
+	test("updates an existing ignore file", async () => {
+		const { dir, cleanup } = await make_dir();
+		try {
+			let list = await add_exact(await load_ignore_list(dir), "first.txt");
+			list = await add_exact(await load_ignore_list(dir), "second.txt");
+			expect(is_ignored(list, "first.txt")).toBe(true);
+			expect(is_ignored(list, "second.txt")).toBe(true);
+		} finally {
+			await cleanup();
+		}
+	});
+
 	test("reports invalid glob patterns without throwing", async () => {
 		const { dir, cleanup } = await make_dir();
 		try {

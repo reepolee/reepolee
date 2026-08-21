@@ -17,6 +17,17 @@
 			const switcher = document.querySelector("[data-dev-app-switcher]");
 			if (switcher) {
 				const app_links = Array.from(switcher.querySelectorAll("a"));
+				// Dev app links are built against localhost (config/apps.ts), but the
+				// page may be reached over the LAN (e.g. http://m4mini:2338) where
+				// localhost resolves to the visitor's own machine. Rewrite each link
+				// to the host the page was served from, so both the reachability
+				// probe below and navigation work from other machines.
+				const server_host = location.hostname;
+				for (const app_link of app_links) {
+					if (app_link.href.startsWith("http://localhost:")) {
+						app_link.href = app_link.href.replace("http://localhost:", `http://${server_host}:`);
+					}
+				}
 				const active_apps = await Promise.all(app_links.map(async (app_link) => {
 					if (app_link.getAttribute("aria-current") === "page") return true;
 					const controller = new AbortController();

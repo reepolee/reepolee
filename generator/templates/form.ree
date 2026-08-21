@@ -5,7 +5,12 @@
 
 		<div class="flex items-center justify-between">
 			<h1 class="mb-4">{_ ui.title }</h1>
-			<div class="text-sm">{~ js_timestamp_to_locale_string(record.updated_at ?? record.created_at)}</div>
+			<div class="text-sm">
+				{~ js_timestamp_to_locale_string(record.updated_at ?? record.created_at)}
+				{#if record.archived_by_user_display}
+					<span class="ml-2 text-xs opacity-70">({= record.archived_by_user_display })</span>
+				{/if}
+			</div>
 		</div>
 
 		{#if form_errors}

@@ -152,6 +152,9 @@ describe("layout presentation-boundary metadata", () => {
 		expect(html).toContain('data-dev-app-switcher hidden class="ml-auto flex items-center gap-1"');
 		expect(html).toContain("new AbortController()");
 		expect(html).toContain('mode: "no-cors"');
+		// LAN access: localhost links are rewritten to the host the page was served from
+		expect(html).toContain('app_link.href.startsWith("http://localhost:")');
+		expect(html).toContain('app_link.href.replace("http://localhost:", `http://${server_host}:`)');
 		expect(html).toContain('class="flex items-center justify-between gap-2 px-4 mb-4"');
 		expect(html).toContain('class="w-24"');
 		expect(html).toContain('class="flex items-center gap-2 font-semibold pl-2"');

@@ -1,15 +1,17 @@
 /**
  * Recursive walk + SHA-256 comparison between an upstream source directory
  * and the current project. Mirrors the standalone `reesync` CLI's exclusion
- * rules so Reeman sync sees the same file set.
+ * rules so Reeman Software Update sees the same file set.
  */
 
+import { existsSync } from "node:fs";
 import { readdir, lstat, stat } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 
 import { is_ignored, load_ignore_list, matching_glob, type IgnoreList } from "./ignore_list";
 import { to_forward_slashes } from "./paths";
-import type { FileState, ScanEntry } from "./types";
+import type { FileState, ScanEntry, SourceCommitInfo } from "./types";
 
 const EXCLUDED_DIR_NAMES = new Set(["node_modules", "target", "vendor", "vendors", "dist", ".next", ".svelte-kit", ".cache", ".output"]);
 
@@ -102,7 +104,8 @@ export async function diff_directories(source_root: string, project_root: string
 			state = "project-only";
 		}
 
-		entries.push(build_entry(rel_path, state, source_hash, dest_hash, source_size, dest_size, ignore_list));
+		const commit_info = source_abs ? get_file_commit_info(source_root, rel_path) : null;
+		entries.push(build_entry(rel_path, state, source_hash, dest_hash, source_size, dest_size, commit_info, ignore_list));
 	}
 
 	return entries;
@@ -115,9 +118,10 @@ function build_entry(
 	dest_hash: string | null,
 	source_size: number | null,
 	dest_size: number | null,
+	commit_info: SourceCommitInfo | null,
 	ignore_list: IgnoreList,
 ): ScanEntry {
-	const ignored = state !== "project-only" && is_ignored(ignore_list, rel_path);
+	const ignored = is_ignored(ignore_list, rel_path);
 	const ignore_pattern = ignored ? matching_glob(ignore_list, rel_path) : null;
 	return {
 		rel_path,
@@ -126,10 +130,28 @@ function build_entry(
 		dest_hash,
 		source_size,
 		dest_size,
+		commit_info,
 		ignored,
 		ignore_pattern,
 		is_exact_ignore: ignored && ignore_pattern === null,
 	};
+}
+
+function get_file_commit_info(source_root: string, rel_path: string): SourceCommitInfo | null {
+	if (!existsSync(join(source_root, ".git"))) return null;
+	try {
+		const result = execFileSync(
+			"git",
+			["-C", source_root, "log", "-1", "--format=%H%x09%s%x09%an%x09%ai", "--", rel_path],
+			{ encoding: "utf8", timeout: 5000, stdio: ["ignore", "pipe", "ignore"] },
+		).trim();
+		if (!result) return null;
+		const [hash, message, author, date] = result.split("\t");
+		if (!hash || !message || !author || !date) return null;
+		return { hash, message, author, date };
+	} catch {
+		return null;
+	}
 }
 
 export async function rehash(abs_path: string): Promise<string | null> {

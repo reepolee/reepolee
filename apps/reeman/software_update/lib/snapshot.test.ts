@@ -13,6 +13,7 @@ const sample_entry: ScanEntry = {
 	dest_hash: null,
 	source_size: 3,
 	dest_size: null,
+	commit_info: null,
 	ignored: false,
 	ignore_pattern: null,
 	is_exact_ignore: false,
@@ -31,6 +32,7 @@ describe("snapshot", () => {
 				scan_id: generate_scan_id(),
 				source_root: "/src",
 				project_root: "/proj",
+				source_head: null,
 				created_at: new Date().toISOString(),
 				entries: [sample_entry],
 			};

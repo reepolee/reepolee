@@ -19,6 +19,7 @@ export const IGNORE_TABLES = ["modules", "sessions", "email", "images", "files",
  */
 export const ARCHIVE_TIMESTAMP_FIELD = "archived_at" as const;
 export const ARCHIVE_USER_FIELD = "archived_by_user_id" as const;
+export const ARCHIVE_DISPLAY_FIELD = "archived_by_user_display" as const;
 export const ARCHIVE_FIELDS = [ARCHIVE_TIMESTAMP_FIELD, ARCHIVE_USER_FIELD] as const satisfies readonly string[];
 
 /**
@@ -98,13 +99,13 @@ export const FILE_SUFFIXES = ["_file"] as const satisfies readonly string[];
  * Fields excluded from index/list schemas
  * those fields can be supplied by the SQL select but will not get a column on index table to be displayed by default
  */
-export const IGNORE_INDEX_FIELDS = ["display", "option_display", "option_text", "search_text", "hashed_password", "previous_hashed_password"] as const satisfies readonly string[];
+export const IGNORE_INDEX_FIELDS = ["display", "option_display", "option_text", "search_text", "hashed_password", "previous_hashed_password", ARCHIVE_DISPLAY_FIELD] as const satisfies readonly string[];
 
 /**
  * Fields excluded from sort options
  * these fields cannot be used for ordering results
  */
-export const IGNORE_ORDER_FIELDS = ["option_display", "search_text", "hashed_password", "previous_hashed_password"] as const satisfies readonly string[];
+export const IGNORE_ORDER_FIELDS = ["option_display", "search_text", "hashed_password", "previous_hashed_password", ARCHIVE_DISPLAY_FIELD] as const satisfies readonly string[];
 
 /**
  * Boolean fields
@@ -117,7 +118,7 @@ export const BOOLEAN_PREFIXES = ["is_", "has_", "can_"] as const satisfies reado
  * Fields never eligible for per-locale content overrides, even when they
  * pass the type check below - they are identifiers/metadata, not translatable copy.
  */
-export const LOCALIZATION_SYSTEM_FIELDS = ["id", "display", "search_text", "created_at", "updated_at", ARCHIVE_TIMESTAMP_FIELD, ARCHIVE_USER_FIELD] as const satisfies readonly string[];
+export const LOCALIZATION_SYSTEM_FIELDS = ["id", "display", "search_text", "created_at", "updated_at", ARCHIVE_TIMESTAMP_FIELD, ARCHIVE_USER_FIELD, ARCHIVE_DISPLAY_FIELD] as const satisfies readonly string[];
 
 /**
  * Field types reeman marks `localized: true` by default when

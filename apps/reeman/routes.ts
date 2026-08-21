@@ -40,7 +40,7 @@ const NAV_ORDER = [
 	"/database",
 	"/project",
 	"/environment",
-	"/sync",
+	"/software-update",
 	"/studio",
 	"/cache",
 	"/global_scopes",

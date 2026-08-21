@@ -1,5 +1,5 @@
 /**
- * `.reesyncignore` support for Reeman sync.
+ * `.reesyncignore` support for the Reeman Software Update page.
  *
  * Mirrors the standalone `reesync` CLI's ignore_list.rs semantics: a
  * clone-owned skip list at `<project>/.reesyncignore`, one glob pattern per
@@ -99,7 +99,17 @@ async function persist(list: IgnoreList): Promise<void> {
 	const body = `${list.lines.join("\n")}\n`;
 	const tmp_path = `${list.path}.tmp`;
 	await writeFile(tmp_path, body, "utf8");
-	await rename(tmp_path, list.path);
+	try {
+		await rename(tmp_path, list.path);
+	} catch (error) {
+		const code = (error as NodeJS.ErrnoException).code;
+		if (process.platform !== "win32" || (code !== "EPERM" && code !== "EEXIST")) throw error;
+
+		// Windows cannot rename over an existing file. Remove the old target
+		// only after the replacement is fully written, then move it into place.
+		await rm(list.path, { force: true });
+		await rename(tmp_path, list.path);
+	}
 }
 
 /** Add an exact-path line for `rel_path` and persist. No-op if already exact. Returns the updated list. */

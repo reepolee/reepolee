@@ -1,5 +1,5 @@
-import { statSync } from "node:fs";
-import { resolve, sep } from "node:path";
+import { realpathSync, statSync } from "node:fs";
+import { dirname, resolve, sep } from "node:path";
 
 /** Normalize a filesystem-joined relative path to forward slashes for comparison keys and ignore patterns. */
 export function to_forward_slashes(rel_path: string): string {
@@ -14,7 +14,15 @@ export function is_contained(root: string, child: string): boolean {
 	return canonical_child.startsWith(canonical_root + sep);
 }
 
-export type SourceValidationError = "empty" | "not-found" | "not-directory" | "equals-project" | "nested-in-project" | "contains-project";
+/** True when two existing paths are distinct directories directly under the same parent. */
+export function is_sibling(first: string, second: string): boolean {
+	const canonical_first = resolve(first);
+	const canonical_second = resolve(second);
+	if (canonical_first === canonical_second) return false;
+	return resolve(dirname(canonical_first)) === resolve(dirname(canonical_second));
+}
+
+export type SourceValidationError = "empty" | "not-found" | "not-directory" | "equals-project" | "nested-in-project" | "contains-project" | "not-sibling";
 
 /**
  * Validate a submitted upstream source directory against the current project
@@ -25,20 +33,26 @@ export async function validate_source_dir(raw_source: string, project_root: stri
 	const trimmed = raw_source.trim();
 	if (!trimmed) return { ok: false, error: "empty" };
 
-	const canonical_source = resolve(trimmed);
-	const canonical_project = resolve(project_root);
+	const resolved_source = resolve(trimmed);
+	const resolved_project = resolve(project_root);
 
 	let is_dir = false;
 	try {
-		is_dir = statSync(canonical_source).isDirectory();
+		is_dir = statSync(resolved_source).isDirectory();
 	} catch {
 		return { ok: false, error: "not-found" };
 	}
 	if (!is_dir) return { ok: false, error: "not-directory" };
 
+	// Resolve existing paths through symlinks/junctions before applying the
+	// sibling restriction so a link beside the project cannot expose a distant tree.
+	const canonical_source = realpathSync(resolved_source);
+	const canonical_project = realpathSync(resolved_project);
+
 	if (canonical_source === canonical_project) return { ok: false, error: "equals-project" };
 	if (is_contained(canonical_project, canonical_source)) return { ok: false, error: "nested-in-project" };
 	if (is_contained(canonical_source, canonical_project)) return { ok: false, error: "contains-project" };
+	if (!is_sibling(canonical_source, canonical_project)) return { ok: false, error: "not-sibling" };
 
 	return { ok: true, canonical: canonical_source };
 }

@@ -8,10 +8,10 @@
 import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import type { BunRequest } from "bun";
 
-import { get_sync_diff, post_sync_apply, post_sync_ignore, post_sync_scan, type Sync_runtime } from "./index";
+import { get_software_update_browse, get_software_update_diff, post_software_update_apply, post_software_update_ignore, post_software_update_scan, software_update_crud, type Software_update_runtime } from "./index";
 import { save_snapshot } from "./lib/snapshot";
 import type { ScanSnapshot } from "./lib/types";
 import { diff_directories } from "./lib/diff";
@@ -29,7 +29,7 @@ function fake_req(opts: { url: string; method?: string; body?: string; headers?:
 	} as unknown as BunRequest;
 }
 
-function make_runtime(base: string): Required<Sync_runtime> {
+function make_runtime(base: string): Required<Software_update_runtime> {
 	return {
 		snapshot_dir: join(base, "snapshots"),
 		run_log_file: join(base, "runs.json"),
@@ -38,7 +38,16 @@ function make_runtime(base: string): Required<Sync_runtime> {
 	};
 }
 
-async function make_project(): Promise<{ source: string; project: string; runtime: Required<Sync_runtime>; cleanup: () => Promise<void> }> {
+test("registers and serves the upstream folder browser endpoint", async () => {
+	const browse_route = software_update_crud["/software-update/browse"];
+	expect(browse_route?.GET).toBe(get_software_update_browse);
+
+	const response = await get_software_update_browse(fake_req({ url: "http://localhost/software-update/browse" }));
+	expect(response.status).toBe(200);
+	expect(await response.json()).toEqual(expect.objectContaining({ dirs: expect.any(Array), project_root: expect.any(String) }));
+});
+
+async function make_project(): Promise<{ source: string; project: string; runtime: Required<Software_update_runtime>; cleanup: () => Promise<void> }> {
 	const base = await mkdtemp(join(tmpdir(), "reesync-functional-"));
 	const source = join(base, "source");
 	const project = join(base, "project");
@@ -61,8 +70,8 @@ async function build_snapshot(source: string, project: string, snapshot_dir: str
 	return snapshot;
 }
 
-describe("post_sync_scan", () => {
-	// The invalid-source path calls get_sync_page(), which renders a .ree
+describe("post_software_update_scan", () => {
+	// The invalid-source path calls get_software_update_page(), which renders a .ree
 	// template - that needs the full app bootstrap (template engine, mounted
 	// route modules) and isn't exercised at this level. validate_source_dir's
 	// rejection branches are covered directly in lib/paths.test.ts instead.
@@ -71,23 +80,23 @@ describe("post_sync_scan", () => {
 	// tarballs and static assets), so it needs a generous timeout under
 	// --parallel load instead of Bun's 5s default.
 	test("scans a real temp source directory against this project and redirects to the review page", async () => {
-		const base = await mkdtemp(join(tmpdir(), "reesync-scan-"));
+		const base = await mkdtemp(join(dirname(process.cwd()), "reesync-scan-"));
 		const runtime = make_runtime(base);
 		try {
 			await writeFile(join(base, "upstream-only.txt"), "hello");
 
-			const req = fake_req({ url: "http://localhost/sync/scan", method: "POST", body: `source_dir=${encodeURIComponent(base)}` });
-			const res = await post_sync_scan(req, runtime);
+			const req = fake_req({ url: "http://localhost/software-update/scan", method: "POST", body: `source_dir=${encodeURIComponent(base)}` });
+			const res = await post_software_update_scan(req, runtime);
 
 			expect(res.status).toBe(303);
 			const location = res.headers.get("Location")!;
-			// Routes are locale-aliased, so the redirect is "/sync" or
-			// "/en-us/sync" depending on the active locale config. Ten test files
+			// Routes are locale-aliased, so the redirect is "/software-update" or
+			// "/en-us/software-update" depending on the active locale config. Ten test files
 			// mock $config/supported_locales, and mock.module is process-global in
 			// Bun, so which form this route produces depends on what else ran
 			// first. The property under test is the destination and the scan id,
 			// not the locale prefix.
-			expect(location).toMatch(/^(\/[a-z]{2}-[a-z]{2})?\/sync\?scan=/);
+			expect(location).toMatch(/^(\/[a-z]{2}-[a-z]{2})?\/software-update\?scan=/);
 			const scan_id = new URL(location, "http://localhost").searchParams.get("scan")!;
 
 			const { load_snapshot, delete_snapshot } = await import("./lib/snapshot");
@@ -101,7 +110,7 @@ describe("post_sync_scan", () => {
 	}, { timeout: 60_000 });
 });
 
-describe("post_sync_ignore + post_sync_apply + get_sync_diff (isolated snapshot)", () => {
+describe("software update ignore + apply + diff (isolated snapshot)", () => {
 	test("full flow: scan snapshot, ignore toggle, lazy diff, then apply", async () => {
 		const { source, project, runtime, cleanup } = await make_project();
 		try {
@@ -112,19 +121,19 @@ describe("post_sync_ignore + post_sync_apply + get_sync_diff (isolated snapshot)
 			const snapshot = await build_snapshot(source, project, runtime.snapshot_dir);
 
 			// --- lazy diff endpoint ---
-			const diff_req = fake_req({ url: `http://localhost/sync/diff?scan=${snapshot.scan_id}&path=changed.txt` });
-			const diff_res = await get_sync_diff(diff_req, runtime);
+			const diff_req = fake_req({ url: `http://localhost/software-update/diff?scan=${snapshot.scan_id}&path=changed.txt` });
+			const diff_res = await get_software_update_diff(diff_req, runtime);
 			const diff_html = await diff_res.text();
 			expect(diff_html).toContain("upstream v2");
 			expect(diff_html).toContain("local v1");
 
 			// --- ignore toggle: add then remove an exact entry ---
 			const ignore_add_req = fake_req({
-				url: "http://localhost/sync/ignore",
+				url: "http://localhost/software-update/ignore",
 				method: "POST",
 				body: `scan=${snapshot.scan_id}&rel_path=new.txt&ignore_action=add`,
 			});
-			const ignore_res = await post_sync_ignore(ignore_add_req, runtime);
+			const ignore_res = await post_software_update_ignore(ignore_add_req, runtime);
 			expect(ignore_res.status).toBe(303);
 			const ignore_list_text = await readFile(join(project, ".reesyncignore"), "utf8");
 			expect(ignore_list_text).toContain("new.txt");
@@ -135,16 +144,16 @@ describe("post_sync_ignore + post_sync_apply + get_sync_diff (isolated snapshot)
 
 			// --- apply: only changed.txt should copy; new.txt stays ignored ---
 			const apply_req = fake_req({
-				url: "http://localhost/sync/apply",
+				url: "http://localhost/software-update/apply",
 				method: "POST",
 				body: `scan=${redirected_scan_id}&selected=changed.txt&selected=new.txt`,
 			});
-			const apply_res = await post_sync_apply(apply_req, runtime);
+			const apply_res = await post_software_update_apply(apply_req, runtime);
 			expect(apply_res.status).toBe(303);
 
 			expect(await readFile(join(project, "changed.txt"), "utf8")).toBe("upstream v2");
 			const runs = JSON.parse(await readFile(runtime.run_log_file, "utf8")) as { action: string }[];
-			expect(runs[0]?.action).toBe("sync-apply");
+			expect(runs[0]?.action).toBe("software_update_apply");
 			// new.txt was ignored at apply time, so it must not have been created.
 			await expect(readFile(join(project, "new.txt"), "utf8")).rejects.toThrow();
 		} finally {
@@ -160,11 +169,11 @@ describe("post_sync_ignore + post_sync_apply + get_sync_diff (isolated snapshot)
 			await writeFile(join(source, "a.txt"), "v2 - changed after scan");
 
 			const apply_req = fake_req({
-				url: "http://localhost/sync/apply",
+				url: "http://localhost/software-update/apply",
 				method: "POST",
 				body: `scan=${snapshot.scan_id}&selected=a.txt`,
 			});
-			const apply_res = await post_sync_apply(apply_req, runtime);
+			const apply_res = await post_software_update_apply(apply_req, runtime);
 			expect(apply_res.status).toBe(303);
 			await expect(readFile(join(project, "a.txt"), "utf8")).rejects.toThrow();
 		} finally {
