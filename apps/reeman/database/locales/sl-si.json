@@ -1,0 +1,53 @@
+{
+	"actions": {
+		"check_compliance": "Preveri domensko skladnost",
+		"data_to_sql": "PODATKI v SQL",
+		"open_in_studio": "Odpri v Studiu",
+		"run_sql": "Zaženi datoteko SQL"
+	},
+	"confirm": {
+		"run_sql": "Izvrednotim to datoteko SQL proti bazi podatkov? Tega ni mogoče razveljaviti."
+	},
+	"hints": {
+		"json_path": "Pot do datoteke JSON za pretvorbo, relativno na koren projekta (npr. data/recipes.json)",
+		"slug": "Neobvezen slug za ime generirane datoteke SQL. Privzeto je ime tabele.",
+		"slug_safe_table": "Samo male črke in številke (uporabi se za slug datoteke SQL)"
+	},
+	"labels": {
+		"action": "Dejanje",
+		"columns": "Stolpci",
+		"file_count": "datotek",
+		"file_type": "Vrsta",
+		"folder": "Mapa",
+		"folder_summary": "Skupaj v mapi",
+		"import_file": "Datoteka JSON, XLS ali XLSX",
+		"json_file": "Datoteka JSON",
+		"json_path": "Pot do datoteke JSON",
+		"last_updated": "Nazadnje posodobljeno",
+		"rows": "vrstic",
+		"sheets": "Listi za uvoz",
+		"slug": "Slug (neobvezno)",
+		"sql_file": "Datoteka SQL",
+		"table_name": "Ime tabele"
+	},
+	"nav": "Podatkovna baza",
+	"selectors": {
+		"select_sql": "-- izberite datoteko .sql --"
+	},
+	"ui": {
+		"broken_views_hint": "Ti pogledi se sklicujejo na tabele, ki ne obstajajo več, in so bili med pregledom izpuščeni. Znova ustvarite manjkajoče tabele (npr. z Zaženi SQL datoteko) in nato osvežite.",
+		"broken_views_title": "Zaznani pokvarjeni pogledi",
+		"busy": "Obdelava v teku — stran se bo osvežila, ko bo končano.",
+		"compliance_hint": "Pregleda živo bazo in poroča o stolpcih, ki ne ustrezajo kanoničnim domenskim vrstam. Samo za branje.",
+		"database_description": "Zaženi SQL datoteke, uvozi podatke iz JSON in preveri skladnost.",
+		"database_title": "Podatkovna baza",
+		"empty_sheet": "prazen list",
+		"inspection_error": "Datoteke ni bilo mogoče pregledati.",
+		"inspecting_file": "Pregledovanje datoteke...",
+		"data_to_sql_hint": "Naložite podatke JSON, XLS ali XLSX in ustvarite datoteki SQL za MySQL in SQLite.",
+		"json_upload_hint": "Izberite datoteko, preglejte njeno vsebino in nato določite uvoz.",
+		"no_sql_files": "V mapi sql/{dialect}/ ni datotek .sql.",
+		"sheet_selection_hint": "Izberite enega ali več listov in preverite predlagana imena tabel.",
+		"sql_files_hint": "Izberite datoteko SQL za zagon v trenutni bazi."
+	}
+}
