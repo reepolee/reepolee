@@ -1,0 +1,44 @@
+{
+	"actions": {
+		"check_compliance": "Domänenkonformität prüfen",
+		"json_to_sql": "JSON in SQL-Tabelle",
+		"open_in_studio": "Im Studio öffnen",
+		"run_sql": "SQL-Datei ausführen"
+	},
+	"confirm": {
+		"run_sql": "Diese SQL-Datei gegen die Datenbank ausführen? Dies kann nicht rückgängig gemacht werden."
+	},
+	"hints": {
+		"json_path": "Pfad zur zu konvertierenden JSON-Datei, relativ zum Projektstamm (z. B. data/recipes.json)",
+		"slug": "Optionaler Slug in Kleinbuchstaben für den generierten SQL-Dateinamen. Standardmäßig wird der Tabellenname verwendet.",
+		"slug_safe_table": "Nur Kleinbuchstaben und Zahlen (wird für den Slug des SQL-Dateinamens verwendet)"
+	},
+	"labels": {
+		"action": "Aktion",
+		"file_count": "Dateien",
+		"file_type": "Typ",
+		"folder": "Ordner",
+		"folder_summary": "Ordner gesamt",
+		"json_file": "JSON-Datei",
+		"json_path": "Pfad zur JSON-Datei",
+		"last_updated": "Zuletzt aktualisiert",
+		"slug": "Slug (optional)",
+		"sql_file": "SQL-Datei",
+		"table_name": "Tabellenname"
+	},
+	"selectors": {
+		"select_sql": "-- eine .sql-Datei auswählen --"
+	},
+	"ui": {
+		"broken_views_hint": "Diese Ansichten verweisen auf Tabellen, die nicht mehr existieren, und wurden bei der Untersuchung übersprungen. Erstellen Sie die fehlenden Tabellen neu (z. B. über „SQL-Datei ausführen\"), und laden Sie dann neu.",
+		"broken_views_title": "Beschädigte Ansichten erkannt",
+		"busy": "Verarbeitung — die Seite wird nach Abschluss aktualisiert.",
+		"compliance_hint": "Untersucht die Live-Datenbank und meldet Spalten, die nicht den kanonischen Domänentypen entsprechen. Nur lesend.",
+		"database_description": "SQL-Dateien ausführen, Daten aus JSON einspielen und Domänenkonformität prüfen.",
+		"database_title": "Datenbank",
+		"json_to_sql_hint": "Laden Sie eine JSON-Datei hoch und generieren Sie passende MySQL- und SQLite-SQL-Dateien.",
+		"json_upload_hint": "Wählen Sie vor dem Start der Transformation eine .json-Datei aus.",
+		"no_sql_files": "Keine .sql-Dateien in sql/{dialect}/ gefunden.",
+		"sql_files_hint": "Wählen Sie eine SQL-Datei aus, die gegen die aktuelle Datenbank ausgeführt werden soll."
+	}
+}

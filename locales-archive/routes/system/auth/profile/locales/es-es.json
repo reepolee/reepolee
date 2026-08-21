@@ -1,0 +1,21 @@
+{
+	"actions": {
+		"cancel": "Cancelar",
+		"submit": "Guardar mi perfil"
+	},
+	"labels": {
+		"avatar": "Imagen de avatar",
+		"name": "Nombre completo",
+		"nickname": "Apodo"
+	},
+	"messages": {
+		"successful_save": "El perfil se ha guardado correctamente."
+	},
+	"route_name": "perfil",
+	"ui": {
+		"avatar_label": "Foto de perfil",
+		"change_password": "Cambiar contraseña",
+		"logout": "Cerrar sesión",
+		"title": "Mi perfil"
+	}
+}

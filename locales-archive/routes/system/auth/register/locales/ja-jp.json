@@ -1,0 +1,24 @@
+{
+	"actions": {
+		"submit": "登録を完了"
+	},
+	"errors": {
+		"name_required": "必須入力",
+		"password_confirm_required": "必須入力",
+		"password_too_short": "パスワードは8文字以上必要です",
+		"passwords_mismatch": "パスワードが一致しません"
+	},
+	"labels": {
+		"name": "氏名",
+		"password": "パスワード（8文字以上）",
+		"password_confirm": "パスワードを確認"
+	},
+	"route_name": "registration",
+	"ui": {
+		"already_used": "この招待は既に使用されています。ログインしてください。",
+		"invalid_link": "このリンクは無効です。",
+		"invalid_title": "無効な招待",
+		"registering_as": "登録名:",
+		"title": "登録を完了"
+	}
+}

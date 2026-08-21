@@ -1,0 +1,21 @@
+{
+	"actions": {
+		"cancel": "Anuluj",
+		"submit": "Zapisz mój profil"
+	},
+	"labels": {
+		"avatar": "Obraz awatara",
+		"name": "Pełne imię i nazwisko",
+		"nickname": "Pseudonim"
+	},
+	"messages": {
+		"successful_save": "Profil został pomyślnie zapisany."
+	},
+	"route_name": "profil",
+	"ui": {
+		"avatar_label": "Zdjęcie profilowe",
+		"change_password": "Zmień hasło",
+		"logout": "Wyloguj się",
+		"title": "Mój profil"
+	}
+}

@@ -1,0 +1,52 @@
+{
+	"descriptions": {
+		"card": "Ceci est une section de type carte avec bordure et remplissage.",
+		"typography": "Texte de paragraphe normal avec mise en forme en gras et en italique."
+	},
+	"errors": {
+		"min_length_3": "Minimum 3 caractères requis",
+		"text_input_max": "Maximum 100 caractères autorisés"
+	},
+	"labels": {
+		"banners": "Bannières",
+		"buttons": "Boutons",
+		"card_section": "Section de carte",
+		"cards": "Cartes et sections",
+		"checkbox_option": "Option de case à cocher",
+		"code_example": "Exemple de code",
+		"date_input": "Champ de date",
+		"disabled_button": "Bouton désactivé",
+		"email_input": "Champ e-mail",
+		"email_placeholder": "Saisissez l'e-mail",
+		"file_upload": "Envoi de fichier",
+		"form_elements": "Éléments de formulaire",
+		"heading_1": "Titre 1",
+		"heading_2": "Titre 2",
+		"heading_3": "Titre 3",
+		"list_item": "Élément de liste",
+		"option": "Option",
+		"primary_button": "Bouton principal",
+		"radio": "Bouton radio",
+		"radio_options": "Options de bouton radio",
+		"secondary_button": "Bouton secondaire",
+		"select_dropdown": "Liste déroulante",
+		"selected_date": "Date sélectionnée :",
+		"text_input": "Champ de texte",
+		"text_placeholder": "Saisissez du texte (min. 3 caractères)",
+		"textarea": "Zone de texte",
+		"textarea_placeholder": "Saisissez plusieurs lignes",
+		"typography": "Typographie"
+	},
+	"messages": {
+		"error": "Erreur : Une erreur s'est produite",
+		"info": "Info : Ceci est informatif",
+		"success": "Succès : L'opération a été réalisée avec succès",
+		"warning": "Avertissement : Veuillez examiner ces informations"
+	},
+	"nav": "Évier",
+	"route_name": "evier",
+	"ui": {
+		"description": "Vitrine de composants et exemples",
+		"title": "Évier"
+	}
+}

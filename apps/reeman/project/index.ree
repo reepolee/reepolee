@@ -1,0 +1,39 @@
+{#layout("layout")}
+{#with props}
+	<div class="w-full p-4 space-y-6">
+
+		<header class="flex flex-wrap items-center justify-between gap-3">
+			<div>
+				<h1 class="text-xl font-bold">{_ ui.project_title}</h1>
+				<p class="text-sm text-text-secondary mt-1">{_ ui.project_description}</p>
+			</div>
+		</header>
+
+		{#if form_error}
+			<app-banner type="red">{= form_error}</app-banner>
+		{/if}
+
+		<section class="grid reeman-card-grid gap-4">
+
+			<form method="POST" action="{~ localized_path('/project/set-repo') }" class="flex flex-col gap-3 rounded-md border border-border bg-surface-raised p-4">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<h2 class="font-semibold">{_ actions.set_repo}</h2>
+				<p class="text-sm text-text-secondary">{_ ui.set_repo_hint}</p>
+
+				{#if current_repo}
+					<p class="text-sm text-text-secondary">{_ labels.current_repo} <code>{= current_repo }</code></p>
+				{/if}
+
+				<field-wrapper class="grid" data-field="owner_repo">
+					<div class="grid">
+						<label class="px-3" for="owner-repo">{_ labels.owner_repo}</label>
+						<input id="owner-repo" name="owner_repo" placeholder="owner/repo" pattern="[\w.\-]+/[\w.\-]+" value="{= current_repo }" required />
+						<validation-error class="mt-1" id="error-owner_repo"></validation-error>
+					</div>
+				</field-wrapper>
+
+				<button type="submit" class="button primary mt-auto">{_ actions.set_repo}</button>
+			</form>
+		</section>
+	</div>
+{/with}

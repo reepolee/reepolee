@@ -1,0 +1,52 @@
+{
+	"descriptions": {
+		"card": "To sekcja w stylu karty z obramowaniem i wypełnieniem.",
+		"typography": "Zwykły tekst akapitu z pogrubieniem i kursywą."
+	},
+	"errors": {
+		"min_length_3": "Wymagane minimum 3 znaki",
+		"text_input_max": "Dozwolone maksymalnie 100 znaków"
+	},
+	"labels": {
+		"banners": "Banery",
+		"buttons": "Przyciski",
+		"card_section": "Sekcja karty",
+		"cards": "Karty i sekcje",
+		"checkbox_option": "Opcja pola wyboru",
+		"code_example": "Przykład kodu",
+		"date_input": "Pole daty",
+		"disabled_button": "Wyłączony przycisk",
+		"email_input": "Pole e-mail",
+		"email_placeholder": "Wpisz e-mail",
+		"file_upload": "Przesyłanie plików",
+		"form_elements": "Elementy formularza",
+		"heading_1": "Nagłówek 1",
+		"heading_2": "Nagłówek 2",
+		"heading_3": "Nagłówek 3",
+		"list_item": "Element listy",
+		"option": "Opcja",
+		"primary_button": "Główny przycisk",
+		"radio": "Radio",
+		"radio_options": "Opcje przycisków radio",
+		"secondary_button": "Drugorzędny przycisk",
+		"select_dropdown": "Lista rozwijana",
+		"selected_date": "Wybrana data:",
+		"text_input": "Pole tekstowe",
+		"text_placeholder": "Wpisz tekst (min. 3 znaki)",
+		"textarea": "Obszar tekstowy",
+		"textarea_placeholder": "Wpisz wiele linii",
+		"typography": "Typografia"
+	},
+	"messages": {
+		"error": "Błąd: Coś poszło nie tak",
+		"info": "Informacja: To jest informacyjne",
+		"success": "Sukces: Operacja zakończona pomyślnie",
+		"warning": "Ostrzeżenie: Proszę przejrzeć te informacje"
+	},
+	"nav": "Zlew kuchenny",
+	"route_name": "zlew-kuchenny",
+	"ui": {
+		"description": "Prezentacja komponentów i przykłady",
+		"title": "Zlew kuchenny"
+	}
+}

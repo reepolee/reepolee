@@ -1,0 +1,67 @@
+{
+	"actions": {
+		"bulk_action": "Elimina i moduli selezionati",
+		"bulk_action_2": "Azione alternativa",
+		"cancel": "Annulla",
+		"do_it": "Sì, procedi",
+		"new_module": "Nuovo modulo",
+		"save": "Salva",
+		"save_close": "Salva e chiudi"
+	},
+	"child_ui": {
+		"actions": "Azioni",
+		"delete": "Elimina",
+		"deleting": "Eliminazione…",
+		"edit": "Modifica",
+		"edit_title": "Modifica modulo",
+		"empty_text": "Nessun modulo trovato.",
+		"error_deleting": "Errore durante l'eliminazione del record.",
+		"error_loading": "Errore durante il caricamento del record.",
+		"error_saving": "Errore durante il salvataggio del record.",
+		"new_button": "+ Nuovo modulo",
+		"new_title": "Nuovo modulo"
+	},
+	"errors": {
+		"duplicate_key": "Esiste già un record con questo valore.",
+		"error_creating_record": "Si è verificato un errore durante il salvataggio del record.",
+		"must_be_selected": "Questo campo è obbligatorio.",
+		"title_required": "Il titolo è obbligatorio."
+	},
+	"labels": {
+		"code": "Codice",
+		"description": "Descrizione",
+		"name": "Nome",
+		"table": "Tabella / Percorso"
+	},
+	"messages": {
+		"bulk_delete_failed": "Eliminazione di massa non riuscita.",
+		"bulk_delete_no_ids": "Nessun modulo selezionato.",
+		"bulk_deleted": "Nessun modulo eliminato|{count} modulo eliminato|{count} moduli eliminati|{count} moduli eliminati|{count} moduli eliminati",
+		"bulk_errors": "|{count} modulo non riuscito|{count} moduli non riusciti|{count} moduli non riusciti|{count} moduli non riusciti",
+		"record_created": "Record creato",
+		"record_updated": "Record aggiornato"
+	},
+	"nav": "Moduli",
+	"route_name": "moduli",
+	"search": {
+		"search_term": "Cerca moduli...",
+		"submit": "Cerca"
+	},
+	"selectors": {
+		"0": "No",
+		"1": "Sì",
+		"all": "Tutti",
+		"per_page": "per pagina",
+		"select_table": "-- Seleziona tabella o percorso --"
+	},
+	"ui": {
+		"apply_filters": "Applica",
+		"clear_all": "Elimina tutto",
+		"filter_not": "NO",
+		"loading_count": "Caricamento…",
+		"modifying": "Stai per modificare",
+		"no_records": "Nessun modulo trovato.",
+		"records": "record",
+		"title": "Moduli"
+	}
+}

@@ -1,0 +1,67 @@
+{
+	"actions": {
+		"bulk_action": "Usuń wybrane moduły",
+		"bulk_action_2": "Alternatywna akcja",
+		"cancel": "Anuluj",
+		"do_it": "Tak, zrób to",
+		"new_module": "Nowy moduł",
+		"save": "Zapisz",
+		"save_close": "Zapisz i zamknij"
+	},
+	"child_ui": {
+		"actions": "Akcje",
+		"delete": "Usuń",
+		"deleting": "Usuwanie…",
+		"edit": "Edytuj",
+		"edit_title": "Edytuj moduł",
+		"empty_text": "Nie znaleziono modułów.",
+		"error_deleting": "Błąd podczas usuwania rekordu.",
+		"error_loading": "Błąd podczas ładowania rekordu.",
+		"error_saving": "Błąd podczas zapisywania rekordu.",
+		"new_button": "+ Nowy moduł",
+		"new_title": "Nowy moduł"
+	},
+	"errors": {
+		"duplicate_key": "Rekord z tą wartością już istnieje.",
+		"error_creating_record": "Wystąpił błąd podczas zapisywania rekordu.",
+		"must_be_selected": "To pole jest wymagane.",
+		"title_required": "Tytuł jest wymagany."
+	},
+	"labels": {
+		"code": "Kod",
+		"description": "Opis",
+		"name": "Nazwa",
+		"table": "Tabela / Ścieżka"
+	},
+	"messages": {
+		"bulk_delete_failed": "Masowe usuwanie nie powiodło się.",
+		"bulk_delete_no_ids": "Nie wybrano modułów.",
+		"bulk_deleted": "Nie usunięto żadnych modułów|{count} moduł usunięty|{count} moduły usunięte|{count} moduły usunięte|{count} modułów usuniętych",
+		"bulk_errors": "|{count} moduł nie powiódł się|{count} moduły nie powiodły się|{count} moduły nie powiodły się|{count} modułów nie powiodło się",
+		"record_created": "Rekord utworzony",
+		"record_updated": "Rekord zaktualizowany"
+	},
+	"nav": "Moduły",
+	"route_name": "moduly",
+	"search": {
+		"search_term": "Szukaj modułów...",
+		"submit": "Szukaj"
+	},
+	"selectors": {
+		"0": "Nie",
+		"1": "Tak",
+		"all": "Wszystkie",
+		"per_page": "na stronę",
+		"select_table": "-- Wybierz tabelę lub ścieżkę --"
+	},
+	"ui": {
+		"apply_filters": "Zastosuj",
+		"clear_all": "Usuń wszystko",
+		"filter_not": "NIE",
+		"loading_count": "Ładowanie…",
+		"modifying": "Zamierzasz zmodyfikować",
+		"no_records": "Nie znaleziono modułów.",
+		"records": "rekord(y)",
+		"title": "Moduły"
+	}
+}

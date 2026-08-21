@@ -1,0 +1,22 @@
+<script type=speculationrules>
+	{
+	"prefetch": [
+		{
+			"source": "document",
+			"where": {
+				"selector_matches": "a[href^='/']"
+			},
+			"eagerness": "immediate"
+		}
+	],
+	"prerender": [
+		{
+			"source": "document",
+			"where": {
+				"selector_matches": "a[href^='/']"
+			},
+			"eagerness": "immediate"
+		}
+	]
+}
+</script>
