@@ -1,0 +1,52 @@
+{
+	"descriptions": {
+		"card": "This is a card-like section with border and padding.",
+		"typography": "Regular paragraph text with bold and italic formatting."
+	},
+	"errors": {
+		"min_length_3": "Minimum 3 characters required",
+		"text_input_max": "Maximum 100 characters allowed"
+	},
+	"labels": {
+		"banners": "Banners",
+		"buttons": "Buttons",
+		"card_section": "Card Section",
+		"cards": "Cards & Sections",
+		"checkbox_option": "Checkbox Option",
+		"code_example": "Code Example",
+		"date_input": "Date Input",
+		"disabled_button": "Disabled Button",
+		"email_input": "Email Input",
+		"email_placeholder": "Enter email",
+		"file_upload": "File Upload",
+		"form_elements": "Form Elements",
+		"heading_1": "Heading 1",
+		"heading_2": "Heading 2",
+		"heading_3": "Heading 3",
+		"list_item": "List item",
+		"option": "Option",
+		"primary_button": "Primary Button",
+		"radio": "Radio",
+		"radio_options": "Radio Options",
+		"secondary_button": "Secondary Button",
+		"select_dropdown": "Select Dropdown",
+		"selected_date": "Selected date:",
+		"text_input": "Text Input",
+		"text_placeholder": "Enter text (min 3 chars)",
+		"textarea": "Textarea",
+		"textarea_placeholder": "Enter multiple lines",
+		"typography": "Typography"
+	},
+	"messages": {
+		"error": "Error: Something went wrong",
+		"info": "Info: This is informational",
+		"success": "Success: Operation completed successfully",
+		"warning": "Warning: Please review this information"
+	},
+	"nav": "Kitchen Sink",
+	"route_name": "kitchen-sink",
+	"ui": {
+		"description": "Component showcase and examples",
+		"title": "Kitchen Sink"
+	}
+}

@@ -1,0 +1,356 @@
+{#layout("layout")}
+{#with props}
+
+	<div class="py-4">
+
+		{#if busy}
+			<div class="px-4 mb-4">
+				<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
+			</div>
+		{/if}
+
+		<!-- TABLE DISPLAY CONTROLLER -->
+		<div class="flex items-center gap-1 justify-between w-full flex-wrap px-4">
+
+			<div class="pagination-info">
+				{#if first_url }
+					<a href="{~ localized_path(first_url) }" role="button">
+						<ree-icon name="chevrons_left"></ree-icon>
+					</a>
+				{:else }
+					<ree-icon name="chevrons_left"></ree-icon>
+				{/if}
+
+				{#if prev_url }
+					<a href="{~ localized_path(prev_url) }" role="button"><ree-icon name="chevron_left"></ree-icon></a>
+				{:else }
+					<ree-icon name="chevron_left"></ree-icon>
+				{/if}
+
+				{#if total > 0 }
+					<div style="width: {= total.toString().length * 3 + 4 }ch; text-align: center">{= offset + 1 }-{= Math.min(offset + (limit === 'all' ? total : limit), total) } / {= total}</div>
+				{:else }
+					<div style="width: 7ch; text-align: center">0 / 0</div>
+				{/if}
+
+				{#if next_url }
+					<a href="{~ localized_path(next_url) }" role="button">
+						<ree-icon name="chevron_right"></ree-icon>
+					</a>
+				{:else }
+					<ree-icon name="chevron_right"></ree-icon>
+				{/if}
+
+				{#if last_url }
+					<a href="{~ localized_path(last_url) }" role="button">
+						<ree-icon name="chevrons_right"></ree-icon>
+					</a>
+				{:else }
+					<ree-icon name="chevrons_right"></ree-icon>
+				{/if}
+			</div>
+
+			<div class="flex items-center gap-2">
+				<select id="limit" class="w-[20ch]" onchange="navigate_to('limit', this.value)">
+					{#each limit_options as option }
+						<option value="{= option }" {#if option === limit }selected{/if}>
+							{#if option==="all"}
+								{_ selectors.all}
+							{:else}
+								{= option } {_ selectors.per_page}
+							{/if}
+						</option>
+					{/each}
+				</select>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<select id="order_by" class="w-[40ch]" onchange="navigate_to('order_by', this.value)">
+					{#each sort_options as option }
+						<option value="{= option.value }" {#if option.value === order_by }selected{/if}>{= props.translations.labels?.[option.field] || option.field } ({= option.direction === 'asc' ? props.translations.selectors.ascending : props.translations.selectors.descending })</option>
+					{/each}
+				</select>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<a href="{~ localized_path('/locales/export-bundle') }" class="button secondary" download>{_ actions.export_english}</a>
+				<button commandfor="upload_translation_dialog" command="show-modal" class="button secondary">{_ actions.upload_translation}</button>
+				<button id="action" commandfor="add_locale_dialog" command="show-modal" class="button primary">{_ actions.add_locale}</button>
+			</div>
+
+			<ree-filters action-url="/locales"></ree-filters>
+
+			{#if enable_archive }
+				<!-- BULK ACTIONS -->
+				<div class="flex items-center gap-4 justify-start w-full flex-wrap px-4 my-4">
+					<button id="action_set_active" disabled class="button secondary">{_ actions.set_active}</button>
+					<button id="action_set_inactive" disabled class="button secondary">{_ actions.set_inactive}</button>
+					<button id="action_2" commandfor="remove_dialog" command="show-modal" disabled class="button tertiary">{_ actions.remove_selected}</button>
+					{#if available_seed_locales.length > 0 }
+						<button id="action_add_seeded" disabled class="button secondary">{_ actions.add}</button>
+					{/if}
+				</div>
+			{/if}
+
+		</div>
+
+		<!-- TABLE GRID -->
+
+		{#if (records.length === 0) }
+			<p class="p-4">{_ ui.no_records}</p>
+
+		{:else }
+
+			<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-4" style="grid-template-columns: {= grid_cols }">
+
+				<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+					{#if enable_archive }
+						<div class="grid grid-cols-2 place-items-center p-0!">
+							<button id="deselect_all" class="text-brand cursor-pointer"><ree-icon name="x" class="size-6"></ree-icon></button>
+							<label class="w-full h-full grid place-items-center hover:bg-brand rounded">
+								<input type="checkbox" name="select_all" id="select_all">
+							</label>
+						</div>
+					{/if}
+					<div class="{= columns.code.class }">{_ labels.code }</div>
+					<div class="{= columns.name.class }">{_ labels.name }</div>
+					<div class="{= columns.alias.class }">{_ labels.alias }</div>
+					<div class="{= columns.active.class }">{_ labels.active }</div>
+					<div class="{= columns.default.class }">{_ labels.default }</div>
+					<!-- filler cell for the trailing grid_filler track in grid_cols -->
+					<div class="grid-filler"></div>
+				</div>
+				{#each records as record }
+					<a href="{~ localized_path('/locales/' + record.code) }" class="col-span-full *:py-2 grid cursor-pointer grid-cols-subgrid border-b border-b-neutral-200 *:px-2 hover:bg-primary hover:text-white">
+
+						{#if enable_archive }
+							<div class="grid grid-cols-2 place-items-center p-0! m-0!">
+								<div></div>
+								<label class="w-full h-full grid place-items-center hover:bg-brand rounded" onclick="event.stopPropagation()">
+									<input type="checkbox" name="checkboxes[]" value="{= record.code}" onclick="event.stopPropagation()">
+								</label>
+							</div>
+						{/if}
+
+						<div class="{= props.columns.code.class } font-mono">{= record.code }</div>
+						<div class="{= props.columns.name.class }">{= record.name || '—' }</div>
+						<div class="{= props.columns.alias.class }">{= record.alias || '—' }</div>
+						<div class="{= props.columns.active.class }">{~ yes_no(record.active) }</div>
+						<div class="{= props.columns.default.class }">{~ yes_no(record.is_default) }</div>
+						<!-- filler cell for the trailing grid_filler track in grid_cols -->
+						<div class="grid-filler"></div>
+					</a>
+				{/each}
+
+				{#if available_seed_locales.length > 0 }
+					<!-- empty separator row, spans the full grid -->
+					<div class="col-span-full h-4"></div>
+					<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2">
+						<div class="col-span-full py-2">{_ labels.available_locales}</div>
+					</div>
+					{#each available_seed_locales as seed }
+						<div class="col-span-full *:py-2 grid grid-cols-subgrid border-b border-b-neutral-200 *:px-2">
+							{#if enable_archive }
+								<div class="grid grid-cols-2 place-items-center p-0! m-0!">
+									<div></div>
+									<label class="w-full h-full grid place-items-center hover:bg-brand rounded">
+										<input type="checkbox" name="add_checkboxes[]" value="{= seed.code}">
+									</label>
+								</div>
+							{/if}
+							<div class="{= props.columns.code.class } font-mono">{= seed.code }</div>
+							<div class="{= props.columns.name.class }">{= seed.name }</div>
+							<div class="col-span-2"></div>
+							<div class="grid-filler"></div>
+						</div>
+					{/each}
+				{/if}
+
+			</div>
+		{/if}
+
+		{#if available_seed_locales.length > 0 }
+			<p class="px-4 mt-2 text-sm text-text-secondary">{_ ui.available_locales_hint}</p>
+		{/if}
+
+		{#if archived_locales.length > 0 }
+			<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-8" style="grid-template-columns: 14ch 1fr auto">
+				<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-4 *:py-2">
+					<div class="col-span-full">{_ labels.archived_locales}</div>
+				</div>
+				{#each archived_locales as archived_locale }
+					<div class="col-span-full grid grid-cols-subgrid items-center border-b border-b-neutral-200 *:px-4 *:py-2">
+						<div class="font-mono">{= archived_locale.code }</div>
+						<div>{= archived_locale.name }</div>
+						<form method="POST" action="{~ localized_path('/locales/install-archived') }">
+							<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+							<input type="hidden" name="locale_code" value="{= archived_locale.code }" />
+							<button type="submit" class="button secondary" {#if busy }disabled{/if}>{_ actions.import}</button>
+						</form>
+					</div>
+				{/each}
+			</div>
+			<p class="px-4 mt-2 text-sm text-text-secondary">{_ ui.archived_locales_hint}</p>
+		{/if}
+
+		<!-- ADD LOCALE DIALOG - an add action, not gated on enable_archive. The
+			 toolbar Add button (id=action) targets this dialog, so both live
+			 outside the delete-gated block below. -->
+		<dialog id="add_locale_dialog" class="p-0 rounded-xl shadow-2xl w-120">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.add_locale}</h2>
+
+				{#if inactive_supported_locales.length > 0 }
+					<!-- Fast path: activate a locale that's already supported
+						 (translations already generated) - just runs its init SQL. -->
+					<form method="POST" action="{~ localized_path('/locales/activate') }" class="mt-4">
+						<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+						<p class="text-sm text-text-secondary">{_ ui.activate_locale_hint}</p>
+						<div class="grid gap-1.5 mt-3 max-h-[30ch] overflow-y-auto">
+							{#each inactive_supported_locales as option }
+								<label class="flex cursor-pointer items-center gap-1.5 text-sm">
+									<input type="checkbox" name="locale_codes" value="{= option.option_value }" /> {= option.option_text } <span class="text-text-secondary font-mono">({= option.option_value })</span>
+								</label>
+							{/each}
+						</div>
+						<div class="mt-4 flex justify-end">
+							<button type="submit" class="button primary">{_ actions.activate_selected}</button>
+						</div>
+					</form>
+
+					<hr class="my-5 border-t border-neutral-200" />
+				{/if}
+
+				<!-- Slow path: a brand new locale not yet in the system at all. -->
+				<form method="POST" action="{~ localized_path('/locales/add') }">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<p class="text-sm text-text-secondary">{_ ui.add_locale_hint}</p>
+					<div class="grid gap-3 mt-3">
+						<field-wrapper class="grid" data-field="locale_code">
+							<div class="grid">
+								<label class="px-3" for="add-locale-code">{_ labels.locale_code}</label>
+								<input id="add-locale-code" name="locale_code" required pattern="[a-z]{2,3}(-[a-z0-9]{2,8})?" title="{_ hints.locale_code }" />
+							</div>
+						</field-wrapper>
+						<label class="flex cursor-pointer items-center gap-1.5 text-sm">
+							<input type="checkbox" name="translate" value="1" /> {_ actions.translate}
+						</label>
+					</div>
+					<div class="mt-6 flex justify-end gap-2">
+						<button type="button" class="button secondary" commandfor="add_locale_dialog" command="close">{_ actions.cancel}</button>
+						<button type="submit" class="button primary">{_ actions.do_it}</button>
+					</div>
+				</form>
+			</div>
+		</dialog>
+
+		<dialog id="upload_translation_dialog" class="p-0 rounded-xl shadow-2xl w-120">
+			<form method="POST" action="{~ localized_path('/locales/upload-bundle') }" enctype="multipart/form-data" class="p-6 grid gap-4">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<h2 class="text-lg font-semibold">{_ actions.upload_translation}</h2>
+				<p class="text-sm text-text-secondary">{_ ui.upload_translation_hint}</p>
+				<input type="file" name="translation_bundle" accept=".json,application/json" required />
+				<div class="flex justify-end gap-2">
+					<button type="button" class="button secondary" commandfor="upload_translation_dialog" command="close">{_ actions.cancel}</button>
+					<button type="submit" class="button primary">{_ actions.upload}</button>
+				</div>
+			</form>
+		</dialog>
+
+		<script src="/dialog-confirm.js?v={= version}"></script>
+
+		{#if enable_archive }
+			<!-- REMOVE SELECTED DIALOG -->
+			<dialog id="remove_dialog" class="p-0 rounded-xl shadow-2xl w-120">
+				<form method="POST" action="{~ localized_path('/locales/bulk-remove') }" id="remove_form" class="p-6">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<h2 class="text-lg font-semibold">{_ actions.remove_selected}</h2>
+					<p class="text-slate-600 mt-2">{_ ui.modifying} <span class="font-semibold text-brand" id="remove_count">0</span> {_ ui.records}.</p>
+					<p class="text-sm text-text-secondary mt-1">{_ ui.remove_selected_hint}</p>
+					<div class="mt-6 flex justify-end gap-2">
+						<button type="button" class="button secondary" commandfor="remove_dialog" command="close">{_ actions.cancel}</button>
+						<button type="submit" class="button danger">{_ actions.do_it}</button>
+					</div>
+				</form>
+			</dialog>
+
+			<!-- SET ACTIVE / SET INACTIVE forms - no confirm dialog, unlike remove:
+				 reversible, non-destructive state flips. -->
+			<form method="POST" action="{~ localized_path('/locales/bulk-set-active') }" id="set_active_form">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="active" value="1" />
+			</form>
+			<form method="POST" action="{~ localized_path('/locales/bulk-set-active') }" id="set_inactive_form">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="active" value="0" />
+			</form>
+
+			{#if available_seed_locales.length > 0 }
+				<form method="POST" action="{~ localized_path('/locales/add-seeded') }" id="add_seeded_form">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				</form>
+			{/if}
+
+			<script src="/checkbox-group.js?v={= version}"></script>
+			<script>
+				const bulkCheckboxes = document.getElementById("select_all")
+					? new CheckboxGroup({ buttonSelectors: ["#action_set_active", "#action_set_inactive", "#action_2"] })
+					: null;
+
+				// Inject one hidden "codes" input per checked checkbox into the
+				// target form right before submit - the bulk handlers all read
+				// params.getAll("codes").
+				function inject_selected_codes(form, checkbox_selector) {
+					form.querySelectorAll('input[name="codes"]').forEach((el) => el.remove());
+					const selected = $$(`${checkbox_selector}:checked`);
+					for (const cb of selected) {
+						const hidden = document.createElement("input");
+						hidden.type = "hidden";
+						hidden.name = "codes";
+						hidden.value = cb.value;
+						form.appendChild(hidden);
+					}
+				}
+
+				document.getElementById("remove_form").addEventListener("submit", (e) => {
+					inject_selected_codes(e.currentTarget, 'input[name="checkboxes[]"]');
+				});
+
+				document.getElementById("action_set_active").addEventListener("click", () => {
+					const form = document.getElementById("set_active_form");
+					inject_selected_codes(form, 'input[name="checkboxes[]"]');
+					form.submit();
+				});
+
+				document.getElementById("action_set_inactive").addEventListener("click", () => {
+					const form = document.getElementById("set_inactive_form");
+					inject_selected_codes(form, 'input[name="checkboxes[]"]');
+					form.submit();
+				});
+
+				document.addEventListener("change", (e) => {
+					if (e.target.name === "select_all" || e.target.name === "checkboxes[]") {
+						const selected = $$('input[name="checkboxes[]"]:checked').length;
+						document.getElementById("remove_count").textContent = selected;
+					}
+				});
+
+				// Seed-locale checkboxes are a separate, ungrouped set (no
+				// select-all - the list is short) - just toggle the Add button.
+				const addSeededBtn = document.getElementById("action_add_seeded");
+				if (addSeededBtn) {
+					document.addEventListener("change", (e) => {
+						if (e.target.name === "add_checkboxes[]") {
+							addSeededBtn.disabled = $$('input[name="add_checkboxes[]"]:checked').length === 0;
+						}
+					});
+					addSeededBtn.addEventListener("click", () => {
+						const form = document.getElementById("add_seeded_form");
+						inject_selected_codes(form, 'input[name="add_checkboxes[]"]');
+						form.submit();
+					});
+				}
+			</script>
+		{/if}
+	</div>
+{/with}

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="{= props.locale }" class="{= props.theme_class }">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<link rel="stylesheet" href='/app{~ props.is_dev ? "-dev" :"" }.css?v={= props.version }' />
+		<title>{= props.translations?.ui?.title || props.site_name}</title>
+
+		<script src="/helpers-client.js?v={= props.version }"></script>
+		<script src="/web-components/validation-error.js?v={= props.version }"></script>
+		<script src="/web-components/toasts-area.js?v={= props.version }"></script>
+		<script src="/web-components/markdown-editor.js?v={= props.version }"></script>
+		<!-- <script src="/dpu.min.js?v={= props.version }" defer></script> -->
+
+		{#if (!props.is_dev)}
+			<!-- {#include('speculationrules.partial')} -->
+		{/if}
+		<meta http-equiv="Content-Language" content="{= format_bcp47(props.locale) }" />
+	</head>
+
+	<body class="bg-surface grid grid-cols-[30ch_1fr] min-h-screen 2xl:bg-surface 3xl:bg-surface">
+
+		{#if props.path_locale && props.locale_preferred && props.path_locale !== props.locale_preferred}
+			<!-- LANG MISMATCH DIALOG START -->
+			<dialog id="lang_mismatch_dialog" class="p-0 rounded-xl shadow-2xl min-w-100">
+				<div class="p-6">
+					<h2 class="text-lg font-semibold">{_ ui.lang_mismatch_title}</h2>
+					<p class="text-slate-600 mt-2">
+						{_ ui.lang_mismatch_body}
+						<strong>{= props.path_locale_name}</strong>
+					</p>
+					<div class="mt-6 flex justify-end gap-2">
+						<form method="dialog">
+							<button class="button secondary" value="dismiss">{_ actions.lang_mismatch_dismiss}</button>
+						</form>
+						<a href="?locale={= props.locale_preferred }" class="button primary no-underline">{_ actions.lang_mismatch_switch}</a>
+					</div>
+				</div>
+			</dialog>
+			<script>
+				document.getElementById("lang_mismatch_dialog")?.showModal();
+			</script>
+			<!-- LANG MISMATCH DIALOG END -->
+		{/if}
+
+		<nav class="flex py-4 bg-neutral-200 gap-4 pb-8 flex-col border-r border-r-neutral-300 justify-between h-screen sticky top-0 overflow-y-auto">
+
+			<div class="top flex flex-col">
+				<a href="/" class="px-4 mb-4">
+					<img class="w-24" src="{= props.dark_mode ? '/logo-light.svg' : '/logo-dark.svg' }" alt="Reepolee logo" />
+				</a>
+				<form method="GET" action="{~ localized_path('/studio') }" class="px-4 mb-6">
+					<label class="grid gap-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+						<span class="ml-3">{_ labels.file}</span>
+						<select name="path" class="text-base w-full" onchange="this.form.submit()">
+							<option value="">{_ selectors.select_file}</option>
+							{#each props.file_groups as file_group}
+								<optgroup label="{= file_group.group }">
+									{#each file_group.files as file}
+										<option value="{= file.path }" {#if file.path===props.path}selected{/if}>{= file.name }</option>
+									{/each}
+								</optgroup>
+							{/each}
+						</select>
+					</label>
+				</form>
+
+				{#if props.model}
+					<button type="button" class="button secondary py-1! mx-4 mb-6" command="show-modal" commandfor="adapt-schema-dialog">{_ actions.adapt_schema}</button>
+				{/if}
+
+				<!-- NAVIGATION START -->
+
+				{#if props.model}
+					<div class="flex items-center justify-between px-4 mb-2">
+						<h2 class="text-sm font-semibold uppercase tracking-wider text-brand">{_ labels.tables}</h2>
+						<button type="button" class="button secondary px-2! py-1!" command="show-modal" commandfor="new-table-dialog" title="{_ actions.new_table}">+</button>
+					</div>
+					<div class="flex flex-col mb-8">
+						{#each props.objects.tables as item}
+							<a href="{~ localized_path(item.url) }" class="{= item.name===props.selected_object ? 'bg-primary text-white' : 'hover:bg-neutral-100' } pl-6">{= item.name}</a>
+						{/each}
+					</div>
+					{#if props.objects.views.length}
+						<h2 class="px-4 mb-2 text-sm font-semibold uppercase tracking-wider text-brand">{_ labels.views}</h2>
+						<div class="flex flex-col">
+							{#each props.objects.views as item}
+								<a href="{~ localized_path(item.url) }" class="{= item.name===props.selected_object ? 'bg-primary text-white' : 'hover:bg-neutral-100' } pl-6">{= item.name}</a>
+							{/each}
+						</div>
+					{/if}
+				{/if}
+
+				<!-- NAVIGATION END -->
+
+			</div>
+
+			<div class="bottom flex flex-col gap-2 px-4">
+				<div class="flex items-center gap-2">
+					{#if props.active_locales.length <= 5}
+						<div class="flex flex-wrap items-center gap-1" aria-label="Language">
+							{#each props.active_locales as locale}
+								{#if props.locale === locale}
+									<span aria-current="true" class="text-xs px-2 py-1 font-bold" title="{= props.locale_names?.[locale] || locale }">{= locale_short_code(locale) }</span>
+								{:else}
+									<a href="?locale={= locale }" class="text-xs px-2 py-1 rounded border border-transparent no-underline hover:border-neutral-300 hover:bg-neutral-100" title="{= props.locale_names?.[locale] || locale }">{= locale_short_code(locale) }</a>
+								{/if}
+							{/each}
+						</div>
+					{:else}
+						<select aria-label="Language" onchange="location.href=this.value" class="text-base w-36 px-2 py-1">
+							{#each props.active_locales as locale}
+								<option value="?locale={= locale }" {#if props.locale === locale}selected{/if}>{= props.locale_names?.[locale] || locale}</option>
+							{/each}
+						</select>
+					{/if}
+					<button id="theme-toggle" aria-label="Toggle dark mode" class="ml-auto cursor-pointer px-2 py-1 text-xs rounded border border-transparent hover:border-neutral-300 hover:bg-neutral-100">🌙</button>
+				</div>
+				<div class="flex items-center gap-2 font-semibold px-2" title="{= Bun.env.DEV_CONNECTION_STRING}">
+					{#if props.user}
+						<a href="{~ localized_path('/profile') }">{= props.user.display_name}</a>
+					{:else}
+						<a href="{~ localized_path('/login') }">{_ nav_auth.login}</a>
+					{/if}
+				</div>
+
+			</div>
+
+		</nav>
+
+		<main id="main" class="min-w-0">{~ props.body}</main>
+
+		<toasts-area id="toasts-area">
+			<!-- TOASTS (server-rendered, no JS required) -->
+			{#each props.toasts as toast}
+				{{
+					const toast_classes = new Map([
+						['green', 'bg-green-600/90 text-white'],
+						['red', 'bg-brand/90 text-white'],
+						['yellow', 'bg-amber-300/90 text-black'],
+					]);
+					const toast_class = toast_classes.get(toast.type) ?? 'bg-white text-black border border-neutral-300';
+				}}
+				<div id="toast-{= toast.key }"
+					class="animate-in-top"
+					style="--toast-duration:{= toast.duration ?? 3000 }ms">
+
+					<div class="relative px-3 py-2 mb-3 {= toast_class }	font-semibold rounded-sm min-w-96 pointer-events-auto">
+
+						<div class="pr-6">
+							{= toast.message } {~ toast.user ? `(${toast.user})` : "" }
+						</div>
+
+						<a href="#toast-{= toast.key }" class="absolute top-1 right-1 h-8 w-8 flex items-center justify-center text-lg leading-none opacity-70 hover:opacity-100 hover:bg-black/10 rounded-full no-underline" aria-label="Close toast">
+							🗙
+						</a>
+
+					</div>
+				</div>
+			{/each}
+		</toasts-area>
+		{#if is_dev}
+			<script>
+				console.info({~ props.toJSON});
+				window.addEventListener("pageshow", (event) => {
+					if (event.persisted) {
+						console.log("Page restored from BFCache");
+					} else {
+						console.log("Normal page load");
+					}
+				});
+				const nav = performance.getEntriesByType("navigation")[0];
+				console.log("navigation type:", nav?.type);
+			</script>
+		{/if}
+	</body>
+
+	<script>
+		init_theme_toggle();
+
+		const nav_module_details = document.querySelectorAll("details[data-nav-module]");
+		for (const nav_module_detail of nav_module_details) {
+			nav_module_detail.addEventListener("toggle", () => {
+				const collapsed_modules = Array.from(document.querySelectorAll("details[data-nav-module]:not([open])"), (element) => element.dataset.navModule);
+				const cookie_value = encodeURIComponent(JSON.stringify(collapsed_modules));
+				document.cookie = `nav_collapsed_modules=${cookie_value}; path=/; max-age=31536000; samesite=lax`;
+			});
+		}
+	</script>
+
+</html>
