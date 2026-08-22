@@ -21,11 +21,23 @@
 						{#if grid_columns.length === 0}
 							<p class="p-3">{_ ui.no_selectable_columns}</p>
 						{:else}
+							<div class="grid grid-cols-[minmax(0,1fr)_12ch_minmax(0,1fr)_auto] gap-2 px-3 py-2 text-xs font-semibold border-b border-border bg-surface">
+								<span>{_ labels.name}</span>
+								<span>{_ labels.width}</span>
+								<span>{_ labels.class}</span>
+								<span>{_ labels.filter}</span>
+							</div>
 							{#each grid_columns as col}
-								<label class="flex cursor-pointer items-center gap-1.5 px-3 py-2 border-b border-border last:border-b-0">
-									<input type="checkbox" name="grid_columns" value="{= col.name }" {#if col.default_selected}checked{/if} />
-									<span>{= col.name }</span>
-								</label>
+								<div class="grid grid-cols-[minmax(0,1fr)_12ch_minmax(0,1fr)_auto] items-center gap-2 px-3 py-2 border-b border-border last:border-b-0">
+									<input type="hidden" name="grid_column_name" value="{= col.name }" />
+									<label class="flex cursor-pointer items-center gap-1.5">
+										<input type="checkbox" name="grid_columns" value="{= col.name }" {#if col.default_selected}checked{/if} />
+										<span>{= col.name }</span>
+									</label>
+									<input name="grid_column_width" value="{= col.width }" aria-label="{_ labels.width}: {= col.name }" />
+									<input name="grid_column_class" value="{= col.class_name }" aria-label="{_ labels.class}: {= col.name }" />
+									<input type="checkbox" name="grid_filter_columns" value="{= col.name }" aria-label="{_ labels.filter}: {= col.name }" {#if col.filter}checked{/if} />
+								</div>
 							{/each}
 						{/if}
 					</div>

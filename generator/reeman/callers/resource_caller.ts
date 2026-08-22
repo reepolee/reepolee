@@ -7,6 +7,7 @@ import { notify_server_reload } from "$lib/server_notify";
 
 import { generate_crud } from "../../crud/main";
 import { generate_schema } from "../../schema";
+import type { GridColumnDefinition } from "../../schema/types";
 
 export interface ResourceCallOptions {
 	prefix?: string;
@@ -21,6 +22,7 @@ export interface ResourceCallOptions {
 	template_tags?: "flat" | "tags";
 	/** Index-grid columns chosen interactively - see SchemaOptions.grid_columns. */
 	grid_columns?: string[];
+	grid_column_definitions?: GridColumnDefinition[];
 }
 
 /**
@@ -36,6 +38,7 @@ export async function run_full_pipeline(table: string, options: ResourceCallOpti
 		pagination_strategy: options.pagination_method,
 		route_name: options.route_name,
 		grid_columns: options.grid_columns,
+		grid_column_definitions: options.grid_column_definitions,
 	});
 
 	if (!schema_success) {

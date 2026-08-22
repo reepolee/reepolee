@@ -1,4 +1,5 @@
 import { db } from "$config/db";
+import type { Record as DbRouteRecord } from "./sql";
 
 // Add custom queries here. This file is never overwritten by the generator.
 
@@ -32,4 +33,9 @@ export async function refresh_db_routes(): Promise<void> {
 	for (const route of routes) {
 		await db`INSERT INTO db_routes (url, table_name, module, removable) VALUES (${route.url}, ${route.table}, ${route.prefix}, ${removable_urls.has(route.url) ? 1 : 0})`;
 	}
+}
+
+export async function get_route_record_by_url(url: string): Promise<DbRouteRecord | undefined> {
+	const records = await db`SELECT * FROM db_routes WHERE url = ${url} LIMIT 1`;
+	return records[0] as DbRouteRecord | undefined;
 }

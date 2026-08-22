@@ -6,7 +6,7 @@ import { render } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
 
 import { search_records } from "./sql";
-import { refresh_db_routes } from "./sql.custom";
+import { get_route_record_by_url, refresh_db_routes } from "./sql.custom";
 
 import { wants_json } from "$lib/wants_json";
 import { strip_api_sensitive } from "$config/api_blocklist";
@@ -17,6 +17,8 @@ import type { RouteDefinition } from "$lib/route_builder";
 
 import { post_bulk_refresh_routes, post_bulk_remove_route, post_simple_page, post_simple_route } from "../reeman/handlers";
 import { load_reeman_data } from "../reeman/page";
+import { load_route_settings, route_edit_path } from "./route_settings";
+import type { Record as DbRouteRecord } from "./sql";
 
 export const reeman_db_routes_crud = {
 	"/routes": { GET: get_db_routes_index },
@@ -26,6 +28,7 @@ export const reeman_db_routes_crud = {
 	// CLI flows. Static paths are matched before the "/routes/:id" param route.
 	"/routes/add-page": { GET: get_add_page_form, POST: post_simple_page },
 	"/routes/add-table-page": { GET: get_add_table_page_form, POST: post_simple_route },
+	"/routes/edit": { GET: get_db_route_edit },
 	"/routes/:id": { GET: get_db_route_detail },
 };
 
@@ -78,12 +81,16 @@ export async function get_db_routes_index(req: BunRequest): Promise<Response> {
 	const visible_column_entries = column_entries.filter(([key, value]: [string, any]) => value.grid !== false && (key !== "checkbox" || enable_archive));
 	const grid_widths = visible_column_entries.map(([, value]: [string, any]) => (typeof value === "string" ? value : value.width));
 	const grid_cols = `${grid_widths.join(" ")} ${grid_filler}`;
+	const records = result.records.map((record) => ({
+		...record,
+		edit_path: route_edit_path(record.url),
+	}));
 
 	return render("index", {
 		data: {
 			title: "Routes",
 			busy: reeman_data.busy,
-			records: result.records,
+			records,
 			query: query || "",
 			limit,
 			offset,
@@ -109,21 +116,41 @@ export async function get_db_routes_index(req: BunRequest): Promise<Response> {
 }
 
 export async function get_db_route_detail(req: BunRequest): Promise<Response> {
-	const ctx = await create_ctx(req, import.meta.dir);
 	const id = Number(req.params.id || 0);
 
-	const [reeman_data] = await Promise.all([load_reeman_data({ tables: false }), refresh_db_routes()]);
+	await refresh_db_routes();
 	const { get_record_by_id } = await import("./sql");
 	const record = await get_record_by_id(id);
+	return render_db_route_detail(req, record);
+}
+
+export async function get_db_route_edit(req: BunRequest): Promise<Response> {
+	const request_url = new URL(req.url);
+	const raw_route_url = request_url.searchParams.get("url");
+	const route_url = raw_route_url?.trim() ?? "";
+
+	await refresh_db_routes();
+	const record = route_url ? await get_route_record_by_url(route_url) : undefined;
+	return render_db_route_detail(req, record);
+}
+
+async function render_db_route_detail(req: BunRequest, record: DbRouteRecord | undefined): Promise<Response> {
+	const ctx = await create_ctx(req, import.meta.dir);
 
 	if (!record) {
 		return render("notfound", { data: { title: "404 Not Found" }, status: 404, ctx });
 	}
+	const [reeman_data, route_settings] = await Promise.all([
+		load_reeman_data({ tables: false }),
+		load_route_settings(record.url),
+	]);
 
 	return render("detail", {
 		data: {
 			busy: reeman_data.busy,
 			record,
+			route_settings,
+			route_detail_path: route_edit_path(record.url),
 		},
 		ctx,
 	});

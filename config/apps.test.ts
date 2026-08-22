@@ -3,8 +3,8 @@ import { describe, expect, test } from "bun:test";
 import { dev_app_links } from "./apps";
 
 describe("development app links", () => {
-	test("uses the three app defaults and marks the current app", () => {
-		const apps = dev_app_links("reeman", {});
+	test("uses main and reeman defaults and requires an explicit ReeQA port", () => {
+		const apps = dev_app_links("reeman", { REEQA_PORT: "2340" });
 
 		expect(apps.map((app) => app.url)).toEqual([
 			"http://localhost:2338/",
@@ -13,6 +13,12 @@ describe("development app links", () => {
 		]);
 		expect(apps.find((app) => app.name === "reeman")?.current).toBe(true);
 		expect(apps.find((app) => app.name === "main")?.module).toBeNull();
+	});
+
+	test("does not fall back when ReeQA port is missing or invalid", () => {
+		expect(() => dev_app_links("main", {})).toThrow("REEQA_PORT");
+		expect(() => dev_app_links("main", { REEQA_PORT: "N/A" })).toThrow("REEQA_PORT");
+		expect(() => dev_app_links("main", { REEQA_PORT: "65536" })).toThrow("REEQA_PORT");
 	});
 
 	test("uses configured ports while keeping development links on localhost", () => {

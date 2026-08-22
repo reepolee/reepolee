@@ -52,19 +52,15 @@ Each `.override.ts` file carries a hash of the original on its first line:
 // @release-sync-hash: d181dcfa
 ```
 
-`reelease` checks this hash before packing. If the original file has changed since the hash was recorded, the release fails with a message telling you which file is affected. The workflow is:
+The release packager checks this hash before packing. If the original file has changed since the hash was recorded, the release fails with a message telling you which file is affected. The workflow is:
 
 1. Edit the original `foo.ts` as needed.
 2. Update `foo.override.ts` to reflect any structural changes (new exports, removed exports).
-3. Update the hash by running:
+3. Use the current maintainer release tooling to update the hash and validate the package.
 
-```sh
-bun run release:update-hashes
-```
-
-The hash comment is stripped automatically before the override is packed, so it never appears in the distributed file.
-
-`bun run release:update-hashes` updates only hashes that differ from their paired source files. Review the override's content before reconciling it, because a new hash confirms that the override is intentionally compatible with the current source. Run `bun run release --dry-run` afterward to validate every override without creating a release.
+The hash comment is stripped automatically before the override is packed, so it never appears
+in the distributed file. This checkout does not provide release-update commands; do not invent
+or run an old command from documentation without maintainer direction.
 
 ## Security
 

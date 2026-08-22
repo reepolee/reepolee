@@ -24,6 +24,7 @@ export const ENV_VAR_DESCRIPTIONS: Record<string, string> = {
 	PORT: "Port the main app binds to. Defaults to 2338.",
 	TEST_PORT: "Overrides PORT under the --test flag (binds to 127.0.0.1 only). Falls back to PORT then 2338. \"N/A\" means no override.",
 	REEMAN_PORT: "Port for the reeman app (apps/reeman/server.ts), a second process serving the generator UI and sysadmin pages from this checkout. Defaults to 2339.",
+	REEQA_PORT: "Port for the ReeQA app (apps/reeqa/server.ts). Required; set an explicit valid TCP port.",
 	MAIN_APP_URL: "Base URL of the main app, used by the reeman process to reload the main app's translations across the two-app split.",
 	SERVER_NAME: "Hostname used when building self-referencing URLs (reload notifications, agent mode). Defaults to localhost.",
 

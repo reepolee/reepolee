@@ -8,6 +8,7 @@ import { join, relative } from "node:path";
 import { parseArgs } from "node:util";
 
 import { MAIN_APP } from "$config/paths";
+import type { GridColumnDefinition } from "../schema/types";
 
 import { sync_all_namespaces } from "../translate_namespace";
 import { run_full_pipeline } from "./callers/resource_caller";
@@ -29,6 +30,7 @@ export function parse_crud_flags(argv: string[]) {
 			"render-strategy": { type: "string" },
 			"template-tags": { type: "string" },
 			"grid-columns": { type: "string" },
+			"grid-column-definitions": { type: "string" },
 		},
 		allowPositionals: true,
 		strict: false,
@@ -48,6 +50,10 @@ export function parse_crud_flags(argv: string[]) {
 	const raw_grid_columns = values["grid-columns"];
 	const parsed_grid_columns = raw_grid_columns ? String(raw_grid_columns).split(",").map((c) => c.trim()).filter(Boolean) : [];
 	const grid_columns = parsed_grid_columns.length > 0 ? parsed_grid_columns : undefined;
+	const raw_grid_column_definitions = values["grid-column-definitions"];
+	const grid_column_definitions = raw_grid_column_definitions
+		? parse_grid_column_definitions(decodeURIComponent(String(raw_grid_column_definitions)))
+		: undefined;
 
 	return {
 		table: positionals[0] !== undefined ? String(positionals[0]) : undefined,
@@ -60,7 +66,33 @@ export function parse_crud_flags(argv: string[]) {
 		render_strategy,
 		template_tags,
 		grid_columns,
+		grid_column_definitions,
 	};
+}
+
+function parse_grid_column_definitions(raw: string): GridColumnDefinition[] {
+	const parsed: unknown = JSON.parse(raw);
+	if (!Array.isArray(parsed)) throw new Error("--grid-column-definitions must be a JSON array.");
+
+	const definitions: GridColumnDefinition[] = [];
+	const names = new Set<string>();
+	for (const item of parsed) {
+		if (typeof item !== "object" || item === null) throw new Error("Each grid column definition must be an object.");
+		const candidate = item as Record<string, unknown>;
+		if (typeof candidate.name !== "string" || !candidate.name.trim()) throw new Error("Each grid column definition requires a name.");
+		if (typeof candidate.width !== "string" || !candidate.width.trim()) throw new Error(`Grid column "${candidate.name}" requires a width.`);
+		if (typeof candidate.class_name !== "string") throw new Error(`Grid column "${candidate.name}" requires a class string.`);
+		if (typeof candidate.filter !== "boolean") throw new Error(`Grid column "${candidate.name}" requires a boolean filter value.`);
+		if (names.has(candidate.name)) throw new Error(`Duplicate grid column definition: ${candidate.name}.`);
+		names.add(candidate.name);
+		definitions.push({
+			name: candidate.name,
+			width: candidate.width,
+			class_name: candidate.class_name,
+			filter: candidate.filter,
+		});
+	}
+	return definitions;
 }
 
 // ---------------------------------------------------------------------------

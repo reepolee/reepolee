@@ -9,7 +9,7 @@
  * Usage:
  * bun scripts/smoke-integration.ts                   # default (port 2600)
  * TEST_PORT=3333 bun scripts/smoke-integration.ts    # custom port
- * bun scripts/smoke-integration.ts --agent            # enable agent mode (tests protected routes)
+ * bun scripts/smoke-integration.ts --agent            # currently unsupported: agent mode requires --dev
  *
  * This script is also available via:
  * bun run smoke:integration

@@ -120,7 +120,7 @@ const render_strategy: "stream" | "load" = "load";
 - `"load"` (default) - current synchronous behavior: render the full page after all DB queries complete, return one `Response`.
 - `"stream"` - declarative partial updates (DPU): render the page shell (layout, nav, controls) immediately as the first chunk of a `ReadableStream`, then stream record rows and pagination info as `<template for="...">` chunks after DB queries resolve.
 
-The generator branches on this value at codegen time, selecting either the normal GET handler template or the streaming handler template. No runtime branching. See `internals/adr/0001-declarative-partial-updates.md` for the full design.
+The generator branches on this value at codegen time, selecting either the normal GET handler template or the streaming handler template. No runtime branching. Inspect `generator/templates/index/` and `generator/crud/` for the implementation.
 
 ## Missing translation rendering
 
@@ -221,7 +221,7 @@ Generated CRUD index views support two pagination strategies, selectable per-rou
 
 ### Cursor
 
-Keyset pagination using the last-seen record's `id` and sort-field value as a cursor. URL params: `after`, `before`, `last`, `limit`, `order_by`, `query`, `scope`. SQL uses `WHERE (sort > val OR (sort = val AND id > id)) LIMIT N`. Center display shows `"{records.length} / {total}"`. No numbered page links - first/prev/next/last icon buttons. See [AGENTS.md](GENERATOR_INTERNALS.md#pagination-strategies) for cursor URL params and SQL strategies.
+Keyset pagination using the last-seen record's `id` and sort-field value as a cursor. URL params: `after`, `before`, `last`, `limit`, `order_by`, `query`, `scope`. SQL uses `WHERE (sort > val OR (sort = val AND id > id)) LIMIT N`. Center display shows `"{records.length} / {total}"`. No numbered page links - first/prev/next/last icon buttons. See [GENERATOR_INTERNALS.md](GENERATOR_INTERNALS.md#pagination-strategies) for cursor URL params and SQL strategies.
 
 ### Offset
 
@@ -383,7 +383,7 @@ MySQL generated columns (`VIRTUAL GENERATED` / `STORED GENERATED`) are detected 
 
 ## Fulltext search
 
-When a table has a `search_text` column, the CRUD generator produces fulltext search queries instead of `LIKE '%term%'`. This applies to both the WHERE clause and the COUNT query on search. See [AGENTS.md](GENERATOR_INTERNALS.md#fulltext-search) for the SQL patterns. Requires a MySQL FULLTEXT index.
+When a table has a `search_text` column, the CRUD generator produces fulltext search queries instead of `LIKE '%term%'`. This applies to both the WHERE clause and the COUNT query on search. See [GENERATOR_INTERNALS.md](GENERATOR_INTERNALS.md#fulltext-search) for the SQL patterns. Requires a MySQL FULLTEXT index.
 
 ## Sort options from indexed columns
 
@@ -703,7 +703,7 @@ can opt into failing instead via `set_locale_drift_mode("fail")`
 - **Two whole-app translation trees: `nav`, `nav_prefix_title`** - These keys live in namespace files but merge under `routes.nav.<namespace>` and `routes.nav_prefix_title.<namespace>`. `nav_label()` reads the merged whole-app dictionaries.
 - **`{_ path }` / `{- path }` / `{@ path }` tags** - Dedicated template tags for translation lookups, distinct from `{= }`/`{~ }`. `{_ }` HTML-escapes (the common case - translation strings are plain text); `{- }` does not (mirrors the `{~ }` unescaped convention, for the rare translation value that legitimately contains markup); `{@ }` renders the resolved value through markdown to HTML via `Bun.markdown.html()` (for a translation value authored as markdown source - headings, lists, `**bold**`, links). `path` is a restricted dotted property path only (e.g. `labels.text_input`) - no arbitrary JS, no function calls, no computed keys. Always resolves against `props.translations` (populated by `render()` from `ctx.translations` - see above) via a safe compile-time property walk - never eval-and-catch. On a missing key, or when `props.translations` is absent entirely (legitimate during active development - see "Translations are mandatory infrastructure" below), renders `{last_segment}` instead of throwing or silently rendering empty - same marker convention as `mark_missing_from()` (`{@ }` wraps that marker in a `<p>` per markdown rules). `{= }`/`{~ }` remain technically able to reach `props.translations` directly but this is discouraged by convention (documentation only, no lint enforcement) since it bypasses the missing-key marker. Fetch-only - does not interpolate placeholders like `{count}` into the resolved string; that stays the job of `plural()` / `format_bulk_delete_message()`, called against `ctx.translations.messages` in the route handler, same as today. Variable interpolation inside `{_ }`/`{- }`/`{@ }` is a deferred, separate future tag - not designed yet. Tokenizer: adds `_`, `-`, and `@` to the compiler's prefix character class (`lib/template/compiler.ts`, `[~=#:/_@-]`) - none of these characters collides with any existing `.ree` syntax (raw-JS `{{ }}` blocks, ReeTag hyphenated custom elements, HTML comments, or `{&:hover{...}}` CSS-nesting braces).
 - **Reeweb engine copy** - Reeweb runs a copy of this `.ree` template engine. Both products resolve UI translations from JSON-backed translation objects and use the same missing-key markers.
-- **Design rationale** - See `internals/adr/0001-translation-lookup-tags.md` for why `{_ }`/`{- }` were added instead of extending `{= }`/`{~ }`, and why the rejected prefix-matching approach doesn't work.
+- **Design rationale** - `{_ }` and `{- }` keep translation lookup distinct from direct value rendering (`{= }` and `{~ }`). Prefix matching is intentionally avoided because it cannot distinguish a missing key from a nested value without changing normal render semantics.
 - **Translations are mandatory infrastructure** - Every app uses co-located locale files for UI strings, including single-locale deployments. Multi-locale readiness remains the default posture from day one.
 
 ## Test Database

@@ -4,7 +4,7 @@ export type Dev_app_definition = {
 	name: Dev_app_name;
 	icon: "dashboard" | "settings" | "qa";
 	port_env: string;
-	default_port: number;
+	default_port?: number;
 	module: string | null;
 };
 
@@ -18,14 +18,17 @@ export type Dev_app_link = Dev_app_definition & {
 export const DEV_APP_DEFINITIONS: readonly Dev_app_definition[] = [
 	{ name: "main", icon: "dashboard", port_env: "PORT", default_port: 2338, module: null },
 	{ name: "reeman", icon: "settings", port_env: "REEMAN_PORT", default_port: 2339, module: "system" },
-	{ name: "reeqa", icon: "qa", port_env: "REEQA_PORT", default_port: 2340, module: "system" },
+	{ name: "reeqa", icon: "qa", port_env: "REEQA_PORT", module: "system" },
 ];
 
 type App_env = Record<string, string | undefined>;
 
 function app_port(definition: Dev_app_definition, env: App_env): number {
-	const configured_port = Number(env[definition.port_env]);
-	return Number.isInteger(configured_port) && configured_port > 0 ? configured_port : definition.default_port;
+	const raw_port = env[definition.port_env]?.trim();
+	const configured_port = Number(raw_port);
+	if (Number.isInteger(configured_port) && configured_port > 0 && configured_port <= 65_535) return configured_port;
+	if (definition.default_port !== undefined) return definition.default_port;
+	throw new Error(`Required environment variable ${definition.port_env} must be a valid TCP port`);
 }
 
 /** Build localhost links for the app switcher without coupling apps to one port. */

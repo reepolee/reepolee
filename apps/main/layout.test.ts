@@ -115,7 +115,7 @@ describe("layout presentation-boundary metadata", () => {
 					return "ok";
 				},
 			},
-			{ is_dev: true, dev_apps: dev_app_links("reeqa", {}) },
+			{ is_dev: true, dev_apps: dev_app_links("reeqa", { REEQA_PORT: "2340" }) },
 		);
 
 		const req = { url: "http://localhost/", headers: { get: () => null } } as any;
@@ -136,7 +136,7 @@ describe("layout presentation-boundary metadata", () => {
 			...render_data,
 			is_dev: true,
 			app_name: "main",
-			dev_apps: dev_app_links("main", {}),
+			dev_apps: dev_app_links("main", { REEQA_PORT: "2340" }),
 			user: { modules_tags: "system" },
 			translations: {
 				ui: { title: "Izdelki", app_switcher: "Apps", apps: { main: "Main", reeman: "Reeman", reeqa: "ReeQA" } },
@@ -170,7 +170,7 @@ describe("layout presentation-boundary metadata", () => {
 			...render_data,
 			is_dev: true,
 			app_name: "main",
-			dev_apps: dev_app_links("main", {}),
+			dev_apps: dev_app_links("main", { REEQA_PORT: "2340" }),
 			translations: {
 				ui: { title: "Izdelki", app_switcher: "Apps", apps: { main: "Main", reeman: "Reeman", reeqa: "ReeQA" } },
 				nav: {},

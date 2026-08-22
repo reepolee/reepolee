@@ -1,5 +1,10 @@
 import { notify_evidence_ready as broadcast_evidence_ready, notify_recording_ready as broadcast_recording_ready } from "$lib/livereload";
 
+function reeqa_port(): string | null {
+	const port = Bun.env.REEQA_PORT?.trim();
+	return port && port !== "N/A" ? port : null;
+}
+
 /**
  * Tell connected ReeQA browsers that an evidence video for a page finished
  * (or failed), so an open report page swaps its "recording" notice for the
@@ -15,7 +20,8 @@ export function notify_evidence_ready(run_id: string, page_id: string, video_pat
 	broadcast_evidence_ready(run_id, page_id, video_path, error);
 	// The worker and server are co-located, so localhost is the correct target
 	// (SERVER_NAME may be a public hostname that routes out and back).
-	const port = Bun.env.REEQA_PORT || "2340";
+	const port = reeqa_port();
+	if (!port) return;
 	const params = new URLSearchParams({ run_id, page_id });
 	if (video_path) params.set("video_path", video_path);
 	if (error) params.set("error", error);
@@ -33,7 +39,8 @@ export function notify_evidence_ready(run_id: string, page_id: string, video_pat
  */
 export function notify_recording_ready(run_id: string, page_id: string, recording_path?: string, error?: string): void {
 	broadcast_recording_ready(run_id, page_id, recording_path, error);
-	const port = Bun.env.REEQA_PORT || "2340";
+	const port = reeqa_port();
+	if (!port) return;
 	const params = new URLSearchParams({ run_id, page_id });
 	if (recording_path) params.set("recording_path", recording_path);
 	if (error) params.set("error", error);

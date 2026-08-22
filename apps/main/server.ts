@@ -3,8 +3,8 @@
  *
  * Architecture:
  *   ┌──────────────────────────────────────────────────┐
- *   │  bun --hot server.ts --dev          (dev)        │
- *   │  bun server.ts --prod               (prod)       │
+ *   │  bun --hot apps/main/server.ts --dev (dev)       │
+ *   │  bun apps/main/server.ts --prod      (prod)      │
  *   ├──────────────────────────────────────────────────┤
  *   │  Dev:  fetch() handler + global route table      │
  *   │        (--hot re-evaluates, no restart)          │

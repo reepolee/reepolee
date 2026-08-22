@@ -14,7 +14,7 @@ import {
 import { env_switch_on } from "$config/env_vars";
 import { canonical_sql_for_domain, generate_fields_object } from "./field_generator";
 import type { TypeMapper } from "./type_mapper";
-import type { FormFieldDef, SchemaObject } from "./types";
+import type { FormFieldDef, GridColumnDefinition, SchemaObject } from "./types";
 
 /**
  * Whether a table has an auto-increment integer primary key. Localization
@@ -174,6 +174,24 @@ function build_grid_field_sets(
 export interface GridColumnChoice {
 	name: string;
 	default_selected: boolean;
+	width: string;
+	class_name: string;
+	filter: boolean;
+}
+
+function column_class(field: FormFieldDef): string {
+	if (field.attributes?.initial_class) return field.attributes.initial_class;
+	const column_type = field.attributes?.column_type?.toLowerCase() || "";
+	const column_name = field.name || "";
+	if (column_type === CURRENCY_FIELD.toLowerCase() || column_type === PERCENT_FIELD.toLowerCase()) return "text-right";
+	if (BOOLEAN_PREFIXES.some((prefix) => column_name.startsWith(prefix))) return "text-center";
+	return "";
+}
+
+function capped_width(width: string): string {
+	const ch_match = width.match(/^(\d+)ch$/);
+	if (ch_match && Number(ch_match[1]) > 20) return COL_WIDTH_AUTO;
+	return width;
 }
 
 /**
@@ -207,7 +225,13 @@ export function list_grid_column_choices(
 		default_names.add(field.name);
 	}
 
-	return eligible.map((f) => ({ name: f.name, default_selected: default_names.has(f.name) }));
+	return eligible.map((field) => ({
+		name: field.name,
+		default_selected: default_names.has(field.name),
+		width: capped_width(field.attributes?.initial_width || COL_WIDTH_AUTO),
+		class_name: column_class(field),
+		filter: field.attributes?.filter === true,
+	}));
 }
 
 /**
@@ -222,6 +246,7 @@ function build_column_lines(
 	all_tables_indexes: Map<string, Set<string>> | undefined,
 	localize_content: boolean,
 	grid_columns?: string[],
+	grid_column_definitions?: GridColumnDefinition[],
 ): ColumnLine[] {
 	const { source_fields, source_commented, base_table_field_names, has_display_field_for_fk } = build_grid_field_sets(
 		schema_obj,
@@ -238,16 +263,6 @@ function build_column_lines(
 		);
 	}
 
-	// Column class based on field type - matches compute_initial_class logic.
-	function column_class(f: FormFieldDef): string {
-		if (f.attributes?.initial_class) return f.attributes.initial_class;
-		const ctype = f.attributes?.column_type?.toLowerCase() || "";
-		const cname = f.name || "";
-		if (ctype === CURRENCY_FIELD.toLowerCase() || ctype === PERCENT_FIELD.toLowerCase()) return "text-right";
-		if (BOOLEAN_PREFIXES.some((p) => cname.startsWith(p))) return "text-center";
-		return "";
-	}
-
 	// Build a concise mismatch comment naming the actual vs. canonical SQL type.
 	function domain_mismatch_comment(f: FormFieldDef, domain: string | undefined, compliant: boolean | undefined): string {
 		if (!domain || compliant) return "";
@@ -256,19 +271,13 @@ function build_column_lines(
 		return ` // ⚠ ${domain} expects ${canonical}, got ${actual}`;
 	}
 
-	// Index grids shouldn't default to very long text columns - anything wider than
-	// 20ch collapses to "auto" instead.
-	function capped_width(width: string): string {
-		const ch_match = width.match(/^(\d+)ch$/);
-		if (ch_match && Number(ch_match[1]) > 20) return COL_WIDTH_AUTO;
-		return width;
-	}
-
 	// Which columns the index grid shows. checkbox/id are excluded from the decision
 	// (almost always present), and fields already hidden for another reason (FK _id
 	// with a display sibling) don't count either since they're not contributing
 	// visible width.
 	const eligible_for_cap = source_fields.filter((f) => f.name !== "id" && f.name !== "checkbox" && !has_display_field_for_fk(f));
+	const definition_entries = grid_column_definitions?.map((definition) => [definition.name, definition] as const) ?? [];
+	const definitions_by_name = new Map(definition_entries);
 
 	// An explicit selection is the source of truth - everything outside it gets
 	// grid: false, with no count limit. Selecting every eligible column is how
@@ -296,8 +305,9 @@ function build_column_lines(
 	}
 
 	function format_line(f: FormFieldDef, commented: boolean): string {
-		const width = capped_width(f.attributes?.initial_width || COL_WIDTH_AUTO);
-		const cls = column_class(f);
+		const definition = definitions_by_name.get(f.name);
+		const width = definition?.width ?? capped_width(f.attributes?.initial_width || COL_WIDTH_AUTO);
+		const cls = definition?.class_name ?? column_class(f);
 		const domain = f.attributes?.domain_type;
 		const compliant = f.attributes?.domain_compliant;
 		const domain_prop = domain ? `, domain: "${domain}"` : "";
@@ -305,7 +315,7 @@ function build_column_lines(
 		// Auto-detect FK _id fields with a corresponding display field in the view.
 		// Hide them from the grid (grid: false) but keep them filterable (filter: true).
 		const is_auto_hidden_fk = has_display_field_for_fk(f);
-		const filter_val = is_auto_hidden_fk || f.attributes?.filter;
+		const filter_val = definition?.filter ?? (is_auto_hidden_fk || f.attributes?.filter);
 		const filter_prop = filter_val ? ", filter: true" : "";
 		// Commented (CU) entries never carry the cap-based hide - they are already hidden.
 		const grid_prop = is_auto_hidden_fk || (!commented && hidden_by_cap.has(f.name)) ? ", grid: false" : "";
@@ -313,7 +323,9 @@ function build_column_lines(
 
 		const mismatch_comment = domain_mismatch_comment(f, domain, compliant);
 		const prefix = commented ? "  // " : "  ";
-		return `${prefix}"${f.name}": { width: "${width}", class: "${cls}"${domain_prop}${filter_prop}${grid_prop}${localized_prop} },${mismatch_comment}`;
+		const width_value = JSON.stringify(width);
+		const class_value = JSON.stringify(cls);
+		return `${prefix}"${f.name}": { width: ${width_value}, class: ${class_value}${domain_prop}${filter_prop}${grid_prop}${localized_prop} },${mismatch_comment}`;
 	}
 
 	const lines: ColumnLine[] = [];
@@ -344,6 +356,8 @@ export interface WriteTableConfig {
 	 * with `grid: false`. Omit to apply the default cap of DEFAULT_GRID_COLUMN_CAP.
 	 */
 	grid_columns?: string[];
+	/** Per-column width, class and filter values supplied by the CRUD creation UI. */
+	grid_column_definitions?: GridColumnDefinition[];
 	/**
 	 * Override for whether string columns are scaffolded with `localized: true`.
 	 * Omit to fall back to `Bun.env.LOCALIZE_CONTENT` (the project-wide default
@@ -355,12 +369,12 @@ export interface WriteTableConfig {
 }
 
 export async function write_table_file(config: WriteTableConfig): Promise<void> {
-	const { dir, schema_obj, type_mapper, all_tables_columns, all_tables_indexes, all_schemas, pagination_strategy = "offset", render_strategy = "load", template_tags = "flat", grid_columns, localize_content: localize_content_override } = config;
+	const { dir, schema_obj, type_mapper, all_tables_columns, all_tables_indexes, all_schemas, pagination_strategy = "offset", render_strategy = "load", template_tags = "flat", grid_columns, grid_column_definitions, localize_content: localize_content_override } = config;
 	const table_ts_path = `${dir}/schema/table.ts`;
 	const exists = await Bun.file(table_ts_path).exists();
-	// An existing table.ts holds hand-tuned widths, classes and grid flags, so it is
-	// never rewritten wholesale. New DB columns are merged into its `columns` map
-	// instead, and everything already there is left byte-for-byte alone.
+	// An existing table.ts is never rewritten wholesale. New DB columns are merged
+	// into its `columns` map, and explicit editor values update only their matching
+	// settings.
 	if (exists) {
 		await merge_columns_into_table_file(table_ts_path, config);
 		return;
@@ -372,7 +386,7 @@ export async function write_table_file(config: WriteTableConfig): Promise<void> 
 	const localize_content = localize_content_override !== undefined
 		? localize_content_override && is_auto_increment_pk
 		: env_switch_on("LOCALIZE_CONTENT") && is_auto_increment_pk;
-	const column_lines = build_column_lines(schema_obj, type_mapper, all_tables_columns, all_tables_indexes, localize_content, grid_columns);
+	const column_lines = build_column_lines(schema_obj, type_mapper, all_tables_columns, all_tables_indexes, localize_content, grid_columns, grid_column_definitions);
 
 	// Build columns as a string so we can include commented-out entries
 	const columns_lines: string[] = ["{"];
@@ -562,25 +576,98 @@ function set_grid_flag_on_line(line: string, hidden: boolean): string {
 	const has_grid_false = /,\s*grid:\s*false/.test(line);
 	if (hidden === has_grid_false) return line;
 	if (hidden) {
-		// Insert right after the class property, matching format_line()'s own
-		// property order (width, class, domain, filter, grid, localized).
-		return line.replace(/(class:\s*"[^"]*")/, "$1, grid: false");
+		const localized_index = line.indexOf(", localized:");
+		const insert_index = localized_index >= 0 ? localized_index : line.lastIndexOf("}");
+		if (insert_index < 0) return line;
+		return `${line.slice(0, insert_index)}, grid: false${line.slice(insert_index)}`;
 	}
 	return line.replace(/,\s*grid:\s*false/, "");
 }
 
+function set_string_property_on_line(line: string, property: "width" | "class", value: string): string {
+	const property_pattern = new RegExp(`${property}:\\s*"(?:\\\\.|[^"\\\\])*"`);
+	return line.replace(property_pattern, `${property}: ${JSON.stringify(value)}`);
+}
+
+function set_true_flag_on_line(line: string, property: "filter", enabled: boolean): string {
+	const property_pattern = new RegExp(`,\\s*${property}:\\s*true`);
+	if (!enabled) return line.replace(property_pattern, "");
+	if (property_pattern.test(line)) return line;
+	const grid_index = line.indexOf(", grid:");
+	const localized_index = line.indexOf(", localized:");
+	const later_property_indexes = [grid_index, localized_index];
+	const valid_later_property_indexes = later_property_indexes.filter((index) => index >= 0);
+	valid_later_property_indexes.sort((a, b) => a - b);
+	const first_later_property = valid_later_property_indexes[0];
+	const insert_index = first_later_property ?? line.lastIndexOf("}");
+	if (insert_index < 0) return line;
+	const before_close = line.slice(0, insert_index);
+	const trimmed_before_close = before_close.trimEnd();
+	const suffix = line.slice(insert_index);
+	const separator = suffix.startsWith(",") ? "" : " ";
+	return `${trimmed_before_close}, ${property}: true${separator}${suffix}`;
+}
+
+export interface TableFileSettings {
+	pagination_strategy?: "cursor" | "offset";
+	render_strategy?: "stream" | "load";
+	template_tags?: "flat" | "tags";
+	grid_columns?: string[];
+	grid_column_definitions?: GridColumnDefinition[];
+}
+
+function apply_grid_settings(source: string, settings: TableFileSettings): { source: string; updated_names: string[]; } {
+	if (!settings.grid_column_definitions) return { source, updated_names: [] };
+
+	const selected = settings.grid_columns === undefined ? null : new Set(settings.grid_columns);
+	let working_source = source;
+	const updated_names: string[] = [];
+	for (const definition of settings.grid_column_definitions) {
+		const escaped_name = definition.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const line_pattern = new RegExp(`^([ \\t]*)"${escaped_name}":\\s*\\{[^}]*\\},?.*$`, "m");
+		const match = working_source.match(line_pattern);
+		if (!match) continue;
+
+		let updated = match[0]!;
+		updated = set_string_property_on_line(updated, "width", definition.width);
+		updated = set_string_property_on_line(updated, "class", definition.class_name);
+		updated = set_true_flag_on_line(updated, "filter", definition.filter);
+		if (selected) updated = set_grid_flag_on_line(updated, !selected.has(definition.name));
+		if (updated === match[0]) continue;
+		working_source = working_source.replace(match[0]!, updated);
+		updated_names.push(definition.name);
+	}
+	return { source: working_source, updated_names };
+}
+
+function set_schema_setting(source: string, setting: "pagination_strategy" | "render_strategy" | "template_tags", value: string): string {
+	const setting_pattern = new RegExp(`(const ${setting}:[^=]+?=\\s*)"[^"]+"`);
+	return source.replace(setting_pattern, `$1${JSON.stringify(value)}`);
+}
+
+function apply_table_file_settings(source: string, settings: TableFileSettings): { source: string; updated_names: string[]; } {
+	const grid_result = apply_grid_settings(source, settings);
+	let working_source = grid_result.source;
+	if (settings.pagination_strategy) working_source = set_schema_setting(working_source, "pagination_strategy", settings.pagination_strategy);
+	if (settings.render_strategy) working_source = set_schema_setting(working_source, "render_strategy", settings.render_strategy);
+	if (settings.template_tags) working_source = set_schema_setting(working_source, "template_tags", settings.template_tags);
+	return { source: working_source, updated_names: grid_result.updated_names };
+}
+
+export async function update_table_file_settings(table_ts_path: string, settings: TableFileSettings): Promise<void> {
+	const source = await Bun.file(table_ts_path).text();
+	const result = apply_table_file_settings(source, settings);
+	if (result.source !== source) await Bun.write(table_ts_path, result.source);
+}
+
 /**
  * Append `columns` entries for DB columns that appeared since table.ts was
- * scaffolded, and - only when the caller passed an explicit `grid_columns`
- * selection - update the `grid: false` flag on already-present entries to
- * match it. Every other hand-tuned property (width, class, domain, filter,
- * localized, comments) on existing entries is left untouched; visibility is
- * the one property a fresh explicit selection is meant to override, since
- * the "Index columns" picker always presents itself as the current choice,
- * not an additive one.
+ * scaffolded. Explicit settings from the index-column editor update width,
+ * class, filter and visibility on existing entries while leaving domain,
+ * localized and comments untouched.
  */
 async function merge_columns_into_table_file(table_ts_path: string, config: WriteTableConfig): Promise<void> {
-	const { schema_obj, type_mapper, all_tables_columns, all_tables_indexes, grid_columns, localize_content: localize_content_override } = config;
+	const { schema_obj, type_mapper, all_tables_columns, all_tables_indexes, grid_columns, grid_column_definitions, localize_content: localize_content_override } = config;
 	let source = await Bun.file(table_ts_path).text();
 
 	// Inject the global_scopes declaration into table.ts files scaffolded before
@@ -609,13 +696,14 @@ async function merge_columns_into_table_file(table_ts_path: string, config: Writ
 	const localize_content = localize_content_override !== undefined
 		? localize_content_override && is_auto_increment_pk
 		: env_switch_on("LOCALIZE_CONTENT") && is_auto_increment_pk;
-	const all_lines = build_column_lines(schema_obj, type_mapper, all_tables_columns, all_tables_indexes, localize_content, grid_columns);
+	const all_lines = build_column_lines(schema_obj, type_mapper, all_tables_columns, all_tables_indexes, localize_content, grid_columns, grid_column_definitions);
 	const new_lines = all_lines.filter((entry) => !present.has(entry.name));
 
-	let working_source = source;
-	const retargeted_names: string[] = [];
+	const settings_result = apply_table_file_settings(source, config);
+	let working_source = settings_result.source;
+	const retargeted_names = settings_result.updated_names;
 
-	if (grid_columns) {
+	if (grid_columns !== undefined && !grid_column_definitions) {
 		const selected = new Set(grid_columns);
 		const existing_lines = all_lines.filter((entry) => present.has(entry.name) && !entry.commented);
 		for (const entry of existing_lines) {
@@ -630,10 +718,10 @@ async function merge_columns_into_table_file(table_ts_path: string, config: Writ
 		}
 	}
 
-	if (retargeted_names.length > 0) { console.log(`  ${Bun.color("green", "ansi")}Updated index-grid visibility for ${retargeted_names.length} existing column(s): ${retargeted_names.join(", ")}`); }
+	if (retargeted_names.length > 0) { console.log(`  ${Bun.color("green", "ansi")}Updated index-grid settings for ${retargeted_names.length} existing column(s): ${retargeted_names.join(", ")}`); }
 
 	if (new_lines.length === 0) {
-		if (retargeted_names.length > 0) await Bun.write(table_ts_path, working_source);
+		if (working_source !== source) await Bun.write(table_ts_path, working_source);
 		return;
 	}
 

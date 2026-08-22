@@ -52,6 +52,14 @@ const is_dev = Bun.argv.includes("--dev");
 const is_agent = Bun.argv.includes("--agent");
 const is_prod = Bun.argv.includes("--prod");
 
+function require_reeqa_port(): number {
+	const raw_port = Bun.env.REEQA_PORT?.trim();
+	const port = Number(raw_port);
+	if (Number.isInteger(port) && port > 0 && port <= 65_535) return port;
+	console.error("REEQA_PORT must be set to a valid TCP port.");
+	process.exit(1);
+}
+
 if (is_dev && is_prod) {
 	console.error("ReeQA cannot start with both --dev and --prod.");
 	process.exit(1);
@@ -67,7 +75,7 @@ if (is_agent && !env_available("AGENT_REEQA_SERVER_PORT")) {
 	process.exit(1);
 }
 
-const reeqa_port = Number(Bun.env.REEQA_PORT) || 2340;
+const reeqa_port = require_reeqa_port();
 const server_port = is_agent ? Number(Bun.env.AGENT_REEQA_SERVER_PORT) : reeqa_port;
 const reeqa_pid_file = ".reepolee/server-reeqa.pid";
 const fallback_opts = { is_dev, static_dirs };

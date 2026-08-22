@@ -12,6 +12,7 @@ describe("get_filter_definitions", () => {
 		modules_tags: { width: "20ch", class: "", filter: true },
 		vat_number: { width: "20ch", class: "", filter: true, domain: "number" },
 		not_filterable: { width: "auto", class: "" },
+		developer_id: { width: "10ch", class: "", grid: false },
 	};
 
 	const base_fields: Record<string, FormFieldDef> = {
@@ -57,6 +58,13 @@ describe("get_filter_definitions", () => {
 			is_nullable: true,
 			attributes: {},
 		},
+		developer_id: {
+			name: "developer_id",
+			type: "foreign_key",
+			required: false,
+			is_nullable: true,
+			attributes: { foreign_key: { table: "developers", column: "id" } },
+		},
 	};
 
 	test("identifies FK filter columns", () => {
@@ -100,6 +108,12 @@ describe("get_filter_definitions", () => {
 		const defs = get_filter_definitions(base_columns, base_fields);
 		const nf = defs.find((d) => d.key === "not_filterable");
 		expect(nf).toBeUndefined();
+	});
+
+	test("excludes hidden FK columns without filter: true", () => {
+		const defs = get_filter_definitions(base_columns, base_fields);
+		const developer = defs.find((definition) => definition.key === "developer_id");
+		expect(developer).toBeUndefined();
 	});
 });
 

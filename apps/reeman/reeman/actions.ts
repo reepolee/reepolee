@@ -14,6 +14,7 @@ import { clear_busy, get_busy, GLOBAL_BUSY_KEY, set_busy, type BusyEntry } from 
 import { record_run, update_run } from "./lib/state";
 
 import type { OrderByItem, WhereItem } from "$generator/reeman/types";
+import type { GridColumnDefinition } from "$generator/schema/types";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -114,7 +115,7 @@ function pick<T extends string>(value: string | undefined, allowed: readonly T[]
 // Actions
 // ---------------------------------------------------------------------------
 
-export async function action_crud(params: { table: string; force?: boolean; translate?: boolean; prefix?: string; route_name?: string; pagination?: string; render_strategy?: string; template_tags?: string; grid_columns?: string[]; }): Promise<ActionResult> {
+export async function action_crud(params: { table: string; force?: boolean; translate?: boolean; prefix?: string; route_name?: string; pagination?: string; render_strategy?: string; template_tags?: string; grid_columns?: string[]; grid_column_definitions?: GridColumnDefinition[]; }): Promise<ActionResult> {
 	return run_captured_action("crud", params.table, async () => {
 		await refresh_ddl_cache();
 		const { run_full_pipeline } = await import("$generator/reeman/callers/resource_caller");
@@ -128,8 +129,9 @@ export async function action_crud(params: { table: string; force?: boolean; tran
 			pagination_method: pick(params.pagination, ["cursor", "offset"]),
 			render_strategy: pick(params.render_strategy, ["stream", "load"]),
 			template_tags: pick(params.template_tags, ["flat", "tags"]),
-			// Selected index-grid columns; empty means "generator defaults" (same as the CLI).
-			grid_columns: params.grid_columns?.length ? params.grid_columns : undefined,
+			// An explicit empty list means every editable index-grid column is hidden.
+			grid_columns: params.grid_columns,
+			grid_column_definitions: params.grid_column_definitions,
 		});
 	}, params.table);
 }
@@ -402,13 +404,20 @@ export async function action_bulk_remove_route(params: { urls: string[]; delete_
 	});
 }
 
-export async function action_bulk_refresh_routes(params: { urls: string[]; mode: "fields" | "full"; template_tags?: string; }): Promise<ActionResult> {
+export async function action_bulk_refresh_routes(params: { urls: string[]; mode: "fields" | "full"; template_tags?: string; pagination?: string; render_strategy?: string; grid_columns?: string[]; grid_column_definitions?: GridColumnDefinition[]; }): Promise<ActionResult> {
 	const target = params.urls.join(", ");
 	return run_captured_action("bulk-refresh-routes", target, async () => {
 		const { discover_routes_with_schema } = await import("$generator/reeman/utils/route_scan");
 		const { refresh_crud_fields_only, refresh_crud_for_table } = await import("$generator/reeman/refresh_crud");
 		const routes = discover_routes_with_schema();
 		const template_tags = pick(params.template_tags, ["flat", "tags"]);
+		const is_single_route = params.urls.length === 1;
+		const refresh_options = is_single_route ? {
+			pagination_strategy: pick(params.pagination, ["cursor", "offset"]),
+			render_strategy: pick(params.render_strategy, ["stream", "load"]),
+			grid_columns: params.grid_columns,
+			grid_column_definitions: params.grid_column_definitions,
+		} : undefined;
 		let fail = 0;
 		for (const url of params.urls) {
 			const route = routes.find((r) => r.url === url);
@@ -419,8 +428,8 @@ export async function action_bulk_refresh_routes(params: { urls: string[]; mode:
 				continue;
 			}
 			const ok = params.mode === "fields"
-				? await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name, false, template_tags)
-				: await refresh_crud_for_table(route.table, route.prefix, route.parent, route.route_name, false, template_tags);
+				? await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name, false, template_tags, refresh_options)
+				: await refresh_crud_for_table(route.table, route.prefix, route.parent, route.route_name, false, template_tags, refresh_options);
 			if (!ok) fail++;
 		}
 		return fail === 0;
@@ -457,7 +466,7 @@ export async function action_reload_routes(): Promise<ActionResult> {
 /** Spawn `bun run reeman crud <table>` with the given flags. Caller has already reserved `table`'s busy key and created the pending run record. */
 async function spawn_one(
 	table: string,
-	opts: { force?: boolean; translate?: boolean; prefix?: string; route_name?: string; pagination?: string; render_strategy?: string; template_tags?: string; grid_columns?: string[]; },
+	opts: { force?: boolean; translate?: boolean; prefix?: string; route_name?: string; pagination?: string; render_strategy?: string; template_tags?: string; grid_columns?: string[]; grid_column_definitions?: GridColumnDefinition[]; },
 	run_id: string,
 	action: "crud" | "bulk",
 ): Promise<void> {
@@ -470,6 +479,12 @@ async function spawn_one(
 	if (opts.render_strategy) args.push("--render-strategy", opts.render_strategy);
 	if (opts.template_tags) args.push("--template-tags", opts.template_tags);
 	if (opts.grid_columns && opts.grid_columns.length > 0) args.push("--grid-columns", opts.grid_columns.join(","));
+	if (opts.grid_column_definitions) {
+		const definitions_json = JSON.stringify(opts.grid_column_definitions);
+		const encoded_definitions = encodeURIComponent(definitions_json);
+		const shell_safe_definitions = encoded_definitions.replaceAll("'", "%27");
+		args.push("--grid-column-definitions", shell_safe_definitions);
+	}
 
 	let proc: ReturnType<typeof Bun.spawn>;
 	try {
@@ -516,7 +531,7 @@ async function spawn_one(
 }
 
 /** Spawn a single table CRUD generation as a subprocess. Returns false (no-op) if `table` is already busy. */
-export async function spawn_crud_action(table: string, opts: { force?: boolean; translate?: boolean; prefix?: string; route_name?: string; pagination?: string; render_strategy?: string; template_tags?: string; grid_columns?: string[]; }): Promise<boolean> {
+export async function spawn_crud_action(table: string, opts: { force?: boolean; translate?: boolean; prefix?: string; route_name?: string; pagination?: string; render_strategy?: string; template_tags?: string; grid_columns?: string[]; grid_column_definitions?: GridColumnDefinition[]; }): Promise<boolean> {
 	const acquired = await set_busy(table, { action: "crud", target: table });
 	if (!acquired) return false;
 	const run_id = await record_run({ action: "crud", target: table, ok: true, output: "Generation started in background." });

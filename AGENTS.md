@@ -65,7 +65,7 @@ Co-located `{locale}.json` files are the source of truth for UI translations.
 
 - Put each namespace beside its route directory, for example `platform/auth/login/en-us.json`.
 - Root fallback strings live in repository-root `{locale}.json` files.
-- Edit through the JSON file, `bun reeman sync-translations`, MCP, the inspector, or the `/system/translations` admin UI.
+- Edit through the JSON file, `bun reeman sync-translations`, MCP, the inspector, or the `/translations` admin UI in Reeman.
 - Keep files sorted, tab-indented, and terminated by a newline. The file helpers enforce this for generated edits.
 - Co-located `{locale}.json` files are the only runtime translation artifact; no merged runtime file is emitted.
 - Versioned `locales-archive/{locale}.json` bundles are transport and inactive-locale archive artifacts. They combine all namespaces under repository-relative `en-us.json` path keys, but do not replace co-located runtime files.
@@ -88,10 +88,32 @@ Full merge model, root fallback, and the prune tool: [internals/CONTEXT.md](inte
 | MCP server         | `bun run mcp`                                        |
 | Clone test DB      | `bun run db:clone-test`                              |
 | Run dev SQL        | `bun run sql` (read-only by default; `--allow-changes` for writes) |
+| Check docs links   | `bun run docs:check`                                 |
 | Sync translations  | `bun reeman sync-translations`                       |
 | Prerequisites      | `bun run get:pre`                                    |
 
 See [README.md](README.md) for setup, the full command list, and generator usage.
+
+## Documentation ownership
+
+Keep one canonical owner for each operational fact. Do not duplicate command behavior,
+environment-variable semantics, or security rules across guides.
+
+| Topic | Canonical owner |
+| --- | --- |
+| Installation and first-run setup | `README.md` |
+| Agent workflow, ports, identity, and safety | `internals/AGENT_MODE.md` |
+| Test commands and test patterns | `internals/TESTING.md` |
+| MCP capabilities and opt-in mutations | `internals/MCP_SERVER.md` |
+| Runtime operations and deployment concerns | `internals/RUNTIME.md` |
+| Generator lifecycle and generated-code boundaries | `internals/GENERATOR_INTERNALS.md` and `internals/DEVELOPMENT_GUIDE.md` |
+| Environment variable behavior | `config/env_var_descriptions.ts` |
+| Package commands | `package.json` |
+
+Other documents should link to the canonical owner and provide only the context needed for
+that document's audience. Use `bun run docs:check` after documentation edits. Code comments
+should explain local rationale, invariants, or non-obvious constraints; do not copy a workflow
+manual into comments.
 
 ## Where to look (documentation map)
 

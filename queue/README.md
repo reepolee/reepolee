@@ -336,7 +336,7 @@ jobs pending forever with no error anywhere.
 ```
 
 `scripts/dev_run.ts` is a small Bun-native orchestrator: it always builds CSS
-and starts `bun --hot server.ts --dev`. The queue worker is **opt-in** - it
+and starts `bun --hot apps/main/server.ts --dev`. The queue worker is **opt-in** - it
 runs only when `--worker` is passed (`dev:worker`, `dev:all`, or a bare
 `--worker`), so `dev` runs the app alone. Output from each child is streamed
 with a `[dev]`/`[wk]` prefix, and SIGINT/SIGTERM are forwarded to the children -

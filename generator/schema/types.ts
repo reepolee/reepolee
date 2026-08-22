@@ -102,3 +102,10 @@ export interface FormFieldDef {
 	max?: string | number;
 	attributes?: ColumnAttributes;
 }
+
+export interface GridColumnDefinition {
+	name: string;
+	width: string;
+	class_name: string;
+	filter: boolean;
+}

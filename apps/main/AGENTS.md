@@ -4,9 +4,9 @@
 > `.ree` templates before changing anything.
 >
 > **Most route folders under here are GENERATED.** Within the Reepolee source repository,
-> generated CRUD output is maintained through [generator/](../generator/AGENTS.md) and
+> generated CRUD output is maintained through [generator/](../../generator/AGENTS.md) and
 > regeneration. Hand-written system routes (under `system/`) are the exception. See
-> [internals/AGENT_CRUD_WORKFLOW.md](../internals/AGENT_CRUD_WORKFLOW.md) before editing CRUD code.
+> [internals/AGENT_CRUD_WORKFLOW.md](../../internals/AGENT_CRUD_WORKFLOW.md) before editing CRUD code.
 
 ## How routing works
 
@@ -19,7 +19,7 @@
 - For a `crud` entry, `build_routes()` derives the mount prefix from `url` and applies `mount_prefix()`.
 - Return HTML via `render("template", { data, ctx })` from `$lib/render`; `ctx` comes from `create_ctx(req, import.meta.dir)`. Helpers are auto-injected.
 - Multi-file modules (auth, email) stay as barrel-exported objects - don't decompose them into individual flat-array entries.
-- Path/slash and nav-key rules: see the Path/Slash convention in the root [AGENTS.md](../AGENTS.md).
+- Path/slash and nav-key rules: see the Path/Slash convention in the root [AGENTS.md](../../AGENTS.md).
 
 ## Layout
 
@@ -58,11 +58,11 @@ apps/main/<table>/
 └-- index.ree                # list/index page
 ```
 
-- `route_param` (in `schema/table.ts`) selects the column used for URL routing (default `"id"`). See [README.md](../README.md) "route_param".
-- Translations are co-located `{locale}.json` files. Edit the files directly or use `/system/translations`. See the root [AGENTS.md](../AGENTS.md) translation policy.
+- `route_param` (in `schema/table.ts`) selects the column used for URL routing (default `"id"`). See [README.md](../../README.md) "route_param".
+- Translations are co-located `{locale}.json` files. Edit the files directly or use `/translations` in Reeman. See the root [AGENTS.md](../../AGENTS.md) translation policy.
 
 ## Templates & components
 
-`.ree` templates use the engine documented in [internals/REE_TEMPLATES.md](../internals/REE_TEMPLATES.md).
-Reusable components (form inputs, dialogs, filters) live in [components/](../components/) and
+`.ree` templates use the engine documented in [internals/REE_TEMPLATES.md](../../internals/REE_TEMPLATES.md).
+Reusable components (form inputs, dialogs, filters) live in [components/](../../components/) and
 are invoked as ReeTags (e.g. `<input-text>`, `<confirm-dialog>`, `<ree-filters>`).

@@ -94,8 +94,7 @@ export function get_filter_definitions(columns: Record<string, { width?: string;
 	const defs: FilterDef[] = [];
 
 	for (const [col_name, col_meta] of Object.entries(columns)) {
-		// Include in filter defs if explicitly filterable OR hidden from grid (grid: false)
-		if (!col_meta.filter && col_meta.grid !== false) continue;
+		if (col_meta.filter !== true) continue;
 
 		const field = fields[col_name];
 		if (!field) continue;

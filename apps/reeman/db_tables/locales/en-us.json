@@ -42,8 +42,10 @@
 		"route_name": "Optional URL name that replaces the table name (e.g. my-users)"
 	},
 	"labels": {
+		"class": "Class",
 		"column_count": "Column Count",
 		"display": "Display",
+		"filter": "Filter",
 		"fk_count": "Fk Count",
 		"has_crud": "Has Crud",
 		"index_columns": "Index columns",
@@ -55,7 +57,8 @@
 		"route_name": "Route name (optional)",
 		"row_count": "Row count",
 		"table": "Table / Route",
-		"template_tags": "Template tags"
+		"template_tags": "Template tags",
+		"width": "Width"
 	},
 	"messages": {
 		"bulk_delete_failed": "Bulk delete failed.",

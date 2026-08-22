@@ -15,6 +15,7 @@ import { determine_search_field, extract_foreign_keys, generate_sort_options, lo
 import type { ScopeSeed } from "./archive_scopes";
 import type { ColumnDef, FieldDef, ForeignKeyMap, LocalizedFieldMeta, ParentInfo } from "./types";
 import { MAIN_APP, MAIN_APP_POSIX } from "$config/paths";
+import { load_table_module_fresh } from "$generator/schema/table_module_loader";
 
 export interface TableMeta {
 	table_name: string;
@@ -113,7 +114,7 @@ export async function load_table_schema(table_name: string, options: {
 	log_step(`Importing table module: ${table_module_path}`);
 	let table_module: any;
 	try {
-		table_module = await import(`file://${table_module_path}`);
+		table_module = await load_table_module_fresh<any>(table_module_path);
 	} catch {
 		let hint = `Run 'bun reeman crud ${table_name}' to generate the schema first.`;
 		try {
@@ -161,7 +162,7 @@ export async function load_table_schema(table_name: string, options: {
 	let indexed_columns: string[] | undefined = table_module.indexed_columns;
 	try {
 		const gen_path = table_module_path.replace(/\.ts$/, ".generated.ts");
-		const gen_module = await import(`file://${gen_path}`);
+		const gen_module = await load_table_module_fresh<any>(gen_path);
 		generated_fields = gen_module.fields || null;
 		if (!indexed_columns) indexed_columns = gen_module.indexed_columns || undefined;
 	} catch {

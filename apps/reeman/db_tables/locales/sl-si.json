@@ -42,8 +42,10 @@
 		"route_name": "Neobvezno ime URL, ki nadomesti ime tabele (npr. my-users)"
 	},
 	"labels": {
+		"class": "Razred",
 		"column_count": "Število stolpcev",
 		"display": "Prikaz",
+		"filter": "Filter",
 		"fk_count": "Število FK",
 		"has_crud": "Ima CRUD",
 		"index_columns": "Stolpci za indeks",
@@ -55,7 +57,8 @@
 		"route_name": "Ime poti (neobvezno)",
 		"row_count": "Število vrstic",
 		"table": "Tabela / Pot",
-		"template_tags": "Predloge polj"
+		"template_tags": "Predloge polj",
+		"width": "Širina"
 	},
 	"messages": {
 		"bulk_delete_failed": "Skupno brisanje ni uspelo.",

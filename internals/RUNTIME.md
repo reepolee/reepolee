@@ -32,7 +32,7 @@ Bypass with `git commit --no-verify` (or `-n`) for WIP/emergency commits.
 
 ## Dev mode quirks
 
-- **`bun dev`** runs `scripts/dev_run.ts`, which builds CSS once (`bun run css:once`) then starts `bun --hot --no-clear-screen server.ts --dev`. The Bun-native file watcher (`lib/watcher.ts`) rebuilds CSS on `.css`/`.ree` changes during dev. Template cache is disabled in dev and enabled in prod.
+- **`bun dev`** runs `scripts/dev_run.ts`, which builds CSS once (`bun run css:once`) then starts `bun --hot --no-clear-screen apps/main/server.ts --dev`. The Bun-native file watcher (`lib/watcher.ts`) rebuilds CSS on `.css`/`.ree` changes during dev. Template cache is disabled in dev and enabled in prod.
 - **`bun dev:worker`** runs the same via `scripts/dev_run.ts --worker`, additionally starting `bun --hot worker.ts`. The worker is opt-in: it runs only when `--worker` is passed, never implicitly alongside the app (see `scripts/dev_run.ts`). Use `bun run worker` to start the worker on its own instead.
 - **`bun --hot`** reloads the process on code changes without clearing the terminal.
 - Live reload SSE at `/__reload`; CSS output goes to `static/app-dev.css` (gitignored).
@@ -260,6 +260,6 @@ autocannon -c 25 -d 15 -m POST --latency --renderStatusCodes http://<host>:<port
 
 ## Release
 
-`bun run release` bumps `package.json`, commits and pushes the bump, then packages
-source files for distribution via `scripts/release.ts`. Run `bun run release` from
-the project root.
+This source checkout does not define `bun run release` or ship `scripts/release.ts`. Release
+packaging and override reconciliation are maintainer-owned workflows. Confirm the current
+release tooling before modifying an override file or publishing a package.

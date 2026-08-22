@@ -35,6 +35,7 @@ export const KNOWN_ENV_VARS: readonly string[] = [
 	"PORT",
 	"TEST_PORT",
 	"REEMAN_PORT",
+	"REEQA_PORT",
 	"MAIN_APP_URL",
 	"SERVER_NAME",
 

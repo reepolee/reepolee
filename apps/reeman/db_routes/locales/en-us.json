@@ -45,19 +45,26 @@
 		"prefix": "Optional module prefix. Leave empty to place directly under /routes."
 	},
 	"labels": {
+		"class": "Class",
 		"delete_translations": "Delete translations",
 		"display": "Display",
 		"fields": "Fields",
 		"folder_name": "Folder name",
+		"filter": "Filter",
+		"index_columns": "Index columns",
 		"mode": "Mode",
 		"module": "Module",
+		"name": "Name",
 		"order_by": "Order by",
+		"pagination": "Pagination",
 		"prefix": "Prefix",
 		"removable": "Removable",
+		"render_strategy": "Render strategy",
 		"table": "Table / Route",
 		"table_name": "Table Name",
 		"template_tags": "Template tags",
 		"url": "Url",
+		"width": "Width",
 		"where": "Where"
 	},
 	"messages": {

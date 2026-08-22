@@ -13,6 +13,14 @@ import { generate_schema } from "../schema";
 import { BOLD, color, confirm, CYAN, dim, GREEN, header, RED, select_from_list, show_cli_tip, YELLOW } from "./ui";
 import { discover_routes_with_schema } from "./utils/route_scan";
 import { MAIN_APP } from "$config/paths";
+import type { GridColumnDefinition } from "$generator/schema/types";
+
+export interface RefreshCrudOptions {
+	pagination_strategy?: "cursor" | "offset";
+	render_strategy?: "stream" | "load";
+	grid_columns?: string[];
+	grid_column_definitions?: GridColumnDefinition[];
+}
 
 // ---------------------------------------------------------------------------
 // CRUD refresh logic - direct function calls
@@ -27,10 +35,10 @@ import { MAIN_APP } from "$config/paths";
  * the fresh cache. Without this, generate_crud imports a stale table.ts and
  * faithfully regenerates CRUD against columns the DB no longer has.
  *
- * table.ts itself is not rewritten - write_table_file() merges new columns into
- * its `columns` map and leaves hand-tuned widths, classes and grid flags alone.
+ * table.ts itself is not rewritten wholesale. write_table_file() merges new
+ * columns and applies only settings explicitly supplied by the caller.
  */
-async function regenerate_schema_from_db(table: string, prefix: string, parent?: string, route_name?: string): Promise<boolean> {
+async function regenerate_schema_from_db(table: string, prefix: string, parent?: string, route_name?: string, options: RefreshCrudOptions = {}): Promise<boolean> {
 	console.log(`\n${color("Re-reading DB schema...", BOLD)}\n`);
 
 	await load_ddl_cache({ force_refresh: true });
@@ -39,14 +47,18 @@ async function regenerate_schema_from_db(table: string, prefix: string, parent?:
 		prefix,
 		parent_table: parent,
 		route_name,
+		pagination_strategy: options.pagination_strategy,
+		render_strategy: options.render_strategy,
+		grid_columns: options.grid_columns,
+		grid_column_definitions: options.grid_column_definitions,
 	});
 
 	if (!schema_ok) { console.log(`  ${color("✗ Schema regeneration failed", RED)}`); }
 	return schema_ok;
 }
 
-export async function refresh_crud_for_table(table: string, prefix: string, parent?: string, route_name?: string, translate: boolean = false, template_tags?: "flat" | "tags"): Promise<boolean> {
-	const schema_ok = await regenerate_schema_from_db(table, prefix, parent, route_name);
+export async function refresh_crud_for_table(table: string, prefix: string, parent?: string, route_name?: string, translate: boolean = false, template_tags?: "flat" | "tags", options: RefreshCrudOptions = {}): Promise<boolean> {
+	const schema_ok = await regenerate_schema_from_db(table, prefix, parent, route_name, options);
 	if (!schema_ok) return false;
 
 	console.log(`\n${color("Running CRUD generation...", BOLD)}\n`);
@@ -58,6 +70,8 @@ export async function refresh_crud_for_table(table: string, prefix: string, pare
 		parent_table: parent,
 		route_name,
 		template_tags,
+		pagination_strategy: options.pagination_strategy,
+		render_strategy: options.render_strategy,
 	});
 
 	console.log();
@@ -70,8 +84,9 @@ export async function refresh_crud_for_table(table: string, prefix: string, pare
 	}
 }
 
-export async function refresh_crud_fields_only(table: string, prefix: string, parent?: string, route_name?: string, translate: boolean = false, template_tags?: "flat" | "tags"): Promise<boolean> {
+export async function refresh_crud_fields_only(table: string, prefix: string, parent?: string, route_name?: string, translate: boolean = false, template_tags?: "flat" | "tags", options: RefreshCrudOptions = {}): Promise<boolean> {
 	console.log(`\n${color("Running field refresh...", BOLD)}\n`);
+	await update_refresh_settings({ table, prefix, parent, route_name }, { ...options, template_tags });
 
 	const success = await generate_crud(table, {
 		refresh_fields: true,
@@ -80,6 +95,8 @@ export async function refresh_crud_fields_only(table: string, prefix: string, pa
 		parent_table: parent,
 		route_name,
 		template_tags,
+		pagination_strategy: options.pagination_strategy,
+		render_strategy: options.render_strategy,
 	});
 
 	console.log();
@@ -90,6 +107,17 @@ export async function refresh_crud_fields_only(table: string, prefix: string, pa
 		console.log(`${color("✗ Fields refresh failed", RED)}`);
 		return false;
 	}
+}
+
+async function update_refresh_settings(selected: { table: string; prefix: string; parent?: string; route_name?: string; }, options: RefreshCrudOptions & { template_tags?: "flat" | "tags"; }): Promise<void> {
+	const route_directory = selected.route_name || selected.table;
+	const schema_dir_parts = [process.cwd(), MAIN_APP];
+	if (selected.prefix) schema_dir_parts.push(selected.prefix);
+	if (selected.parent) schema_dir_parts.push(selected.parent);
+	schema_dir_parts.push(route_directory, "schema", "table.ts");
+	const schema_ts_path = join(...schema_dir_parts);
+	const { update_table_file_settings } = await import("$generator/schema/write_table");
+	await update_table_file_settings(schema_ts_path, options);
 }
 
 /**

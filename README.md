@@ -6,7 +6,7 @@ An MIT-licensed, database-first framework for long-lived business applications o
 
 **Zero runtime dependencies.** Only dev dependencies.
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 
 ---
 
@@ -200,19 +200,25 @@ If you don't use the image editor or avatar uploads, you can skip this - the res
 ## Development
 
 ```bash
-bun dev							# Server with --hot reload (CSS rebuilt on change by the dev watcher)
-bun dev:worker					# Same, plus the queue worker (bun --hot worker.ts)
-bun dev:reeman					# Reeman app only (apps/reeman/server.ts, port from REEMAN_PORT)
-bun dev:all					# App server + reeman app side-by-side (everything in one command)
-bun run worker   				# Start background worker separately
+bun dev                         # Main server with hot reload and CSS watcher
+bun dev:worker                  # Main server plus queue worker
+bun dev:reeman                  # Reeman only
+bun dev:reeqa                   # ReeQA only
+bun dev:all                     # Main, Reeman, ReeQA, worker, and CSS watcher
+bun run worker                  # Background worker only
 ```
+
+For local headless automation, use the dedicated agent-mode commands and ports described
+in [Agent Mode](internals/AGENT_MODE.md). It is development-only and intentionally does
+not use the normal login, session, or CSRF flow.
 
 ## Testing
 
 ```bash
 bun test					# Full suite (--parallel)
-bun run db:clone-test				# Clone production DB → test DB (requires TEST_CONNECTION_STRING)
+bun run db:clone-test				# Clone development DB into the test DB (requires TEST_CONNECTION_STRING)
 bun run sql <file.sql>				# Run SQL (file or stdin) against the dev DB - read-only by default, --allow-changes for writes
+bun run docs:check                       # Verify relative links across repository documentation
 ```
 
 Set `TEST_CONNECTION_STRING` in `.env` to a database with "test" in the name. The safety guard refuses non-test databases.
@@ -227,7 +233,7 @@ bun git:hooks
 
 ```bash
 bun run css:build				# Build minified CSS
-bun start						# bun server.ts --prod
+bun start						# bun apps/main/server.ts --prod
 ```
 
 ### Required environment
@@ -250,12 +256,9 @@ CSRF tokens are signed and bound to the requesting browser, with no fallback for
 older unsigned tokens - a stale token costs one 403 and is replaced on the next page
 load. Details in [RUNTIME.md](internals/RUNTIME.md#csrf).
 
-To bump the version:
-
-```bash
-bun pm version patch				# Bump package.json version
-bun run release					# Bump version, commit, and package the release archive via the sibling ../reelease project
-```
+Versioning and distribution packaging are maintainer workflows. This checkout does not define
+`release` or `release:update-hashes` package scripts. Do not copy release commands from older
+documentation without first confirming the current release tooling and target branch.
 
 You can also start PM2 for long term running
 
@@ -270,7 +273,7 @@ and then use `pm2 logs` or `pm2 monit` to check the runtime progress.
 ## Architecture
 
 - **Runtime**: Bun only. No runtime dependencies.
-- **Entry**: `server.ts` - `Bun.serve()` with route table from `routes.ts`.
+- **Entry**: `apps/main/server.ts` - Bun server with route table from `apps/main/routes.ts`.
 - **Templates**: `.ree` files in `apps/main/`, custom engine at `lib/template_engine.ts`.
 - **Routes**: Route handlers export named functions, registered in `routes.ts`.
 - **Database**: Bun's `SQL` API → MySQL or SQLite via `config/db.ts`.

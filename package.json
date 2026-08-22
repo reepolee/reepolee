@@ -21,7 +21,7 @@
 		],
 		"issue_repo": "reepolee/reepolee-dev"
 	},
-	"version": "26.08.127",
+	"version": "26.08.129",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",
@@ -75,6 +75,7 @@
 		"get:reesql": "bun scripts/cli.ts reesql",
 		"get:pre": "bun scripts/install/prerequisites.ts",
 		"naming:check": "bun scripts/naming_check.ts",
+		"docs:check": "bun scripts/docs_check.ts",
 		"test": "bun test --parallel",
 		"test:dev": "bun test --parallel ./tests-dev/ ./marketplace/",
 		"test:user": "bun test --parallel ./lib/ ./apps/main/ ./platform/ ./config/ ./components/ ./integration.test.ts",

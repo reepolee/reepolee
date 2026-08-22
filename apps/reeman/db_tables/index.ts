@@ -11,12 +11,15 @@ import { get_table_row_count, refresh_db_tables } from "./sql.custom";
 import { wants_json } from "$lib/wants_json";
 import { strip_api_sensitive } from "$config/api_blocklist";
 import { type BunRequest } from "bun";
+import { localized_url, resolve_locale } from "$lib/route";
 
 import { columns, enable_archive, fields, grid_filler } from "./schema/table";
 import type { RouteDefinition } from "$lib/route_builder";
 
 import { post_bulk, post_bulk_refresh, post_bulk_schema, post_crud } from "../reeman/handlers";
 import { load_reeman_data } from "../reeman/page";
+import { discover_routes_with_schema } from "$generator/reeman/utils/route_scan";
+import { route_edit_paths_by_table } from "../db_routes/route_settings";
 
 export const reeman_db_tables_crud = {
 	"/tables": { GET: get_db_tables_index },
@@ -80,6 +83,8 @@ export async function get_db_tables_index(req: BunRequest): Promise<Response> {
 	const visible_column_entries = column_entries.filter(([key, value]: [string, any]) => value.grid !== false && (key !== "checkbox" || enable_archive));
 	const grid_widths = visible_column_entries.map(([, value]: [string, any]) => (typeof value === "string" ? value : value.width));
 	const grid_cols = `${grid_widths.join(" ")} ${grid_filler}`;
+	const routes_with_schema = discover_routes_with_schema();
+	const route_edit_paths = route_edit_paths_by_table(routes_with_schema);
 
 	return render("index", {
 		data: {
@@ -99,6 +104,7 @@ export async function get_db_tables_index(req: BunRequest): Promise<Response> {
 			last_url,
 			columns,
 			grid_cols,
+			route_edit_paths,
 			filter_definitions,
 			filter_clauses,
 			filter_params: filters,
@@ -111,8 +117,16 @@ export async function get_db_tables_index(req: BunRequest): Promise<Response> {
 }
 
 export async function get_db_table_detail(req: BunRequest): Promise<Response> {
-	const ctx = await create_ctx(req, import.meta.dir);
 	const table = req.params.name ?? "";
+	const routes_with_schema = discover_routes_with_schema();
+	const route_edit_paths = route_edit_paths_by_table(routes_with_schema);
+	const route_edit_url = route_edit_paths[table];
+	if (route_edit_url) {
+		const localized_edit_url = localized_url(route_edit_url, resolve_locale(req));
+		return Response.redirect(localized_edit_url, 302);
+	}
+
+	const ctx = await create_ctx(req, import.meta.dir);
 
 	const [reeman_data, { get_grid_column_choices }, row_count, { is_busy }] = await Promise.all([
 		load_reeman_data({ tables: false }),

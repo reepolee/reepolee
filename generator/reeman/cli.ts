@@ -178,6 +178,7 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 				pagination_strategy: flags.pagination_method,
 				route_name: flags.route_name,
 				grid_columns: flags.grid_columns,
+				grid_column_definitions: flags.grid_column_definitions,
 			});
 			process.exit(success ? 0 : 1);
 		}
@@ -203,6 +204,7 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 					route_name: flags.route_name,
 					template_tags: flags.template_tags,
 					grid_columns: flags.grid_columns,
+					grid_column_definitions: flags.grid_column_definitions,
 				});
 			process.exit(success ? 0 : 1);
 		}

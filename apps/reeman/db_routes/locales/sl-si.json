@@ -45,19 +45,26 @@
 		"prefix": "Neobvezna predpona modula. Pustite prazno za neposredno umestitev pod /routes."
 	},
 	"labels": {
+		"class": "Razred",
 		"delete_translations": "Izbriši prevode",
 		"display": "Prikaz",
 		"fields": "Polja",
 		"folder_name": "Ime mape",
+		"filter": "Filter",
+		"index_columns": "Stolpci za indeks",
 		"mode": "Način",
 		"module": "Modul",
+		"name": "Ime",
 		"order_by": "Razvrsti po",
+		"pagination": "Oštevilčenje strani",
 		"prefix": "Predpona",
 		"removable": "Odstranljivo",
+		"render_strategy": "Način izrisa",
 		"table": "Tabela / Pot",
 		"table_name": "Ime tabele",
 		"template_tags": "Predloge polj",
 		"url": "Url",
+		"width": "Širina",
 		"where": "Pogoj"
 	},
 	"messages": {

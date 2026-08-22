@@ -8,7 +8,7 @@ extension and are **co-located** with source files - a test for `lib/helpers.ts`
 `lib/helpers.test.ts`.
 
 **Exception - `tests-dev/`:** Tests for framework/tooling code (the `generator/` codegen
-pipeline, `scripts/mcp/` MCP server, `scripts/release.ts`) live in the top-level
+pipeline and `scripts/mcp/` MCP server) live in the top-level
 `tests-dev/` folder instead, mirroring the source path (e.g. `generator/naming.ts` ->
 `tests-dev/generator/naming.test.ts`). This folder is excluded from the public
 distribution build (`../reepolee`) via `.releaseignore` - it's not weight an end user
@@ -32,6 +32,17 @@ bun test:coverage             # Coverage report (script: bun test --parallel --c
 test arguments as substring filters against the full path, not as directory scopes, so a
 bare `lib/` also matches nested `*/lib/*.test.ts` files elsewhere in the tree. The `./`
 prefix anchors the match. Keep it.
+
+## Agent-mode verification
+
+Agent mode is a local development server workflow, not a replacement for the test suite.
+Configure its dedicated port and a real development user, start the relevant `bun run agent`
+command, then verify the intended HTTP behavior with the automation client or `curl`. The
+canonical setup, authentication, and safety rules are in [AGENT_MODE.md](AGENT_MODE.md).
+
+Do not use `bun run smoke:integration --agent` as an agent check today. The smoke script
+starts Main with `--prod --test --agent`, while Main only permits agent mode with `--dev`.
+Use the normal smoke command for its supported coverage until those contracts are aligned.
 
 ## Test file structure
 

@@ -821,7 +821,7 @@ Key points:
 
 - **Headers** (`{#with props}`): `{= columns.name.class }` resolves as `props.columns.name.class` (structural data, stays `{= }`). `{_ labels.name }` resolves against `props.translations.labels.name` regardless of the `with` scope.
 - **Cells** (`{#with record}`): `{= name }` resolves as `record.name`. The class still uses the full `{= props.columns.name.class }` path because `props` is a local variable that takes precedence over the with context.
-- **Nested child grids**: Child headers also use `{#with props}`, child rows use `{#with child}` for their cells - same pattern, different loop variable. Note `child_ui`/`child_fields` are handler-flattened plain data (from the child route's own `ctx.translations`, resolved separately), not `props.translations` - they stay `{= }`, not `{_ }`. See `internals/adr/0001-translation-lookup-tags.md`.
+- **Nested child grids**: Child headers also use `{#with props}`, child rows use `{#with child}` for their cells - same pattern, different loop variable. Note `child_ui`/`child_fields` are handler-flattened plain data (from the child route's own `ctx.translations`, resolved separately), not `props.translations` - they stay `{= }`, not `{_ }`.
 - **Generator alignment**: The `render_field_header()` function emits bare `{= columns.* }` (no `props.` prefix, structural data) and `{_ labels.* }` (translation, ignores `with` scope) - both expecting the `{#with props}` wrapper for the structural half. The `render_field_cell()` function emits bare `{= name }` field names (no `record.` prefix), expecting the `{#with record}` wrapper.
 
 ### When NOT to use `{#with}`
@@ -906,7 +906,7 @@ but this is discouraged - it bypasses the missing-key marker, so a typo or an un
 renders as `""` instead of showing up as `{title}`. Reserve `{= }`/`{~ }` for everything that is not a
 translation lookup: `props.user`, `props.record`, loop variables, computed expressions.
 
-See `internals/adr/0001-translation-lookup-tags.md` for the full design rationale.
+Translation lookup remains separate from direct value rendering so template expressions do not need ambiguous prefix-matching behavior.
 
 #### Control flow
 
@@ -1310,17 +1310,20 @@ data: {
 
 ---
 
-## Global Template Variables (`server.ts`)
+## Global Template Variables (`lib/bootstrap.ts`)
 
-`base_data` in `server.ts` is passed to `initialize_render()` and merged into **every** template render automatically. No need to pass these values per-route.
+`base_data` in `lib/bootstrap.ts` is passed to `initialize_render()` and merged into **every** template render automatically. No need to pass these values per-route.
 
 | Variable                   | Type / Value                           | Description                                         |
 | -------------------------- | -------------------------------------- | --------------------------------------------------- |
 | `site_name`                | `string` - `"reepolee App v<version>"` | App name with version from `package.json`           |
 | `year`                     | `number` - current year                | Useful for copyright footers                        |
 | `is_dev`                   | `boolean`                              | `true` when server started with `--dev`             |
-| `url(p)`                   | `(p: string) => string`                | Ensures a path starts with `/`; use in `href` attrs |
-| `menu_entries_crud_routes` | `CrudRoute[]`                          | CRUD routes flagged with `is_menu_entry: true`      |
+| `app_name`                 | `"main" \| "reeman" \| "reeqa"`     | Current application identity                         |
+| `version`                  | `string`                               | Package version in production, short timestamp in dev |
+| `dev_apps`                 | `Dev_app_link[]`                       | Local application links in development only          |
+| `nav_groups`               | `NavRouteGroup[]`                      | Navigation groups built from registered routes        |
+| `busy_poller`              | `boolean`                              | Enables busy-state polling for ReeQA                  |
 
 These merge with any per-render `data` argument. Per-render data takes precedence over `base_data`.
 
@@ -1329,13 +1332,9 @@ These merge with any per-render `data` argument. Per-render data takes precedenc
 ```html
 <footer>© {= year } {= site_name }</footer>
 
-<a href="{= url('dashboard') }">Dashboard</a>
-
 {#if is_dev }
 <div class="dev-banner">Development mode</div>
-{/if} {#each menu_entries_crud_routes as entry }
-<a href="{= entry.path }">{= entry.label }</a>
-{/each}
+{/if}
 ```
 
 ---

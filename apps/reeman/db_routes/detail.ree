@@ -10,7 +10,37 @@
 			<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
 		{/if}
 
-		<form class="grid gap-4 max-w-[60ch] lg:max-w-[100ch] lg:grid-cols-2 lg:gap-x-6" id="detail-form">
+		<form method="POST" action="{~ localized_path('/routes/bulk-refresh') }" class="grid gap-4 max-w-[60ch] lg:max-w-[100ch] lg:grid-cols-2 lg:gap-x-6" id="route-refresh-form">
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+			<input type="hidden" name="return_to" value="{= route_detail_path }" />
+			<input type="hidden" name="urls" value="{= record.url }" />
+			{#if route_settings}
+				<field-wrapper class="grid lg:col-span-2" data-field="grid_columns">
+					<div class="grid">
+						<label class="px-3">{_ labels.index_columns}</label>
+						<div class="rounded border border-border bg-surface-raised">
+							<div class="grid grid-cols-[minmax(0,1fr)_12ch_minmax(0,1fr)_auto] gap-2 px-3 py-2 text-xs font-semibold border-b border-border bg-surface">
+								<span>{_ labels.name}</span>
+								<span>{_ labels.width}</span>
+								<span>{_ labels.class}</span>
+								<span>{_ labels.filter}</span>
+							</div>
+							{#each route_settings.grid_columns as col}
+								<div class="grid grid-cols-[minmax(0,1fr)_12ch_minmax(0,1fr)_auto] items-center gap-2 px-3 py-2 border-b border-border last:border-b-0">
+									<input type="hidden" name="grid_column_name" value="{= col.name }" />
+									<label class="flex cursor-pointer items-center gap-1.5">
+										<input type="checkbox" name="grid_columns" value="{= col.name }" {#if col.default_selected}checked{/if} />
+										<span>{= col.name }</span>
+									</label>
+									<input name="grid_column_width" value="{= col.width }" aria-label="{_ labels.width}: {= col.name }" />
+									<input name="grid_column_class" value="{= col.class_name }" aria-label="{_ labels.class}: {= col.name }" />
+									<input type="checkbox" name="grid_filter_columns" value="{= col.name }" aria-label="{_ labels.filter}: {= col.name }" {#if col.filter}checked{/if} />
+								</div>
+							{/each}
+						</div>
+					</div>
+				</field-wrapper>
+			{/if}
 
 			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="url">
 				<div class="grid">
@@ -45,49 +75,63 @@
 			</field-wrapper>
 
 			<div class="flex gap-2 mt-8 items-center lg:col-span-1">
-				<button type="button" commandfor="refresh_dialog" command="show-modal" class="button primary" {#if busy}disabled{/if}>{_ actions.refresh_crud}</button>
+				<button type="button" commandfor="refresh_dialog" command="show-modal" class="button primary" {#if busy || !route_settings}disabled{/if}>{_ actions.refresh_crud}</button>
 				<button type="button" onclick="history.back()" class="button secondary">{_ actions.cancel}</button>
 
 				{#if record.removable}
 					<button type="button" commandfor="remove_dialog" command="show-modal" class="ml-auto button tertiary" {#if busy}disabled{/if}>{_ actions.remove_route}</button>
 				{/if}
 			</div>
-		</form>
 
-		<!-- REFRESH CRUD DIALOG -->
-		<dialog id="refresh_dialog" class="p-0 rounded-xl shadow-2xl w-120">
-			<form method="POST" action="{~ localized_path('/routes/bulk-refresh') }" class="p-6">
-				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
-				<input type="hidden" name="return_to" value="{= '/routes/' + record.id }" />
-				<input type="hidden" name="urls" value="{= record.url }" />
-				<h2 class="text-lg font-semibold">{_ actions.refresh_crud}</h2>
-				<div class="grid gap-3 mt-4">
-					<field-wrapper class="grid" data-field="mode">
-						<div class="grid">
-							<label class="px-3" for="route-refresh-mode">{_ labels.mode}</label>
-							<select id="route-refresh-mode" name="mode">
-								<option value="full" selected>{_ actions.full}</option>
-								<option value="fields">{_ actions.fields}</option>
-							</select>
-						</div>
-					</field-wrapper>
-					<field-wrapper class="grid" data-field="template_tags">
-						<div class="grid">
-							<label class="px-3" for="route-refresh-template-tags">{_ labels.template_tags}</label>
-							<select id="route-refresh-template-tags" name="template_tags">
-								<option value="" selected>{_ selectors.default}</option>
-								<option value="flat">flat</option>
-								<option value="tags">tags</option>
-							</select>
-						</div>
-					</field-wrapper>
+			<!-- REFRESH CRUD DIALOG -->
+			<dialog id="refresh_dialog" class="p-0 rounded-xl shadow-2xl w-120">
+				<div class="p-6">
+					<h2 class="text-lg font-semibold">{_ actions.refresh_crud}</h2>
+					<div class="grid gap-3 mt-4">
+						<field-wrapper class="grid" data-field="mode">
+							<div class="grid">
+								<label class="px-3" for="route-refresh-mode">{_ labels.mode}</label>
+								<select id="route-refresh-mode" name="mode">
+									<option value="full" selected>{_ actions.full}</option>
+									<option value="fields">{_ actions.fields}</option>
+								</select>
+							</div>
+						</field-wrapper>
+						<field-wrapper class="grid" data-field="template_tags">
+							<div class="grid">
+								<label class="px-3" for="route-refresh-template-tags">{_ labels.template_tags}</label>
+								<select id="route-refresh-template-tags" name="template_tags">
+									<option value="flat" {#if route_settings && route_settings.template_tags === "flat"}selected{/if}>flat</option>
+									<option value="tags" {#if route_settings && route_settings.template_tags === "tags"}selected{/if}>tags</option>
+								</select>
+							</div>
+						</field-wrapper>
+						<field-wrapper class="grid" data-field="pagination">
+							<div class="grid">
+								<label class="px-3" for="route-refresh-pagination">{_ labels.pagination}</label>
+								<select id="route-refresh-pagination" name="pagination">
+									<option value="offset" {#if route_settings && route_settings.pagination_strategy === "offset"}selected{/if}>offset</option>
+									<option value="cursor" {#if route_settings && route_settings.pagination_strategy === "cursor"}selected{/if}>cursor</option>
+								</select>
+							</div>
+						</field-wrapper>
+						<field-wrapper class="grid" data-field="render_strategy">
+							<div class="grid">
+								<label class="px-3" for="route-refresh-render-strategy">{_ labels.render_strategy}</label>
+								<select id="route-refresh-render-strategy" name="render_strategy">
+									<option value="load" {#if route_settings && route_settings.render_strategy === "load"}selected{/if}>load</option>
+									<option value="stream" {#if route_settings && route_settings.render_strategy === "stream"}selected{/if}>stream</option>
+								</select>
+							</div>
+						</field-wrapper>
+					</div>
+					<div class="mt-6 flex justify-end gap-2">
+						<button type="button" class="button secondary" commandfor="refresh_dialog" command="close">{_ actions.cancel}</button>
+						<button type="submit" class="button primary">{_ actions.do_it}</button>
+					</div>
 				</div>
-				<div class="mt-6 flex justify-end gap-2">
-					<button type="button" class="button secondary" commandfor="refresh_dialog" command="close">{_ actions.cancel}</button>
-					<button type="submit" class="button primary">{_ actions.do_it}</button>
-				</div>
-			</form>
-		</dialog>
+			</dialog>
+		</form>
 
 		{#if record.removable}
 			<!-- REMOVE ROUTE DIALOG -->

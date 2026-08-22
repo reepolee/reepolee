@@ -22,6 +22,7 @@ import { MySQLTypeMapper } from "./schema/mysql/mysql_type_mapper";
 import { SQLiteTypeMapper } from "./schema/sqlite/sqlite_type_mapper";
 import { default_locale } from "$config/supported_locales";
 import { MAIN_APP } from "$config/paths";
+import type { GridColumnDefinition } from "./schema/types";
 
 // ---------------------------------------------------------------------------
 // Exported API - callable from other modules
@@ -31,6 +32,7 @@ export interface SchemaOptions {
 	prefix?: string;
 	parent_table?: string;
 	pagination_strategy?: "cursor" | "offset";
+	render_strategy?: "stream" | "load";
 	route_name?: string;
 	/**
 	 * Index-grid columns chosen interactively. Anything outside the list is written
@@ -38,6 +40,7 @@ export interface SchemaOptions {
 	 * where each table would need its own selection.
 	 */
 	grid_columns?: string[];
+	grid_column_definitions?: GridColumnDefinition[];
 }
 
 export async function generate_schema(target: string, options: SchemaOptions = {}): Promise<boolean> {
@@ -146,7 +149,9 @@ export async function generate_schema(target: string, options: SchemaOptions = {
 				all_tables_indexes: all_indexes,
 				all_schemas,
 				pagination_strategy: options.pagination_strategy,
+				render_strategy: options.render_strategy,
 				grid_columns: options.grid_columns,
+				grid_column_definitions: options.grid_column_definitions,
 			});
 			await write_validation_file(route_dir, schema_obj, type_mapper, table_column_map, all_indexes);
 			await write_translation_files(

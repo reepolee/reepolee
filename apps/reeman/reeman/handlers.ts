@@ -17,6 +17,7 @@ import { notify_server_reload } from "$lib/server_notify";
 import { require_max_upload_size_mb } from "$lib/env";
 import { localized_url, resolve_locale } from "$lib/route";
 import type { BunRequest } from "bun";
+import type { GridColumnDefinition } from "$generator/schema/types";
 
 import {
 	action_add_locale,
@@ -42,19 +43,7 @@ import {
 	type ActionResult,
 } from "./actions";
 import { clear_runs, record_run } from "./lib/state";
-
-// Pages a reeman form may redirect back to. Any other return_to is ignored
-// (open-redirect guard) - the fallback is the dashboard at the app root.
-// Routes are served at root URLs (e.g. /tables), so the whitelist and
-// fallback mirror that.
-const REEMAN_PAGES = new Set(["/", "/refresh", "/database", "/routes", "/logs", "/tables", "/locales"]);
-
-function safe_return_to(raw: string): string {
-	const clean = (raw ?? "").trim().replace(/\/+$/, "");
-	// "" is the trailing-slash-stripped form of the app root ("/").
-	const normalized = clean === "" ? "/" : clean;
-	return REEMAN_PAGES.has(normalized) ? normalized : "/";
-}
+import { safe_return_to } from "./return_to";
 
 async function params_of(req: BunRequest): Promise<URLSearchParams> {
 	return new URLSearchParams(await req.text());
@@ -101,13 +90,53 @@ async function busy_response(req: BunRequest, return_to: string = "", key?: stri
 // CRUD generators
 // ---------------------------------------------------------------------------
 
+type GridFormSettings = {
+	grid_columns?: string[];
+	grid_column_definitions?: GridColumnDefinition[];
+	error?: string;
+};
+
+function parse_grid_form_settings(params: URLSearchParams): GridFormSettings {
+	const raw_grid_column_names = params.getAll("grid_column_name");
+	if (raw_grid_column_names.length === 0) return {};
+
+	const raw_grid_columns = params.getAll("grid_columns");
+	const trimmed_grid_columns = raw_grid_columns.map((column) => column.trim());
+	const grid_columns = trimmed_grid_columns.filter(Boolean);
+	const grid_column_names = raw_grid_column_names.map((name) => name.trim());
+	const raw_grid_column_widths = params.getAll("grid_column_width");
+	const grid_column_widths = raw_grid_column_widths.map((width) => width.trim());
+	const raw_grid_column_classes = params.getAll("grid_column_class");
+	const grid_column_classes = raw_grid_column_classes.map((class_name) => class_name.trim());
+	const raw_filter_columns = params.getAll("grid_filter_columns");
+	const filter_columns = new Set(raw_filter_columns);
+	const definition_names = new Set(grid_column_names);
+	const has_invalid_definition_lengths = grid_column_names.length !== grid_column_widths.length || grid_column_names.length !== grid_column_classes.length;
+	const has_blank_definition = grid_column_names.some((name, index) => !name || !grid_column_widths[index]);
+	const has_duplicate_definition = definition_names.size !== grid_column_names.length;
+	const has_unknown_selection = grid_columns.some((name) => !definition_names.has(name));
+	const has_unknown_filter = raw_filter_columns.some((name) => !definition_names.has(name));
+	if (has_invalid_definition_lengths || has_blank_definition || has_duplicate_definition || has_unknown_selection || has_unknown_filter) {
+		return { error: "Invalid grid column definitions." };
+	}
+
+	const grid_column_definitions: GridColumnDefinition[] = grid_column_names.map((name, index) => ({
+		name,
+		width: grid_column_widths[index]!,
+		class_name: grid_column_classes[index]!,
+		filter: filter_columns.has(name),
+	}));
+	return { grid_columns, grid_column_definitions };
+}
+
 export async function post_crud(req: BunRequest): Promise<Response> {
 	const params = await params_of(req);
 	const return_to = get_param(params, "return_to");
 	const table = get_param(params, "table");
 	if (!table) return redirect_result(req, "crud", "", { ok: false, output: "", error: "No table selected." }, return_to);
 	if (await is_busy(table)) return busy_response(req, return_to, table);
-	const grid_columns = params.getAll("grid_columns").map((c) => c.trim()).filter(Boolean);
+	const grid_settings = parse_grid_form_settings(params);
+	if (grid_settings.error) return redirect_result(req, "crud", table, { ok: false, output: "", error: grid_settings.error }, return_to);
 	// Spawn as subprocess so generation survives bun --hot reloads. Keyed by
 	// table, so generating another table concurrently is not blocked.
 	const started = await spawn_crud_action(table, {
@@ -118,7 +147,8 @@ export async function post_crud(req: BunRequest): Promise<Response> {
 		pagination: get_param(params, "pagination"),
 		render_strategy: get_param(params, "render_strategy"),
 		template_tags: get_param(params, "template_tags"),
-		grid_columns: grid_columns.length > 0 ? grid_columns : undefined,
+		grid_columns: grid_settings.grid_columns,
+		grid_column_definitions: grid_settings.grid_column_definitions,
 	});
 	if (!started) return busy_response(req, return_to, table);
 	return redirect_result(req, "crud", table, { ok: true, output: "Generation started in background." }, return_to, false);
@@ -228,8 +258,18 @@ export async function post_bulk_refresh_routes(req: BunRequest): Promise<Respons
 	const urls = params.getAll("urls").map((u) => u.trim()).filter(Boolean);
 	if (urls.length === 0) return redirect_result(req, "bulk-refresh-routes", "", { ok: false, output: "", error: "No routes selected." }, return_to);
 	if (await is_busy()) return busy_response(req, return_to);
+	const grid_settings = parse_grid_form_settings(params);
+	if (grid_settings.error) return redirect_result(req, "bulk-refresh-routes", urls.join(", "), { ok: false, output: "", error: grid_settings.error }, return_to);
 	const mode = get_param(params, "mode") === "fields" ? "fields" : "full";
-	const result = await action_bulk_refresh_routes({ urls, mode, template_tags: get_param(params, "template_tags") });
+	const result = await action_bulk_refresh_routes({
+		urls,
+		mode,
+		template_tags: get_param(params, "template_tags"),
+		pagination: get_param(params, "pagination"),
+		render_strategy: get_param(params, "render_strategy"),
+		grid_columns: grid_settings.grid_columns,
+		grid_column_definitions: grid_settings.grid_column_definitions,
+	});
 	return redirect_result(req, "bulk-refresh-routes", urls.join(", "), result, return_to);
 }
 
