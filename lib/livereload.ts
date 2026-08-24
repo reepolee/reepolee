@@ -1,11 +1,14 @@
 import { join } from "node:path";
 
-// Data attached at server.upgrade(req, { data: {...} }) - the only WebSocket
-// use in this app. `locale` is captured once at upgrade time (from the
-// `locale` cookie, same resolution as lib/route.ts's resolve_locale) so
-// inspector i18n messages on this connection resolve against the same
-// locale the page was rendered in.
-export type WebSocketData = { type: "livereload"; locale: string; };
+// Data attached at server.upgrade(req, { data: {...} }). Two WebSocket uses
+// share one connection pool:
+// - "livereload" (dev) - `locale` is captured once at upgrade time (from the
+//   `locale` cookie, same resolution as lib/route.ts's resolve_locale) so
+//   inspector i18n messages on this connection resolve against the same
+//   locale the page was rendered in.
+// - "updates" (dev + prod) - CRUD mutation notifications for the "updated
+//   records" marker (route/action/id payloads, see notify_updates).
+export type WebSocketData = { type: "livereload"; locale: string; } | { type: "updates"; };
 
 let _client_script: string | null = null;
 let _issue_reporter_script: string | null = null;
@@ -102,6 +105,25 @@ export async function inject_inspector(html_content: string): Promise<string> {
 export function notify_clients() {
 	for (const ws of clients) {
 		if (ws.readyState === WebSocket.OPEN) { ws.send(JSON.stringify({ type: "reload" })); }
+	}
+}
+
+/**
+ * Broadcast a CRUD mutation notification to connected browsers on the
+ * "updates" channel. Payload shape (issue #336):
+ *
+ *   { route: "/frameworks", action: "updated", column: "id", value: "100",
+ *     description: "Aleš edited the record" }
+ *
+ * The client-side marker script filters by `route` and record `value`, so a
+ * browser on a different page or listing different rows ignores the message.
+ * Sent to every open socket - livereload-only clients ignore non-"reload"
+ * types, updates clients act on "updates".
+ */
+export function notify_updates(payload: { route: string; action: string; column: string; value: string; description?: string }) {
+	const message = JSON.stringify({ type: "updates", ...payload });
+	for (const ws of clients) {
+		if (ws.readyState === WebSocket.OPEN) { ws.send(message); }
 	}
 }
 

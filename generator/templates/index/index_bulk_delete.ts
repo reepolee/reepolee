@@ -6,6 +6,7 @@ export async function post___table.exact___bulk___archive.action_value__(req: Bu
 	return run_bulk_remove(req, ctx, {
 		feature,
 		table_name: TABLE_NAME,
+		route: base_path(),
 		remove_one: (id) => __archive.record_fn__(Number(id)__archive.delete_arg__),__archive.bulk_mode__
 	});
 }

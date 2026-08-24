@@ -48,7 +48,12 @@ export async function get___table.exact___index(req: BunRequest): Promise<Respon
 	const column_entries = Object.entries(columns);
 	const visible_column_entries = column_entries.filter(([key, value]: [string, any]) => value.grid !== false && (key !== "checkbox" || enable_archive));
 	const grid_widths = visible_column_entries.map(([_, value]: [string, any]) => (typeof value === "string" ? value : value.width));
-	const grid_cols = `${grid_widths.join(" ")} ${grid_filler}`;
+	// The ws "updated record" marker column sits right after the checkbox
+	// column (or leads the grid when the table has no checkbox column).
+	const marker_width = "2rem";
+	const grid_cols = enable_archive
+		? `${grid_widths[0]} ${marker_width} ${grid_widths.slice(1).join(" ")} ${grid_filler}`
+		: `${marker_width} ${grid_widths.join(" ")} ${grid_filler}`;
 
 	return render("index", {
 		data:{

@@ -16,6 +16,8 @@
 			</div>
 		{/if}
 
+		<!-- marker cell for the ws "updated record" bullet - filled by updates-client.js -->
+		<div class="updates-marker-cell" data-record-id="{= record.id }"></div>
 		<div>{= record.id }</div>
 		__table.cells__
 		<!-- filler cell for the trailing grid_filler track in grid_cols -->

@@ -62,7 +62,7 @@
 
 			<div class="rounded-md border border-dashed border-border bg-surface-raised p-4 transition-colors hover:border-brand">
 				<div class="text-sm font-bold">{_ actions.reload_routes}</div>
-				<p class="mt-1 text-xs text-text-secondary">{_ ui.reload_routes_hint}</p>
+				<p class="mt-1 text-text-secondary">{_ ui.reload_routes_hint}</p>
 				<confirm-dialog trigger-class="button primary mt-3 text-xs" form-path="/reload-routes" title="{_ actions.reload_routes}" trigger-text="{_ actions.reload_routes}" message="{_ confirm.reload_routes}" confirm-text="{_ actions.do_it}" cancel-text="{_ actions.cancel}" extra-field-name="return_to" extra-field-value="/"></confirm-dialog>
 			</div>
 		</section>
@@ -77,7 +77,7 @@
 				<p class="text-sm text-text-secondary px-4">{_ ui.no_tables}</p>
 			{:else}
 				<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-4" style="grid-template-columns: auto 15ch 15ch 15ch 15ch 1fr">
-					<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+					<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-4 *:py-2 sticky top-0">
 						<div>{_ labels.table}</div>
 						<div class="text-center">{_ labels.columns}</div>
 						<div class="text-center">{_ labels.foreign_keys}</div>
@@ -87,7 +87,7 @@
 						<div class="grid-filler"></div>
 					</div>
 					{#each tables as table}
-						<div class="col-span-full *:py-2 grid grid-cols-subgrid border-b border-b-neutral-200 *:px-2 hover:bg-surface-raised last:border-b-0">
+						<div class="col-span-full *:py-2 grid grid-cols-subgrid border-b border-b-neutral-200 *:px-4 hover:bg-surface-raised last:border-b-0">
 							<div class="font-mono">{= table.name }{#if table.comment} <span class="text-xs text-text-tertiary">— {= table.comment }</span>{/if}</div>
 							<div class="text-center">{= table.column_count }</div>
 							<div class="text-center">{= table.fk_count }</div>

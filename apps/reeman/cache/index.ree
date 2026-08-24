@@ -50,7 +50,7 @@
 					{#if status.tables && status.tables.length > 0}
 						<div class="bg-white border border-neutral-200 rounded overflow-hidden">
 							<!-- Header row -->
-							<div class="grid grid-cols-[1fr_10rem_10rem] gap-2 px-4 py-2 bg-neutral-100 text-xs font-medium text-neutral-600">
+							<div class="grid grid-cols-[1fr_10rem_10rem] gap-2 px-4 py-2 bg-neutral-100 font-medium text-neutral-600">
 								<span>{_ ui.table_header}</span>
 								<span class="text-right">{_ ui.entries_header}</span>
 								<span class="text-right">{_ ui.actions_header}</span>

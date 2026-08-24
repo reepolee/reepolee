@@ -106,7 +106,7 @@ export async function find_project(project_id: string): Promise<Qa_project | und
 	return projects.find((project) => project.id === project_id);
 }
 
-export async function create_project(name_value: string, path_value: string, base_url_value: string): Promise<Qa_project> {
+function normalize_project_input(name_value: string, path_value: string, base_url_value: string): { name: string; path: string; base_url: string; } {
 	const name = name_value.trim();
 	const raw_path = path_value.trim();
 	const raw_base_url = base_url_value.trim();
@@ -123,7 +123,15 @@ export async function create_project(name_value: string, path_value: string, bas
 	parsed_base_url.search = "";
 	parsed_base_url.hash = "";
 
-	const project_path = resolve(raw_path);
+	return {
+		name,
+		path: resolve(raw_path),
+		base_url: parsed_base_url.href.slice(0, -1),
+	};
+}
+
+export async function create_project(name_value: string, path_value: string, base_url_value: string): Promise<Qa_project> {
+	const { name, path: project_path, base_url } = normalize_project_input(name_value, path_value, base_url_value);
 	await read_manifest(project_path);
 	const projects = await load_projects();
 	if (projects.some((project) => project.path === project_path)) {
@@ -134,12 +142,33 @@ export async function create_project(name_value: string, path_value: string, bas
 		id: crypto.randomUUID(),
 		name,
 		path: project_path,
-		base_url: parsed_base_url.href.slice(0, -1),
+		base_url,
 		created_at: new Date().toISOString(),
 	};
 	projects.push(project);
 	await persist_projects(projects);
 	return project;
+}
+
+export async function update_project(project_id: string, name_value: string, path_value: string, base_url_value: string): Promise<Qa_project> {
+	const { name, path: project_path, base_url } = normalize_project_input(name_value, path_value, base_url_value);
+	await read_manifest(project_path);
+	const projects = await load_projects();
+	const project_index = projects.findIndex((project) => project.id === project_id);
+	if (project_index < 0) throw new Error("QA project not found.");
+	if (projects.some((project) => project.path === project_path && project.id !== project_id)) {
+		throw new Error("That project path is already registered.");
+	}
+
+	const updated_project: Qa_project = {
+		...projects[project_index]!,
+		name,
+		path: project_path,
+		base_url,
+	};
+	projects[project_index] = updated_project;
+	await persist_projects(projects);
+	return updated_project;
 }
 
 function duplicate_project_name(projects: Qa_project[], source_name: string): string {

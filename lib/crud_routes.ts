@@ -10,6 +10,7 @@
 import { cache } from "$lib/cache";
 import { make_toast } from "$lib/cookies";
 import { format_bulk_archive_message, format_bulk_delete_message } from "$lib/format";
+import { notify_updates } from "$lib/livereload";
 import { sql_log } from "$lib/logger";
 import type { RequestContext } from "$lib/request_context";
 import type { BunRequest } from "bun";
@@ -86,6 +87,10 @@ export interface BulkRemoveOptions {
 	feature: string;
 	/** Table name for cache invalidation. */
 	table_name: string;
+	/** CRUD route the removed records belong to (e.g. "/users"). Used as the
+	 * `route` in the ws "updates" notification, so index pages only react to
+	 * removals of rows they actually list. */
+	route?: string;
 	/** Remove one record by its (stringified) id; true when a row was removed. */
 	remove_one: (id: string) => Promise<boolean>;
 	/** Label used in fallback messages when translation keys are missing. */
@@ -128,6 +133,7 @@ export async function run_bulk_remove(req: BunRequest, ctx: RequestContext, opts
 				const removed = await remove_one(String(id));
 				if (removed) {
 					sql_log({ s: is_archive ? "Archive" : "Delete", t: feature, id: String(id) }, ctx.user?.username);
+					notify_updates({ route: opts.route ?? `/${feature}`, action: "deleted", column: "id", value: String(id), description: `${ctx.user?.display_name || ctx.user?.username || "Someone"} deleted the record` });
 					removed_count++;
 				} else {
 					error_count++;

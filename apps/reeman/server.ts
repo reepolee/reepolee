@@ -96,7 +96,11 @@ const websocket_config = {
 	open(ws: any) { clients.add(ws); },
 	message(ws: Bun.ServerWebSocket<WebSocketData>, message: string | Buffer) {
 		// Dev-only inspector messages (i18n/class get/update) - same dispatch as server.ts.
-		void handle_inspector_message(ws, String(message), process.cwd(), ws.data.locale);
+		// Only livereload sockets speak the inspector protocol ("updates"
+		// channel sockets never send messages).
+		if (ws.data.type === "livereload") {
+			void handle_inspector_message(ws, String(message), process.cwd(), ws.data.locale);
+		}
 	},
 	close(ws: any) { clients.delete(ws); },
 };

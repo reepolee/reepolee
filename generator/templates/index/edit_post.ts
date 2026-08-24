@@ -31,6 +31,7 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 			if (removed) {
 				await cache.invalidate(TABLE_NAME);
 				sql_log({s:"__archive.log_verb__", "t":`${feature}`, id}, ctx.user?.username)
+				notify_updates({ route: base_path(), action: "deleted", column: "id", value: String(id), description: `${ctx.user?.display_name || ctx.user?.username || "Someone"} deleted the record` });
 				return Response.redirect(redirect_url, 303);
 			}
 
@@ -116,6 +117,7 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 		__edit.save_localization__
 		await cache.invalidate(TABLE_NAME);
 		sql_log({s:"Update", "t":`${feature}`, r:{...record}}, ctx.user?.username)
+		notify_updates({ route: base_path(), action: "updated", column: "id", value: String(id), description: `${ctx.user?.display_name || ctx.user?.username || "Someone"} edited the record` });
 	} catch (error) {
 		const error_key =
 			error instanceof Error && error.message.toLowerCase().includes("duplicate entry")

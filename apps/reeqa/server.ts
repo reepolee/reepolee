@@ -89,7 +89,11 @@ const websocket_config = {
 		clients.add(ws);
 	},
 	message(ws: Bun.ServerWebSocket<WebSocketData>, message: string | Buffer) {
-		void handle_inspector_message(ws, String(message), process.cwd(), ws.data.locale);
+		// Only livereload sockets speak the inspector protocol ("updates"
+		// channel sockets never send messages).
+		if (ws.data.type === "livereload") {
+			void handle_inspector_message(ws, String(message), process.cwd(), ws.data.locale);
+		}
 	},
 	close(ws: Bun.ServerWebSocket<WebSocketData>) {
 		clients.delete(ws);

@@ -127,7 +127,7 @@
 					</div>
 
 					{#if file.show_folder_summary}
-						<div class="col-span-full grid grid-cols-subgrid bg-surface-sunken text-xs text-text-secondary *:px-2 *:py-1.5 border-b border-b-neutral-200">
+						<div class="col-span-full grid grid-cols-subgrid bg-surface-sunken text-text-secondary *:px-2 *:py-1.5 border-b border-b-neutral-200">
 							<div class="col-span-full">{_ labels.folder_summary }: {= file.folder || "/" } - {= file.folder_count } {_ labels.file_count }</div>
 						</div>
 					{/if}

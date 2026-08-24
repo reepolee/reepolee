@@ -5,6 +5,7 @@
 		"delete": "Remove project",
 		"do_it": "Remove",
 		"duplicate": "Duplicate project",
+		"edit": "Edit project",
 		"save": "Save project"
 	},
 	"confirm": {

@@ -100,10 +100,12 @@ const fallback_opts = { is_dev, static_dirs };
 const websocket_config = {
 	open(ws: any) { clients.add(ws); },
 	message(ws: Bun.ServerWebSocket<WebSocketData>, message: string | Buffer) {
-		// Dev-only inspector messages (i18n/class get/update). Ignored in prod -
-		// this handler is only reachable via /__reload, which only upgrades
-		// under create_dev_fetch_handler().
-		void handle_inspector_message(ws, String(message), process.cwd(), ws.data.locale);
+		// Dev-only inspector messages (i18n/class get/update). Only livereload
+		// sockets carry a locale and only they speak the inspector protocol -
+		// "updates" channel sockets never send messages.
+		if (ws.data.type === "livereload") {
+			void handle_inspector_message(ws, String(message), process.cwd(), ws.data.locale);
+		}
 	},
 	close(ws: any) { clients.delete(ws); },
 };
@@ -126,6 +128,14 @@ function create_dev_fetch_handler() {
 			const raw_locale = cookie_header.match(/(?:^|;\s*)locale=([^;]+)/)?.[1];
 			const locale = canonical_locale(raw_locale ? decodeURIComponent(raw_locale) : null) ?? default_locale;
 			if (server.upgrade(req, { data: { type: "livereload", locale } })) { return new Response(); }
+		}
+
+		// CRUD "updates" WebSocket channel (dev and prod): index/forms pages
+		// listen here for record mutations so they can surface an "updated"
+		// marker with a reload link (issue #336). Same upgrade path in the prod
+		// handler - the channel is a production feature, not a dev tool.
+		if (url.pathname === "/__updates") {
+			if (server.upgrade(req, { data: { type: "updates" } })) { return new Response(); }
 		}
 
 		// Dev-only GitHub issue reporter (Ctrl+Shift+I overlay)
@@ -174,8 +184,15 @@ function create_dev_fetch_handler() {
  * - S3 proxy / local storage / static files / 404
  */
 function create_prod_fetch_handler() {
-	return async function fetch (req: Request, _server: Bun.Server<WebSocketData>): Promise<Response> {
+	return async function fetch (req: Request, server: Bun.Server<WebSocketData>): Promise<Response> {
 		const url = new URL(req.url);
+
+		// CRUD "updates" WebSocket channel - same upgrade as the dev handler.
+		// This is the production path: Bun's native `routes:` never sees
+		// /__updates (not a registered route), so it reaches this fallback.
+		if (url.pathname === "/__updates") {
+			if (server.upgrade(req, { data: { type: "updates" } })) { return new Response(); }
+		}
 
 		// Internal admin endpoints
 		const internal = handle_internal_endpoints(req, url);

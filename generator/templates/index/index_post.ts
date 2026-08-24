@@ -33,6 +33,7 @@ export async function post___table.exact___index(req: BunRequest): Promise<Respo
 		const created_record = await create_record(valid_data);
 		await cache.invalidate(TABLE_NAME);
 		sql_log({s:"Create", "t":`${feature}`, r:{...created_record}}, ctx.user?.username)
+		notify_updates({ route: base_path(), action: "inserted", column: "id", value: String(created_record.id), description: `${ctx.user?.display_name || ctx.user?.username || "Someone"} added the record` });
 
 		const save_action = params.get("_save_action");
 		if (save_action === "stay") {

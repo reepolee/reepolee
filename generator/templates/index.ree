@@ -126,7 +126,7 @@
 		__stream.close_norecords__
 	{:else }
 		__stream.end_if_norecords__
-		<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-4" style="grid-template-columns: {= grid_cols }">
+		<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-4" style="grid-template-columns: {= grid_cols }" data-updates-route="__route_prefix__/__table.exact__">
 
 			<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
 				{#if enable_archive }
@@ -137,6 +137,8 @@
 						</label>
 					</div>
 				{/if}
+				<!-- marker cell for the ws "updated record" column (right after checkbox) -->
+				<div class="updates-marker-header" title="{_ ui.updated_records }"></div>
 				<!-- GEN:FIELDS:HEADERS:START -->
 				<div>ID</div>
 				__table.headers__
@@ -159,6 +161,8 @@
 						</div>
 					{/if}
 
+					<!-- marker cell for the ws "updated record" bullet - filled by updates-client.js -->
+					<div class="updates-marker-cell" data-record-id="{= record.id }"></div>
 					<div>{= record.id}</div>
 					<!-- GEN:FIELDS:CELLS:START -->
 					__table.cells__
@@ -274,5 +278,6 @@
 			});
 		</script>
 	{/if}
+	<script src="/updates-client.js?v={= version}"></script>
 </div>
 {/with}

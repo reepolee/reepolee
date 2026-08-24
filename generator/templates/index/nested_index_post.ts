@@ -19,6 +19,7 @@ export async function post___table.exact___index(req: BunRequest): Promise<Respo
 	try {
 		const created_record = await create_record(valid_data);
 		sql_log({s:"Create", t:`${feature}`, r:{...created_record}}, ctx.user?.username)
+		notify_updates({ route: base_path(req.params.__parent.route_param__), action: "inserted", column: "id", value: String(created_record.id), description: `${ctx.user?.display_name || ctx.user?.username || "Someone"} added the record` });
 
 		return Response.json({ success: true, record: created_record });
 

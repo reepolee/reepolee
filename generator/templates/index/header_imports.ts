@@ -14,6 +14,7 @@ import { default_locale } from "$config/supported_locales";
 import { strip_api_sensitive } from "$config/api_blocklist";
 import { wants_json } from "$lib/wants_json";
 import { sql_log } from "$lib/logger";
+import { notify_updates } from "$lib/livereload";
 __import.bun__
 
 import { validate, validate_touched__import.validation_schema__ } from "./schema/validation_server";

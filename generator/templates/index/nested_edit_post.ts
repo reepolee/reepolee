@@ -20,6 +20,7 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 				await cache.invalidate(TABLE_NAME);
 				await cache.invalidate("__parent.table__");
 				sql_log({s:"__archive.log_verb__", t:`${feature}`, id: child_id}, ctx.user?.username)
+				notify_updates({ route: base_path(parent_id), action: "deleted", column: "id", value: String(child_id), description: `${ctx.user?.display_name || ctx.user?.username || "Someone"} deleted the record` });
 				return Response.json({ success: true });
 			}
 
@@ -52,6 +53,7 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 		await cache.invalidate(TABLE_NAME);
 		await cache.invalidate("__parent.table__");
 		sql_log({s:"Update", t:`${feature}`, r:{...record}}, ctx.user?.username)
+		notify_updates({ route: base_path(parent_id), action: "updated", column: "id", value: String(id), description: `${ctx.user?.display_name || ctx.user?.username || "Someone"} edited the record` });
 	} catch (error) {
 		const error_key =
 			error instanceof Error && error.message.toLowerCase().includes("duplicate entry")

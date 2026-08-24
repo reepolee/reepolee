@@ -7,7 +7,7 @@ import type { BunRequest } from "bun";
 import { visual_capture_presets, resolve_capture_preset } from "../lib/config";
 import { iso_datetime } from "../lib/format";
 import { clear_active_page_set_selection, create_page_set, delete_page_set, find_page_set, get_active_page_set, is_workflow_page_set, list_page_sets, page_set_capture_size, page_set_page_count, require_page_set, set_active_page_set_id, update_page_set, type Page_set_input } from "../lib/page_set_store";
-import { create_project, delete_project, duplicate_project, get_active_project, list_projects, require_active_project, set_active_project_id, type Qa_project } from "../lib/project_store";
+import { create_project, delete_project, duplicate_project, get_active_project, list_projects, require_active_project, set_active_project_id, update_project, type Qa_project } from "../lib/project_store";
 import { sidebar_props } from "../lib/sidebar";
 import { get_baseline_summary, sitemap_pages_for_project, type Sitemap_page } from "../lib/visual_store";
 import { parse_workflow_steps } from "../lib/workflow";
@@ -68,6 +68,8 @@ async function validate_sitemap_urls(project: Qa_project, selected_urls: string[
 type Render_opts = {
 	project_form?: Project_form;
 	project_form_error?: string;
+	project_edit_form?: Project_form;
+	project_edit_form_error?: string;
 	page_error?: string;
 	page_set_form_error?: string;
 	page_set_error_id?: string;
@@ -81,6 +83,8 @@ async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Pr
 	const {
 		project_form = { name: "", path: "", base_url: "" },
 		project_form_error = "",
+		project_edit_form: requested_edit_form,
+		project_edit_form_error = "",
 		page_error = "",
 		page_set_form_error = "",
 		page_set_error_id = "",
@@ -91,6 +95,9 @@ async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Pr
 	} = opts;
 	const projects = await list_projects();
 	const active_project = await get_active_project();
+	const project_edit_form = requested_edit_form ?? (active_project
+		? { name: active_project.name, path: active_project.path, base_url: active_project.base_url }
+		: { name: "", path: "", base_url: "" });
 	const sitemap = active_project ? await sitemap_pages_or_error(active_project) : { pages: [] as Sitemap_page[], error: "" };
 	const page_sets = active_project ? await list_page_sets(active_project.id) : [];
 	const active_page_set = active_project ? await get_active_page_set(active_project.id) : undefined;
@@ -142,6 +149,8 @@ async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Pr
 			open_create_dialog: show_create_dialog,
 			project_form,
 			project_form_error,
+			project_edit_form,
+			project_edit_form_error,
 			page_set_form_error,
 			page_set_error_id,
 			page_error,
@@ -177,6 +186,30 @@ export async function post_create_project(req: BunRequest): Promise<Response> {
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		return render_projects_page(req, { project_form: form, project_form_error: message, status: 400 });
+	}
+}
+
+export async function post_update_project(req: BunRequest): Promise<Response> {
+	const body = await req.text();
+	const params = new URLSearchParams(body);
+	const project_id = params.get("project_id");
+	const name_value = params.get("name");
+	const path_value = params.get("path");
+	const base_url_value = params.get("base_url");
+	const form = {
+		name: name_value ? name_value.trim() : "",
+		path: path_value ? path_value.trim() : "",
+		base_url: base_url_value ? base_url_value.trim() : "",
+	};
+	if (!project_id) return new Response("QA project id is required.", { status: 400 });
+	try {
+		await update_project(project_id, form.name, form.path, form.base_url);
+		const locale = resolve_locale(req);
+		const target = localized_url("/projects", locale);
+		return Response.redirect(target, 303);
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return render_projects_page(req, { project_edit_form: form, project_edit_form_error: message, status: 400 });
 	}
 }
 
@@ -339,16 +372,7 @@ export async function post_set_active_page_set(req: BunRequest): Promise<Respons
 	}
 }
 
-export const projects_crud = {
-	"/projects": { GET: get_projects_page },
-	"/projects/create": { POST: post_create_project },
-	"/projects/delete": { POST: post_delete_project },
-	"/projects/duplicate": { POST: post_duplicate_project },
-	"/projects/active": { POST: post_set_active_project },
-	"/projects/page-sets/create": { POST: post_create_page_set },
-	"/projects/page-sets/update": { POST: post_update_page_set },
-	"/projects/page-sets/delete": { POST: post_delete_page_set },
-};
+export const projects_crud = { "/projects": { GET: get_projects_page }, "/projects/create": { POST: post_create_project }, "/projects/update": { POST: post_update_project }, "/projects/delete": { POST: post_delete_project }, "/projects/duplicate": { POST: post_duplicate_project }, "/projects/active": { POST: post_set_active_project }, "/projects/page-sets/create": { POST: post_create_page_set }, "/projects/page-sets/update": { POST: post_update_page_set }, "/projects/page-sets/delete": { POST: post_delete_page_set } };
 
 export const route_definitions: RouteDefinition[] = [
 	{

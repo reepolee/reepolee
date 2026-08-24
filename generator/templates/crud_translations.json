@@ -52,7 +52,9 @@
 		"clear_all": "Clear all",
 		"apply_filters": "Apply",
 		"filter_not": "NOT",
-		"show_actions": "Show actions"
+		"show_actions": "Show actions",
+		"updated_records": "Updated records",
+		"reload": "Reload"
 	},
 	"child_ui": {
 		"actions": "Actions",

@@ -18,17 +18,17 @@
 				<field-wrapper class="grid lg:col-span-2" data-field="grid_columns">
 					<div class="grid">
 						<label class="px-3">{_ labels.index_columns}</label>
-						<div class="rounded border border-border bg-surface-raised">
-							<div class="grid grid-cols-[minmax(0,1fr)_12ch_minmax(0,1fr)_auto] gap-2 px-3 py-2 text-xs font-semibold border-b border-border bg-surface">
-								<span>{_ labels.name}</span>
-								<span>{_ labels.width}</span>
-								<span>{_ labels.class}</span>
-								<span>{_ labels.filter}</span>
+						<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) auto">
+							<div class="col-span-full grid grid-cols-subgrid gap-2 px-3 py-2 font-semibold border-b border-border bg-surface">
+								<span class="ml-3">{_ labels.name}</span>
+								<span class="ml-3">{_ labels.width}</span>
+								<span class="ml-3">{_ labels.class}</span>
+								<span class="ml-3">{_ labels.filter}</span>
 							</div>
 							{#each route_settings.grid_columns as col}
-								<div class="grid grid-cols-[minmax(0,1fr)_12ch_minmax(0,1fr)_auto] items-center gap-2 px-3 py-2 border-b border-border last:border-b-0">
+								<div class="col-span-full grid grid-cols-subgrid items-center gap-2 px-3 py-2 border-b border-border last:border-b-0">
 									<input type="hidden" name="grid_column_name" value="{= col.name }" />
-									<label class="flex cursor-pointer items-center gap-1.5">
+									<label class="ml-3 flex cursor-pointer items-center gap-1.5">
 										<input type="checkbox" name="grid_columns" value="{= col.name }" {#if col.default_selected}checked{/if} />
 										<span>{= col.name }</span>
 									</label>
