@@ -1,0 +1,69 @@
+{
+	"actions": {
+		"abort_archive": "Prekliči",
+		"abort_delete": "Prekliči",
+		"abort_restore": "Prekliči",
+		"archive": "Arhiviraj",
+		"bulk_action": "Arhiviraj izbrane slike",
+		"confirm_archive": "Da, arhiviraj",
+		"confirm_delete": "Da, izbriši",
+		"confirm_restore": "Da, obnovi",
+		"delete": "Izbriši to sliko za vedno?",
+		"new_image": "Nova slika",
+		"restore": "Obnovi"
+	},
+	"counts": {
+		"archived": "Arhivirani",
+		"live": "Aktivni",
+		"total": "Skupaj"
+	},
+	"labels": {
+		"description": "Opis",
+		"file_size": "Velikost datoteke",
+		"filename": "Ime datoteke",
+		"folder": "Mapa",
+		"height": "Višina",
+		"mime_type": "Mime tip",
+		"original_filename": "Izvirno ime datoteke",
+		"s3_key": "S3 ključ",
+		"tags": "Oznake",
+		"title": "Naslov",
+		"width": "Širina"
+	},
+	"messages": {
+		"bulk_archive_no_ids": "Nobena slika ni izbrana.",
+		"bulk_archived": "Ni arhiviranih slik|{count} slika arhivirana|{count} sliki arhivirani|{count} slike arhivirane|{count} slik arhiviranih",
+		"bulk_errors": "|{count} slika neuspešna|{count} sliki neuspešni|{count} slike neuspešne|{count} slik neuspešnih",
+		"record_archived": "Zapis arhiviran",
+		"record_restored": "Zapis obnovljen"
+	},
+	"nav": "Slike",
+	"route_name": "slike",
+	"scopes": {
+		"__all": "Vsi",
+		"__archived": "Arhivirani"
+	},
+	"search": {
+		"search_term": "Išči slike...",
+		"submit": "Išči"
+	},
+	"selectors": {
+		"all": "Vse"
+	},
+	"ui": {
+		"no_records": "Ni najdenih slik.",
+		"title": "Slike"
+	},
+	"v_labels": {
+		"description": "Opis",
+		"file_size": "Velikost datoteke",
+		"filename": "Ime datoteke",
+		"folder": "Mapa",
+		"height": "Višina",
+		"mime_type": "MIME Vrsta",
+		"original_filename": "Originalno ime datoteke",
+		"tags": "Zaznane oznake",
+		"title": "Naslov",
+		"width": "Širina"
+	}
+}

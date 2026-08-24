@@ -1,0 +1,13 @@
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="__field.name__">
+	<div class="grid">
+		<label class="px-3" for="__field.name__">{_ labels.__field.name__}</label>
+		<select id="__field.name__" name="__field.name__" value="{= record.__field.name__}">
+			<option value="">{_ selectors.select }</option>
+			{#each select_fields?.__field.name__ || [] as option }
+				<option value="{= option }" {#if String(option) === String(record.__field.name__) }selected{/if}>{= option }</option>
+			{/each}
+		</select>
+		<validation-error class="mt-1" id="error-__field.name__"></validation-error>
+	</div>
+	<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"><!-- hints.__field.name__ --></p>
+</field-wrapper>

@@ -1,0 +1,22 @@
+{
+	"actions": {
+		"cancel": "Cancel",
+		"submit": "Change password"
+	},
+	"errors": {
+		"incorrect_password": "Current password is incorrect."
+	},
+	"labels": {
+		"current_password": "Current password",
+		"password": "New password",
+		"password_confirm": "Confirm new password"
+	},
+	"messages": {
+		"successful_save": "Password has been successfully changed."
+	},
+	"route_name": "password",
+	"ui": {
+		"no_password_set": "Password is not set. Contact the administrator.",
+		"title": "Change password"
+	}
+}
