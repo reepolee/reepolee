@@ -515,13 +515,18 @@ async function spawn_one(
 
 	void completion.then(async ([exit_code, stdout, stderr]) => {
 		const output = clean_output([stdout, stderr]);
-		const error = exit_code === 0 ? undefined : `CRUD generation exited with code ${exit_code}.`;
+		const error = exit_code === 0
+			? undefined
+			: `CRUD generation for "${table}" failed with exit code ${exit_code}. See the captured generator output below.`;
 		await update_run(run_id, { ok: exit_code === 0, output, error });
 		await clear_busy(table);
-		if (exit_code !== 0) console.error(`[reeman] ${action} generation for ${table} exited with code ${exit_code}`);
+		if (exit_code !== 0) {
+			console.error(`[reeman] ${error}`);
+			if (output) console.error(`[reeman] Generator output for ${table}:\n${output}`);
+		}
 	}).catch(async (err) => {
 		const message = err instanceof Error ? err.message : String(err);
-		await update_run(run_id, { ok: false, output: "", error: message });
+		await update_run(run_id, { ok: false, output: "", error: `Failed to collect ${action} output for "${table}": ${message}` });
 		await clear_busy(table);
 		console.error(`[reeman] Failed to collect ${action} output for ${table}: ${message}`);
 	});

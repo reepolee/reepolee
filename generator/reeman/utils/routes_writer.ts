@@ -38,7 +38,11 @@ export function add_route_def_entry(
 		return { content: routes_content, modified: false };
 	}
 
-	const modified = routes_content.replace(/(const route_definitions: RouteDefinition\[\] = \[)([\s\S]*?)(\];)/, (_, start, body, end) => {
+	const route_def_re = /(const route_definitions: RouteDefinition\[\] = \[[\s\S]*?)(\n\];)/;
+	if (!route_def_re.test(routes_content)) {
+		throw new Error(`Could not find the route_definitions array in ${MAIN_APP_POSIX}/routes.ts.`);
+	}
+	const modified = routes_content.replace(route_def_re, (_, body, end) => {
 		const body_lines = body.split("\n");
 		let last_line_idx = -1;
 		for (let i = body_lines.length - 1; i >= 0; i--) {
@@ -55,9 +59,12 @@ export function add_route_def_entry(
 		}
 
 		const result_body = body_lines.join("\n");
-		return `${start}${result_body}\n${handler_entry}\n${end}\n`;
+		return `${result_body}\n${handler_entry}${end}\n`;
 	});
 
+	if (modified === routes_content) {
+		throw new Error(`Failed to add the route definition for "${route_prefix}/${folder_name}" to ${MAIN_APP_POSIX}/routes.ts.`);
+	}
 	return { content: modified, modified: true };
 }
 
@@ -106,7 +113,7 @@ export function add_static_route_definitions(routes_content: string, import_path
 	}
 
 	if (!content.includes(spread)) {
-		const route_def_re = /(const route_definitions: RouteDefinition\[\] = \[)([\s\S]*?)(\];)/;
+		const route_def_re = /(const route_definitions: RouteDefinition\[\] = \[[\s\S]*?)(\n\];)/;
 		if (!route_def_re.test(content)) {
 			throw new Error(
 				`Could not find "const route_definitions: RouteDefinition[] = [ ... ];" block in routes.ts - ` +
@@ -114,7 +121,7 @@ export function add_static_route_definitions(routes_content: string, import_path
 			);
 		}
 		const before_insert = content;
-		content = content.replace(route_def_re, (_, start, body, end) => {
+		content = content.replace(route_def_re, (_, body, end) => {
 			const body_lines = body.split("\n");
 			let last_line_idx = -1;
 			for (let i = body_lines.length - 1; i >= 0; i--) {
@@ -128,7 +135,7 @@ export function add_static_route_definitions(routes_content: string, import_path
 				const last_line = body_lines[last_line_idx].trimEnd();
 				if (!last_line.endsWith(",")) { body_lines[last_line_idx] = `${last_line},`; }
 			}
-			return `${start}${body_lines.join("\n")}\n${spread}\n${end}\n`;
+			return `${body_lines.join("\n")}\n${spread}${end}\n`;
 		});
 		if (!content.includes(spread)) {
 			throw new Error(`Failed to insert "${spread}" into route_definitions array in routes.ts.`);

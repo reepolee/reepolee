@@ -76,7 +76,13 @@ export async function update_routes_ts(config: UpdateRoutesConfig): Promise<Rout
 
 	// Add route definition
 	if (!is_nested) {
-		const load_result = add_static_route_definitions(routes_content, import_path);
+		let load_result;
+		try {
+			load_result = add_static_route_definitions(routes_content, import_path);
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			throw new Error(`CRUD route registration failed for "${table_name}": ${message}`, { cause: error });
+		}
 		if (load_result.modified) {
 			log_step(`Adding load_routes call for "$main/${import_path}"`);
 			routes_content = load_result.content;
