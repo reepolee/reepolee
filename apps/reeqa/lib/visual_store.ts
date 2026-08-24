@@ -295,7 +295,7 @@ function sitemap_lastmod_rank(lastmod?: string): number {
 
 export async function sitemap_pages_for_project(project: Qa_project): Promise<Sitemap_page[]> {
 	const sitemap_url = new URL("/sitemap.xml", project.base_url);
-	const response = await fetch(sitemap_url, { signal: AbortSignal.timeout(15_000) });
+	const response = await fetch(sitemap_url, { signal: AbortSignal.timeout(100) });
 	if (!response.ok) throw new Error(`Sitemap request failed with HTTP ${response.status}: ${sitemap_url.href}`);
 	const xml = await response.text();
 	const entries = [...xml.matchAll(/<url>\s*([\s\S]*?)\s*<\/url>/g)];
