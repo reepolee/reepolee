@@ -1,0 +1,8 @@
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="__field.name__">
+	<div class="grid">
+		<label class="px-3" for="__field.name__">{_ labels.__field.name__}</label>
+		<textarea id="__field.name__" name="__field.name__">{= record.__field.name__}</textarea>
+		<validation-error class="mt-1" id="error-__field.name__"></validation-error>
+	</div>
+	<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"><!-- hints.__field.name__ --></p>
+</field-wrapper>
