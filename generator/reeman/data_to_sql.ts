@@ -552,7 +552,7 @@ export async function convert_json_to_sql(
 export async function convert_spreadsheet_to_sql(
 	spreadsheet_path: string,
 	table: string,
-	options: { slug?: string; project_root?: string } = {}
+	options: { slug?: string; project_root?: string; sheet?: string } = {}
 ): Promise<ConvertResult & { sheets: string[] }> {
 	const validated_table = validate_name(table, "Table name");
 	const project_root = options.project_root ?? process.cwd();

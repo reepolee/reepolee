@@ -377,7 +377,7 @@ function get_git_commit_info(source_root: string): { hash: string; message: stri
 			["-C", source_root, "log", "-1", "--format=%H|%s|%an|%ai"],
 			{ encoding: "utf8", timeout: 5000 }
 		);
-		const [hash, message, author, date] = result.trim().split("|");
+		const [hash = "", message = "", author = "", date = ""] = result.trim().split("|");
 		return { hash, message, author, date };
 	} catch {
 		return null;

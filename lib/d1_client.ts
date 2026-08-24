@@ -20,6 +20,8 @@ export interface D1ClientConfig {
 	api_base_url?: string;
 }
 
+type D1Fetch = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
+
 export interface D1QueryResult {
 	success: boolean;
 	errors: { code?: number; message: string }[];
@@ -49,7 +51,7 @@ export async function d1_query(
 	config: D1ClientConfig,
 	sql: string,
 	params: unknown[] = [],
-	options: { fetch_fn?: typeof fetch } = {},
+	options: { fetch_fn?: D1Fetch } = {},
 ): Promise<Record<string, unknown>[]> {
 	const fetch_fn = options.fetch_fn ?? fetch;
 	const response = await fetch_fn(d1_query_endpoint(config, "/query"), {
@@ -80,7 +82,7 @@ export async function d1_query(
 export async function d1_query_table(
 	config: D1ClientConfig,
 	table: string,
-	options: { fetch_fn?: typeof fetch } = {},
+	options: { fetch_fn?: D1Fetch } = {},
 ): Promise<Record<string, unknown>[]> {
 	return d1_query(config, `SELECT * FROM ${table}`, [], options);
 }

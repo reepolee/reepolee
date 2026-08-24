@@ -8,6 +8,7 @@ import { post_reload_routes } from "./handlers";
 import { get_and_clear_completed_return_to, is_busy } from "./actions";
 import { any_busy } from "./lib/busy_state";
 import { load_reeman_data, type PageOverrides } from "./page";
+import { load_runs } from "./lib/state";
 
 const TRANSLATE_QUEUE = "translate_batch";
 
@@ -73,9 +74,19 @@ export async function get_busy_status(req: BunRequest): Promise<Response> {
 	const translating = await count_translation_jobs();
 
 	const redirect_to = busy ? null : get_and_clear_completed_return_to();
-	const payload: Record<string, unknown> = { busy };
+	const runs = await load_runs();
+	const latest_run = runs[0];
+	const error = !busy && latest_run && !latest_run.ok
+		? {
+			id: latest_run.id,
+			action: latest_run.action,
+			target: latest_run.target,
+			message: latest_run.error || "The action failed. See the run log for details.",
+		}
+		: null;
+	const payload: Record<string, unknown> = { busy, error };
 	if (translating > 0) payload.translating = translating;
-	if (redirect_to) payload.redirect_to = redirect_to;
+	if (redirect_to && !error) payload.redirect_to = redirect_to;
 	return Response.json(payload);
 }
 

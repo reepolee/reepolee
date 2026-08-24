@@ -15,6 +15,8 @@ export type PageOverrides = {
 };
 
 export type ReemanData = {
+	/** Most recent failed background action, kept visible until the user dismisses it. */
+	last_error?: RunRecord;
 	db_summary: { type: string; display: string; };
 	tables: Array<{ name: string; column_count: number; fk_count: number; has_view: boolean; has_crud: boolean; comment: string; }>;
 	crud_count: number;
@@ -85,7 +87,10 @@ export async function load_reeman_data(load: ReemanLoad = {}): Promise<ReemanDat
 			: import("$generator/reeman/remove_route").then((m) => m.list_removable_routes()),
 	]);
 
+	const last_error = runs.find((run) => !run.ok);
+
 	return {
+		last_error,
 		db_summary: summarize_connection(),
 		tables: tables_data?.tables ?? [],
 		crud_count: tables_data?.crud_count ?? 0,
