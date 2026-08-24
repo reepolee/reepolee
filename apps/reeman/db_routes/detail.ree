@@ -1,0 +1,158 @@
+{#layout("layout") }
+{#with props}
+	<div class="p-4">
+
+		<div class="flex items-center justify-between">
+			<h1 class="mb-4">{= record.url }</h1>
+		</div>
+
+		{#if busy}
+			<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
+		{/if}
+
+		<form method="POST" action="{~ localized_path('/routes/bulk-refresh') }" class="grid gap-4 max-w-[60ch] lg:max-w-[100ch] lg:grid-cols-2 lg:gap-x-6" id="route-refresh-form">
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+			<input type="hidden" name="return_to" value="{= route_detail_path }" />
+			<input type="hidden" name="urls" value="{= record.url }" />
+			{#if route_settings}
+				<field-wrapper class="grid lg:col-span-2" data-field="grid_columns">
+					<div class="grid">
+						<label class="px-3">{_ labels.index_columns}</label>
+						<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) auto">
+							<div class="col-span-full grid grid-cols-subgrid gap-2 px-3 py-2 font-semibold border-b border-border bg-surface">
+								<span class="ml-3">{_ labels.name}</span>
+								<span class="ml-3">{_ labels.width}</span>
+								<span class="ml-3">{_ labels.class}</span>
+								<span class="ml-3">{_ labels.filter}</span>
+							</div>
+							{#each route_settings.grid_columns as col}
+								<div class="col-span-full grid grid-cols-subgrid items-center gap-2 px-3 py-2 border-b border-border last:border-b-0">
+									<input type="hidden" name="grid_column_name" value="{= col.name }" />
+									<label class="ml-3 flex cursor-pointer items-center gap-1.5">
+										<input type="checkbox" name="grid_columns" value="{= col.name }" {#if col.default_selected}checked{/if} />
+										<span>{= col.name }</span>
+									</label>
+									<input name="grid_column_width" value="{= col.width }" aria-label="{_ labels.width}: {= col.name }" />
+									<input name="grid_column_class" value="{= col.class_name }" aria-label="{_ labels.class}: {= col.name }" />
+									<input type="checkbox" name="grid_filter_columns" value="{= col.name }" aria-label="{_ labels.filter}: {= col.name }" {#if col.filter}checked{/if} />
+								</div>
+							{/each}
+						</div>
+					</div>
+				</field-wrapper>
+			{/if}
+
+			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="url">
+				<div class="grid">
+					<label class="px-3" for="detail-url">{_ labels.url}</label>
+					<input type="text" id="detail-url" value="{= record.url }" readonly />
+				</div>
+				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+			</field-wrapper>
+
+			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="table_name">
+				<div class="grid">
+					<label class="px-3" for="detail-table-name">{_ labels.table_name}</label>
+					<input type="text" id="detail-table-name" value="{= record.table_name }" readonly />
+				</div>
+				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+			</field-wrapper>
+
+			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="module">
+				<div class="grid">
+					<label class="px-3" for="detail-module">{_ labels.module}</label>
+					<input type="text" id="detail-module" value="{= record.module || '-' }" readonly />
+				</div>
+				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+			</field-wrapper>
+
+			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="removable">
+				<div class="grid">
+					<label class="px-3" for="detail-removable">{_ labels.removable}</label>
+					<input type="text" id="detail-removable" value="{= record.removable ? props.translations.selectors[1] : props.translations.selectors[0] }" readonly />
+				</div>
+				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+			</field-wrapper>
+
+			<div class="flex gap-2 mt-8 items-center lg:col-span-1">
+				<button type="button" commandfor="refresh_dialog" command="show-modal" class="button primary" {#if busy || !route_settings}disabled{/if}>{_ actions.refresh_crud}</button>
+				<button type="button" onclick="history.back()" class="button secondary">{_ actions.cancel}</button>
+
+				{#if record.removable}
+					<button type="button" commandfor="remove_dialog" command="show-modal" class="ml-auto button tertiary" {#if busy}disabled{/if}>{_ actions.remove_route}</button>
+				{/if}
+			</div>
+
+			<!-- REFRESH CRUD DIALOG -->
+			<dialog id="refresh_dialog" class="p-0 rounded-xl shadow-2xl w-120">
+				<div class="p-6">
+					<h2 class="text-lg font-semibold">{_ actions.refresh_crud}</h2>
+					<div class="grid gap-3 mt-4">
+						<field-wrapper class="grid" data-field="mode">
+							<div class="grid">
+								<label class="px-3" for="route-refresh-mode">{_ labels.mode}</label>
+								<select id="route-refresh-mode" name="mode">
+									<option value="full" selected>{_ actions.full}</option>
+									<option value="fields">{_ actions.fields}</option>
+								</select>
+							</div>
+						</field-wrapper>
+						<field-wrapper class="grid" data-field="template_tags">
+							<div class="grid">
+								<label class="px-3" for="route-refresh-template-tags">{_ labels.template_tags}</label>
+								<select id="route-refresh-template-tags" name="template_tags">
+									<option value="flat" {#if route_settings && route_settings.template_tags === "flat"}selected{/if}>flat</option>
+									<option value="tags" {#if route_settings && route_settings.template_tags === "tags"}selected{/if}>tags</option>
+								</select>
+							</div>
+						</field-wrapper>
+						<field-wrapper class="grid" data-field="pagination">
+							<div class="grid">
+								<label class="px-3" for="route-refresh-pagination">{_ labels.pagination}</label>
+								<select id="route-refresh-pagination" name="pagination">
+									<option value="offset" {#if route_settings && route_settings.pagination_strategy === "offset"}selected{/if}>offset</option>
+									<option value="cursor" {#if route_settings && route_settings.pagination_strategy === "cursor"}selected{/if}>cursor</option>
+								</select>
+							</div>
+						</field-wrapper>
+						<field-wrapper class="grid" data-field="render_strategy">
+							<div class="grid">
+								<label class="px-3" for="route-refresh-render-strategy">{_ labels.render_strategy}</label>
+								<select id="route-refresh-render-strategy" name="render_strategy">
+									<option value="load" {#if route_settings && route_settings.render_strategy === "load"}selected{/if}>load</option>
+									<option value="stream" {#if route_settings && route_settings.render_strategy === "stream"}selected{/if}>stream</option>
+								</select>
+							</div>
+						</field-wrapper>
+					</div>
+					<div class="mt-6 flex justify-end gap-2">
+						<button type="button" class="button secondary" commandfor="refresh_dialog" command="close">{_ actions.cancel}</button>
+						<button type="submit" class="button primary">{_ actions.do_it}</button>
+					</div>
+				</div>
+			</dialog>
+		</form>
+
+		{#if record.removable}
+			<!-- REMOVE ROUTE DIALOG -->
+			<dialog id="remove_dialog" class="p-0 rounded-xl shadow-2xl w-120">
+				<form method="POST" action="{~ localized_path('/routes/bulk-remove') }" class="p-6">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<input type="hidden" name="return_to" value="/routes" />
+					<input type="hidden" name="urls" value="{= record.url }" />
+					<h2 class="text-lg font-semibold">{_ actions.remove_route}</h2>
+					<p class="text-slate-600 mt-2">{_ ui.remove_route_hint}</p>
+					<label class="flex cursor-pointer items-center gap-1.5 text-sm mt-2">
+						<input type="checkbox" name="delete_translations" value="1" /> {_ labels.delete_translations}
+					</label>
+					<div class="mt-6 flex justify-end gap-2">
+						<button type="button" class="button secondary" commandfor="remove_dialog" command="close">{_ actions.cancel}</button>
+						<button type="submit" class="button danger">{_ actions.do_it}</button>
+					</div>
+				</form>
+			</dialog>
+		{/if}
+
+		<script src="/dialog-confirm.js?v={= version}"></script>
+	</div>
+{/with}
