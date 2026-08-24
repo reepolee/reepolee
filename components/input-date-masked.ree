@@ -1,0 +1,23 @@
+{{
+	const date_input_attrs = props.attributes ?? {};
+	const date_input_extra = {};
+	if (date_input_attrs.min) date_input_extra.min = date_input_attrs.min;
+	if (date_input_attrs.max) date_input_extra.max = date_input_attrs.max;
+	if (date_input_attrs.required) date_input_extra.required = true;
+}}
+
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= props.attributes.name }">
+	<div class="grid">
+		<label class="px-3" for="{= props.attributes.name }">{= props.attributes.label} ({_ hints.date_format_value})</label>
+		<date-input
+			id="{= props.attributes.name }"
+			name="{= props.attributes.name }"
+			value="{= props.attributes.value }"
+			locale="{= date_input_attrs.locale || props.locale }"
+			...date_input_extra
+			...props.translations.errors
+			>
+		</date-input>
+		<validation-error class="mt-1" id="error-{= props.attributes.name }"></validation-error>
+	</div>
+</field-wrapper>

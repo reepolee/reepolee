@@ -1,0 +1,39 @@
+{#layout("layout")}
+{#with props}
+	<div class="w-full p-4 space-y-6">
+		<ree-breadcrumbs items="{= breadcrumb_items }"></ree-breadcrumbs>
+		{#if form_error}<app-banner type="red">{= props.form_error }</app-banner>{/if}
+		{#if run}
+			<header>
+				<div class="flex flex-wrap items-center gap-2">
+					<h1 class="text-xl font-bold">{= run.operation_label }</h1>
+					<span class="pill-layout text-xs font-bold {= run.status_class }">{= run.status_label }</span>
+				</div>
+				<div class="mt-1 font-semibold">{= run.project_name }</div>
+				<a href="{= run.project_base_url }" target="_blank" class="text-xs font-semibold text-brand hover:underline">{= run.project_base_url }</a>
+				{#if run.operation === 'compare'}<div class="mt-2 flex items-center gap-2 text-sm"><span class="font-semibold">{_ labels.page_set}:</span><span class="pill-layout bg-neutral-200">{= run.page_selection_label }</span></div>{/if}
+				{#if run.status === 'running' || run.status === 'queued' || run.status === 'canceling'}<div class="mt-3 flex flex-wrap gap-2"><confirm-dialog trigger-class="button primary text-xs" confirm-class="button danger" form-path="/visual-runs/cancel" title="{_ actions.cancel_run}" trigger-text="{_ actions.cancel_run}" message="{_ confirm.cancel_run}" confirm-text="{_ actions.do_it}" cancel-text="{_ actions.cancel}" extra-field-name="run_id" extra-field-value="{= run.id }"></confirm-dialog></div>{/if}
+			</header>
+
+			<section class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr))">
+				<div class="rounded-md border border-border bg-surface-raised p-4"><div class="text-xs font-semibold uppercase text-text-secondary">{_ labels.pages}</div><div class="mt-1 text-2xl font-bold">{= run.pages.length }</div></div>
+				<div class="rounded-md border border-border bg-surface-raised p-4"><div class="text-xs font-semibold uppercase text-text-secondary">{_ labels.duration}</div><div class="mt-1 text-2xl font-bold">{= run.duration_display }</div></div>
+				{#if run.operation === 'compare'}
+					<div class="rounded-md border border-border bg-surface-raised p-4"><div class="text-xs font-semibold uppercase text-text-secondary">{_ labels.changed}</div><div class="mt-1 text-2xl font-bold text-warning">{= run.changed_count }</div></div>
+					<div class="rounded-md border border-border bg-surface-raised p-4"><div class="text-xs font-semibold uppercase text-text-secondary">{_ labels.new}</div><div class="mt-1 text-2xl font-bold text-primary">{= run.new_count }</div></div>
+					<div class="rounded-md border border-border bg-surface-raised p-4"><div class="text-xs font-semibold uppercase text-text-secondary">{_ labels.removed}</div><div class="mt-1 text-2xl font-bold text-brand">{= run.removed_count }</div></div>
+				{/if}
+			</section>
+
+			<section class="min-w-0 overflow-hidden rounded-md border border-border bg-surface-overlay text-white">
+				<div class="border-b border-neutral-700 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-neutral-300">{_ labels.output}</div>
+				<div class="max-h-[65vh] max-w-full overflow-auto whitespace-pre-wrap break-all p-4 font-mono text-xs">{= run.output || translations.ui.waiting_output }</div>
+			</section>
+
+			{#if run.operation === 'compare' && (run.status === 'passed' || run.status === 'failed')}
+				<a href="{~ localized_path(`/results/visual/${run.id}`) }" class="button primary">{_ actions.open_report}</a>
+			{/if}
+		{/if}
+	</div>
+	<script src="/dialog-confirm.js?v={= version}"></script>
+{/with}
