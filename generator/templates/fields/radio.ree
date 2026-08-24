@@ -1,0 +1,12 @@
+<field-wrapper class="grid" data-field="__field.name__">
+	<fieldset class="px-3">
+		<legend>{_ labels.__field.name__}</legend>
+		{#each select_fields?.__field.name__ || [] as option}
+			<label class="flex items-center gap-2">
+				<input type="radio" name="__field.name__" value="{= option }" {#if String(option) === String(record.__field.name__) }checked{/if} />
+				{= option }
+			</label>
+		{/each}
+	</fieldset>
+	<validation-error class="mt-1" id="error-__field.name__"></validation-error>
+</field-wrapper>
