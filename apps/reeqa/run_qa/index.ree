@@ -1,4 +1,4 @@
-{#layout("layout")}
+{#layout("dashboard/layout")}
 {#with props}
 	<div class="min-w-0 w-full p-4 space-y-6">
 		<header>

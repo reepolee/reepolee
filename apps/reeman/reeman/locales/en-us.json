@@ -8,16 +8,9 @@
 	},
 	"labels": {
 		"action": "Action",
-		"columns": "Columns",
-		"crud": "CRUD",
 		"finished": "Finished",
-		"foreign_keys": "FKs",
-		"schema": "Schema",
 		"status": "Status",
-		"table": "Table",
-		"tables": "Tables",
-		"target": "Target",
-		"view": "View"
+		"target": "Target"
 	},
 	"nav": "Reeman",
 	"nav_prefix_title": "Reeman",
@@ -26,7 +19,6 @@
 		"description": "Web interface for the Reepolee resource manager",
 		"last_runs": "Recent runs",
 		"no_runs": "No runs yet - pick an action above.",
-		"no_tables": "No tables found. Is the database initialized?",
 		"reload_routes_hint": "Hot-rebuilds the route table and nav from disk and refreshes translations. No server restart needed in dev.",
 		"stats_crud": "With CRUD",
 		"stats_locales": "Locales",

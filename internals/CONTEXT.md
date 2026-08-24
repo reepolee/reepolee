@@ -155,7 +155,7 @@ The polyfill script tag is placed in the `<head>` of `apps/main/layout.ree` (lin
 
 It sits alongside the other vendored scripts (`helpers-client.js`, `validation-error.js`, `toasts-area.js`). The `defer` attribute ensures it executes after the HTML is parsed but before `DOMContentLoaded`. Uncomment when deploying DPU streaming to production.
 
-Only `apps/main/layout.ree` and its copy `apps/reeman/studio/layout.ree` contain the reference - other layouts do not include it.
+Only `apps/main/layout.ree` (the single shared layout) contains the reference - no other layout exists or includes it.
 
 #### Why it's needed
 

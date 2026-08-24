@@ -92,6 +92,7 @@ export function build_pagination_urls(
 	scope: string = "",
 	filters: Record<string, string> = {},
 	filter_not: Record<string, string> = {},
+	extra_params: Record<string, string> = {},
 ): {
 	prev_url: string | null;
 	next_url: string | null;
@@ -103,8 +104,12 @@ export function build_pagination_urls(
 	const order_param = `&order_by=${encodeURIComponent(order_by)}`;
 	const scope_param = scope ? `&scope=${encodeURIComponent(scope)}` : "";
 	const filter_qs = build_filter_param(filters, filter_not);
+	const extra_param_qs = Object.entries(extra_params)
+		.filter(([, value]) => value !== "")
+		.map(([key, value]) => `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+		.join("");
 
-	const extra_qs = `${scope_param}${filter_qs}`;
+	const extra_qs = `${scope_param}${filter_qs}${extra_param_qs}`;
 
 	const prev_offset = Math.max(0, current_offset - limit_numeric);
 	const prev_url = current_offset > 0 ? `${base_path}?offset=${prev_offset}&${limit_param}${query_param}${order_param}${extra_qs}` : null;

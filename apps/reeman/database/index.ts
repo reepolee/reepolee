@@ -7,7 +7,7 @@ import { create_ctx } from "$lib/request_context";
 import type { RouteDefinition } from "$lib/route_builder";
 import type { BunRequest } from "bun";
 
-import { post_check_compliance, post_data_to_sql, post_inspect_import, post_run_sql } from "../reeman/handlers";
+import { post_backup_database, post_check_compliance, post_data_to_sql, post_inspect_import, post_run_sql } from "../reeman/handlers";
 import { load_reeman_data, type PageOverrides } from "../reeman/page";
 import { is_studio_editable_path, studio_url } from "./lib/sql_files";
 
@@ -97,6 +97,7 @@ export async function get_database_page(req: BunRequest, overrides: PageOverride
 export const database_crud = {
 	"/database": { GET: get_database_page },
 	"/run-sql": { POST: post_run_sql },
+	"/backup-database": { POST: post_backup_database },
 	"/data-to-sql": { POST: post_data_to_sql },
 	"/inspect-import": { POST: post_inspect_import },
 	"/check-compliance": { POST: post_check_compliance },

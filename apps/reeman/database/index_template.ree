@@ -65,6 +65,10 @@
 					<button type="submit" class="button primary" {#if busy}disabled{/if}>+ {_ actions.check_compliance }</button>
 				</form>
 				<button type="button" command="show-modal" commandfor="data-to-sql-dialog" class="button primary" {#if busy}disabled{/if}>+ {_ actions.data_to_sql }</button>
+				<form method="POST" action="{~ localized_path('/backup-database') }">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<button type="submit" class="button secondary" {#if busy}disabled{/if}>{_ actions.backup_sql}</button>
+				</form>
 			</div>
 
 			<!-- Search is intentionally provided by the shared control. SQL files do

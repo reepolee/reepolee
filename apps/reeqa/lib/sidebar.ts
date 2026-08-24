@@ -2,10 +2,11 @@ import { get_active_page_set, list_page_sets, page_set_capture_size, page_set_pa
 import { get_active_project_id, list_projects } from "./project_store";
 
 /**
- * Data for the shared-layout sidebar selectors, rendered above the nav entries
- * (mirroring the Studio file selector). Every ReeQA page includes this in its
- * render data; the selectors are the single place the active project and the
- * active page set are chosen, so pages never carry their own selection.
+ * Data for the reeqa layout's sidebar selectors, passed explicitly to the
+ * shared `<sidebar-header>` component as children (the project and page set
+ * pickers above the nav). Every ReeQA page includes this in its render data;
+ * the selectors are the single place the active project and the active page
+ * set are chosen, so pages never carry their own selection.
  */
 export type Reeqa_project_selector = {
 	action: string;

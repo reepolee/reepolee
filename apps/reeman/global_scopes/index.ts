@@ -24,7 +24,7 @@ import {
 import { columns, enable_archive, fields } from "./schema/table";
 import { validate } from "./schema/validation_server";
 import { is_archive_scope_key, resolve_archive_filter } from "$lib/archive";
-import { create_record, get_archive_counts, search_records } from "./sql";
+import { create_record, get_archive_counts, resolve_global_scope_list_filter, search_records } from "./sql";
 
 export { enable_archive };
 
@@ -57,7 +57,8 @@ const SORT_OPTIONS = [
 
 export async function get_global_scopes_index(req: BunRequest): Promise<Response> {
 	const ctx = await create_ctx(req, import.meta.dir);
-	const { query, offset, limit, order_by, scope, filters, filter_not } = parse_pagination_params(req.url, 20, ["scope"]);
+	const { query, offset, limit, order_by, scope, filters, filter_not, list_filter: raw_list_filter } = parse_pagination_params(req.url, 20, ["scope", "list_filter"]);
+	const list_filter = resolve_global_scope_list_filter(raw_list_filter as string);
 	const limit_numeric = get_limit_numeric(limit);
 
 	// The reeman app is the system app: global scopes resolve under the "system"
@@ -88,7 +89,7 @@ export async function get_global_scopes_index(req: BunRequest): Promise<Response
 		{}
 	);
 
-	const result = await search_records(query, offset, limit_numeric, order_by, scope_clause, filter_clauses, archive_filter);
+	const result = await search_records(query, offset, limit_numeric, order_by, scope_clause, filter_clauses, archive_filter, list_filter);
 	const archive_counts = await get_archive_counts(scope_clause);
 
 	const column_entries = Object.entries(columns);
@@ -106,7 +107,9 @@ export async function get_global_scopes_index(req: BunRequest): Promise<Response
 		query,
 		order_by,
 		scope_key,
-		filters
+		filters,
+		filter_not,
+		{ list_filter }
 	);
 
 	return render("index", {
@@ -135,6 +138,7 @@ export async function get_global_scopes_index(req: BunRequest): Promise<Response
 			active_filter_count: filter_clauses.length,
 			archive_counts,
 			archive_filter,
+			list_filter,
 			enable_archive,
 		},
 		ctx,

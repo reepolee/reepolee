@@ -79,6 +79,8 @@
 	},
 	"selectors": {
 		"all": "Vsi",
+		"all_filters": "Vsi filtri",
+		"user_filters": "Uporabniški filtri",
 		"no_module": "-- Brez modula (koren) --",
 		"select_table": "-- Izberite tabelo --"
 	},

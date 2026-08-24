@@ -45,12 +45,8 @@
 			<!-- LANG MISMATCH DIALOG END -->
 		{/if}
 
-		<nav class="flex py-4 bg-neutral-200 gap-4 pb-8 flex-col border-r border-r-neutral-300 justify-between h-screen sticky top-0 overflow-y-auto">
-
-			<div class="top flex flex-col">
-				<a href="/" class="px-4 mb-4">
-					<img class="w-24" src="{= props.dark_mode ? '/logo-light.svg' : '/logo-dark.svg' }" alt="Reepolee logo" />
-				</a>
+		<aside class="flex flex-col bg-neutral-200  border-r border-r-neutral-300 h-screen sticky top-0 max-xl:hidden">
+			<sidebar-header>
 				<form method="GET" action="{~ localized_path('/studio') }" class="px-4 mb-6">
 					<label class="grid gap-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
 						<span class="ml-3">{_ labels.file}</span>
@@ -70,65 +66,30 @@
 				{#if props.model}
 					<button type="button" class="button secondary py-1! mx-4 mb-6" command="show-modal" commandfor="adapt-schema-dialog">{_ actions.adapt_schema}</button>
 				{/if}
-
-				<!-- NAVIGATION START -->
-
+			</sidebar-header>
+			<sidebar-nav>
 				{#if props.model}
 					<div class="flex items-center justify-between px-4 mb-2">
 						<h2 class="text-sm font-semibold uppercase tracking-wider text-brand">{_ labels.tables}</h2>
 						<button type="button" class="button secondary px-2! py-1!" command="show-modal" commandfor="new-table-dialog" title="{_ actions.new_table}">+</button>
 					</div>
-					<div class="flex flex-col mb-8">
+					<div class="flex flex-col mb-4">
 						{#each props.objects.tables as item}
-							<a href="{~ localized_path(item.url) }" class="{= item.name===props.selected_object ? 'bg-primary text-white' : 'hover:bg-neutral-100' } pl-6">{= item.name}</a>
+							<a href="{~ localized_path(item.url) }" class="{= item.name===props.selected_object ? 'bg-primary text-white' : 'hover:bg-neutral-100' } pl-6">{= item.name }</a>
 						{/each}
 					</div>
 					{#if props.objects.views.length}
-						<h2 class="px-4 mb-2 text-sm font-semibold uppercase tracking-wider text-brand">{_ labels.views}</h2>
-						<div class="flex flex-col">
+						<h2 class="mb-2 text-sm font-semibold uppercase tracking-wider text-brand px-4">{_ labels.views}</h2>
+						<div class="flex flex-col mb-4">
 							{#each props.objects.views as item}
-								<a href="{~ localized_path(item.url) }" class="{= item.name===props.selected_object ? 'bg-primary text-white' : 'hover:bg-neutral-100' } pl-6">{= item.name}</a>
+								<a href="{~ localized_path(item.url) }" class="{= item.name===props.selected_object ? 'bg-primary text-white' : 'hover:bg-neutral-100' } pl-6">{= item.name }</a>
 							{/each}
 						</div>
 					{/if}
 				{/if}
-
-				<!-- NAVIGATION END -->
-
-			</div>
-
-			<div class="bottom flex flex-col gap-2 px-4">
-				<div class="flex items-center gap-2">
-					{#if props.active_locales.length <= 5}
-						<div class="flex flex-wrap items-center gap-1" aria-label="Language">
-							{#each props.active_locales as locale}
-								{#if props.locale === locale}
-									<span aria-current="true" class="text-xs px-2 py-1 font-bold" title="{= props.locale_names?.[locale] || locale }">{= locale_short_code(locale) }</span>
-								{:else}
-									<a href="?locale={= locale }" class="text-xs px-2 py-1 rounded border border-transparent no-underline hover:border-neutral-300 hover:bg-neutral-100" title="{= props.locale_names?.[locale] || locale }">{= locale_short_code(locale) }</a>
-								{/if}
-							{/each}
-						</div>
-					{:else}
-						<select aria-label="Language" onchange="location.href=this.value" class="text-base w-36 px-2 py-1">
-							{#each props.active_locales as locale}
-								<option value="?locale={= locale }" {#if props.locale === locale}selected{/if}>{= props.locale_names?.[locale] || locale}</option>
-							{/each}
-						</select>
-					{/if}
-					<button id="theme-toggle" aria-label="Toggle dark mode" class="ml-auto cursor-pointer px-2 py-1 text-xs rounded border border-transparent hover:border-neutral-300 hover:bg-neutral-100">🌙</button>
-				</div>
-				<div class="flex items-center gap-2 font-semibold px-2" title="{= Bun.env.DEV_CONNECTION_STRING}">
-					{#if props.user}
-						<a href="{~ localized_path('/profile') }">{= props.user.display_name}</a>
-					{:else}
-						<a href="{~ localized_path('/login') }">{_ nav_auth.login}</a>
-					{/if}
-				</div>
-
-			</div>
-
-		</nav>
+			</sidebar-nav>
+			<sidebar-footer></sidebar-footer>
+		</aside>
 
 		<main id="main" class="min-w-0">{~ props.body}</main>
 

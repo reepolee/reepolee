@@ -155,10 +155,14 @@ describe("layout presentation-boundary metadata", () => {
 		// LAN access: localhost links are rewritten to the host the page was served from
 		expect(html).toContain('app_link.href.startsWith("http://localhost:")');
 		expect(html).toContain('app_link.href.replace("http://localhost:", `http://${server_host}:`)');
-		expect(html).toContain('class="flex items-center justify-between gap-2 px-4 mb-4"');
+		expect(html).toContain('class="flex items-center justify-between gap-2 px-4 py-4"');
 		expect(html).toContain('class="w-24"');
 		expect(html).toContain('class="flex items-center gap-2 font-semibold pl-2"');
-		expect(html.indexOf('aria-label="Apps"')).toBeLessThan(html.indexOf('class="bottom flex flex-col'));
+		expect(html.indexOf('aria-label="Apps"')).toBeLessThan(html.indexOf('<footer class="bottom flex flex-col'));
+		expect(html).toContain('<aside class="flex flex-col bg-neutral-200  border-r border-r-neutral-300 h-screen sticky top-0 max-xl:hidden">');
+		expect(html).toContain('<header class="top flex flex-col">');
+		expect(html).toContain('<nav class="flex flex-col min-h-0 flex-1 overflow-y-auto">');
+		expect(html).toContain('<footer class="bottom flex flex-col');
 		expect(html).toContain('class="cursor-pointer px-2 py-1 text-xs rounded border border-transparent no-underline hover:border-neutral-300 hover:bg-neutral-100');
 		expect(html).toContain('<svg class="size-4 text-brand" viewBox="0 0 24 24"');
 		expect(html).not.toContain("<details");
@@ -218,24 +222,29 @@ describe("layout presentation-boundary metadata", () => {
 				"hr-hr": "Hrvatski",
 			},
 			csrf_token: "test-token",
-			reeqa_project_selector: {
-				action: "/reeqa/project",
-				next: "/",
-				label: "Project",
-				projects: [{ id: 1, name: "Demo" }],
-				active_project_id: 1,
-			},
-			reeqa_page_set_selector: {
-				action: "/reeqa/page-set",
-				next: "/",
-				label: "Page set",
-				page_sets: [{ id: 1, name: "Default", page_count: 1, capture_width: 1280 }],
-				active_page_set_id: 1,
-			},
 		};
 		const html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...sidebar_data, helpers: create_template_helpers(sidebar_data) });
 
-		expect(html.match(/class="text-base w-full"/g)?.length).toBe(2);
 		expect(html).toContain('aria-label="Language" onchange="location.href=this.value" class="text-base w-36 px-2 py-1"');
+	});
+
+	test("shared layout stays a pure shell - no app-specific sidebar sections", async () => {
+		const html = await render_layout();
+
+		// The shared layout composes the sidebar tags only; app content lives
+		// in each app's own layout as sidebar-header children (reeqa selectors,
+		// the studio file picker), never here.
+		expect(html).toContain('<aside class="flex flex-col bg-neutral-200  border-r border-r-neutral-300 h-screen sticky top-0 max-xl:hidden">');
+		// The ReeTag markers resolve to the component files, so the rendered
+		// output carries each component's inner markup.
+		expect(html).toContain('<header class="top flex flex-col">');
+		expect(html).toContain('<nav class="flex flex-col min-h-0 flex-1 overflow-y-auto">');
+		expect(html).toContain('<footer class="bottom flex flex-col gap-2 px-4 py-4">');
+
+		expect(html).not.toContain('name="project_id"');
+		expect(html).not.toContain('name="page_set_id"');
+		expect(html).not.toContain('name="path"');
+		expect(html).not.toContain('commandfor="adapt-schema-dialog"');
+		expect(html).not.toContain("v_frameworks");
 	});
 });

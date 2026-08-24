@@ -26,11 +26,10 @@ export const ARCHIVE_FIELDS = [ARCHIVE_TIMESTAMP_FIELD, ARCHIVE_USER_FIELD] as c
  * Tables that must never be archivable - a row here is genuinely removed.
  * `sessions` and `rate_limit_counters` are TTL-expired key/value stores; logout
  * and the rate-limit sweep have to delete for real. `jobs` and `queue_meta` are
- * owned by the queue's own lifecycle states. `db_tables` and `db_routes` are
- * metadata snapshots rebuilt by `DELETE FROM <table>` then reinsert on every
- * reeman page load, so archiving would accumulate garbage without bound.
+ * owned by the queue's own lifecycle states. Reeman's db_tables and db_routes
+ * pages are virtual metadata resources and have no archive state.
  */
-export const ARCHIVE_EXEMPT_TABLES = ["sessions", "rate_limit_counters", "jobs", "queue_meta", "db_tables", "db_routes"] as const satisfies readonly string[];
+export const ARCHIVE_EXEMPT_TABLES = ["sessions", "rate_limit_counters", "jobs", "queue_meta"] as const satisfies readonly string[];
 
 /**
  * Reserved `global_scopes.scope_key` values that select which archive state a

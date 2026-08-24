@@ -290,6 +290,91 @@ describe("TemplateEngine", () => {
 		});
 	});
 
+	describe("#switch / {#case} / {:else} / {/switch}", () => {
+		test("renders the matching numeric case", async () => {
+			const engine = make_engine("/tmp");
+			const tmpl = "{{ const x = 100 }}{#switch x }{#case 10}<h1>It's 10</h1>{#case 100}<h1>It's 100</h1>{#case 1000}<h1>It's 1000</h1>{/switch}";
+			expect(await engine.render_string(tmpl)).toBe("<h1>It's 100</h1>");
+		});
+
+		test("renders else when no case matches", async () => {
+			const engine = make_engine("/tmp");
+			const tmpl = "{#switch props.v }{#case 10}ten{#case 100}hundred{:else}other{/switch}";
+			expect(await engine.render_string(tmpl, { v: 42 })).toBe("other");
+		});
+
+		test("renders nothing when no case matches and there is no else", async () => {
+			const engine = make_engine("/tmp");
+			const tmpl = "[{#switch props.v }{#case 1}one{/switch}]";
+			expect(await engine.render_string(tmpl, { v: 9 })).toBe("[]");
+			expect(await engine.render_string(tmpl, { v: 1 })).toBe("[one]");
+		});
+
+		test("matches string keys", async () => {
+			const engine = make_engine("/tmp");
+			const tmpl = "{#switch props.kind }{#case \"user\"}USER{#case \"admin\"}ADMIN{:else}GUEST{/switch}";
+			expect(await engine.render_string(tmpl, { kind: "user" })).toBe("USER");
+			expect(await engine.render_string(tmpl, { kind: "admin" })).toBe("ADMIN");
+			expect(await engine.render_string(tmpl, { kind: "x" })).toBe("GUEST");
+		});
+
+		test("case values are expressions", async () => {
+			const engine = make_engine("/tmp");
+			const tmpl = "{#switch props.n }{#case props.a}A{#case props.b}B{:else}NONE{/switch}";
+			expect(await engine.render_string(tmpl, { n: 5, a: 5, b: 9 })).toBe("A");
+			expect(await engine.render_string(tmpl, { n: 9, a: 5, b: 9 })).toBe("B");
+			expect(await engine.render_string(tmpl, { n: 7, a: 5, b: 9 })).toBe("NONE");
+		});
+
+		test("nests inside an each loop", async () => {
+			const engine = make_engine("/tmp");
+			const tmpl = "{#each props.items as item}{#switch item}{#case 1}one{#case 2}two{:else}many{/switch}{/each}";
+			expect(await engine.render_string(tmpl, { items: [1, 2, 3] })).toBe("onetwomany");
+		});
+
+		test("switch inside an if branch", async () => {
+			const engine = make_engine("/tmp");
+			const tmpl = "{#if props.show}{#switch props.v}{#case \"a\"}A{:else}Z{/switch}{/if}";
+			expect(await engine.render_string(tmpl, { show: true, v: "a" })).toBe("A");
+			expect(await engine.render_string(tmpl, { show: false, v: "a" })).toBe("");
+		});
+
+		test("throws for unclosed switch", async () => {
+			const engine = make_engine("/tmp");
+			await expect(engine.render_string("{#switch props.x}hello")).rejects.toThrow("Unclosed block(s): switch");
+		});
+
+		test("throws for unmatched /switch", async () => {
+			const engine = make_engine("/tmp");
+			await expect(engine.render_string("{/switch}")).rejects.toThrow("Unexpected {/switch}");
+		});
+
+		test("throws for a case outside a switch", async () => {
+			const engine = make_engine("/tmp");
+			await expect(engine.render_string("{#case 1}x{/switch}")).rejects.toThrow("Unexpected {#case}");
+		});
+
+		test("throws for empty switch expression", async () => {
+			const engine = make_engine("/tmp");
+			await expect(engine.render_string("{#switch }x{/switch}")).rejects.toThrow("Invalid #switch syntax");
+		});
+
+		test("throws for empty case value", async () => {
+			const engine = make_engine("/tmp");
+			await expect(engine.render_string("{#switch props.x}{#case }x{/switch}")).rejects.toThrow("Invalid #case syntax");
+		});
+
+		test("throws for a case after the default else", async () => {
+			const engine = make_engine("/tmp");
+			await expect(engine.render_string("{#switch props.x}{#case 1}a{:else}b{#case 2}c{/switch}")).rejects.toThrow("{#case} after {:else}");
+		});
+
+		test("a default else with no cases always renders - matches JS switch semantics", async () => {
+			const engine = make_engine("/tmp");
+			expect(await engine.render_string("{#switch props.x}{:else}default{/switch}", { x: 1 })).toBe("default");
+		});
+	});
+
 	describe("#each / {:else} / {/each}", () => {
 		test("iterates over array", async () => {
 			const engine = make_engine("/tmp");

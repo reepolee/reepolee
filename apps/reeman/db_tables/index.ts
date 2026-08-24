@@ -6,7 +6,7 @@ import { render } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
 
 import { search_records } from "./sql";
-import { get_table_row_count, refresh_db_tables } from "./sql.custom";
+import { get_table_row_count } from "./sql.custom";
 
 import { wants_json } from "$lib/wants_json";
 import { strip_api_sensitive } from "$config/api_blocklist";
@@ -60,7 +60,7 @@ export async function get_db_tables_index(req: BunRequest): Promise<Response> {
 	const { query, offset, limit, order_by, filters, filter_not } = parse_pagination_params(req.url);
 	const limit_numeric = limit === "all" ? 999999 : limit;
 
-	const [reeman_data] = await Promise.all([load_reeman_data({ tables: false }), refresh_db_tables()]);
+	const reeman_data = await load_reeman_data({ tables: false });
 
 	const raw_filter_definitions = get_filter_definitions(columns, fields);
 	const filter_clauses = resolve_filters(raw_filter_definitions, filters, filter_not);

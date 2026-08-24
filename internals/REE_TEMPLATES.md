@@ -919,9 +919,17 @@ Translation lookup remains separate from direct value rendering so template expr
 ```
 
 ```
-{#each list as item }
-  ...
-{/each}
+{#switch value }
+  {#case 10}
+    ...
+  {#case 100}
+    ...
+  {:else}
+    ...
+{/switch}
+```
+
+`{#switch}` compares the value with each `{#case}` expression using strict equality (`===`) and renders the first matching branch; `{:else}` (optional, must be last) is the default. This covers the `{:else if}` chains the engine deliberately does not support. The switch expression and case values may be any JS expression (`props.status`, `"admin"`, etc.).
 
 {#each list as item, index }
   ...

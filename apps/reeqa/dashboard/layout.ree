@@ -19,21 +19,6 @@
 			<!-- {#include('speculationrules.partial')} -->
 		{/if}
 		<meta http-equiv="Content-Language" content="{= format_bcp47(props.locale) }" />
-
-		<!-- Presentation boundaries: conventional BCP 47 casing for search/OG metadata.
-		     hreflang hrefs are absolute when a request origin is available, relative otherwise. -->
-		{#if props.request_url}
-			<link rel="alternate" hreflang="x-default" href="{~ `${props.request_origin}${localized_path_for_locale(props.default_locale, props.request_url)}` }" />
-			{#each props.active_locales as alt_locale}
-				<link rel="alternate" hreflang="{= format_bcp47(alt_locale) }" href="{~ `${props.request_origin}${localized_path_for_locale(alt_locale, props.request_url)}` }" />
-			{/each}
-		{/if}
-		<meta property="og:locale" content="{= format_og_locale(props.locale) }" />
-		{#each props.active_locales as alt_locale}
-			{#if alt_locale !== props.locale}
-				<meta property="og:locale:alternate" content="{= format_og_locale(alt_locale) }" />
-			{/if}
-		{/each}
 	</head>
 
 	<body class="bg-surface grid grid-cols-[30ch_1fr] min-h-screen">
@@ -60,8 +45,39 @@
 			</script>
 			<!-- LANG MISMATCH DIALOG END -->
 		{/if}
+
 		<aside class="flex flex-col bg-neutral-200  border-r border-r-neutral-300 h-screen sticky top-0 max-xl:hidden">
-			<sidebar-header></sidebar-header>
+			<sidebar-header>
+				{#if props.reeqa_project_selector}
+					<form method="POST" action="{~ localized_path(props.reeqa_project_selector.action) }" class="px-4 mb-6">
+						<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+						<input type="hidden" name="next" value="{= props.reeqa_project_selector.next }" />
+						<label class="grid gap-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+							<span class="ml-3">{= props.reeqa_project_selector.label }</span>
+							<select name="project_id" class="text-base w-full" onchange="this.form.submit()">
+								{#each props.reeqa_project_selector.projects as project}
+									<option value="{= project.id }" {#if project.id === props.reeqa_project_selector.active_project_id}selected{/if}>{= project.name }</option>
+								{/each}
+							</select>
+						</label>
+					</form>
+				{/if}
+
+				{#if props.reeqa_page_set_selector}
+					<form method="POST" action="{~ localized_path(props.reeqa_page_set_selector.action) }" class="px-4 mb-6">
+						<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+						<input type="hidden" name="next" value="{= props.reeqa_page_set_selector.next }" />
+						<label class="grid gap-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+							<span class="ml-3">{= props.reeqa_page_set_selector.label }</span>
+							<select name="page_set_id" class="text-base w-full" onchange="this.form.submit()">
+								{#each props.reeqa_page_set_selector.page_sets as page_set}
+									<option value="{= page_set.id }" {#if page_set.id === props.reeqa_page_set_selector.active_page_set_id}selected{/if}>{= page_set.name } ({= page_set.page_count }) · {= page_set.capture_width }px</option>
+								{/each}
+							</select>
+						</label>
+					</form>
+				{/if}
+			</sidebar-header>
 			<sidebar-nav></sidebar-nav>
 			<sidebar-footer></sidebar-footer>
 		</aside>

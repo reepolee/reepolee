@@ -1,5 +1,6 @@
 {
 	"actions": {
+		"backup_sql": "Varnostno kopiraj v SQL",
 		"check_compliance": "Preveri domensko skladnost",
 		"data_to_sql": "PODATKI v SQL",
 		"open_in_studio": "Odpri v Studiu",

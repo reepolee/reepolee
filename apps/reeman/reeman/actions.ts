@@ -12,6 +12,7 @@
 import { clean_output, capture_output } from "./lib/capture";
 import { clear_busy, get_busy, GLOBAL_BUSY_KEY, set_busy, type BusyEntry } from "./lib/busy_state";
 import { record_run, update_run } from "./lib/state";
+import { backup_database } from "./lib/database_backup";
 
 import type { OrderByItem, WhereItem } from "$generator/reeman/types";
 import type { GridColumnDefinition } from "$generator/schema/types";
@@ -255,6 +256,14 @@ export async function action_sync_locale_tables(): Promise<ActionResult> {
 	return run_captured_action("sync-locale-tables", "", async () => {
 		const { sync_locale_tables_command } = await import("$generator/reeman/sync_locale_tables");
 		return await sync_locale_tables_command();
+	});
+}
+
+export async function action_backup_database(): Promise<ActionResult> {
+	return run_captured_action("backup-database", "", async () => {
+		const backup_path = await backup_database();
+		console.log(`Wrote ${backup_path}`);
+		return true;
 	});
 }
 

@@ -79,6 +79,8 @@
 	},
 	"selectors": {
 		"all": "All",
+		"all_filters": "All filters",
+		"user_filters": "User-created filters",
 		"no_module": "-- Without module (root) --",
 		"select_table": "-- Select table --"
 	},

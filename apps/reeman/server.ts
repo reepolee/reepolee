@@ -41,7 +41,6 @@ import { create_template_engine } from "$lib/template";
 import "$lib/temporal";
 import { now_iso_str } from "$lib/temporal";
 import { nav_routes, routes } from "$reeman/routes";
-import { ensure_reeman_meta_tables } from "$reeman/reeman/lib/meta_tables";
 import { REEMAN_APP } from "$config/paths";
 
 // Global error handlers
@@ -193,11 +192,6 @@ const hot_reload = !is_first_run();
 
 if (!hot_reload) {
 	try {
-		// The reeman meta tables (db_tables/db_routes) back the standard CRUD
-		// pages /tables and /routes. They are metadata snapshots
-		// (repopulated from the DDL cache on each load), so ensure they exist
-		// on every start instead of requiring a schema migration.
-		await ensure_reeman_meta_tables();
 		await bootstrap({
 			is_dev,
 			app_name: "reeman",

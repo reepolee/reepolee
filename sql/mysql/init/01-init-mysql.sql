@@ -58,42 +58,6 @@ INSERT IGNORE INTO modules (code, name) VALUES
 ('admin','Administration'),
 ('examples','Examples');
 
-DROP TABLE IF EXISTS db_tables;
-
--- Metadata snapshot of the DB's own tables, repopulated from the DDL cache on
--- each /reeman/tables load. Read-only from the CRUD's perspective - rows are
--- never created/edited by hand, only refreshed wholesale.
-CREATE TABLE db_tables (
-    id           INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'ICU',
-    name         VARCHAR(64)  NOT NULL COMMENT 'ICU',
-    column_count INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'ICU',
-    fk_count     INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'ICU',
-    has_crud     TINYINT(1)   NOT NULL DEFAULT 0 COMMENT 'ICU',
-    display      VARCHAR(64)  GENERATED ALWAYS AS(name) VIRTUAL,
-    created_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) COMMENT '';
-
-CREATE UNIQUE INDEX db_tables_name_unique ON db_tables(name);
-
-DROP TABLE IF EXISTS db_routes;
-
--- Metadata snapshot of generated routes, repopulated from routes.ts + schema
--- folders on each /reeman/routes load. Read-only from the CRUD's perspective -
--- rows are never created/edited by hand, only refreshed wholesale.
-CREATE TABLE db_routes (
-    id         INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'ICU',
-    url        VARCHAR(255) NOT NULL COMMENT 'ICU',
-    table_name VARCHAR(64)  NOT NULL DEFAULT '' COMMENT 'ICU',
-    module     VARCHAR(64)  NOT NULL DEFAULT '' COMMENT 'ICU',
-    removable  TINYINT(1)   NOT NULL DEFAULT 0 COMMENT 'ICU',
-    display    VARCHAR(255) GENERATED ALWAYS AS(url) VIRTUAL,
-    created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) COMMENT '';
-
-CREATE UNIQUE INDEX db_routes_url_unique ON db_routes(url);
-
 DROP TABLE IF EXISTS images;
 
 CREATE TABLE images (

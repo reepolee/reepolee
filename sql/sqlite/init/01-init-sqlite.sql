@@ -31,56 +31,6 @@ INSERT OR IGNORE INTO modules (code, name) VALUES
 ('reeman','Reepolee Manager'),
 ('examples','Examples');
 
-DROP TABLE IF EXISTS db_tables;
-
--- Metadata snapshot of the DB's own tables, repopulated from the DDL cache on
--- each /reeman/tables load. Read-only from the CRUD's perspective - rows are
--- never created/edited by hand, only refreshed wholesale.
-CREATE TABLE db_tables (
-    id           INTEGER   PRIMARY KEY,
-    name         TEXT      NOT NULL,
-    column_count INTEGER   NOT NULL DEFAULT 0,
-    fk_count     INTEGER   NOT NULL DEFAULT 0,
-    has_crud     INTEGER   NOT NULL DEFAULT 0,
-    display      TEXT      GENERATED ALWAYS AS(name) VIRTUAL,
-    created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE UNIQUE INDEX db_tables_name_unique ON db_tables(name);
-
-CREATE TRIGGER db_tables_updated_at_trigger AFTER UPDATE ON db_tables FOR EACH ROW WHEN NEW.updated_at IS OLD.updated_at BEGIN
-    UPDATE db_tables
-    SET
-        updated_at = CURRENT_TIMESTAMP
-    WHERE id = NEW.id;
-END;
-
-DROP TABLE IF EXISTS db_routes;
-
--- Metadata snapshot of generated routes, repopulated from routes.ts + schema
--- folders on each /reeman/routes load. Read-only from the CRUD's perspective -
--- rows are never created/edited by hand, only refreshed wholesale.
-CREATE TABLE db_routes (
-    id         INTEGER   PRIMARY KEY,
-    url        TEXT      NOT NULL,
-    table_name TEXT      NOT NULL DEFAULT '',
-    module     TEXT      NOT NULL DEFAULT '',
-    removable  INTEGER   NOT NULL DEFAULT 0,
-    display    TEXT      GENERATED ALWAYS AS(url) VIRTUAL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE UNIQUE INDEX db_routes_url_unique ON db_routes(url);
-
-CREATE TRIGGER db_routes_updated_at_trigger AFTER UPDATE ON db_routes FOR EACH ROW WHEN NEW.updated_at IS OLD.updated_at BEGIN
-    UPDATE db_routes
-    SET
-        updated_at = CURRENT_TIMESTAMP
-    WHERE id = NEW.id;
-END;
-
 DROP TABLE IF EXISTS sessions;
 
 CREATE TABLE sessions (

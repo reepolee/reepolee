@@ -21,6 +21,7 @@ import type { GridColumnDefinition } from "$generator/schema/types";
 
 import {
 	action_add_locale,
+	action_backup_database,
 	action_bulk,
 	action_bulk_refresh,
 	action_bulk_refresh_routes,
@@ -332,6 +333,13 @@ export async function post_add_locale(req: BunRequest): Promise<Response> {
 // ---------------------------------------------------------------------------
 // Database & routes
 // ---------------------------------------------------------------------------
+
+export async function post_backup_database(req: BunRequest): Promise<Response> {
+	const return_to = "/database";
+	if (await is_busy()) return busy_response(req, return_to);
+	const result = await action_backup_database();
+	return redirect_result(req, "backup-database", "", result, return_to);
+}
 
 export async function post_run_sql(req: BunRequest): Promise<Response> {
 	const params = await params_of(req);

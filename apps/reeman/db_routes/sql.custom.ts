@@ -1,41 +1,44 @@
-import { db } from "$config/db";
-import type { Record as DbRouteRecord } from "./sql";
+import type { RouteSchema } from "$generator/reeman/utils/route_scan";
 
-// Add custom queries here. This file is never overwritten by the generator.
+export interface DbRouteSnapshot {
+	id: number;
+	url: string;
+	table_name: string;
+	module: string;
+	removable: number;
+	display: string;
+}
 
-/**
- * Repopulate db_routes from routes.ts + schema folders - rows are a
- * snapshot, never hand-edited, so a wholesale delete + reinsert before each
- * index read keeps the grid current with the actual generated routes.
- * Includes static simple routes (simple page / simple table page generators)
- * so every generated route shows up in the grid, not just CRUD ones.
- */
-export async function refresh_db_routes(): Promise<void> {
+/** Discover the current generated routes without persisting a metadata snapshot. */
+export async function refresh_db_routes(): Promise<DbRouteSnapshot[]> {
 	const [{ discover_routes_with_schema, discover_simple_routes }, { list_removable_routes }] = await Promise.all([
 		import("$generator/reeman/utils/route_scan"),
 		import("$generator/reeman/remove_route"),
 	]);
 
-	// Simple routes never carry a CRUD schema, so there is no overlap - but
-	// dedupe by URL anyway to stay safe if a future generator mixes patterns.
 	const routes = discover_routes_with_schema();
-	const seen_urls = new Set(routes.map((r) => r.url));
+	const seen_urls = new Set(routes.map((route) => route.url));
 	for (const route of discover_simple_routes()) {
 		if (seen_urls.has(route.url)) continue;
 		seen_urls.add(route.url);
 		routes.push(route);
 	}
 
-	const removable = await list_removable_routes();
-	const removable_urls = new Set(removable.map((r) => r.url));
-
-	await db`DELETE FROM db_routes`;
-	for (const route of routes) {
-		await db`INSERT INTO db_routes (url, table_name, module, removable) VALUES (${route.url}, ${route.table}, ${route.prefix}, ${removable_urls.has(route.url) ? 1 : 0})`;
-	}
+	const removable_urls = new Set((await list_removable_routes()).map((route) => route.url));
+	return routes.map((route, index) => to_snapshot(route, index + 1, removable_urls));
 }
 
-export async function get_route_record_by_url(url: string): Promise<DbRouteRecord | undefined> {
-	const records = await db`SELECT * FROM db_routes WHERE url = ${url} LIMIT 1`;
-	return records[0] as DbRouteRecord | undefined;
+function to_snapshot(route: RouteSchema, id: number, removable_urls: Set<string>): DbRouteSnapshot {
+	return {
+		id,
+		url: route.url,
+		table_name: route.table,
+		module: route.prefix,
+		removable: removable_urls.has(route.url) ? 1 : 0,
+		display: route.url,
+	};
+}
+
+export async function get_route_record_by_url(url: string): Promise<DbRouteSnapshot | undefined> {
+	return (await refresh_db_routes()).find((record) => record.url === url);
 }

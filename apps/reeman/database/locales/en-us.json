@@ -1,5 +1,6 @@
 {
 	"actions": {
+		"backup_sql": "Backup to SQL",
 		"check_compliance": "Check domain compliance",
 		"data_to_sql": "DATA to SQL",
 		"open_in_studio": "Open in Studio",

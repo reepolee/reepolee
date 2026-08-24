@@ -6,7 +6,7 @@ import { render } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
 
 import { search_records } from "./sql";
-import { get_route_record_by_url, refresh_db_routes } from "./sql.custom";
+import { get_route_record_by_url } from "./sql.custom";
 
 import { wants_json } from "$lib/wants_json";
 import { strip_api_sensitive } from "$config/api_blocklist";
@@ -58,7 +58,7 @@ export async function get_db_routes_index(req: BunRequest): Promise<Response> {
 	const { query, offset, limit, order_by, filters, filter_not } = parse_pagination_params(req.url);
 	const limit_numeric = limit === "all" ? 999999 : limit;
 
-	const [reeman_data] = await Promise.all([load_reeman_data({ tables: false }), refresh_db_routes()]);
+	const reeman_data = await load_reeman_data({ tables: false });
 
 	const raw_filter_definitions = get_filter_definitions(columns, fields);
 	const filter_clauses = resolve_filters(raw_filter_definitions, filters, filter_not);
@@ -118,7 +118,6 @@ export async function get_db_routes_index(req: BunRequest): Promise<Response> {
 export async function get_db_route_detail(req: BunRequest): Promise<Response> {
 	const id = Number(req.params.id || 0);
 
-	await refresh_db_routes();
 	const { get_record_by_id } = await import("./sql");
 	const record = await get_record_by_id(id);
 	return render_db_route_detail(req, record);
@@ -129,7 +128,6 @@ export async function get_db_route_edit(req: BunRequest): Promise<Response> {
 	const raw_route_url = request_url.searchParams.get("url");
 	const route_url = raw_route_url?.trim() ?? "";
 
-	await refresh_db_routes();
 	const record = route_url ? await get_route_record_by_url(route_url) : undefined;
 	return render_db_route_detail(req, record);
 }

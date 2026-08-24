@@ -1,6 +1,7 @@
 {
 	"descriptions": {
 		"card": "This is a card-like section with border and padding.",
+		"switch_pattern": "The `{{ }}` block pre-computes a `role` string from the built-in **`is_dev`** and **`user`** globals, then `{#switch}` dispatches. This is the idiomatic `.ree` pattern for multi-way branching: **compute one value in JS, switch on it.**",
 		"typography": "Regular paragraph text with bold and italic formatting."
 	},
 	"errors": {
@@ -31,6 +32,7 @@
 		"secondary_button": "Secondary Button",
 		"select_dropdown": "Select Dropdown",
 		"selected_date": "Selected date:",
+		"switch_pattern_title": "Switch Demo — Simulating else-if",
 		"text_input": "Text Input",
 		"text_placeholder": "Enter text (min 3 chars)",
 		"textarea": "Textarea",
@@ -40,6 +42,9 @@
 	"messages": {
 		"error": "Error: Something went wrong",
 		"info": "Info: This is informational",
+		"role_dev": "🔧 Developer mode — all features unlocked",
+		"role_guest": "🔒 Guest — sign in for full access",
+		"role_user": "👤 Welcome back, authenticated user",
 		"success": "Success: Operation completed successfully",
 		"warning": "Warning: Please review this information"
 	},

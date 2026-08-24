@@ -13,6 +13,7 @@
  * - {#include(...)}  partial includes
  * - {#each} / {:else} / {/each} iteration
  * - {#if} / {:else} / {/if} conditionals
+ * - {#switch} / {#case} / {:else} / {/switch} value dispatch
  * - {#with} / {/with} scope blocks
  * - Block stack state machine for nested structures
  * - new Function() code generation
@@ -30,7 +31,7 @@ import type { CompiledFn } from "./types";
 // ---------------------------------------------------------------------------
 
 interface BlockEntry {
-	type: "each" | "if" | "with";
+	type: "each" | "if" | "with" | "switch";
 	id?: number;
 	has_else: boolean;
 	pos: number;
@@ -255,10 +256,45 @@ function emit_if_open(trimmed_content: string, state: CompileState, pos: number)
 }
 
 /**
+ * Handle {#switch <expr>} - evaluates the expression once and starts an
+ * if/else-if chain over {#case} values. Content between the switch and the
+ * first case is dead code (like a JS switch), so it is emitted inside an
+ * `if (false)` block that never runs.
+ */
+function emit_switch_open(trimmed_content: string, state: CompileState, pos: number): string {
+	const expr = trimmed_content.replace(/^switch\b/, "").trim();
+	if (!expr) { throw new Error(`Invalid #switch syntax: "{#switch ${trimmed_content}}". Expected "{#switch <expr> }"`); }
+	const id = state.each_counter++;
+	state.block_stack.push({ type: "switch", id, has_else: false, pos });
+	return `\n{\n  const __switch$${id} = (${expr});\n  if (false) {\n`;
+}
+
+/**
+ * Handle {#case <value>} - appends an `else if (__switch$N === value)` branch.
+ */
+function emit_case_open(trimmed_content: string, state: CompileState): string {
+	const top = state.block_stack[state.block_stack.length - 1];
+	if (!top || top.type !== "switch") { throw new Error("Unexpected {#case} without a matching {#switch}"); }
+	if (top.has_else) { throw new Error("{#case} after {:else} is not allowed - the default case must be last"); }
+	const value_expr = trimmed_content.replace(/^case\b/, "").trim();
+	if (!value_expr) { throw new Error(`Invalid #case syntax: "{#case ${trimmed_content}}". Expected "{#case <value> }"`); }
+	return `\n  } else if (__switch$${top.id} === (${value_expr})) {\n`;
+}
+
+/**
+ * Handle {/switch} - closes the if/else-if chain and the block.
+ */
+function emit_close_switch(state: CompileState): string {
+	if (state.block_stack.length === 0 || state.block_stack[state.block_stack.length - 1]!.type !== "switch") { throw new Error("Unexpected {/switch} without a matching {#switch}"); }
+	state.block_stack.pop();
+	return `\n  }\n}\n`;
+}
+
+/**
  * Handle {:else} - emits the else branch code.
  */
 function emit_else(state: CompileState): string {
-	if (state.block_stack.length === 0) { throw new Error("Unexpected {:else} without an open {#if} or {#each} block"); }
+	if (state.block_stack.length === 0) { throw new Error("Unexpected {:else} without an open {#if}, {#each}, or {#switch} block"); }
 	if (state.block_stack[state.block_stack.length - 1]!.type === "with") { throw new Error("{:else} is not allowed inside {#with} blocks"); }
 	const current = state.block_stack[state.block_stack.length - 1]!;
 	if (current.has_else) { throw new Error("Multiple {:else} in the same block are not allowed"); }
@@ -270,7 +306,7 @@ function emit_else(state: CompileState): string {
     }
   } else {
 `;
-	} else if (current.type === "if") {
+	} else if (current.type === "if" || current.type === "switch") {
 		return `
   } else {
 `;
@@ -467,6 +503,10 @@ export function compile_to_code(processed_template: string, slot_fns: CompiledFn
 				code += emit_with_open(trimmed_content, state, index);
 			} else if (prefix === "#" && /^if\b/.test(trimmed_content)) {
 				code += emit_if_open(trimmed_content, state, index);
+			} else if (prefix === "#" && /^switch\b/.test(trimmed_content)) {
+				code += emit_switch_open(trimmed_content, state, index);
+			} else if (prefix === "#" && /^case\b/.test(trimmed_content)) {
+				code += emit_case_open(trimmed_content, state);
 			} else if (prefix === ":" && trimmed_content === "else") {
 				code += emit_else(state);
 			} else if (prefix === "/" && trimmed_content === "each") {
@@ -475,6 +515,8 @@ export function compile_to_code(processed_template: string, slot_fns: CompiledFn
 				code += emit_close_with(state);
 			} else if (prefix === "/" && trimmed_content === "if") {
 				code += emit_close_if(state);
+			} else if (prefix === "/" && trimmed_content === "switch") {
+				code += emit_close_switch(state);
 			} else if (prefix === "_" || prefix === "-" || prefix === "@") {
 				code += emit_translation_lookup(prefix, trimmed_content);
 			} else {

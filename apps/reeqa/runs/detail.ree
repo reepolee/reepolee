@@ -1,4 +1,4 @@
-{#layout("layout")}
+{#layout("dashboard/layout")}
 {#with props}
 	<div class="w-full p-4 space-y-6">
 		<ree-breadcrumbs items="{= breadcrumb_items }"></ree-breadcrumbs>
