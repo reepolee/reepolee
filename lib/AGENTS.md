@@ -76,6 +76,6 @@ DB config lives in `config/db.ts`. Standalone-script connection-pool gotcha:
 | `session.ts`, `cookies.ts` | Session and cookie handling                           |
 | `logger.ts`           | File logging                                               |
 | `livereload.ts`, `server_notify.ts`, `server_helpers.ts`, `bootstrap.ts` | Dev reload, server startup |
-| `modules.ts`, `route_module.ts` | Module system                                    |
+| `route_module.ts`    | External development route module mounts        |
 | `admin/`              | Admin-only helpers (`require_admin_auth.ts`, `rate_limits.ts`, `reload_translations.ts`) |
 | `env.ts`, `object.ts`, `format.ts` | Small utilities (fail-loud env, object/format helpers) |

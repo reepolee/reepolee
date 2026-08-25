@@ -13,7 +13,7 @@
 // bun scripts:
 //   dev         = --app
 //   dev:worker  = --app --worker
-//   dev:all     = --app --reeman --reeqa
+//   dev:all     = --app --reeman --reeqa --worker
 //   dev:reeman  = --reeman
 //   dev:reeqa   = --reeqa
 //   dev:all:agent = --app --reeman --agent

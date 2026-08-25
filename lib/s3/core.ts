@@ -22,13 +22,15 @@ function read_s3_env(key: string): string {
 	return sanitize_env_value(Bun.env[key]!);
 }
 
+const DEFAULT_PROTOCOL = "http"; // MinIO/local S3-compatible endpoints default to plain http.
+
 function resolve_s3_endpoint(): string {
 	const protocol = read_s3_env("S3_PROTOCOL");
 	const hostname = read_s3_env("S3_HOSTNAME");
 	const port = read_s3_env("S3_PORT");
 
 	if (!hostname) return "";
-	return `${protocol || "http"}://${hostname}${port ? `:${port}` : ""}`;
+	return `${protocol || DEFAULT_PROTOCOL}://${hostname}${port ? `:${port}` : ""}`;
 }
 
 function resolve_s3_access_key(): string { return read_s3_env("S3_ACCESS_KEY_ID"); }

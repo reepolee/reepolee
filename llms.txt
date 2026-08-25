@@ -33,7 +33,7 @@ This is a full-stack web app with server-side rendering, a database, and CRUD op
 - **Live reload** - In dev mode, a WebSocket at `/__reload` notifies the browser on file changes.
 - **S3 / local storage** - Serves media files (avatars, images) from S3-compatible storage or a local directory.
 - **Background worker** - [worker.ts](https://github.com/reepolee/reepolee/blob/main/worker.ts) processes async tasks from a queue (translation jobs, etc.). Started separately with `bun run worker`.
-- **Module system** - `lib/modules.ts` loads optional modules at startup (e.g., auth, email). Modules can register additional routes.
+- **Module system** - External development route modules can be mounted from sibling folders via `lib/route_module.ts` (`mount_route_module`, `mount_route_modules_from_dir`); first-party app module folders under `apps/reeman/` and `apps/reeqa/` are auto-mounted by default. Per-user admin access is enforced by the "system" module via `require_module_mw`.
 ### Key files
 
 | File                                                                                            | Role                                         |
@@ -169,7 +169,7 @@ See [queue/README.md](https://github.com/reepolee/reepolee/blob/main/queue/READM
 
 ## Commands
 
-- **Development**: `bun dev` (tailwind watch + hot server), `bun dev:worker` (dev server + queue worker), `bun run worker` (background worker). The worker is opt-in: it runs only when `--worker` is passed, never implicitly alongside the app.
+- **Development**: `bun dev` (tailwind watch + hot server), `bun dev:worker` (dev server + queue worker), `bun dev:reeman` (reeman app only), `bun dev:reeqa` (reeqa app only), `bun dev:all` (main + reeman + reeqa apps + queue worker + CSS watcher), `bun run worker` (background worker only). The worker is opt-in: it runs only when `--worker` is passed, never implicitly alongside the app. `dev:all` passes `--worker`; `dev:reeman` and `dev:reeqa` do not.
 - **CSS**: `bun run css:watch`, `bun run css:once`, `bun run css:build` (minified).
 - **Production**: `bun start` (production mode), `bun run release` (minified CSS + npm version bump), `bun run git:production` (force-push to production branch).
 - **Testing & formatting**: `bun test` (parallel), `bun run format` (reettier).
