@@ -65,6 +65,22 @@ async function main() {
 	const prereq_code = await run_inherited("bun", prereq_args);
 	if (prereq_code !== 0) { throw new Error(`prerequisites failed with exit code ${prereq_code}`); }
 
+	// Commit downloaded vendor/static files so bun create destinations
+	// have them in version control.
+	try {
+		const git_add = await run_captured("git", ["add", "vendor/", "static/"]);
+		if (git_add.code === 0) {
+			const git_status = await run_captured("git", ["status", "--porcelain", "vendor/", "static/"]);
+			if (git_status.output.trim().length > 0) {
+				await run_step("git commit", ["git", "commit", "-m", "chore: download vendor and static files"], "committed");
+			} else {
+				note("no vendor changes to commit");
+			}
+		}
+	} catch {
+		// Not a git repo or git unavailable — skip commit silently.
+	}
+
 	section("Project");
 
 	await run_step("project meta", ["scripts/sync_project_meta.ts"], "synced");
