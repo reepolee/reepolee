@@ -72,7 +72,13 @@ async function main() {
 		if (git_add.code === 0) {
 			const git_status = await run_captured("git", ["status", "--porcelain", "vendor/", "static/"]);
 			if (git_status.output.trim().length > 0) {
-				await run_step("git commit", ["git", "commit", "-m", "chore: download vendor and static files"], "committed");
+				step_start("git commit");
+				const git_commit = await run_captured("git", ["commit", "-m", "chore: download vendor and static files"]);
+				if (git_commit.code !== 0) {
+					step_fail("git commit", git_commit.output);
+					throw new Error(`git commit failed with exit code ${git_commit.code}`);
+				}
+				step_done("git commit", "committed");
 			} else {
 				note("no vendor changes to commit");
 			}
