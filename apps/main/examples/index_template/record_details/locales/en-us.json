@@ -1,0 +1,10 @@
+{
+	"labels": {
+		"id": "ID",
+		"last_checked": "Last checked",
+		"method": "Method",
+		"owner": "Owner",
+		"path": "Path",
+		"status": "Status"
+	}
+}

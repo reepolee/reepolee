@@ -1,0 +1,239 @@
+{#layout("layout")}
+{#with props}
+
+	{{
+		const backend_label = queue_backend === "redis" ? "Redis" : "SQL";
+	}}
+
+	<div class="py-4">
+
+		{#if error}
+			<div class="px-4 mb-4">
+				<app-banner type="red">{= error}</app-banner>
+			</div>
+		{/if}
+
+		<!-- TABLE DISPLAY CONTROLLER (adapted: worker status + pause/resume) -->
+		<div class="flex items-center gap-1 justify-between w-full flex-wrap px-4">
+
+			<h1 class="text-xl font-bold">
+				{_ ui.title}
+				<span class="pill-layout bg-neutral-200 ml-2 text-xs font-semibold">
+					{_ ui.backend}:
+					{= backend_label }
+				</span>
+			</h1>
+
+			<div class="flex items-center gap-2">
+				<span class="pill-layout text-xs font-bold {= worker_alive ? 'pill-yes' : 'pill-no' }">
+					{#if worker_alive}
+						{_ ui.worker_online}
+					{:else}
+						{_ ui.worker_offline}
+					{/if}
+					{#if worker_state_label}
+						—
+						{= worker_state_label}
+					{/if}
+				</span>
+
+				{#if worker_alive}
+					<form method="POST" action="{~ localized_path('/queues/pause') }" class="inline">
+						<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+						<input type="hidden" name="action" value="{= worker_paused ? 'resume' : 'pause' }" />
+						<button type="submit" class="button {= worker_paused ? 'primary' : 'tertiary' } text-xs">
+							{#if worker_paused}
+								{_ actions.resume}
+							{:else}
+								{_ actions.pause}
+							{/if}
+						</button>
+					</form>
+				{/if}
+			</div>
+		</div>
+
+		<!-- QUEUES GRID (one row per pending job) -->
+		<h2 class="px-4 mt-4 mb-2 text-sm font-semibold uppercase tracking-wider text-text-secondary">{_ ui.queues_heading}</h2>
+
+		{#if (queues.length === 0) }
+			<p class="p-4">{_ ui.no_pending}</p>
+
+		{:else}
+
+			<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg" style="grid-template-columns: {= queue_grid_cols }">
+
+				<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+					<div class="{= queue_columns.queue.class }">{_ labels.queue}</div>
+					<div class="{= queue_columns.id.class }">{_ labels.id}</div>
+					<div class="{= queue_columns.type.class }">{_ labels.type}</div>
+					<div class="{= queue_columns.created.class }">{_ labels.created}</div>
+				</div>
+
+				{#each queues as queue}
+
+					<!-- per-queue header: name, pending count and clear actions -->
+					<div class="col-span-full flex flex-wrap items-center justify-between gap-2 border-b border-b-neutral-200 bg-surface-sunken px-2 py-1.5">
+						<div class="flex items-center gap-2">
+							<span class="font-mono font-semibold">{= queue.name}</span>
+							<span class="pill-layout bg-neutral-200 text-xs">{= queue.pending}</span>
+						</div>
+						<div class="flex items-center gap-2">
+							<confirm-dialog trigger-class="button tertiary text-xs" form-path="/queues/clear?action=pending" confirm-class="danger" title="{_ actions.clear_pending }" trigger-text="{_ actions.clear_pending }" message="{_ ui.confirm_clear_pending }" confirm-text="{_ actions.confirm }" cancel-text="{_ actions.cancel }" extra-field-name="queue" extra-field-value="{= queue.name }">
+							</confirm-dialog>
+							<confirm-dialog trigger-class="button tertiary text-xs" form-path="/queues/clear?action=all" confirm-class="danger" title="{_ actions.clear_all }" trigger-text="{_ actions.clear_all }" message="{_ ui.confirm_clear_all }" confirm-text="{_ actions.confirm }" cancel-text="{_ actions.cancel }" extra-field-name="queue" extra-field-value="{= queue.name }">
+							</confirm-dialog>
+						</div>
+					</div>
+
+					<!-- one row per pending job -->
+					{#each queue.pending_jobs as job}
+						<div class="col-span-full grid grid-cols-subgrid group border-b border-b-neutral-200 *:px-2 *:py-2 hover:bg-primary hover:text-white">
+							<div class="{= queue_columns.queue.class } font-mono text-xs text-text-secondary truncate">{= queue.name}</div>
+							<div class="{= queue_columns.id.class } font-mono text-xs truncate">{= job.id.slice(0, 8) }…</div>
+							<div class="{= queue_columns.type.class } font-medium">{= job.type}</div>
+							<div class="{= queue_columns.created.class } text-xs whitespace-nowrap">{= job.created_formatted}</div>
+						</div>
+					{/each}
+
+				{/each}
+			</div>
+		{/if}
+
+		<!-- RUNNING JOBS GRID -->
+		{#if (running.length > 0) }
+			<h2 class="px-4 mt-6 mb-2 text-sm font-semibold uppercase tracking-wider text-text-secondary">{_ ui.running_heading}</h2>
+
+			<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg" style="grid-template-columns: {= failed_grid_cols }">
+
+				<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+					<div class="{= failed_columns.id.class }">{_ labels.id}</div>
+					<div class="{= failed_columns.type.class }">{_ labels.type}</div>
+					<div class="{= failed_columns.attempts.class }">{_ labels.attempts}</div>
+					<div class="{= failed_columns.error.class }">{_ labels.error}</div>
+					<div class="{= failed_columns.created.class }">{_ labels.created}</div>
+					<div class="{= failed_columns.actions.class }">{_ labels.actions}</div>
+				</div>
+
+				{#each running as job}
+					<div class="col-span-full grid grid-cols-subgrid border-b border-b-neutral-200 *:py-2 *:px-2">
+						<div class="{= failed_columns.id.class } font-mono text-xs">{= job.id.slice(0, 8) }…</div>
+						<div class="{= failed_columns.type.class }">{= job.type}</div>
+						<div class="{= failed_columns.attempts.class }">{= job.attempts} / {= job.max_attempts}</div>
+						<div class="{= failed_columns.error.class } text-xs truncate">{= job.error_message ?? '-'}</div>
+						<div class="{= failed_columns.created.class } text-xs whitespace-nowrap">{= job.created_formatted}</div>
+						<div class="{= failed_columns.actions.class }">
+							<div class="flex items-center justify-end gap-2">
+								<confirm-dialog trigger-class="button danger text-xs" form-path="/queues/delete" confirm-class="danger" title="{_ actions.delete }" trigger-text="{_ actions.delete }" message="{_ ui.confirm_delete_job }" confirm-text="{_ actions.confirm }" cancel-text="{_ actions.cancel }" extra-field-name="job_id" extra-field-value="{= job.id }">
+								</confirm-dialog>
+							</div>
+						</div>
+					</div>
+				{/each}
+
+			</div>
+		{/if}
+
+		<!-- FAILED JOBS GRID -->
+		<h2 class="px-4 mt-6 mb-2 text-sm font-semibold uppercase tracking-wider text-text-secondary">{_ ui.failed_heading}</h2>
+
+		{#if (failed.length === 0) }
+			<p class="p-4">{_ ui.no_failed}</p>
+
+		{:else}
+
+			<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg" style="grid-template-columns: {= failed_grid_cols }">
+
+				<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+					<div class="{= failed_columns.id.class }">{_ labels.id}</div>
+					<div class="{= failed_columns.type.class }">{_ labels.type}</div>
+					<div class="{= failed_columns.attempts.class }">{_ labels.attempts}</div>
+					<div class="{= failed_columns.error.class }">{_ labels.error}</div>
+					<div class="{= failed_columns.created.class }">{_ labels.created}</div>
+					<div class="{= failed_columns.actions.class }">{_ labels.actions}</div>
+				</div>
+
+				{#each failed as job}
+					<div class="col-span-full grid grid-cols-subgrid group border-b border-b-neutral-200">
+
+						<div class="col-span-full grid grid-cols-subgrid *:py-2 *:px-2 cursor-pointer failed-row-toggle hover:bg-primary hover:text-white">
+							<div class="{= failed_columns.id.class } font-mono text-xs">
+								<span class="inline-block transition-transform failed-row-chevron select-none" aria-hidden="true">▶</span>
+								{= job.id.slice(0, 8) }
+								…
+							</div>
+							<div class="{= failed_columns.type.class }">{= job.type}</div>
+							<div class="{= failed_columns.attempts.class }">{= job.attempts} / {= job.max_attempts}</div>
+							<div class="{= failed_columns.error.class } text-xs truncate">{= job.error_message ?? '-'}</div>
+							<div class="{= failed_columns.created.class } text-xs whitespace-nowrap">{= job.created_formatted}</div>
+							<div class="{= failed_columns.actions.class }">
+								<div class="flex items-center justify-end gap-2">
+									<form method="POST" action="{~ localized_path('/queues/retry') }" class="inline">
+										<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+										<input type="hidden" name="job_id" value="{= job.id }" />
+										<button type="submit" class="button primary text-xs">
+											{_ actions.retry}
+										</button>
+									</form>
+									<confirm-dialog trigger-class="button danger text-xs" form-path="/queues/delete" confirm-class="danger" title="{_ actions.delete }" trigger-text="{_ actions.delete }" message="{_ ui.confirm_delete_job }" confirm-text="{_ actions.confirm }" cancel-text="{_ actions.cancel }" extra-field-name="job_id" extra-field-value="{= job.id }">
+									</confirm-dialog>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-span-full gap-3 px-4 pb-4 failed-row-content hidden">
+							<div class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1.5 text-xs">
+								<span class="text-text-tertiary font-medium">{_ labels.id}</span>
+								<span class="font-mono break-all">{= job.id}</span>
+
+								{#if job.queue}
+									<span class="text-text-tertiary font-medium">{_ labels.queue}</span>
+									<span class="font-mono">{= job.queue}</span>
+								{/if}
+
+								<span class="text-text-tertiary font-medium">{_ labels.last_run}</span>
+								<span>{= job.last_run_formatted}</span>
+
+								{#if job.scheduled_formatted && job.scheduled_formatted !== '-'}
+									<span class="text-text-tertiary font-medium">{_ labels.scheduled}</span>
+									<span>{= job.scheduled_formatted}</span>
+								{/if}
+							</div>
+
+							<div>
+								<span class="text-red-500 font-medium block mb-1 text-xs">{_ labels.error}:</span>
+								<pre class="bg-red-50 border border-red-200 rounded p-2 text-red-700 text-xs whitespace-pre-wrap break-all max-h-24 overflow-y-auto font-mono">{= job.error_message ?? '-'}</pre>
+							</div>
+
+							{#if job.payload}
+								<div>
+									<span class="text-text-secondary font-medium block mb-1 text-xs">
+										{_ labels.payload}
+										:
+									</span>
+									<pre class="bg-neutral-100 border border-neutral-200 rounded p-2 text-text-primary text-xs whitespace-pre-wrap break-all max-h-48 overflow-y-auto font-mono">
+										{~ JSON.stringify(job.payload, null, 2)}
+									</pre>
+								</div>
+							{/if}
+						</div>
+					</div>
+				{/each}
+			</div>
+		{/if}
+
+		<script>
+			for (const toggle of document.querySelectorAll(".failed-row-toggle")) {
+				toggle.addEventListener("click", (event) => {
+					if (event.target.closest("button, a, form, dialog, input")) return;
+					const content = toggle.nextElementSibling;
+					if (!content) return;
+					content.classList.toggle("hidden");
+					content.classList.toggle("grid");
+					const chevron = toggle.querySelector(".failed-row-chevron");
+					chevron?.classList.toggle("rotate-90");
+				});
+			}
+		</script>
+	</div>
+{/with}
