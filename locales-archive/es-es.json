@@ -1,0 +1,2140 @@
+{
+	"format": "reepolee-translations-v1",
+	"source_locale": "en-us",
+	"target_locale": "es-es",
+	"files": {
+		"apps/main/examples/index_template/locales/en-us.json": {
+			"source_hash": "2fbb2388bb2286aaf6834cfb998cfc8b3737216262cc9845b3405a58711303f8",
+			"translations": {
+				"labels": {
+					"id": "ID",
+					"last_checked": "Última comprobación",
+					"method": "Método",
+					"owner": "Propietario",
+					"path": "Ruta",
+					"status": "Estado"
+				},
+				"nav": "Plantilla de índice",
+				"route_name": "plantilla-indice"
+			}
+		},
+		"apps/main/examples/index_template/record_details/locales/en-us.json": {
+			"source_hash": "6776f68e5a543a51556b2dd04c2dc5d7103260cf360179107b3f1f550bf4a83e",
+			"translations": {
+				"labels": {
+					"id": "ID",
+					"last_checked": "Última comprobación",
+					"method": "Método",
+					"owner": "Propietario",
+					"path": "Ruta",
+					"status": "Estado"
+				}
+			}
+		},
+		"apps/main/examples/kitchen_sink/locales/en-us.json": {
+			"source_hash": "6122d0e71f4f75bde7611454041b10312fc05c4d4738d2e37eb404fb8eb7f00e",
+			"translations": {
+				"descriptions": {
+					"card": "Esta es una sección tipo tarjeta con borde y relleno.",
+					"typography": "Texto de párrafo normal con formato de negrita y cursiva."
+				},
+				"errors": {
+					"min_length_3": "Se requieren como mínimo 3 caracteres",
+					"text_input_max": "Se permiten como máximo 100 caracteres"
+				},
+				"labels": {
+					"banners": "Banners",
+					"buttons": "Botones",
+					"card_section": "Sección de tarjeta",
+					"cards": "Tarjetas y secciones",
+					"checkbox_option": "Opción de casilla",
+					"code_example": "Ejemplo de código",
+					"date_input": "Campo de fecha",
+					"disabled_button": "Botón deshabilitado",
+					"email_input": "Campo de correo",
+					"email_placeholder": "Introduzca el correo",
+					"file_upload": "Subida de archivos",
+					"form_elements": "Elementos de formulario",
+					"heading_1": "Encabezado 1",
+					"heading_2": "Encabezado 2",
+					"heading_3": "Encabezado 3",
+					"list_item": "Elemento de lista",
+					"option": "Opción",
+					"primary_button": "Botón principal",
+					"radio": "Radio",
+					"radio_options": "Opciones de radio",
+					"secondary_button": "Botón secundario",
+					"select_dropdown": "Menú desplegable",
+					"selected_date": "Fecha seleccionada:",
+					"text_input": "Campo de texto",
+					"text_placeholder": "Introduzca texto (mín. 3 caracteres)",
+					"textarea": "Área de texto",
+					"textarea_placeholder": "Introduzca varias líneas",
+					"typography": "Tipografía"
+				},
+				"messages": {
+					"error": "Error: Algo salió mal",
+					"info": "Información: Esto es informativo",
+					"success": "Éxito: La operación se completó correctamente",
+					"warning": "Advertencia: Revise esta información"
+				},
+				"nav": "Fregadero",
+				"route_name": "fregadero",
+				"ui": {
+					"description": "Escaparate de componentes y ejemplos",
+					"title": "Fregadero"
+				}
+			}
+		},
+		"apps/main/examples/locales/en-us.json": {
+			"source_hash": "ae6e3c1acec2c7c5488a73d30ff4e6d0f1443c277a53691cd031a695a000ed17",
+			"translations": {
+				"nav_prefix_title": "Ejemplos",
+				"route_name": "ejemplos"
+			}
+		},
+		"apps/main/home/locales/en-us.json": {
+			"source_hash": "0059b1a5a17d0320becc14d45646d4d4e1b5d61505b9d7af36d6a11ab4bb6d2f",
+			"translations": {
+				"nav": "Inicio",
+				"ui": {
+					"title": "Página de inicio"
+				}
+			}
+		},
+		"apps/main/system/locales/en-us.json": {
+			"source_hash": "6fcdad06b66bbb4b08db154f4d07e112bb2d1580fb2ee8f06159797f886df912",
+			"translations": {
+				"nav_prefix_title": "Sistema",
+				"route_name": "sistema"
+			}
+		},
+		"apps/reeman/cache/locales/en-us.json": {
+			"source_hash": "38f13d22c207fa4a6121c818efcd1536066f5696afcddb120f691fa3e17fb22e",
+			"translations": {
+				"nav": "Caché",
+				"ui": {
+					"actions_header": "Acciones",
+					"confirm_invalidate": "Vaciar",
+					"disabled": "La caché no está disponible: active CACHE_ENABLED en las variables de entorno",
+					"disabled_badge": "Deshabilitado",
+					"enable_hint": "Establezca CACHE_ENABLED=true en el archivo .env y reinicie el servidor",
+					"enabled_badge": "Activo",
+					"entries_header": "Entradas de caché",
+					"invalidate_btn": "Vaciar",
+					"no_tables": "No hay ninguna tabla en el seguimiento de la caché",
+					"reset_btn": "Vaciar toda la caché",
+					"reset_confirm": "¿Seguro que desea invalidar TODOS los datos almacenados en caché? Esta acción no se puede deshacer.",
+					"table_header": "Tabla",
+					"title": "Caché SQL",
+					"total_keys": "Total de claves de caché",
+					"tracked_tables": "Tablas rastreadas"
+				}
+			}
+		},
+		"apps/reeman/database/locales/en-us.json": {
+			"source_hash": "2e9d017a2d9cabbccafa5da5e8345f70ab6c51e10ca97f7c06892dfcddbb2cef",
+			"translations": {
+				"actions": {
+					"check_compliance": "Comprobar cumplimiento de dominio",
+					"data_to_sql": "DATOS a SQL",
+					"open_in_studio": "Abrir en Studio",
+					"run_sql": "Ejecutar archivo SQL"
+				},
+				"confirm": {
+					"run_sql": "¿Ejecutar este archivo SQL contra la base de datos? Esta acción no se puede deshacer."
+				},
+				"hints": {
+					"json_path": "Ruta del archivo JSON a convertir, relativa a la raíz del proyecto (p. ej. data/recipes.json)",
+					"slug": "Slug opcional en minúsculas para el nombre de archivo SQL generado. Por defecto usa el nombre de la tabla.",
+					"slug_safe_table": "Solo letras minúsculas y números (se usa para el slug del nombre de archivo SQL)"
+				},
+				"labels": {
+					"action": "Acción",
+					"columns": "Columnas",
+					"file_count": "archivos",
+					"file_type": "Tipo",
+					"folder": "Carpeta",
+					"folder_summary": "Total de carpetas",
+					"import_file": "Archivo JSON, XLS o XLSX",
+					"json_file": "Archivo JSON",
+					"json_path": "Ruta del archivo JSON",
+					"last_updated": "Última actualización",
+					"rows": "filas",
+					"sheets": "Hojas que importar",
+					"slug": "Slug (opcional)",
+					"sql_file": "Archivo SQL",
+					"table_name": "Nombre de tabla"
+				},
+				"nav": "Base de datos",
+				"selectors": {
+					"select_sql": "-- seleccionar un archivo .sql --"
+				},
+				"ui": {
+					"broken_views_hint": "Estas vistas hacen referencia a tablas que ya no existen y se omitieron durante la inspección. Recrea las tablas que faltan (p. ej. mediante Ejecutar archivo SQL) y vuelve a cargar.",
+					"broken_views_title": "Vistas rotas detectadas",
+					"busy": "Procesando — la página se actualizará al terminar.",
+					"compliance_hint": "Inspecciona la base de datos en vivo e informa de las columnas que no coinciden con los tipos de dominio canónicos. Solo lectura.",
+					"data_to_sql_hint": "Suba datos JSON, XLS o XLSX y genere archivos SQL emparejados para MySQL y SQLite.",
+					"database_description": "Ejecutar archivos SQL, sembrar datos desde JSON y comprobar el cumplimiento de dominio.",
+					"database_title": "Base de datos",
+					"empty_sheet": "hoja vacía",
+					"inspecting_file": "Inspeccionando archivo...",
+					"inspection_error": "No se pudo inspeccionar este archivo.",
+					"json_upload_hint": "Seleccione un archivo .json antes de iniciar la transformación.",
+					"no_sql_files": "No se encontraron archivos .sql en sql/{dialect}/.",
+					"sheet_selection_hint": "Seleccione una o más hojas y revise los nombres de tabla sugeridos.",
+					"sql_files_hint": "Elija un archivo SQL para ejecutarlo contra la base de datos actual."
+				}
+			}
+		},
+		"apps/reeman/db_routes/locales/en-us.json": {
+			"source_hash": "93e059a979c09a6112129712bf77aee358a8def6085acf671f1a1d721c9a041d",
+			"translations": {
+				"actions": {
+					"add_condition": "Añadir condición",
+					"add_page": "Añadir página simple",
+					"add_table_page": "Añadir página de tabla simple",
+					"bulk_action": "Eliminar rutas de BD seleccionadas",
+					"bulk_action_2": "Acción alternativa",
+					"cancel": "Cancelar",
+					"create": "Crear",
+					"do_it": "Sí, hacerlo",
+					"fields": "Solo campos",
+					"full": "Actualización completa",
+					"new_db_route": "Nueva ruta de BD",
+					"refresh_crud": "Actualizar CRUD",
+					"remove": "Quitar",
+					"remove_route": "Quitar ruta",
+					"save": "Guardar",
+					"save_close": "Guardar y cerrar"
+				},
+				"child_ui": {
+					"actions": "Acciones",
+					"delete": "Eliminar",
+					"deleting": "Eliminando…",
+					"edit": "Editar",
+					"edit_title": "Editar Db_route",
+					"empty_text": "No se encontraron rutas de BD.",
+					"error_deleting": "Error al eliminar el registro.",
+					"error_loading": "Error al cargar el registro.",
+					"error_saving": "Error al guardar el registro.",
+					"new_button": "+ Nueva Db_route",
+					"new_title": "Nueva Db_route"
+				},
+				"errors": {
+					"duplicate_key": "Ya existe un registro con este valor.",
+					"error_creating_record": "Se produjo un error al guardar el registro.",
+					"module_required": "El módulo es obligatorio.",
+					"must_be_selected": "Este campo es obligatorio.",
+					"table_name_required": "El nombre de la tabla es obligatorio.",
+					"title_required": "El título es obligatorio.",
+					"url_required": "La URL es obligatoria.",
+					"value_required_or_use_original": "Introduzca un valor traducido o elimine este idioma."
+				},
+				"hints": {
+					"folder_name": "Letras minúsculas, dígitos, - o _ (p. ej. my_page).",
+					"prefix": "Prefijo de módulo opcional. Déjelo vacío para colocarlo directamente en /routes."
+				},
+				"labels": {
+					"delete_translations": "Eliminar traducciones",
+					"display": "Mostrar",
+					"fields": "Campos",
+					"folder_name": "Nombre de carpeta",
+					"mode": "Modo",
+					"module": "Módulo",
+					"order_by": "Ordenar por",
+					"prefix": "Prefijo",
+					"removable": "Eliminable",
+					"table": "Tabla / Ruta",
+					"table_name": "Nombre de tabla",
+					"template_tags": "Etiquetas de plantilla",
+					"url": "URL",
+					"where": "Dónde"
+				},
+				"messages": {
+					"bulk_delete_failed": "Falló la eliminación masiva.",
+					"bulk_delete_no_ids": "No hay rutas de BD seleccionadas.",
+					"bulk_deleted": "No se eliminaron rutas de BD|{count} ruta de BD eliminada|{count} rutas de BD eliminadas|{count} rutas de BD eliminadas|{count} rutas de BD eliminadas",
+					"bulk_errors": "|{count} ruta de BD con error|{count} rutas de BD con error|{count} rutas de BD con error|{count} rutas de BD con error",
+					"record_created": "Registro creado",
+					"record_updated": "Registro actualizado"
+				},
+				"nav": "Rutas de BD",
+				"route_name": "rutas-bd",
+				"search": {
+					"search_term": "Buscar rutas de BD...",
+					"submit": "Buscar"
+				},
+				"selectors": {
+					"0": "No",
+					"1": "Sí",
+					"all": "Todos",
+					"default": "(mantener actual)",
+					"per_page": "por página",
+					"select_table": "-- Seleccionar tabla o ruta --"
+				},
+				"ui": {
+					"add_page_hint": "Crea una ruta de página estática (sin base de datos) a partir de la plantilla simple-page.",
+					"add_page_title": "Añadir página simple",
+					"add_table_page_hint": "Crea una página de listado de solo lectura respaldada por una tabla de base de datos.",
+					"add_table_page_title": "Añadir página de tabla simple",
+					"apply_filters": "Aplicar",
+					"busy": "Procesando — la página se actualizará al terminar.",
+					"clear_all": "Borrar todo",
+					"filter_not": "NO",
+					"loading_count": "Cargando…",
+					"modifying": "Está a punto de modificar",
+					"no_records": "No se encontraron rutas de BD.",
+					"no_tables": "No se encontraron tablas en la base de datos.",
+					"records": "registro(s)",
+					"remove_route_hint": "Esto elimina la carpeta de la ruta y sus archivos del disco. Esta acción no se puede deshacer.",
+					"select_table_first": "Seleccione una tabla para elegir campos.",
+					"title": "Ruta de BD"
+				}
+			}
+		},
+		"apps/reeman/db_tables/locales/en-us.json": {
+			"source_hash": "f470f987f079463a06dbec121459c9c374f426169e89792411251c206b961db2",
+			"translations": {
+				"actions": {
+					"bulk_action": "Eliminar tablas de BD seleccionadas",
+					"bulk_action_2": "Acción alternativa",
+					"cancel": "Cancelar",
+					"do_it": "Sí, hacerlo",
+					"fields": "Solo campos",
+					"force": "Forzar sobrescritura",
+					"full": "Actualización completa",
+					"generate_crud": "Generar CRUD",
+					"new_db_table": "Nueva tabla de BD",
+					"refresh_crud": "Actualizar CRUD",
+					"save": "Guardar",
+					"save_close": "Guardar y cerrar",
+					"schema_only": "Solo esquema",
+					"translate": "Traducir con IA"
+				},
+				"child_ui": {
+					"actions": "Acciones",
+					"delete": "Eliminar",
+					"deleting": "Eliminando…",
+					"edit": "Editar",
+					"edit_title": "Editar Db_table",
+					"empty_text": "No se encontraron tablas de BD.",
+					"error_deleting": "Error al eliminar el registro.",
+					"error_loading": "Error al cargar el registro.",
+					"error_saving": "Error al guardar el registro.",
+					"new_button": "+ Nueva Db_table",
+					"new_title": "Nueva Db_table"
+				},
+				"errors": {
+					"duplicate_key": "Ya existe un registro con este valor.",
+					"error_creating_record": "Se produjo un error al guardar el registro.",
+					"has_crud_required": "Se requiere la indicación de \"Has CRUD\".",
+					"must_be_selected": "Este campo es obligatorio.",
+					"name_required": "El nombre es obligatorio.",
+					"title_required": "El título es obligatorio.",
+					"value_required_or_use_original": "Introduzca un valor traducido o elimine este idioma."
+				},
+				"hints": {
+					"prefix": "Prefijo de ruta de URL opcional para las rutas generadas (p. ej. admin). Déjelo en blanco para montarlo en la raíz.",
+					"route_name": "Nombre de URL opcional que sustituye al nombre de la tabla (p. ej. my-users)"
+				},
+				"labels": {
+					"column_count": "Número de columnas",
+					"display": "Mostrar",
+					"fk_count": "Número de FK",
+					"has_crud": "Tiene CRUD",
+					"index_columns": "Columnas de índice",
+					"mode": "Modo",
+					"name": "Nombre",
+					"pagination": "Paginación",
+					"prefix": "Prefijo",
+					"render_strategy": "Estrategia de renderizado",
+					"route_name": "Nombre de ruta (opcional)",
+					"row_count": "Número de filas",
+					"table": "Tabla / Ruta",
+					"template_tags": "Etiquetas de plantilla"
+				},
+				"messages": {
+					"bulk_delete_failed": "Falló la eliminación masiva.",
+					"bulk_delete_no_ids": "No hay tablas de BD seleccionadas.",
+					"bulk_deleted": "No se eliminaron tablas de BD|{count} tabla de BD eliminada|{count} tablas de BD eliminadas|{count} tablas de BD eliminadas|{count} tablas de BD eliminadas",
+					"bulk_errors": "|{count} tabla de BD con error|{count} tablas de BD con error|{count} tablas de BD con error|{count} tablas de BD con error",
+					"record_created": "Registro creado",
+					"record_updated": "Registro actualizado"
+				},
+				"nav": "Tablas de BD",
+				"route_name": "tablas-bd",
+				"search": {
+					"search_term": "Buscar tablas de BD...",
+					"submit": "Buscar"
+				},
+				"selectors": {
+					"0": "No",
+					"1": "Sí",
+					"all": "Todos",
+					"default": "(mantener actual)",
+					"per_page": "por página",
+					"select_table": "-- Seleccionar tabla o ruta --"
+				},
+				"ui": {
+					"apply_filters": "Aplicar",
+					"busy": "Procesando — la página se actualizará al terminar.",
+					"clear_all": "Borrar todo",
+					"filter_not": "NO",
+					"loading_count": "Cargando…",
+					"modifying": "Está a punto de modificar",
+					"no_records": "No se encontraron tablas de BD.",
+					"no_selectable_columns": "No hay columnas de índice seleccionables: se usarán los valores predeterminados del generador.",
+					"records": "registro(s)",
+					"refresh_skip_hint": "Se omiten las tablas sin CRUD existente.",
+					"title": "Tabla de BD"
+				}
+			}
+		},
+		"apps/reeman/en-us.json": {
+			"source_hash": "7ff2ae72fed32c2d0d840de6b5a45962e282e0e15927b2d636a50c70b398053a",
+			"translations": {
+				"actions": {
+					"bulk_action": "Delete selected translations",
+					"bulk_action_2": "Bulk action 2",
+					"cancel": "Cancelar",
+					"do_it": "Yes, do it",
+					"new_translation": "Nueva traducción",
+					"save": "Save",
+					"save_close": "Save & close"
+				},
+				"child_ui": {
+					"actions": "Acciones",
+					"delete": "Eliminar",
+					"deleting": "Eliminando…",
+					"edit": "Editar",
+					"edit_title": "Editar traducción",
+					"empty_text": "No se encontraron traducciones.",
+					"error_deleting": "Error al eliminar el registro.",
+					"error_loading": "Error al cargar el registro.",
+					"error_saving": "Error al guardar el registro.",
+					"new_button": "+ New Translation",
+					"new_title": "Nueva traducción"
+				},
+				"errors": {
+					"duplicate_key": "A record with this value already exists.",
+					"error_creating_record": "An error occurred while saving the record.",
+					"key_path_required": "La ruta de clave es obligatoria.",
+					"locale_required": "El idioma es obligatorio.",
+					"must_be_selected": "Este campo es obligatorio.",
+					"namespace_required": "El espacio de nombres es obligatorio.",
+					"title_required": "Title is required.",
+					"translation_required": "La traducción es obligatoria.",
+					"value_required_or_use_original": "Introduzca un valor traducido o quite este idioma."
+				},
+				"labels": {
+					"display": "Visualización",
+					"key_path": "Ruta de clave",
+					"locale": "Idioma",
+					"namespace": "Espacio de nombres",
+					"table": "Tabla / Ruta",
+					"translation": "Traducción"
+				},
+				"messages": {
+					"bulk_delete_failed": "Bulk delete failed.",
+					"bulk_delete_no_ids": "No se seleccionaron traducciones.",
+					"bulk_deleted": "No translations deleted|{count} translation deleted|{count} translations deleted|{count} translations deleted|{count} translations deleted",
+					"bulk_errors": "|{count} translation failed|{count} translations failed|{count} translations failed|{count} translations failed",
+					"record_created": "Record created",
+					"record_updated": "Record updated"
+				},
+				"nav_prefix_title": "Admin",
+				"route_name": "translations",
+				"search": {
+					"search_term": "Search translations...",
+					"submit": "Search"
+				},
+				"selectors": {
+					"0": "No",
+					"1": "Yes",
+					"all": "Todos",
+					"per_page": "per page",
+					"select_table": "-- Select table or route --"
+				},
+				"ui": {
+					"apply_filters": "Aplicar",
+					"clear_all": "Clear all",
+					"filter_not": "NOT",
+					"loading_count": "Loading…",
+					"modifying": "You are about to modify",
+					"no_records": "No se encontraron traducciones.",
+					"records": "record(s)",
+					"title": "Traducción"
+				}
+			}
+		},
+		"apps/reeman/environment/locales/en-us.json": {
+			"source_hash": "9bce64bd00235b429da9849b8849e100b7098de7e9cd4b2c2c469f95f104eba1",
+			"translations": {
+				"actions": {
+					"cancel": "Cancelar",
+					"confirm_delete": "Eliminar",
+					"delete_selected": "Eliminar seleccionados",
+					"hide_values": "Ocultar valores",
+					"save": "Guardar",
+					"search": "Buscar",
+					"show_values": "Mostrar valores"
+				},
+				"confirm": {
+					"delete_selected": "¿Eliminar las claves de entorno seleccionadas?"
+				},
+				"hints": {
+					"description": "Las descripciones provienen de .env.example y no se pueden editar aquí.",
+					"value": "Introduzca el valor dotenv exactamente como debe aparecer después del signo igual. Los valores deben caber en una línea."
+				},
+				"labels": {
+					"description": "Descripción",
+					"key": "Clave",
+					"native_order": "Orden nativo de .env",
+					"selected": "Seleccionado",
+					"value": "Valor"
+				},
+				"nav": "Entorno",
+				"ui": {
+					"edit_title": "Editar variable de entorno",
+					"no_records": "No se encontraron variables de entorno."
+				}
+			}
+		},
+		"apps/reeman/files/locales/en-us.json": {
+			"source_hash": "f8fe5ebbceab4db97ef20c6ac6fe4d1f6f907c938c8a4a05cf458b5fcc131609",
+			"translations": {
+				"actions": {
+					"abort_archive": "Cancelar",
+					"abort_delete": "Cancelar",
+					"abort_restore": "Cancelar",
+					"archive": "Archivar",
+					"back": "Volver",
+					"bulk_action": "Eliminar archivos seleccionados",
+					"cancel": "Cancelar",
+					"confirm_archive": "Sí, archivar",
+					"confirm_delete": "Sí, eliminar",
+					"confirm_restore": "Sí, restaurar",
+					"delete": "¿Eliminar este archivo definitivamente?",
+					"do_it": "Hacerlo",
+					"new_file": "Nuevo archivo",
+					"restore": "Restore",
+					"save": "Guardar",
+					"save_close": "Guardar y cerrar"
+				},
+				"counts": {
+					"archived": "Archivado",
+					"live": "Activo",
+					"total": "Total"
+				},
+				"labels": {
+					"description": "Descripción",
+					"file_size": "Tamaño del archivo",
+					"file_type": "Tipo de archivo",
+					"filename": "Nombre de archivo",
+					"folder": "Carpeta",
+					"mime_type": "Tipo MIME",
+					"original_filename": "Nombre de archivo original",
+					"s3_key": "Clave S3",
+					"tags": "Etiquetas",
+					"title": "Título"
+				},
+				"messages": {
+					"record_archived": "Registro archivado",
+					"record_restored": "Registro restaurado"
+				},
+				"nav": "Archivos",
+				"route_name": "archivos",
+				"scopes": {
+					"__all": "Todos",
+					"__archived": "Archivado"
+				},
+				"selectors": {
+					"all": "Todos",
+					"per_page": "por página"
+				},
+				"ui": {
+					"file": "Archivo",
+					"file_type": "Tipo",
+					"modifying": "Modificando",
+					"no_records": "No se encontraron archivos.",
+					"records": "registros",
+					"title": "Archivos"
+				},
+				"v_labels": {
+					"description": "Descripción",
+					"file_size": "Tamaño del archivo",
+					"file_type": "Tipo de archivo",
+					"filename": "Nombre de archivo",
+					"folder": "Carpeta",
+					"mime_type": "Tipo MIME",
+					"original_filename": "Nombre de archivo original",
+					"tags": "Etiquetas",
+					"title": "Título"
+				}
+			}
+		},
+		"apps/reeman/global_scopes/locales/en-us.json": {
+			"source_hash": "8f727f3b475b56ee57187e136f410e49e9b38d24fd8d444a8e41d38888d7d886",
+			"translations": {
+				"actions": {
+					"abort_archive": "Cancelar",
+					"abort_restore": "Cancelar",
+					"archive": "Archivar",
+					"bulk_action": "Eliminación de filtros globales seleccionados",
+					"bulk_action_2": "Acción alternativa",
+					"confirm_archive": "Sí, archivar",
+					"confirm_restore": "Sí, restaurar",
+					"new_global_scope": "Nuevo filtro global",
+					"restore": "Restore",
+					"scope_translations": "Crear traducciones de filtro",
+					"scope_translations_view": "Ver traducciones de filtro"
+				},
+				"child_ui": {
+					"actions": "Acciones",
+					"archive": "Archivar",
+					"archiving": "Archivando…",
+					"edit": "Editar",
+					"edit_title": "Editar filtro global",
+					"empty_text": "No se encontraron filtros globales.",
+					"error_archiving": "Error al archivar el registro.",
+					"error_loading": "Error al cargar el registro.",
+					"error_saving": "Error al guardar el registro.",
+					"new_button": "+ Nuevo filtro global",
+					"new_title": "Nuevo filtro global",
+					"restore": "Restore"
+				},
+				"counts": {
+					"archived": "Archivado",
+					"live": "Activo",
+					"total": "Total"
+				},
+				"errors": {
+					"duplicate_key": "Ya existe un registro con este valor.",
+					"error_creating_record": "Se produjo un error al guardar el registro.",
+					"must_be_selected": "Este campo es obligatorio.",
+					"title_required": "El título es obligatorio."
+				},
+				"hints": {
+					"display_name": "Etiqueta que se muestra a los usuarios en el menú desplegable de filtros de la página de listado.",
+					"feature_name": "El nombre de la ruta (p. ej. route_name de una ruta con nombre), no la tabla. Limita este filtro a una ruta concreta cuando varias rutas comparten la misma tabla.",
+					"is_default": "Cuando se define, este filtro se aplica automáticamente en la página de listado hasta que el usuario elige otro.",
+					"module_code": "Restringe este filtro a las rutas del módulo seleccionado. Déjelo sin definir para que esté disponible en todo el módulo.",
+					"scope_key": "Clave de traducción. No se muestra a los usuarios: manténgala corta y estable una vez que esté en uso.",
+					"sort_order": "Posición en el menú desplegable de filtros, primero la más baja. Los filtros que comparten tabla/ruta se ordenan por este valor de forma ascendente.",
+					"table": "La tabla de base de datos a la que se aplica este filtro. Determina qué páginas de índice/edición lo muestran en el menú desplegable de filtros.",
+					"where_clause": "Condición SQL sin procesar que se añade después de WHERE cuando este filtro está activo (p. ej. status = 'active'). Use los tokens ::session.* siguientes para referenciar al usuario conectado. El acceso no autenticado a una cláusula que los use se resuelve como 1=0."
+				},
+				"labels": {
+					"display_name": "Nombre para mostrar",
+					"feature_name": "Nombre de característica",
+					"is_default": "Es predeterminado",
+					"module_code": "Código de módulo",
+					"scope_key": "Clave de filtro",
+					"sort_order": "Orden de clasificación",
+					"table": "Tabla",
+					"table_name": "Nombre de tabla",
+					"where_clause": "Cláusula WHERE"
+				},
+				"messages": {
+					"bulk_archive_no_ids": "No se seleccionaron filtros globales.",
+					"bulk_archived": "No global scopes archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
+					"bulk_errors": "|{count} filtro global no se pudo eliminar|{count} filtros globales no se pudieron eliminar|{count} filtros globales no se pudieron eliminar|{count} filtros globales no se pudieron eliminar",
+					"record_archived": "Registro archivado",
+					"record_restored": "Registro restaurado",
+					"record_updated": "Registro actualizado"
+				},
+				"nav": "Filtros globales",
+				"parent_label": "Filtros globales",
+				"route_name": "filtros-globales",
+				"scopes": {
+					"__all": "Todos",
+					"__archived": "Archivado"
+				},
+				"search": {
+					"search_term": "Buscar filtros globales...",
+					"submit": "Buscar"
+				},
+				"selectors": {
+					"all": "Todos",
+					"no_module": "-- Sin módulo (raíz) --",
+					"select_table": "-- Seleccionar tabla --"
+				},
+				"ui": {
+					"no_records": "No se encontraron ámbitos globales.",
+					"title": "Ámbitos globales"
+				}
+			}
+		},
+		"apps/reeman/images/locales/en-us.json": {
+			"source_hash": "f26bcc93e21660cedd743a9414a4759b3aebe43358baf36a9f0da92863d78bb2",
+			"translations": {
+				"actions": {
+					"abort_archive": "Cancelar",
+					"abort_delete": "Cancelar",
+					"abort_restore": "Cancelar",
+					"archive": "Archivar",
+					"bulk_action": "Eliminar imágenes seleccionadas",
+					"confirm_archive": "Sí, archivar",
+					"confirm_delete": "Sí, eliminar",
+					"confirm_restore": "Sí, restaurar",
+					"delete": "¿Eliminar esta imagen definitivamente?",
+					"new_image": "Nueva imagen",
+					"restore": "Restore"
+				},
+				"counts": {
+					"archived": "Archivado",
+					"live": "Activo",
+					"total": "Total"
+				},
+				"labels": {
+					"description": "Descripción",
+					"file_size": "Tamaño del archivo",
+					"filename": "Nombre de archivo",
+					"folder": "Carpeta",
+					"height": "Alto",
+					"mime_type": "Tipo MIME",
+					"original_filename": "Nombre de archivo original",
+					"s3_key": "Clave S3",
+					"tags": "Etiquetas",
+					"title": "Título",
+					"width": "Ancho"
+				},
+				"messages": {
+					"bulk_archive_no_ids": "No se seleccionaron imágenes.",
+					"bulk_archived": "No images archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
+					"bulk_errors": "|{count} imagen con error|{count} imágenes con error|{count} imágenes con error|{count} imágenes con error",
+					"record_archived": "Registro archivado",
+					"record_restored": "Registro restaurado"
+				},
+				"nav": "Imágenes",
+				"route_name": "imagenes",
+				"scopes": {
+					"__all": "Todos",
+					"__archived": "Archivado"
+				},
+				"search": {
+					"search_term": "Buscar imágenes...",
+					"submit": "Buscar"
+				},
+				"selectors": {
+					"all": "Todos"
+				},
+				"ui": {
+					"no_records": "No se encontraron imágenes.",
+					"title": "Imágenes"
+				},
+				"v_labels": {
+					"description": "Descripción",
+					"file_size": "Tamaño del archivo",
+					"filename": "Nombre de archivo",
+					"folder": "Carpeta",
+					"height": "Alto",
+					"mime_type": "Tipo MIME",
+					"original_filename": "Nombre de archivo original",
+					"tags": "Etiquetas",
+					"title": "Título",
+					"width": "Ancho"
+				}
+			}
+		},
+		"apps/reeman/locales/locales/en-us.json": {
+			"source_hash": "96c423cda5f6b1133d4eb0aa50a13c5142074e23cfa7d519a06f962e1f730e41",
+			"translations": {
+				"actions": {
+					"activate_selected": "Activar seleccionados",
+					"add": "Agregar",
+					"add_locale": "Añadir idioma",
+					"back_to_locales": "Volver a los idiomas",
+					"cancel": "Cancelar",
+					"do_it": "Hacerlo",
+					"export_english": "Export English JSON",
+					"import": "Importar",
+					"remove": "Quitar",
+					"remove_selected": "Quitar seleccionados",
+					"save": "Guardar cambios",
+					"set_active": "Activar",
+					"set_inactive": "Desactivar",
+					"translate": "Traducir con IA",
+					"upload": "Upload",
+					"upload_translation": "Upload translated JSON"
+				},
+				"confirm": {
+					"remove_locale": "¿Quitar este idioma? Se eliminarán sus traducciones y tablas de contenido."
+				},
+				"hints": {
+					"alias": "Alias de servicio de cadenas de interfaz: las solicitudes de este idioma muestran las cadenas del idioma de destino",
+					"locale_code": "Código de idioma BCP 47 para añadir (p. ej. de-at)"
+				},
+				"labels": {
+					"active": "Activo",
+					"alias": "Alias",
+					"alias_placeholder": "p. ej. de-at",
+					"archived_locales": "Idiomas archivados",
+					"available_locales": "Idiomas preparados disponibles",
+					"code": "Código",
+					"default": "Predeterminado",
+					"locale_code": "Código de idioma",
+					"locales": "Idiomas",
+					"name": "Nombre",
+					"name_placeholder": "Nombre para mostrar",
+					"remove": "Quitar"
+				},
+				"nav": "Idiomas",
+				"route_name": "idiomas",
+				"ui": {
+					"activate_locale_hint": "Already-supported locales - runs their prepared translations and marks them active.",
+					"add_locale_hint": "Añade el idioma a la configuración, siembra sus traducciones y clona las tablas de contenido (generador add-locale).",
+					"archived_locales_hint": "Las traducciones archivadas revisadas pueden importarse en sus carpetas activas correspondientes. Los idiomas importados son compatibles, pero permanecen inactivos.",
+					"available_locales_hint": "Ya existen traducciones preparadas en disco para estos idiomas - agréguelo con un clic (solo se añade a la configuración, no se activa).",
+					"busy": "Procesando — la página se actualizará al terminar.",
+					"locales_description": "Gestione config/supported_locales.ts: códigos de idioma, nombres para mostrar, alias, lista activa y predeterminado.",
+					"locales_manage_hint": "Añada un idioma para crear sus traducciones + tablas de contenido, o edite la configuración siguiente directamente.",
+					"locales_title": "Idiomas",
+					"modifying": "Está a punto de quitar",
+					"no_records": "No se encontraron idiomas en config/supported_locales.ts.",
+					"records": "idioma(s)",
+					"remove_selected_hint": "Quita los idiomas seleccionados: se eliminan sus traducciones y tablas de contenido.",
+					"save_hint": "Guarda directamente en config/supported_locales.ts. Recargue las rutas para aplicarlo.",
+					"title": "Idioma",
+					"upload_translation_hint": "Upload a translated export bundle. It is validated and added to Archived locales; use Import there to install it."
+				}
+			}
+		},
+		"apps/reeman/logs/locales/en-us.json": {
+			"source_hash": "e1361af8a4077cf426c446dbb0b14f3f1e8ec2ac5d9ab81ae62e0b4ccbf2f4eb",
+			"translations": {
+				"actions": {
+					"clear_log": "Borrar registro"
+				},
+				"confirm": {
+					"clear_log": "¿Borrar el registro de ejecución?"
+				},
+				"labels": {
+					"action": "Acción",
+					"column": "Columna",
+					"current_type": "Tipo actual",
+					"expected_type": "Tipo esperado",
+					"finished": "Finalizado",
+					"result": "Resultado",
+					"table": "Tabla",
+					"target": "Destino"
+				},
+				"nav": "Registros",
+				"ui": {
+					"busy": "Procesando — la página se actualizará al terminar.",
+					"compliance_issues": "Columnas no conformes / desconocidas",
+					"failed": "Fallido",
+					"last_runs": "Ejecuciones recientes",
+					"logs_description": "Acciones recientes de reeman con su salida capturada.",
+					"logs_title": "Registro de ejecución",
+					"no_runs": "Aún no hay ejecuciones: elija una acción arriba.",
+					"ok": "Aceptar"
+				}
+			}
+		},
+		"apps/reeman/modules/locales/en-us.json": {
+			"source_hash": "366aee398ffc089de834ddd7e207406ab9068c22fd93e512820e5608ab0fb002",
+			"translations": {
+				"actions": {
+					"abort_archive": "Cancelar",
+					"abort_restore": "Cancelar",
+					"archive": "Archivar",
+					"bulk_action": "Eliminar módulos seleccionados",
+					"bulk_action_2": "Acción alternativa",
+					"cancel": "Cancelar",
+					"confirm_archive": "Sí, archivar",
+					"confirm_restore": "Sí, restaurar",
+					"do_it": "Sí, hacerlo",
+					"new_module": "Nuevo módulo",
+					"restore": "Restore",
+					"save": "Guardar",
+					"save_close": "Guardar y cerrar"
+				},
+				"child_ui": {
+					"actions": "Acciones",
+					"archive": "Archivar",
+					"archiving": "Archivando…",
+					"edit": "Editar",
+					"edit_title": "Editar módulo",
+					"empty_text": "No se encontraron módulos.",
+					"error_archiving": "Error al archivar el registro.",
+					"error_loading": "Error al cargar el registro.",
+					"error_saving": "Error al guardar el registro.",
+					"new_button": "+ Nuevo módulo",
+					"new_title": "Nuevo módulo",
+					"restore": "Restore"
+				},
+				"counts": {
+					"archived": "Archivado",
+					"live": "Activo",
+					"total": "Total"
+				},
+				"errors": {
+					"duplicate_key": "Ya existe un registro con este valor.",
+					"error_creating_record": "Se produjo un error al guardar el registro.",
+					"must_be_selected": "Este campo es obligatorio.",
+					"title_required": "El título es obligatorio."
+				},
+				"labels": {
+					"code": "Código",
+					"description": "Descripción",
+					"name": "Nombre",
+					"table": "Tabla / Ruta"
+				},
+				"messages": {
+					"bulk_archive_failed": "Bulk archive failed.",
+					"bulk_archive_no_ids": "No se seleccionaron módulos.",
+					"bulk_archived": "No modules archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
+					"bulk_errors": "|{count} módulo con error|{count} módulos con error|{count} módulos con error|{count} módulos con error",
+					"record_archived": "Registro archivado",
+					"record_created": "Registro creado",
+					"record_restored": "Registro restaurado",
+					"record_updated": "Registro actualizado"
+				},
+				"nav": "Módulos",
+				"route_name": "modulos",
+				"scopes": {
+					"__all": "Todos",
+					"__archived": "Archivado"
+				},
+				"search": {
+					"search_term": "Buscar módulos...",
+					"submit": "Buscar"
+				},
+				"selectors": {
+					"0": "No",
+					"1": "Sí",
+					"all": "Todos",
+					"per_page": "por página",
+					"select_table": "-- Seleccionar tabla o ruta --"
+				},
+				"ui": {
+					"apply_filters": "Aplicar",
+					"clear_all": "Eliminar todo",
+					"filter_not": "NO",
+					"loading_count": "Cargando…",
+					"modifying": "Está a punto de modificar",
+					"no_records": "No se encontraron módulos.",
+					"records": "registro(s)",
+					"title": "Módulos"
+				}
+			}
+		},
+		"apps/reeman/project/locales/en-us.json": {
+			"source_hash": "8d3623ea88d904592c22590700c8b5722f2dd5493adf764a6f4499276663d7d7",
+			"translations": {
+				"actions": {
+					"set_repo": "Establecer repositorio"
+				},
+				"labels": {
+					"current_repo": "Repositorio actual:",
+					"owner_repo": "Repositorio de GitHub (owner/repo)"
+				},
+				"nav": "Proyecto",
+				"ui": {
+					"project_description": "Configuración a nivel de proyecto.",
+					"project_title": "Proyecto",
+					"set_repo_hint": "Vincule este proyecto a un repositorio de GitHub para que los informes de incidencias y los metadatos de package.json apunten al lugar correcto."
+				}
+			}
+		},
+		"apps/reeman/queues/locales/en-us.json": {
+			"source_hash": "e4147af4a5e2456d94ccf0411c0bf18cd2d11c71bbeb1079822b9f6316d8f9e8",
+			"translations": {
+				"actions": {
+					"cancel": "Cancelar",
+					"clear_all": "Borrar todo",
+					"clear_pending": "Pendiente",
+					"confirm": "Confirmar",
+					"delete": "Eliminar",
+					"pause": "Pausar trabajador",
+					"resume": "Reanudar trabajador",
+					"retry": "Reintentar"
+				},
+				"labels": {
+					"actions": "Acciones",
+					"attempts": "Intentos",
+					"created": "Creado",
+					"error": "Error",
+					"id": "ID",
+					"last_run": "Última ejecución",
+					"payload": "Carga útil",
+					"pending": "Pendiente",
+					"queue": "Cola",
+					"scheduled": "Programado",
+					"type": "Tipo"
+				},
+				"nav": "Colas",
+				"route_name": "queues",
+				"ui": {
+					"backend": "Backend",
+					"confirm_clear_all": "¿Borrar todos los trabajos de esta cola? Esto no se puede deshacer.",
+					"confirm_clear_pending": "¿Borrar todos los trabajos pendientes de esta cola?",
+					"confirm_delete_job": "¿Eliminar permanentemente este trabajo fallido? Esto no se puede deshacer.",
+					"error_loading": "No se pudieron cargar los datos de la cola",
+					"failed_heading": "Trabajos fallidos",
+					"no_failed": "No hay trabajos fallidos",
+					"no_pending": "No hay trabajos pendientes",
+					"no_queues": "No hay colas activas",
+					"queues_heading": "Colas",
+					"redis_unavailable": "Redis no está disponible - las funciones de cola están deshabilitadas. Los correos se envían directamente vía SMTP en lugar de colocarlos en una cola.",
+					"running_heading": "Trabajos en ejecución",
+					"title": "Gestor de Colas",
+					"worker_draining": "drenando",
+					"worker_offline": "No se detectó trabajador de cola - los trabajos no se procesarán",
+					"worker_online": "El trabajador de cola está en ejecución",
+					"worker_paused": "pausado",
+					"worker_running": "ejecutándose",
+					"worker_stopped": "detenido"
+				}
+			}
+		},
+		"apps/reeman/rate_limits/locales/en-us.json": {
+			"source_hash": "d0fda146cbccd5bbf71c4e7d7e334ff4aa0a2873f563fa0d3c5ed37228234187",
+			"translations": {
+				"actions": {
+					"reset_all_counters": "Restablecer todos los contadores"
+				},
+				"nav": "Límites de tasa",
+				"route_name": "limites-de-tasa",
+				"ui": {
+					"blocked": "BLOQUEADO",
+					"no_active_counters": "No hay contadores de límite de tasa activos",
+					"ok": "Aceptar",
+					"requests": "peticiones",
+					"reset_confirm": "¿Restablecer todos los contadores de límite de tasa activos? Esta acción no se puede deshacer.",
+					"seconds": "s",
+					"status": "Estado",
+					"title": "Límites de tasa",
+					"total_redis_keys": "total de claves Redis",
+					"ttl": "TTL"
+				}
+			}
+		},
+		"apps/reeman/reeman/locales/en-us.json": {
+			"source_hash": "157d37f6cbcbc79abd5b71ad0b885a71d86975691fda20ea6e41b2598e25afb3",
+			"translations": {
+				"actions": {
+					"reload_routes": "Recargar rutas",
+					"view_all": "Ver todo"
+				},
+				"confirm": {
+					"reload_routes": "¿Recargar las rutas ahora? Detecta nuevos archivos de ruta y traducciones sin reiniciar."
+				},
+				"labels": {
+					"action": "Acción",
+					"columns": "Columnas",
+					"crud": "CRUD",
+					"finished": "Finalizado",
+					"foreign_keys": "FKs",
+					"schema": "Esquema",
+					"status": "Estado",
+					"table": "Tabla",
+					"tables": "Tablas",
+					"target": "Destino",
+					"view": "Vista"
+				},
+				"nav": "Reeman",
+				"nav_prefix_title": "Reeman",
+				"ui": {
+					"busy": "Procesando — la página se actualizará al terminar.",
+					"description": "Interfaz web para el gestor de recursos de Reepolee",
+					"last_runs": "Ejecuciones recientes",
+					"no_runs": "Aún no hay ejecuciones: elija una acción arriba.",
+					"no_tables": "No se encontraron tablas. ¿Está inicializada la base de datos?",
+					"reload_routes_hint": "Reconstruye en caliente la tabla de rutas y la navegación desde el disco y actualiza las traducciones. No se necesita reiniciar el servidor en desarrollo.",
+					"stats_crud": "Con CRUD",
+					"stats_locales": "Idiomas",
+					"stats_modules": "Módulos",
+					"stats_tables": "Tablas",
+					"title": "Reeman"
+				}
+			}
+		},
+		"apps/reeman/refresh/locales/en-us.json": {
+			"source_hash": "ae1e1c2bf49982c592e180b2b81b045fa23f3974cc2a204013c49d2aeb1ddaba",
+			"translations": {
+				"actions": {
+					"add_locale": "Añadir idioma",
+					"fields": "Solo campos",
+					"full": "Actualización completa",
+					"refresh_crud": "Actualizar CRUD",
+					"sync_locale_tables": "Sincronizar tablas de idiomas",
+					"sync_translations": "Sincronizar traducciones",
+					"translate": "Traducir con IA"
+				},
+				"hints": {
+					"locale_code": "Código de idioma BCP 47 para añadir (p. ej. de-at)"
+				},
+				"labels": {
+					"locale_code": "Código de idioma",
+					"route": "Ruta",
+					"template_tags": "Etiquetas de plantilla"
+				},
+				"nav": "Actualizar",
+				"selectors": {
+					"default": "(predeterminado)"
+				},
+				"ui": {
+					"busy": "Procesando — la página se actualizará al terminar.",
+					"refresh_description": "Sincronizar traducciones, gestionar idiomas y actualizar tablas de idiomas.",
+					"refresh_title": "Actualizar e idiomas"
+				}
+			}
+		},
+		"apps/reeman/software_update/locales/en-us.json": {
+			"source_hash": "d9b7b55337a2f93599c152e54e877825980c8e4292073eb6b8b7d846295e7855",
+			"translations": {
+				"actions": {
+					"apply": "Aplicar",
+					"cancel": "Cancelar",
+					"do_it": "Hacerlo",
+					"hide_ignored": "Hide ignored files",
+					"ignore": "Ignore",
+					"ignore_selected": "Ignore selected",
+					"scan": "Scan",
+					"select_all": "Seleccionar todo",
+					"select_folder": "Seleccionar carpeta...",
+					"show_not_ignored": "Mostrar solo archivos diferentes",
+					"unignore": "Unignore",
+					"view_diff": "Ver diferencias"
+				},
+				"errors": {
+					"source_contains_project": "The upstream source cannot be a parent directory of this project.",
+					"source_empty": "Enter an upstream directory to scan.",
+					"source_equals_project": "The upstream source cannot be this project itself.",
+					"source_nested_in_project": "The upstream source cannot be inside this project.",
+					"source_not_directory": "That path exists but is not a directory.",
+					"source_not_found": "That directory could not be found.",
+					"source_not_sibling": "Choose an upstream directory next to this project."
+				},
+				"labels": {
+					"files": "archivos",
+					"ignored": "Ignored",
+					"latest_commit": "Latest commit",
+					"modified": "Modified",
+					"new": "Nuevo",
+					"project": "Proyecto",
+					"project_only": "Solo en el proyecto",
+					"selected": "Seleccionado",
+					"source_dir": "Directorio de origen",
+					"upstream": "Upstream"
+				},
+				"nav": "Actualización de software",
+				"ui": {
+					"confirm_apply_hint": "This copies the selected files from the upstream source into this project, overwriting local content for modified files.",
+					"confirm_ignore_hint": "This adds the selected files to the ignore list. They will be dimmed and unchecked in future scans.",
+					"ignored_by_pattern": "Ignored by pattern",
+					"ignored_exact": "Ignored",
+					"loading": "Loading…",
+					"no_changes": "No hay archivos diferentes entre la fuente de origen y este proyecto.",
+					"project_only_hint": "Exists only in this project. Never deleted by Reesync.",
+					"scan_expired": "That scan has expired. Scan the source directory again.",
+					"software_update_description": "Selective upstream adoption: review every differing file against a local upstream checkout, then copy only the files you choose into this project.",
+					"software_update_never_deletes": "Project-only files are informational and are never deleted.",
+					"software_update_title": "Actualización de software",
+					"source_changed": "The upstream has a newer commit than this scan. Rescan before reviewing files."
+				}
+			}
+		},
+		"apps/reeman/studio/locales/en-us.json": {
+			"source_hash": "7a6806073b6132e5d9c95c494b755578cc5605b243f9eaa99faee21536f3c652",
+			"translations": {
+				"actions": {
+					"adapt_schema": "Adaptar esquema",
+					"add_column": "Añadir columna",
+					"add_foreign_key": "Añadir clave foránea",
+					"cancel": "Cancelar",
+					"copy": "Copiar",
+					"create": "Crear",
+					"delete": "Eliminar",
+					"delete_column": "Eliminar columna",
+					"favorite": "Favorito",
+					"generate": "Generar",
+					"generate_view": "Generar vista",
+					"hide_system": "Ocultar columnas del sistema",
+					"new_table": "Nueva tabla",
+					"save": "Guardar",
+					"undo": "Deshacer"
+				},
+				"labels": {
+					"all_types": "Todos los tipos",
+					"auto_increment": "Auto incremento",
+					"current": "actual",
+					"ddl_preview": "Vista previa de DDL",
+					"default": "Predeterminado",
+					"domain_type": "Tipo de dominio",
+					"domain_types": "Tipos de dominio",
+					"expected_type": "Tipo esperado",
+					"file": "Archivo",
+					"generated": "Generado",
+					"name": "Nombre",
+					"nonstandard_sql": "SQL no estándar",
+					"nullability": "Anulabilidad",
+					"other_fields": "Otros campos",
+					"sql_type": "Tipo SQL",
+					"suggested": "sugerido",
+					"table": "Tabla",
+					"table_ids": "IDs de tabla",
+					"tables": "Tablas",
+					"unique": "Único",
+					"view": "Vista",
+					"views": "Vistas"
+				},
+				"messages": {
+					"adapt_schema": "¿Adaptar el esquema al modelo actual?",
+					"delete_column": "¿Eliminar esta columna?",
+					"delete_table": "¿Eliminar esta tabla?",
+					"delete_view": "¿Eliminar esta vista?",
+					"generate_view": "¿Generar una vista para esta tabla?"
+				},
+				"nav": "DDL Studio",
+				"nav_prefix_title": "Studio",
+				"route_name": "studio",
+				"selectors": {
+					"custom": "Personalizado",
+					"select_file": "Seleccionar un archivo"
+				},
+				"ui": {
+					"description": "Editor visual de modelos SQL",
+					"empty_text": "Abra un archivo de la lista para empezar a editar.",
+					"empty_title": "No se ha cargado ningún modelo",
+					"no_objects": "Seleccione una tabla o vista",
+					"title": "Studio"
+				}
+			}
+		},
+		"apps/reeman/translations/locales/en-us.json": {
+			"source_hash": "9fb8c978e1e08399043febe72d3402d9c28c300773d81cc33b33044ad642b888",
+			"translations": {
+				"actions": {
+					"add_group": "Añadir grupo",
+					"add_namespace": "Añadir namespace",
+					"bulk_action": "Eliminar seleccionados",
+					"close": "Cerrar",
+					"create": "Crear",
+					"delete": "Eliminar clave",
+					"delete_namespace": "Eliminar namespace",
+					"do_it": "Eliminar",
+					"edit": "Editar",
+					"save": "Guardar cambios",
+					"save_close": "Guardar y cerrar"
+				},
+				"messages": {
+					"delete_namespace_confirm": "Todas las traducciones de \"{namespace}\" se eliminarán permanentemente.",
+					"no_groups": "No se encontraron grupos de traducción.",
+					"record_updated": "Traducciones actualizadas",
+					"select_templates": "Opcionalmente, precargar con claves comunes:",
+					"shadowed_files_intro": "These locale files are ignored — a higher-priority app tree already owns the same namespace:",
+					"shadowed_files_superseded_by": "is superseded by",
+					"shadowed_files_title": "Shadowed translation files"
+				},
+				"nav": "Traducciones",
+				"route_name": "traducciones",
+				"search": {
+					"search_term": "Buscar claves de traducción...",
+					"submit": "Filtrar"
+				},
+				"selectors": {
+					"all": "-- Todos --",
+					"per_page": "por página"
+				},
+				"ui": {
+					"bulk_delete_warning": "Esto eliminará permanentemente",
+					"bulk_delete_warning_suffix": "grupo(s) de claves, incluida cada clave anidada y cada idioma.",
+					"filter_label": "Filtrar por namespace",
+					"global_label": "(global)",
+					"group_label": "Grupo",
+					"key_label": "Clave",
+					"keys_label": "Claves",
+					"languages_label": "Idiomas",
+					"namespace_label": "Espacio de nombres",
+					"no_records": "No se encontraron claves de traducción.",
+					"title": "Traducciones"
+				}
+			}
+		},
+		"apps/reeman/users/locales/en-us.json": {
+			"source_hash": "9174b6af2b57e03f7906f48d0a4317902d22677b2ef90297814db4489c40c466",
+			"translations": {
+				"actions": {
+					"abort_archive": "Cancelar",
+					"abort_restore": "Cancelar",
+					"archive": "Archivar",
+					"bulk_action": "Eliminar usuarios seleccionados",
+					"bulk_action_2": "Acción alternativa",
+					"confirm_archive": "Sí, archivar",
+					"confirm_restore": "Sí, restaurar",
+					"new_user": "Nuevo usuario",
+					"restore": "Restore"
+				},
+				"counts": {
+					"archived": "Archivado",
+					"live": "Activo",
+					"total": "Total"
+				},
+				"labels": {
+					"avatar_filename": "Nombre de archivo del avatar",
+					"email": "Correo electrónico",
+					"hashed_password": "Contraseña con hash",
+					"invitation_code": "Código de invitación",
+					"modules_tags": "Módulos",
+					"name": "Nombre",
+					"previous_hashed_password": "Contraseña con hash anterior",
+					"username": "Nombre de usuario",
+					"verified_at": "Verificado el"
+				},
+				"messages": {
+					"bulk_archive_no_ids": "No se seleccionaron usuarios.",
+					"bulk_archived": "No users archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
+					"bulk_errors": "|{count} usuario con error|{count} usuarios con error|{count} usuarios con error|{count} usuarios con error",
+					"record_archived": "Registro archivado",
+					"record_restored": "Registro restaurado"
+				},
+				"modules_tags": {
+					"admin": "Admin",
+					"default": "Predeterminado",
+					"examples": "Ejemplos",
+					"system": "Sistema",
+					"user": "Usuario"
+				},
+				"nav": "Usuarios",
+				"route_name": "usuarios",
+				"scopes": {
+					"__all": "Todos",
+					"__archived": "Archivado"
+				},
+				"search": {
+					"search_term": "Buscar usuarios...",
+					"submit": "Buscar"
+				},
+				"selectors": {
+					"all": "Todos"
+				},
+				"ui": {
+					"no_records": "No se encontraron usuarios.",
+					"title": "Usuarios"
+				}
+			}
+		},
+		"apps/reeqa/baselines/locales/en-us.json": {
+			"source_hash": "3e854c2d70736b9679eb2ae02038902a93c8d200bc7ba9b86058bebeeaf2ccde",
+			"translations": {
+				"actions": {
+					"add_project": "Añadir un proyecto",
+					"capture": "Capturar referencia",
+					"page_sets": "Gestionar conjuntos de páginas"
+				},
+				"labels": {
+					"baseline_page_set": "Ver conjunto de páginas de referencia",
+					"baseline_pages": "Páginas de referencia",
+					"baseline_updated": "Referencia capturada",
+					"baseline_url": "URL base de referencia",
+					"capture_size": "Tamaño de captura",
+					"chrome": "Captura de página",
+					"evidence_render": "Vídeo de evidencia",
+					"image_diff": "Image comparison",
+					"latest_capture_pages": "Páginas capturadas la última vez",
+					"latest_capture_urls": "URL capturadas la última vez",
+					"pages": "páginas",
+					"retained_urls": "URL de referencia anteriores conservadas",
+					"voiceover": "Narración de evidencia"
+				},
+				"nav": "Referencias",
+				"route_name": "baselines",
+				"status": {
+					"baseline_ready": "Referencia lista",
+					"no_baseline": "Sin referencia"
+				},
+				"ui": {
+					"active_run": "Ejecución visual en curso",
+					"capture_hint": "Replaces the saved visual reference with fresh captures of the selected page set.",
+					"description": "Inspeccione y sustituya la referencia visual guardada del conjunto de páginas activo.",
+					"no_page_set": "Seleccione o cree un conjunto de páginas antes de capturar una referencia.",
+					"no_projects": "Registre un proyecto antes de capturar referencias visuales.",
+					"title": "Referencias visuales"
+				}
+			}
+		},
+		"apps/reeqa/command_checks/locales/en-us.json": {
+			"source_hash": "cb687317fe7b41877e7333866a7737ff9682e67be118b4118fdaf37809759c4f",
+			"translations": {
+				"actions": {
+					"add_project": "Añadir un proyecto",
+					"cancel": "Cancelar",
+					"clear": "Borrar historial",
+					"confirm_clear": "Borrar completados",
+					"run_check": "Ejecutar comprobación"
+				},
+				"command_checks": {
+					"description": "Ejecute los comandos Bun permitidos definidos para este proyecto.",
+					"script_unavailable": "Script del paquete no disponible",
+					"title": "Comprobaciones de comandos"
+				},
+				"confirm": {
+					"clear": "Remove all completed QA run records?"
+				},
+				"nav": "Comprobaciones de comandos",
+				"route_name": "command-checks",
+				"ui": {
+					"active_run": "Ejecución de QA en curso",
+					"description": "Ejecute y revise las comprobaciones de comandos Bun permitidas.",
+					"history_title": "Historial de ejecuciones",
+					"no_projects": "Registre un proyecto antes de ejecutar comprobaciones de comandos.",
+					"no_runs": "Aún no hay ejecuciones de comandos.",
+					"title": "Comprobaciones de comandos"
+				}
+			}
+		},
+		"apps/reeqa/dashboard/locales/en-us.json": {
+			"source_hash": "eaa963dc2c88163c3a2a5b1817489f27f11b6e033fa0da0011285d381c8bf53c",
+			"translations": {
+				"actions": {
+					"add_project": "Añadir proyecto",
+					"capture_baselines": "Capturar referencias",
+					"create_page_set": "Crear conjunto de páginas",
+					"run_tests": "Ejecutar pruebas",
+					"view_all": "Ver todo"
+				},
+				"labels": {
+					"duration": "Duración",
+					"pages": "páginas",
+					"started": "Iniciado",
+					"status": "Estado",
+					"suite": "Conjunto"
+				},
+				"nav": "ReeQA",
+				"ui": {
+					"active_project": "Proyecto activo",
+					"active_run": "Ejecución activa",
+					"baselines_description": "Inspeccione y sustituya las referencias visuales guardadas.",
+					"baselines_title": "Referencias visuales",
+					"description": "Control de calidad de la aplicación Reepolee y sus herramientas.",
+					"no_runs": "Aún no hay ejecuciones de QA.",
+					"page_sets_description": "Guarde selecciones con nombre de páginas de referencia para ejecuciones específicas.",
+					"page_sets_title": "Conjuntos de páginas",
+					"projects_description": "Registre los directorios de proyectos Bun que ReeQA puede comprobar.",
+					"projects_title": "Proyectos de QA",
+					"recent_runs": "Ejecuciones recientes",
+					"results_description": "Revise comparaciones visuales, registros de comandos, vídeos e incidencias de GitHub.",
+					"results_title": "Resultados",
+					"run_tests_description": "Ejecute comparaciones visuales y comprobaciones de comandos permitidas.",
+					"run_tests_title": "Ejecutar pruebas",
+					"stats_failed": "Fallido",
+					"stats_passed": "Correcto",
+					"stats_projects": "Proyectos",
+					"stats_results": "Resultados",
+					"stats_suites": "Comprobaciones de comandos",
+					"title": "ReeQA"
+				}
+			}
+		},
+		"apps/reeqa/en-us.json": {
+			"source_hash": "7963afccf93435b2b52c27f4a8a203cfa14b900c1579c42363c73bf931c60e6f",
+			"translations": {
+				"nav_prefix_title": "ReeQA"
+			}
+		},
+		"apps/reeqa/page_sets/locales/en-us.json": {
+			"source_hash": "007f7f81ec729a9e9be0eae8195f981f60b9f28f3c3feb7e786e78d0eed670bb",
+			"translations": {
+				"actions": {
+					"add": "Añadir conjunto de páginas",
+					"add_project": "Añadir un proyecto",
+					"cancel": "Cancelar",
+					"clear": "Borrar selección",
+					"confirm_delete": "Quitar",
+					"create": "Crear conjunto de páginas",
+					"delete": "Quitar conjunto de páginas",
+					"manage_baseline": "Gestionar referencia",
+					"only_selected": "Solo seleccionadas",
+					"save": "Guardar cambios",
+					"select_visible": "Seleccionar visibles",
+					"sort_alpha": "Ordenar: A–Z",
+					"sort_newest": "Ordenar: más recientes primero"
+				},
+				"confirm": {
+					"delete": "Remove this saved page set? Existing reports are kept."
+				},
+				"labels": {
+					"auto_evidence": "Grabar evidencias automáticamente para las ejecuciones fallidas",
+					"auto_recording": "Grabar también un vídeo limpio para las ejecuciones correctas",
+					"baseline_pages": "páginas de referencia",
+					"capture_size": "Tamaño de captura",
+					"filter": "Filtrar páginas del mapa del sitio",
+					"name": "Nombre del conjunto de páginas",
+					"pages": "páginas"
+				},
+				"nav": "Conjuntos de páginas",
+				"route_name": "page-sets",
+				"status": {
+					"no_baseline": "Sin referencia"
+				},
+				"ui": {
+					"active": "Activo",
+					"auto_evidence_hint": "Records a narrated video for every changed or new page after each compare run, instead of requiring a manual click.",
+					"auto_recording_hint": "Records a plain, un-annotated video for every unchanged page after each compare run - the only way to get a video for a passing dynamic test.",
+					"description": "Guarde selecciones con nombre de páginas del mapa del sitio para ejecuciones visuales y de vídeo específicas.",
+					"edited_today": "Hoy",
+					"no_baseline": "Capture una referencia antes de seleccionar páginas para este proyecto.",
+					"no_projects": "Registre un proyecto antes de crear conjuntos de páginas.",
+					"no_sets": "Aún no hay conjuntos de páginas guardados. Cree uno para empezar a ejecutar pruebas.",
+					"saved_sets": "Conjuntos de páginas guardados",
+					"sitemap_error": "No se pudo cargar el mapa del sitio del proyecto:",
+					"stale_pages": "página(s) guardada(s) ya no están en el mapa del sitio actual. Guarde el conjunto para quitarlas.",
+					"title": "Conjuntos de páginas"
+				}
+			}
+		},
+		"apps/reeqa/projects/locales/en-us.json": {
+			"source_hash": "4131b3c5c8b77659c3d592a30c5569a828a28697330fee44db48906a08e58fe4",
+			"translations": {
+				"actions": {
+					"add": "Añadir proyecto",
+					"cancel": "Cancelar",
+					"delete": "Quitar proyecto",
+					"do_it": "Quitar",
+					"duplicate": "Duplicar proyecto",
+					"save": "Guardar proyecto"
+				},
+				"confirm": {
+					"delete": "Remove this project from ReeQA? Existing run records are kept."
+				},
+				"labels": {
+					"base_url": "URL del sitio en ejecución",
+					"name": "Nombre del proyecto",
+					"path": "Absolute project path"
+				},
+				"nav": "Proyecto",
+				"page_sets": {
+					"actions": {
+						"add": "Añadir conjunto de páginas",
+						"cancel": "Cancelar",
+						"clear": "Borrar selección",
+						"confirm_delete": "Quitar",
+						"create": "Crear conjunto de páginas",
+						"delete": "Quitar conjunto de páginas",
+						"only_selected": "Solo seleccionadas",
+						"save": "Guardar cambios",
+						"select_visible": "Seleccionar visibles",
+						"sort_alpha": "Ordenar: A–Z",
+						"sort_newest": "Ordenar: más recientes primero"
+					},
+					"confirm": {
+						"delete": "Remove this saved page set? Existing reports are kept."
+					},
+					"labels": {
+						"auto_evidence": "Grabar evidencias automáticamente para las ejecuciones fallidas",
+						"auto_recording": "Grabar también un vídeo limpio para las ejecuciones correctas",
+						"baseline_pages": "páginas de referencia",
+						"capture_size": "Tamaño de captura",
+						"checkpoints": "puntos de control",
+						"filter": "Filtrar páginas del mapa del sitio",
+						"kind": "Tipo de conjunto de páginas",
+						"kind_urls": "Lista de URL",
+						"kind_workflow": "Flujo de trabajo",
+						"name": "Nombre del conjunto de páginas",
+						"pages": "páginas",
+						"steps": "Pasos del flujo de trabajo (JSON)"
+					},
+					"status": {
+						"no_baseline": "Sin referencia"
+					},
+					"ui": {
+						"active": "Activo",
+						"auto_evidence_hint": "Records a narrated video for every changed or new page after each compare run, instead of requiring a manual click.",
+						"auto_recording_hint": "Records a plain, un-annotated video for every unchanged page after each compare run - the only way to get a video for a passing dynamic test.",
+						"edited_today": "Hoy",
+						"no_sets": "Aún no hay conjuntos de páginas guardados. Cree uno para empezar a ejecutar pruebas.",
+						"saved_sets": "Conjuntos de páginas",
+						"sitemap_error": "No se pudo cargar el mapa del sitio del proyecto:",
+						"stale_pages": "página(s) guardada(s) ya no están en el mapa del sitio actual. Guarde el conjunto para quitarlas.",
+						"steps_hint": "A JSON array of steps. Each step is <code>{\"type\":\"navigate\",\"url\":...}</code>, <code>{\"type\":\"click\",\"selector\":...}</code> (or <code>\"text\"</code> to click by visible text) or <code>{\"type\":\"fill\",\"selector\":...,\"value\":...}</code>. Add <code>\"checkpoint\": true</code> to capture and compare a screenshot at that step, <code>\"before_seconds\": 1</code> to pause before a step, <code>\"delay_seconds\": 3</code> to pause after a step, <code>\"outline_seconds\"</code> / <code>\"glide_seconds\"</code> to size a click's outline and cursor glide in the recording, and <code>\"value_env\": \"ADMIN_PASSWORD\"</code> to read a value from the project's own .env file instead of storing it here.",
+						"steps_placeholder": "[\n\t{ \"type\": \"navigate\", \"url\": \"https://example.com/login\" },\n\t{ \"type\": \"fill\", \"selector\": \"#username\", \"value_env\": \"ADMIN_USERNAME\" },\n\t{ \"type\": \"fill\", \"selector\": \"#password\", \"value_env\": \"ADMIN_PASSWORD\" },\n\t{ \"type\": \"click\", \"selector\": \"button[type=submit]\", \"checkpoint\": true }\n]"
+					}
+				},
+				"route_name": "projects",
+				"ui": {
+					"active": "Activo",
+					"base_url_hint": "ReeQA reads sitemap.xml and captures pages from this URL.",
+					"description": "Gestione el proyecto de QA activo y sus conjuntos de páginas.",
+					"no_projects": "No hay proyectos de QA registrados.",
+					"path_hint": "The directory must contain package.json. Suite commands remain controlled by ReeQA.",
+					"title": "Proyecto"
+				}
+			}
+		},
+		"apps/reeqa/reports/locales/en-us.json": {
+			"source_hash": "72aaab48befe7546cd21855f62d90e75d984f5431d364209d5e3f00f53f6d196",
+			"translations": {
+				"actions": {
+					"accept": "Aceptar actual",
+					"accept_change": "Aceptar cambio",
+					"back": "Volver a los informes",
+					"cancel": "Cancelar",
+					"clear": "Borrar informes",
+					"confirm_remove": "Quitar",
+					"delete": "Quitar",
+					"promote_to_docs": "Promover a documentación",
+					"record_evidence": "Record evidence",
+					"record_recording": "Grabar vídeo",
+					"show_all": "Mostrar todo",
+					"view_full_page": "Ver capturas de página completa",
+					"watch_recording": "Ver grabación",
+					"watch_video": "Ver comparación anotada"
+				},
+				"breadcrumbs": {
+					"report": "Comparación visual",
+					"results": "Ejecución y resultados"
+				},
+				"confirm": {
+					"accept": "Update the saved visual baseline for this page?",
+					"clear": "Remove all completed comparison reports and their artifacts?",
+					"delete": "Remove this comparison report and its artifacts?"
+				},
+				"labels": {
+					"actions": "Acciones",
+					"added": "Añadido",
+					"baseline": "Referencia",
+					"capture_size": "Tamaño de captura",
+					"changed": "Cambiado",
+					"changed_elements": "Elementos cambiados",
+					"current": "Actual",
+					"diff": "Diferencia",
+					"new": "Nuevo",
+					"page_set": "Conjunto de páginas",
+					"pages": "Páginas",
+					"pixels_differ": "píxeles diferentes",
+					"project": "Proyecto",
+					"px_changed": "px cambiados",
+					"removed": "Quitado",
+					"started": "Iniciado",
+					"status": "Estado",
+					"unchanged": "Sin cambios",
+					"zoomed": "ampliado"
+				},
+				"nav": "Informes",
+				"route_name": "reports",
+				"status": {
+					"accepted": "Aceptado",
+					"evidence_failed": "Falló la grabación de evidencias",
+					"evidence_recording": "Grabando evidencia…",
+					"promoted": "Promovido como",
+					"recording_failed": "Grabación fallida",
+					"recording_recording": "Grabando…"
+				},
+				"ui": {
+					"description": "Revise las capturas actuales frente a la referencia visual guardada.",
+					"docs_filename_placeholder": "video-name.mp4",
+					"filtered_by": "Filtrado por:",
+					"no_reports": "Aún no hay informes de comparación visual.",
+					"title": "Informes de comparación"
+				}
+			}
+		},
+		"apps/reeqa/results/locales/en-us.json": {
+			"source_hash": "84eb793c896a19d2d7b61d58997b08c862b3c318a16ca45ada2f3fa368dd8354",
+			"translations": {
+				"actions": {
+					"cancel": "Cancelar",
+					"clear": "Borrar historial",
+					"confirm_clear": "Borrar completados"
+				},
+				"confirm": {
+					"clear": "Remove all completed QA run records and visual comparison reports? Saved baselines are kept."
+				},
+				"nav": "Resultados",
+				"route_name": "results",
+				"ui": {
+					"description": "Revise las comparaciones visuales y la salida de comandos en un solo lugar.",
+					"history_description": "Visual comparisons and QA command runs, newest first.",
+					"history_title": "Historial de resultados",
+					"no_results": "Aún no hay resultados de QA.",
+					"qa_run_active": "Ejecución de QA en curso",
+					"title": "Resultados",
+					"visual_run_active": "Ejecución visual en curso"
+				}
+			}
+		},
+		"apps/reeqa/run_qa/locales/en-us.json": {
+			"source_hash": "77eb74e4f01a86481c2f0d2dfd90a37922e264de766ad764c93bd6bf163240c9",
+			"translations": {
+				"actions": {
+					"add_project": "Añadir un proyecto",
+					"cancel": "Cancelar",
+					"clear": "Borrar historial",
+					"compare": "Comparar con la referencia",
+					"confirm_clear": "Borrar completados",
+					"manage_page_sets": "Gestionar conjuntos de páginas"
+				},
+				"baseline": {
+					"capture": "Capturar referencia",
+					"capture_hint": "Replaces the saved visual reference with fresh captures of the selected page set.",
+					"description": "Capture o sustituya la referencia visual guardada del conjunto de páginas activo.",
+					"title": "Referencia visual"
+				},
+				"confirm": {
+					"clear": "Remove all completed visual comparison reports? Saved baselines are kept."
+				},
+				"labels": {
+					"baseline_details": "Detalles de la referencia",
+					"baseline_pages": "páginas de referencia",
+					"baseline_updated": "Referencia capturada",
+					"baseline_url": "URL base de referencia",
+					"capture_size": "Tamaño de captura",
+					"changed": "cambiado",
+					"chrome": "Captura de página",
+					"db_snapshot": "Instantánea de la BD",
+					"evidence_render": "Vídeo de evidencia",
+					"image_diff": "Image comparison",
+					"latest_capture_pages": "Páginas capturadas la última vez",
+					"pages": "páginas",
+					"voiceover": "Narración de evidencia"
+				},
+				"nav": "Ejecución y resultados",
+				"results": {
+					"history_description": "Visual comparisons, newest first.",
+					"history_title": "Historial de resultados",
+					"no_results": "Aún no hay comparaciones visuales."
+				},
+				"route_name": "run-tests",
+				"schedule": {
+					"add": "Añadir programación",
+					"description": "Ejecutar automáticamente a intervalos la comparación o captura de referencia del conjunto de páginas activo.",
+					"every": "cada",
+					"hours": "h",
+					"interval": "Intervalo (horas)",
+					"last_run": "última ejecución",
+					"no_schedules": "Aún no hay programaciones.",
+					"operation": "Operación",
+					"remove": "Quitar",
+					"title": "Programación"
+				},
+				"status": {
+					"baseline_ready": "Referencia lista",
+					"no_baseline": "Sin referencia"
+				},
+				"ui": {
+					"db_snapshot_missing": "This baseline's database snapshot is missing. Recapture the baseline to restore a consistent test database.",
+					"description": "Capture referencias, ejecute comparaciones visuales y revise los resultados en un solo lugar.",
+					"no_page_set": "Seleccione o cree un conjunto de páginas antes de ejecutar pruebas de página.",
+					"no_projects": "Registre un proyecto antes de ejecutar pruebas.",
+					"qa_run_active": "Ejecución de QA en curso",
+					"title": "Ejecución y resultados",
+					"visual_run_active": "Ejecución visual en curso"
+				},
+				"visual": {
+					"description": "Compare la referencia del conjunto de páginas activo con el sitio en ejecución.",
+					"no_baseline_hint": "Capture una referencia para este conjunto de páginas antes de ejecutar una comparación visual.",
+					"title": "Comparación visual"
+				}
+			}
+		},
+		"apps/reeqa/runs/locales/en-us.json": {
+			"source_hash": "a5d5c6cdca0d4c3c8721d0137d1c1aec5d61d1d88a5d9af4f02be73db8a0df03",
+			"translations": {
+				"actions": {
+					"back": "Volver a las ejecuciones",
+					"cancel": "Cancelar",
+					"cancel_run": "Cancelar ejecución",
+					"clear": "Borrar completados",
+					"do_it": "Confirmar"
+				},
+				"breadcrumbs": {
+					"results": "Comprobaciones de comandos",
+					"run": "Ejecución de QA"
+				},
+				"confirm": {
+					"cancel_run": "Stop this running QA process?",
+					"clear": "Remove all completed QA run records?"
+				},
+				"labels": {
+					"duration": "Duración",
+					"exit_code": "Código de salida",
+					"output": "Salida",
+					"project": "Proyecto",
+					"started": "Iniciado",
+					"status": "Estado",
+					"suite": "Conjunto"
+				},
+				"nav": "Ejecuciones",
+				"route_name": "runs",
+				"ui": {
+					"active_run": "Ejecución activa",
+					"description": "Estado persistente y salida capturada de los comandos de ReeQA.",
+					"no_runs": "Aún no hay ejecuciones de QA.",
+					"title": "Historial de ejecuciones",
+					"waiting_output": "Esperando la salida..."
+				}
+			}
+		},
+		"apps/reeqa/visual_runs/locales/en-us.json": {
+			"source_hash": "97d33bed0b74646b81e3770f721d8504f1cdff03a801b6ec89ed5062a8415fab",
+			"translations": {
+				"actions": {
+					"cancel": "Cancelar",
+					"cancel_run": "Cancelar ejecución",
+					"do_it": "Detener ejecución",
+					"open_report": "Abrir informe de comparación"
+				},
+				"breadcrumbs": {
+					"baselines": "Referencias visuales",
+					"run_tests": "Ejecución y resultados",
+					"visual_run": "Ejecución visual"
+				},
+				"confirm": {
+					"cancel_run": "Stop the active browser capture process?"
+				},
+				"labels": {
+					"changed": "Cambiado",
+					"duration": "Duración",
+					"new": "Nuevo",
+					"output": "Registro de ejecución",
+					"page_set": "Conjunto de páginas",
+					"pages": "Páginas capturadas",
+					"removed": "Quitado"
+				},
+				"route_name": "visual_runs",
+				"ui": {
+					"waiting_output": "Esperando la salida de captura..."
+				}
+			}
+		},
+		"locales/en-us.json": {
+			"source_hash": "7c173649d1d870394b422b603f8037e8522d5c9b0937634f118eb4025d28192d",
+			"translations": {
+				"actions": {
+					"abort_archive": "Cancelar",
+					"abort_delete": "No, no eliminar",
+					"abort_restore": "Cancelar",
+					"archive": "Archivar",
+					"areyousure": "¿Seguro que desea eliminar este registro?",
+					"ascending": "Ascendente",
+					"back": "Volver",
+					"bulk_action": "Acción principal",
+					"bulk_action_2": "Acción alternativa",
+					"cancel": "Cancelar",
+					"confirm_archive": "Sí, archivar",
+					"confirm_delete": "Sí, eliminar",
+					"confirm_restore": "Sí, restaurar",
+					"delete": "Eliminar",
+					"do_it": "Sí, hacerlo",
+					"go_home": "← Ir a la página de inicio",
+					"lang_mismatch_dismiss": "Mantener el idioma del enlace",
+					"lang_mismatch_switch": "Usar el idioma actual",
+					"ok": "Aceptar",
+					"restore": "Restore",
+					"save": "Guardar",
+					"save_close": "Guardar y cerrar",
+					"sending": "Enviando...",
+					"submitted": "Guardando..."
+				},
+				"errors": {
+					"current_password_required": "Se requiere la contraseña actual",
+					"date_max": "La fecha debe ser el {max} o anterior.",
+					"date_min": "La fecha debe ser el {min} o posterior.",
+					"date_not_future": "La fecha no puede ser futura.",
+					"date_required": "Este campo es obligatorio.",
+					"duplicate_key": "El código ya existe",
+					"email_invalid": "Debe ser una dirección de correo electrónico válida",
+					"email_not_sent": "Error al enviar el correo",
+					"email_required": "El correo electrónico es obligatorio",
+					"file_upload_failed": "Error en la subida",
+					"file_upload_invalid_type": "Solo se permiten ciertos tipos de archivo",
+					"image_upload_failed": "Error en la subida",
+					"image_upload_invalid_type": "Solo se permiten archivos de imagen",
+					"invalid_date": "Fecha no válida",
+					"invalid_datetime": "Fecha y hora no válidas",
+					"must_be_selected": "Selección obligatoria",
+					"name_invalid": "El nombre no es válido",
+					"name_required": "El nombre es obligatorio",
+					"name_too_long": "El nombre debe tener como máximo 80 caracteres",
+					"nickname_too_long": "El apodo debe tener como máximo 20 caracteres",
+					"password_confirm_required": "Se requiere la confirmación de la contraseña",
+					"password_too_short": "La contraseña debe contener al menos 8 caracteres",
+					"passwords_mismatch": "Las contraseñas no coinciden",
+					"required": "Obligatorio",
+					"tagline_invalid": "El eslogan no es válido",
+					"username_exists": "Ya existe un usuario con este nombre de usuario.",
+					"username_required": "El nombre de usuario es obligatorio"
+				},
+				"hints": {
+					"date_format": "Date format: MM/DD/YYYY",
+					"date_format_value": "MM/DD/YYYY"
+				},
+				"labels": {
+					"folder": "Carpeta",
+					"nickname": "Apodo"
+				},
+				"localization": {
+					"add_language": "Añadir idioma de traducción",
+					"all_fields": "Todos los campos localizados",
+					"copy_all_from": "Copiar todos los campos de",
+					"copy_button": "Copiar",
+					"copy_hint": "Se copia una vez: los cambios posteriores en el origen no se propagan",
+					"copy_original": "Copiar el valor original al portapapeles",
+					"copy_this_field": "Copiar este campo",
+					"generate_button": "Generar con IA",
+					"has_errors": "Tiene errores de validación",
+					"has_translations": "Tiene valores traducidos",
+					"only_this_field": "Solo este campo",
+					"open_in_new_tab": "Abrir en una pestaña nueva",
+					"open_original": "Abrir entradas originales en una pestaña nueva",
+					"original": "Original",
+					"remove_translation": "Quitar traducción",
+					"remove_translation_message": "Quitar la traducción de",
+					"remove_translation_title": "¿Quitar traducción?",
+					"reset_to_default": "Restablecer al predeterminado",
+					"show_original": "Mostrar el valor original",
+					"source_changed": "El original cambió desde que se copió",
+					"source_changed_since_copy": "El original cambió desde que se copió",
+					"source_value": "Valor original",
+					"translate_all_message": "Esta es la primera traducción de",
+					"translate_all_title": "¿Traducir todos los campos localizados?",
+					"use_original": "Usar el original"
+				},
+				"messages": {
+					"bulk_delete_failed": "Falló la eliminación masiva.",
+					"file_upload_uploaded": "Subido",
+					"image_upload_uploaded": "Subido",
+					"record_created": "Registro creado",
+					"record_deleted": "Registro eliminado",
+					"record_updated": "Registro actualizado"
+				},
+				"nav": {
+					"dashboard": "Panel",
+					"database": "Base de datos",
+					"examples": {
+						"signals": "Señales"
+					},
+					"locales": "Idiomas",
+					"logs": "Registros",
+					"project": "Proyecto",
+					"refresh": "Actualizar",
+					"routes": "Rutas",
+					"studio": "Estudio de DDL",
+					"sync": "Sync",
+					"tables": "Tablas"
+				},
+				"nav_auth": {
+					"invite_user": "Invitar usuario",
+					"login": "Iniciar sesión"
+				},
+				"search": {
+					"search_term": "Término de búsqueda ...",
+					"submit": "Buscar"
+				},
+				"selectors": {
+					"0": "No",
+					"1": "Sí",
+					"all": "Todos los registros",
+					"ascending": "Ascendente",
+					"descending": "Descendente",
+					"per_page": "por página",
+					"select": "-- Seleccionar --"
+				},
+				"ui": {
+					"app_switcher": "Apps",
+					"apply_filters": "Aplicar filtros",
+					"apps": {
+						"main": "Main",
+						"reeman": "Reeman",
+						"reeqa": "ReeQA"
+					},
+					"auto_complete_no_results": "No se encontraron resultados",
+					"busy_poller_translating": "{count} translation job(s) running - translations appear when they finish.",
+					"clear_all": "Borrar todo",
+					"file_upload_click": "Hacer clic",
+					"file_upload_drag_drop": "arrastrar y soltar",
+					"file_upload_here": "un archivo aquí",
+					"file_upload_or": "para explorar o",
+					"filter_not": "No",
+					"image_upload_clear": "Quitar",
+					"image_upload_click": "Hacer clic",
+					"image_upload_drag_drop": "arrastrar y soltar",
+					"image_upload_edit": "Editar",
+					"image_upload_edit_hint": "Recortar, redimensionar o cambiar el formato antes de guardar",
+					"image_upload_edit_title": "Editar imagen",
+					"image_upload_fetch": "Obtener",
+					"image_upload_folder": "Carpeta",
+					"image_upload_format": "Formato",
+					"image_upload_here": "una imagen aquí",
+					"image_upload_or": "para explorar o",
+					"image_upload_original": "Original",
+					"image_upload_paste_hint": "Pulse Ctrl+V o Cmd+V para pegar una imagen desde el portapapeles",
+					"image_upload_preview": "Vista previa",
+					"image_upload_preview_empty": "Ajuste la configuración para ver la vista previa",
+					"image_upload_quality": "Calidad",
+					"image_upload_resize": "Cambiar tamaño (opcional)",
+					"image_upload_save": "Guardar",
+					"image_upload_tab_paste": "Pegar",
+					"image_upload_tab_upload": "Subir",
+					"image_upload_tab_url": "URL",
+					"labels": "Filtros",
+					"lang_mismatch_body": "Esta página está en",
+					"lang_mismatch_title": "Conflicto de idioma",
+					"language_name": {
+						"en": "English",
+						"sl": "Slovenščina"
+					},
+					"language_names": {
+						"en": "Inglés",
+						"sl": "Esloveno"
+					},
+					"language_names_to": {
+						"en": "Inglés",
+						"sl": "Esloveno"
+					},
+					"modifying": "Está a punto de modificar",
+					"no_records": "No se encontraron registros.",
+					"page_not_found": "Página no encontrada",
+					"page_not_found_description": "Lo sentimos, no podemos mostrar esta página",
+					"records": "registro(s)",
+					"show_actions": "Show actions",
+					"show_less": "Mostrar menos",
+					"show_more": "Mostrar más"
+				}
+			}
+		},
+		"platform/auth/invite/locales/en-us.json": {
+			"source_hash": "b2586ca95729dcecf76ad816c6a18cf96edadda50358d4f5225636af6af7dacd",
+			"translations": {
+				"actions": {
+					"submit": "Enviar invitación"
+				},
+				"email": {
+					"body": "Hola {username},\n\nHas sido invitado. Completa tu registro aquí:\n{url}",
+					"subject": "Has sido invitado"
+				},
+				"errors": {
+					"email_exists": "Ya existe un usuario con esta dirección de correo electrónico.",
+					"email_required": "Se requiere una dirección de correo electrónico.",
+					"invitation_not_found": "No se encontró la invitación.",
+					"username_invalid": "Username can only contain lowercase letters, numbers, underscores, and hyphens."
+				},
+				"labels": {
+					"email": "Correo del invitado",
+					"username": "Nombre de usuario"
+				},
+				"route_name": "invitacion",
+				"ui": {
+					"confirm_title": "Invitación enviada",
+					"created_field": "Creado",
+					"email_field": "Correo electrónico",
+					"email_label": "Correo del invitado",
+					"link_label": "Enlace de registro:",
+					"send_another": "Enviar otra invitación",
+					"success_message": "La invitación se ha creado correctamente.",
+					"success_send_this_link": "Envíe este enlace al invitado:",
+					"title": "Invitar usuario",
+					"username_field": "Nombre de usuario"
+				}
+			}
+		},
+		"platform/auth/locales/en-us.json": {
+			"source_hash": "1ac168d8072bae6961791abde4f9b18868ce0820038c20e8a4d857e109297633",
+			"translations": {
+				"route_name": "autenticacion"
+			}
+		},
+		"platform/auth/login/locales/en-us.json": {
+			"source_hash": "a476721e19681c6f4e7ed504ac3a144b20e889dfdd7500583ebfe7a8d1a586bc",
+			"translations": {
+				"actions": {
+					"submit": "Iniciar sesión"
+				},
+				"errors": {
+					"account_not_verified": "Su cuenta aún no está verificada.",
+					"invalid_username_or_password": "Nombre de usuario o contraseña no válidos."
+				},
+				"labels": {
+					"email": "Correo electrónico",
+					"password": "Contraseña",
+					"username": "Nombre de usuario (puede ser correo electrónico)"
+				},
+				"route_name": "iniciar-sesion",
+				"ui": {
+					"title": "Iniciar sesión"
+				}
+			}
+		},
+		"platform/auth/password/locales/en-us.json": {
+			"source_hash": "e01a3fbbfd3ccc659df1719ea29c41e9aaf24c04c2808375d00c57365674cdbb",
+			"translations": {
+				"actions": {
+					"cancel": "Cancelar",
+					"submit": "Cambiar contraseña"
+				},
+				"errors": {
+					"incorrect_password": "La contraseña actual es incorrecta."
+				},
+				"labels": {
+					"current_password": "Contraseña actual",
+					"password": "Nueva contraseña",
+					"password_confirm": "Confirmar nueva contraseña"
+				},
+				"messages": {
+					"successful_save": "La contraseña se ha cambiado correctamente."
+				},
+				"route_name": "contrasena",
+				"ui": {
+					"no_password_set": "No se ha establecido una contraseña. Contacte con el administrador.",
+					"title": "Cambiar contraseña"
+				}
+			}
+		},
+		"platform/auth/profile/locales/en-us.json": {
+			"source_hash": "c037c1622f5e9a6187d7db98a09a8e84fcd58a25b62cbef2570224d7dde6dd2f",
+			"translations": {
+				"actions": {
+					"cancel": "Cancelar",
+					"submit": "Guardar mi perfil"
+				},
+				"labels": {
+					"avatar": "Imagen de avatar",
+					"name": "Nombre completo",
+					"nickname": "Apodo"
+				},
+				"messages": {
+					"successful_save": "El perfil se ha guardado correctamente."
+				},
+				"route_name": "perfil",
+				"ui": {
+					"avatar_label": "Foto de perfil",
+					"change_password": "Cambiar contraseña",
+					"logout": "Cerrar sesión",
+					"title": "Mi perfil"
+				}
+			}
+		},
+		"platform/auth/register/locales/en-us.json": {
+			"source_hash": "9c1affee98266ec44fdb1adbd93e5a583e3e070e3abf3734580a6acb4b952502",
+			"translations": {
+				"actions": {
+					"submit": "Completar registro"
+				},
+				"errors": {
+					"name_required": "Entrada obligatoria",
+					"password_confirm_required": "Entrada obligatoria",
+					"password_too_short": "La contraseña debe contener al menos 8 caracteres",
+					"passwords_mismatch": "Las contraseñas no coinciden"
+				},
+				"labels": {
+					"name": "Nombre completo",
+					"password": "Contraseña (al menos 8 caracteres)",
+					"password_confirm": "Confirmar contraseña"
+				},
+				"route_name": "registro",
+				"ui": {
+					"already_used": "Esta invitación ya se ha utilizado. Inicie sesión.",
+					"invalid_link": "Este enlace no es válido.",
+					"invalid_title": "Invitación no válida",
+					"registering_as": "Registrándose como:",
+					"title": "Completar registro"
+				}
+			}
+		}
+	}
+}
