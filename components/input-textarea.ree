@@ -1,0 +1,7 @@
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= props.attributes.name }">
+	<div class="grid">
+		<label class="px-3" for="{= props.attributes.name }">{= props.attributes.label}</label>
+		<textarea id="{= props.attributes.name }" name="{= props.attributes.name }" class="min-h-[5lh]">{= props.attributes.value}</textarea>
+		<validation-error class="mt-1" id="error-{= props.attributes.name }"></validation-error>
+	</div>
+</field-wrapper>

@@ -1,0 +1,2140 @@
+{
+	"format": "reepolee-translations-v1",
+	"source_locale": "en-us",
+	"target_locale": "ru-ru",
+	"files": {
+		"apps/main/examples/index_template/locales/en-us.json": {
+			"source_hash": "2fbb2388bb2286aaf6834cfb998cfc8b3737216262cc9845b3405a58711303f8",
+			"translations": {
+				"labels": {
+					"id": "ID",
+					"last_checked": "Last checked",
+					"method": "Method",
+					"owner": "Owner",
+					"path": "Path",
+					"status": "Status"
+				},
+				"nav": "Шаблон индекса",
+				"route_name": "shablon-indeksa"
+			}
+		},
+		"apps/main/examples/index_template/record_details/locales/en-us.json": {
+			"source_hash": "6776f68e5a543a51556b2dd04c2dc5d7103260cf360179107b3f1f550bf4a83e",
+			"translations": {
+				"labels": {
+					"id": "ID",
+					"last_checked": "Last checked",
+					"method": "Method",
+					"owner": "Owner",
+					"path": "Path",
+					"status": "Status"
+				}
+			}
+		},
+		"apps/main/examples/kitchen_sink/locales/en-us.json": {
+			"source_hash": "6122d0e71f4f75bde7611454041b10312fc05c4d4738d2e37eb404fb8eb7f00e",
+			"translations": {
+				"descriptions": {
+					"card": "Это секция в виде карточки с рамкой и отступами.",
+					"typography": "Обычный текст абзаца с жирным и курсивным форматированием."
+				},
+				"errors": {
+					"min_length_3": "Минимум 3 символа обязательно",
+					"text_input_max": "Максимум 100 символов разрешено"
+				},
+				"labels": {
+					"banners": "Баннеры",
+					"buttons": "Кнопки",
+					"card_section": "Секция карточки",
+					"cards": "Карточки и секции",
+					"checkbox_option": "Параметр флажка",
+					"code_example": "Пример кода",
+					"date_input": "Поле даты",
+					"disabled_button": "Отключенная кнопка",
+					"email_input": "Поле эл. почты",
+					"email_placeholder": "Введите эл. почту",
+					"file_upload": "Загрузка файла",
+					"form_elements": "Элементы формы",
+					"heading_1": "Заголовок 1",
+					"heading_2": "Заголовок 2",
+					"heading_3": "Заголовок 3",
+					"list_item": "Элемент списка",
+					"option": "Вариант",
+					"primary_button": "Основная кнопка",
+					"radio": "Радиокнопка",
+					"radio_options": "Варианты радиокнопки",
+					"secondary_button": "Второстепенная кнопка",
+					"select_dropdown": "Выпадающий список",
+					"selected_date": "Выбранная дата:",
+					"text_input": "Текстовое поле",
+					"text_placeholder": "Введите текст (мин. 3 символа)",
+					"textarea": "Текстовая область",
+					"textarea_placeholder": "Введите несколько строк",
+					"typography": "Типографика"
+				},
+				"messages": {
+					"error": "Ошибка: Что-то пошло не так",
+					"info": "Информация: Это информационное сообщение",
+					"success": "Успех: Операция успешно завершена",
+					"warning": "Внимание: Пожалуйста, проверьте эту информацию"
+				},
+				"nav": "Кухонная мойка",
+				"route_name": "kuhonnaya-mojka",
+				"ui": {
+					"description": "Витрина компонентов и примеры",
+					"title": "Кухонная мойка"
+				}
+			}
+		},
+		"apps/main/examples/locales/en-us.json": {
+			"source_hash": "ae6e3c1acec2c7c5488a73d30ff4e6d0f1443c277a53691cd031a695a000ed17",
+			"translations": {
+				"nav_prefix_title": "Примеры",
+				"route_name": "primery"
+			}
+		},
+		"apps/main/home/locales/en-us.json": {
+			"source_hash": "0059b1a5a17d0320becc14d45646d4d4e1b5d61505b9d7af36d6a11ab4bb6d2f",
+			"translations": {
+				"nav": "Главная",
+				"ui": {
+					"title": "Главная страница"
+				}
+			}
+		},
+		"apps/main/system/locales/en-us.json": {
+			"source_hash": "6fcdad06b66bbb4b08db154f4d07e112bb2d1580fb2ee8f06159797f886df912",
+			"translations": {
+				"nav_prefix_title": "Система",
+				"route_name": "sistema"
+			}
+		},
+		"apps/reeman/cache/locales/en-us.json": {
+			"source_hash": "38f13d22c207fa4a6121c818efcd1536066f5696afcddb120f691fa3e17fb22e",
+			"translations": {
+				"nav": "Кэш",
+				"ui": {
+					"actions_header": "Действия",
+					"confirm_invalidate": "Очистить",
+					"disabled": "Кэш недоступен — включите CACHE_ENABLED в переменных окружения",
+					"disabled_badge": "Отключен",
+					"enable_hint": "Установите CACHE_ENABLED=true в файле .env и перезапустите сервер",
+					"enabled_badge": "Активен",
+					"entries_header": "Записи кэша",
+					"invalidate_btn": "Очистить",
+					"no_tables": "Ни одна таблица не отслеживается кэшем",
+					"reset_btn": "Очистить весь кэш",
+					"reset_confirm": "Вы уверены, что хотите сделать недействительными ВСЕ кэшированные данные? Действие нельзя отменить.",
+					"table_header": "Таблица",
+					"title": "Кэш SQL",
+					"total_keys": "Всего ключей кэша",
+					"tracked_tables": "Отслеживаемые таблицы"
+				}
+			}
+		},
+		"apps/reeman/database/locales/en-us.json": {
+			"source_hash": "2e9d017a2d9cabbccafa5da5e8345f70ab6c51e10ca97f7c06892dfcddbb2cef",
+			"translations": {
+				"actions": {
+					"check_compliance": "Проверить соответствие домену",
+					"data_to_sql": "DATA to SQL",
+					"open_in_studio": "Открыть в Studio",
+					"run_sql": "Выполнить файл SQL"
+				},
+				"confirm": {
+					"run_sql": "Выполнить этот файл SQL в базе данных? Действие нельзя отменить."
+				},
+				"hints": {
+					"json_path": "Путь к JSON-файлу для конвертации относительно корня проекта (например, data/recipes.json)",
+					"slug": "Необязательный slug в нижнем регистре для сгенерированного имени файла SQL. По умолчанию используется имя таблицы.",
+					"slug_safe_table": "Только строчные буквы и цифры (используется для slug имени файла SQL)"
+				},
+				"labels": {
+					"action": "Действие",
+					"columns": "Columns",
+					"file_count": "файлов",
+					"file_type": "Тип",
+					"folder": "Папка",
+					"folder_summary": "Всего папок",
+					"import_file": "JSON, XLS, or XLSX file",
+					"json_file": "JSON-файл",
+					"json_path": "Путь к JSON-файлу",
+					"last_updated": "Последнее обновление",
+					"rows": "rows",
+					"sheets": "Sheets to import",
+					"slug": "Slug (необязательно)",
+					"sql_file": "Файл SQL",
+					"table_name": "Имя таблицы"
+				},
+				"nav": "Database",
+				"selectors": {
+					"select_sql": "-- выбрать файл .sql --"
+				},
+				"ui": {
+					"broken_views_hint": "Эти представления ссылаются на несуществующие таблицы и были пропущены при анализе. Восстановите недостающие таблицы (например, через Выполнить файл SQL), затем перезагрузите.",
+					"broken_views_title": "Обнаружены поврежденные представления",
+					"busy": "Обработка — страница обновится по завершении.",
+					"compliance_hint": "Анализирует активную базу данных и сообщает о колонках, не соответствующих каноническим доменным типам. Только чтение.",
+					"data_to_sql_hint": "Upload JSON, XLS, or XLSX data and generate paired MySQL and SQLite SQL files.",
+					"database_description": "Выполняйте файлы SQL, заполняйте данные из JSON и проверяйте соответствие домену.",
+					"database_title": "База данных",
+					"empty_sheet": "empty sheet",
+					"inspecting_file": "Inspecting file...",
+					"inspection_error": "Could not inspect this file.",
+					"json_upload_hint": "Выберите файл .json перед началом преобразования.",
+					"no_sql_files": "Файлы .sql в sql/{dialect}/ не найдены.",
+					"sheet_selection_hint": "Select one or more sheets and review the suggested table names.",
+					"sql_files_hint": "Выберите файл SQL для выполнения в текущей базе данных."
+				}
+			}
+		},
+		"apps/reeman/db_routes/locales/en-us.json": {
+			"source_hash": "93e059a979c09a6112129712bf77aee358a8def6085acf671f1a1d721c9a041d",
+			"translations": {
+				"actions": {
+					"add_condition": "Добавить условие",
+					"add_page": "Добавить простую страницу",
+					"add_table_page": "Добавить простую страницу таблицы",
+					"bulk_action": "Удалить выбранные маршруты БД",
+					"bulk_action_2": "Альтернативное действие",
+					"cancel": "Отмена",
+					"create": "Создать",
+					"do_it": "Да, сделать",
+					"fields": "Только поля",
+					"full": "Полное обновление",
+					"new_db_route": "Новый маршрут БД",
+					"refresh_crud": "Обновить CRUD",
+					"remove": "Удалить",
+					"remove_route": "Удалить маршрут",
+					"save": "Сохранить",
+					"save_close": "Сохранить и закрыть"
+				},
+				"child_ui": {
+					"actions": "Действия",
+					"delete": "Удалить",
+					"deleting": "Удаление…",
+					"edit": "Изменить",
+					"edit_title": "Изменить Db_route",
+					"empty_text": "Маршруты БД не найдены.",
+					"error_deleting": "Ошибка при удалении записи.",
+					"error_loading": "Ошибка при загрузке записи.",
+					"error_saving": "Ошибка при сохранении записи.",
+					"new_button": "+ Новая Db_route",
+					"new_title": "Новая Db_route"
+				},
+				"errors": {
+					"duplicate_key": "Запись с этим значением уже существует.",
+					"error_creating_record": "Произошла ошибка при сохранении записи.",
+					"module_required": "Требуется модуль.",
+					"must_be_selected": "Это поле обязательно.",
+					"table_name_required": "Требуется имя таблицы.",
+					"title_required": "Требуется название.",
+					"url_required": "Требуется URL.",
+					"value_required_or_use_original": "Введите переведенное значение или удалите этот язык."
+				},
+				"hints": {
+					"folder_name": "Строчные буквы, цифры, - или _ (например, my_page).",
+					"prefix": "Необязательный префикс модуля. Оставьте пустым, чтобы разместить непосредственно в /routes."
+				},
+				"labels": {
+					"delete_translations": "Удалить переводы",
+					"display": "Отображение",
+					"fields": "Поля",
+					"folder_name": "Имя папки",
+					"mode": "Режим",
+					"module": "Модуль",
+					"order_by": "Сортировать по",
+					"prefix": "Префикс",
+					"removable": "Удаляемый",
+					"table": "Таблица / Маршрут",
+					"table_name": "Имя таблицы",
+					"template_tags": "Теги шаблона",
+					"url": "URL",
+					"where": "Где"
+				},
+				"messages": {
+					"bulk_delete_failed": "Не удалось выполнить массовое удаление.",
+					"bulk_delete_no_ids": "Маршруты БД не выбраны.",
+					"bulk_deleted": "Маршруты БД не удалены|{count} маршрут БД удален|{count} маршрута БД удалено|{count} маршрута БД удалено|{count} маршрутов БД удалено",
+					"bulk_errors": "|{count} маршрут БД не удался|{count} маршрута БД не удались|{count} маршрута БД не удались|{count} маршрутов БД не удалось",
+					"record_created": "Запись создана",
+					"record_updated": "Запись обновлена"
+				},
+				"nav": "Маршруты БД",
+				"route_name": "marshruty-bd",
+				"search": {
+					"search_term": "Поиск маршрутов БД...",
+					"submit": "Поиск"
+				},
+				"selectors": {
+					"0": "Нет",
+					"1": "Да",
+					"all": "Все",
+					"default": "(оставить текущий)",
+					"per_page": "на странице",
+					"select_table": "-- Выбрать таблицу или маршрут --"
+				},
+				"ui": {
+					"add_page_hint": "Создает статический маршрут страницы (без базы данных) из шаблона simple-page.",
+					"add_page_title": "Добавить простую страницу",
+					"add_table_page_hint": "Создает страницу списка только для чтения на основе таблицы базы данных.",
+					"add_table_page_title": "Добавить простую страницу таблицы",
+					"apply_filters": "Применить",
+					"busy": "Обработка — страница обновится по завершении.",
+					"clear_all": "Очистить все",
+					"filter_not": "НЕ",
+					"loading_count": "Загрузка…",
+					"modifying": "Вы собираетесь изменить",
+					"no_records": "Маршруты БД не найдены.",
+					"no_tables": "Таблицы в базе данных не найдены.",
+					"records": "запись(и)",
+					"remove_route_hint": "Это удалит папку маршрута и ее файлы с диска. Действие нельзя отменить.",
+					"select_table_first": "Выберите таблицу, чтобы выбрать поля.",
+					"title": "Маршрут БД"
+				}
+			}
+		},
+		"apps/reeman/db_tables/locales/en-us.json": {
+			"source_hash": "f470f987f079463a06dbec121459c9c374f426169e89792411251c206b961db2",
+			"translations": {
+				"actions": {
+					"bulk_action": "Удалить выбранные таблицы БД",
+					"bulk_action_2": "Альтернативное действие",
+					"cancel": "Отмена",
+					"do_it": "Да, сделать",
+					"fields": "Только поля",
+					"force": "Принудительная перезапись",
+					"full": "Полное обновление",
+					"generate_crud": "Создать CRUD",
+					"new_db_table": "Новая таблица БД",
+					"refresh_crud": "Обновить CRUD",
+					"save": "Сохранить",
+					"save_close": "Сохранить и закрыть",
+					"schema_only": "Только схема",
+					"translate": "Перевести с помощью ИИ"
+				},
+				"child_ui": {
+					"actions": "Действия",
+					"delete": "Удалить",
+					"deleting": "Удаление…",
+					"edit": "Изменить",
+					"edit_title": "Изменить Db_table",
+					"empty_text": "Таблицы БД не найдены.",
+					"error_deleting": "Ошибка при удалении записи.",
+					"error_loading": "Ошибка при загрузке записи.",
+					"error_saving": "Ошибка при сохранении записи.",
+					"new_button": "+ Новая Db_table",
+					"new_title": "Новая Db_table"
+				},
+				"errors": {
+					"duplicate_key": "Запись с этим значением уже существует.",
+					"error_creating_record": "Произошла ошибка при сохранении записи.",
+					"has_crud_required": "Требуется указание «Has CRUD».",
+					"must_be_selected": "Это поле обязательно.",
+					"name_required": "Требуется название.",
+					"title_required": "Требуется название.",
+					"value_required_or_use_original": "Введите переведенное значение или удалите этот язык."
+				},
+				"hints": {
+					"prefix": "Необязательный префикс пути URL для сгенерированных маршрутов (например, admin). Оставьте пустым, чтобы смонтировать в корне.",
+					"route_name": "Необязательное имя URL, заменяющее имя таблицы (например, my-users)"
+				},
+				"labels": {
+					"column_count": "Количество колонок",
+					"display": "Отображение",
+					"fk_count": "Количество FK",
+					"has_crud": "Имеет CRUD",
+					"index_columns": "Индексные колонки",
+					"mode": "Режим",
+					"name": "Название",
+					"pagination": "Пагинация",
+					"prefix": "Префикс",
+					"render_strategy": "Стратегия рендеринга",
+					"route_name": "Имя маршрута (необязательно)",
+					"row_count": "Количество строк",
+					"table": "Таблица / Маршрут",
+					"template_tags": "Теги шаблона"
+				},
+				"messages": {
+					"bulk_delete_failed": "Не удалось выполнить массовое удаление.",
+					"bulk_delete_no_ids": "Таблицы БД не выбраны.",
+					"bulk_deleted": "Таблицы БД не удалены|{count} таблица БД удалена|{count} таблицы БД удалены|{count} таблицы БД удалены|{count} таблиц БД удалено",
+					"bulk_errors": "|{count} таблица БД не удалась|{count} таблицы БД не удались|{count} таблицы БД не удались|{count} таблиц БД не удалось",
+					"record_created": "Запись создана",
+					"record_updated": "Запись обновлена"
+				},
+				"nav": "Таблицы БД",
+				"route_name": "tablicy-bd",
+				"search": {
+					"search_term": "Поиск таблиц БД...",
+					"submit": "Поиск"
+				},
+				"selectors": {
+					"0": "Нет",
+					"1": "Да",
+					"all": "Все",
+					"default": "(оставить текущий)",
+					"per_page": "на странице",
+					"select_table": "-- Выбрать таблицу или маршрут --"
+				},
+				"ui": {
+					"apply_filters": "Применить",
+					"busy": "Обработка — страница обновится по завершении.",
+					"clear_all": "Очистить все",
+					"filter_not": "НЕ",
+					"loading_count": "Загрузка…",
+					"modifying": "Вы собираетесь изменить",
+					"no_records": "Таблицы БД не найдены.",
+					"no_selectable_columns": "Нет доступных для выбора индексных колонок — будут использованы значения по умолчанию генератора.",
+					"records": "запись(и)",
+					"refresh_skip_hint": "Таблицы без существующего CRUD пропускаются.",
+					"title": "Таблица БД"
+				}
+			}
+		},
+		"apps/reeman/en-us.json": {
+			"source_hash": "7ff2ae72fed32c2d0d840de6b5a45962e282e0e15927b2d636a50c70b398053a",
+			"translations": {
+				"actions": {
+					"bulk_action": "Delete selected translations",
+					"bulk_action_2": "Bulk action 2",
+					"cancel": "Cancel",
+					"do_it": "Yes, do it",
+					"new_translation": "New Translation",
+					"save": "Save",
+					"save_close": "Save & close"
+				},
+				"child_ui": {
+					"actions": "Actions",
+					"delete": "Delete",
+					"deleting": "Deleting…",
+					"edit": "Edit",
+					"edit_title": "Edit Translation",
+					"empty_text": "No translations found.",
+					"error_deleting": "Error deleting record.",
+					"error_loading": "Error loading record.",
+					"error_saving": "Error saving record.",
+					"new_button": "+ New Translation",
+					"new_title": "New Translation"
+				},
+				"errors": {
+					"duplicate_key": "A record with this value already exists.",
+					"error_creating_record": "An error occurred while saving the record.",
+					"key_path_required": "Key path is required.",
+					"locale_required": "Locale is required.",
+					"must_be_selected": "This field is required.",
+					"namespace_required": "Namespace is required.",
+					"title_required": "Title is required.",
+					"translation_required": "Translation is required.",
+					"value_required_or_use_original": "Enter a translated value or remove this language."
+				},
+				"labels": {
+					"display": "Display",
+					"key_path": "Key Path",
+					"locale": "Locale",
+					"namespace": "Namespace",
+					"table": "Table / Route",
+					"translation": "Translation"
+				},
+				"messages": {
+					"bulk_delete_failed": "Bulk delete failed.",
+					"bulk_delete_no_ids": "No translations selected.",
+					"bulk_deleted": "No translations deleted|{count} translation deleted|{count} translations deleted|{count} translations deleted|{count} translations deleted",
+					"bulk_errors": "|{count} translation failed|{count} translations failed|{count} translations failed|{count} translations failed",
+					"record_created": "Record created",
+					"record_updated": "Record updated"
+				},
+				"nav_prefix_title": "Администратор",
+				"route_name": "translations",
+				"search": {
+					"search_term": "Search translations...",
+					"submit": "Search"
+				},
+				"selectors": {
+					"0": "No",
+					"1": "Yes",
+					"all": "All",
+					"per_page": "per page",
+					"select_table": "-- Select table or route --"
+				},
+				"ui": {
+					"apply_filters": "Apply",
+					"clear_all": "Clear all",
+					"filter_not": "NOT",
+					"loading_count": "Loading…",
+					"modifying": "You are about to modify",
+					"no_records": "No translations found.",
+					"records": "record(s)",
+					"title": "Translation"
+				}
+			}
+		},
+		"apps/reeman/environment/locales/en-us.json": {
+			"source_hash": "9bce64bd00235b429da9849b8849e100b7098de7e9cd4b2c2c469f95f104eba1",
+			"translations": {
+				"actions": {
+					"cancel": "Отмена",
+					"confirm_delete": "Удалить",
+					"delete_selected": "Удалить выбранные",
+					"hide_values": "Скрыть значения",
+					"save": "Сохранить",
+					"search": "Поиск",
+					"show_values": "Показать значения"
+				},
+				"confirm": {
+					"delete_selected": "Удалить выбранные ключи окружения?"
+				},
+				"hints": {
+					"description": "Описания берутся из .env.example и не могут быть изменены здесь.",
+					"value": "Введите значение dotenv точно так, как оно должно отображаться после знака равенства. Значения должны помещаться в одну строку."
+				},
+				"labels": {
+					"description": "Описание",
+					"key": "Ключ",
+					"native_order": "Естественный порядок .env",
+					"selected": "Выбрано",
+					"value": "Значение"
+				},
+				"nav": "Окружение",
+				"ui": {
+					"edit_title": "Изменить переменную окружения",
+					"no_records": "Переменные окружения не найдены."
+				}
+			}
+		},
+		"apps/reeman/files/locales/en-us.json": {
+			"source_hash": "f8fe5ebbceab4db97ef20c6ac6fe4d1f6f907c938c8a4a05cf458b5fcc131609",
+			"translations": {
+				"actions": {
+					"abort_archive": "Cancel",
+					"abort_delete": "Отмена",
+					"abort_restore": "Cancel",
+					"archive": "Archive",
+					"back": "Назад",
+					"bulk_action": "Удалить выбранные файлы",
+					"cancel": "Отмена",
+					"confirm_archive": "Yes, archive",
+					"confirm_delete": "Да, удалить",
+					"confirm_restore": "Yes, restore",
+					"delete": "Удалить этот файл навсегда?",
+					"do_it": "Сделать",
+					"new_file": "Новый файл",
+					"restore": "Restore",
+					"save": "Сохранить",
+					"save_close": "Сохранить и закрыть"
+				},
+				"counts": {
+					"archived": "Archived",
+					"live": "Active",
+					"total": "Total"
+				},
+				"labels": {
+					"description": "Описание",
+					"file_size": "Размер файла",
+					"file_type": "Тип файла",
+					"filename": "Имя файла",
+					"folder": "Папка",
+					"mime_type": "MIME-тип",
+					"original_filename": "Исходное имя файла",
+					"s3_key": "Ключ S3",
+					"tags": "Теги",
+					"title": "Название"
+				},
+				"messages": {
+					"record_archived": "Record archived",
+					"record_restored": "Record restored"
+				},
+				"nav": "Файлы",
+				"route_name": "fajly",
+				"scopes": {
+					"__all": "All",
+					"__archived": "Archived"
+				},
+				"selectors": {
+					"all": "Все",
+					"per_page": "на странице"
+				},
+				"ui": {
+					"file": "Файл",
+					"file_type": "Тип",
+					"modifying": "Изменение",
+					"no_records": "Файлы не найдены.",
+					"records": "записи",
+					"title": "Файлы"
+				},
+				"v_labels": {
+					"description": "Описание",
+					"file_size": "Размер файла",
+					"file_type": "Тип файла",
+					"filename": "Имя файла",
+					"folder": "Папка",
+					"mime_type": "MIME-тип",
+					"original_filename": "Исходное имя файла",
+					"tags": "Теги",
+					"title": "Название"
+				}
+			}
+		},
+		"apps/reeman/global_scopes/locales/en-us.json": {
+			"source_hash": "8f727f3b475b56ee57187e136f410e49e9b38d24fd8d444a8e41d38888d7d886",
+			"translations": {
+				"actions": {
+					"abort_archive": "Cancel",
+					"abort_restore": "Cancel",
+					"archive": "Archive",
+					"bulk_action": "Удаление выбранных глобальных фильтров",
+					"bulk_action_2": "Альтернативное действие",
+					"confirm_archive": "Yes, archive",
+					"confirm_restore": "Yes, restore",
+					"new_global_scope": "Новый глобальный фильтр",
+					"restore": "Restore",
+					"scope_translations": "Создать переводы фильтра",
+					"scope_translations_view": "Просмотреть переводы фильтра"
+				},
+				"child_ui": {
+					"actions": "Действия",
+					"archive": "Archive",
+					"archiving": "Archiving…",
+					"edit": "Изменить",
+					"edit_title": "Изменить глобальный фильтр",
+					"empty_text": "Глобальные фильтры не найдены.",
+					"error_archiving": "Error archiving record.",
+					"error_loading": "Ошибка при загрузке записи.",
+					"error_saving": "Ошибка при сохранении записи.",
+					"new_button": "+ Новый глобальный фильтр",
+					"new_title": "Новый глобальный фильтр",
+					"restore": "Restore"
+				},
+				"counts": {
+					"archived": "Archived",
+					"live": "Active",
+					"total": "Total"
+				},
+				"errors": {
+					"duplicate_key": "Запись с этим значением уже существует.",
+					"error_creating_record": "Произошла ошибка при сохранении записи.",
+					"must_be_selected": "Это поле обязательно.",
+					"title_required": "Требуется название."
+				},
+				"hints": {
+					"display_name": "Метка, отображаемая пользователям в раскрывающемся списке фильтров на странице списка.",
+					"feature_name": "Имя маршрута (например, route_name именованного маршрута), а не таблицы. Ограничивает этот фильтр одним конкретным маршрутом, когда несколько маршрутов используют одну таблицу.",
+					"is_default": "Если задано, этот фильтр автоматически применяется на странице списка, пока пользователь не выберет другой.",
+					"module_code": "Ограничивает этот фильтр маршрутами выбранного модуля. Оставьте пустым, чтобы сделать его доступным на уровне всего модуля.",
+					"scope_key": "Ключ перевода. Не отображается пользователям — держите его коротким и стабильным после начала использования.",
+					"sort_order": "Позиция в раскрывающемся списке фильтров, сначала самая низкая. Фильтры, использующие одну таблицу/маршрут, сортируются по этому значению по возрастанию.",
+					"table": "Таблица базы данных, к которой применяется этот фильтр. Определяет, на каких страницах индекса/редактирования он отображается в раскрывающемся списке фильтров.",
+					"where_clause": "Сырое условие SQL, добавляемое после WHERE, когда этот фильтр активен (например, status = 'active'). Используйте токены ::session.* ниже для ссылки на вошедшего пользователя. Неавторизованный доступ к условию с их использованием разрешается в 1=0."
+				},
+				"labels": {
+					"display_name": "Отображаемое имя",
+					"feature_name": "Имя функции",
+					"is_default": "По умолчанию",
+					"module_code": "Код модуля",
+					"scope_key": "Ключ фильтра",
+					"sort_order": "Порядок сортировки",
+					"table": "Таблица",
+					"table_name": "Имя таблицы",
+					"where_clause": "Условие WHERE"
+				},
+				"messages": {
+					"bulk_archive_no_ids": "No global filters selected.",
+					"bulk_archived": "No global scopes archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
+					"bulk_errors": "|{count} глобальный фильтр не удалось удалить|{count} глобальных фильтра не удалось удалить|{count} глобальных фильтра не удалось удалить|{count} глобальных фильтров не удалось удалить",
+					"record_archived": "Record archived",
+					"record_restored": "Record restored",
+					"record_updated": "Запись обновлена"
+				},
+				"nav": "Глобальные фильтры",
+				"parent_label": "Глобальные фильтры",
+				"route_name": "globalnye-filtry",
+				"scopes": {
+					"__all": "All",
+					"__archived": "Archived"
+				},
+				"search": {
+					"search_term": "Поиск глобальных фильтров...",
+					"submit": "Поиск"
+				},
+				"selectors": {
+					"all": "Все",
+					"no_module": "-- Без модуля (корень) --",
+					"select_table": "-- Выбрать таблицу --"
+				},
+				"ui": {
+					"no_records": "Глобальные области не найдены.",
+					"title": "Глобальные области"
+				}
+			}
+		},
+		"apps/reeman/images/locales/en-us.json": {
+			"source_hash": "f26bcc93e21660cedd743a9414a4759b3aebe43358baf36a9f0da92863d78bb2",
+			"translations": {
+				"actions": {
+					"abort_archive": "Cancel",
+					"abort_delete": "Отмена",
+					"abort_restore": "Cancel",
+					"archive": "Archive",
+					"bulk_action": "Удалить выбранные изображения",
+					"confirm_archive": "Yes, archive",
+					"confirm_delete": "Да, удалить",
+					"confirm_restore": "Yes, restore",
+					"delete": "Удалить это изображение навсегда?",
+					"new_image": "Новое изображение",
+					"restore": "Restore"
+				},
+				"counts": {
+					"archived": "Archived",
+					"live": "Active",
+					"total": "Total"
+				},
+				"labels": {
+					"description": "Описание",
+					"file_size": "Размер файла",
+					"filename": "Имя файла",
+					"folder": "Папка",
+					"height": "Высота",
+					"mime_type": "MIME-тип",
+					"original_filename": "Исходное имя файла",
+					"s3_key": "Ключ S3",
+					"tags": "Теги",
+					"title": "Название",
+					"width": "Ширина"
+				},
+				"messages": {
+					"bulk_archive_no_ids": "No images selected.",
+					"bulk_archived": "No images archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
+					"bulk_errors": "|{count} изображение не удалось|{count} изображения не удались|{count} изображения не удались|{count} изображений не удалось",
+					"record_archived": "Record archived",
+					"record_restored": "Record restored"
+				},
+				"nav": "Изображения",
+				"route_name": "izobrazheniya",
+				"scopes": {
+					"__all": "All",
+					"__archived": "Archived"
+				},
+				"search": {
+					"search_term": "Поиск изображений...",
+					"submit": "Поиск"
+				},
+				"selectors": {
+					"all": "Все"
+				},
+				"ui": {
+					"no_records": "Изображения не найдены.",
+					"title": "Изображения"
+				},
+				"v_labels": {
+					"description": "Описание",
+					"file_size": "Размер файла",
+					"filename": "Имя файла",
+					"folder": "Папка",
+					"height": "Высота",
+					"mime_type": "MIME-тип",
+					"original_filename": "Исходное имя файла",
+					"tags": "Теги",
+					"title": "Название",
+					"width": "Ширина"
+				}
+			}
+		},
+		"apps/reeman/locales/locales/en-us.json": {
+			"source_hash": "96c423cda5f6b1133d4eb0aa50a13c5142074e23cfa7d519a06f962e1f730e41",
+			"translations": {
+				"actions": {
+					"activate_selected": "Activate selected",
+					"add": "Добавить",
+					"add_locale": "Добавить язык",
+					"back_to_locales": "Вернуться к языкам",
+					"cancel": "Отмена",
+					"do_it": "Сделать",
+					"export_english": "Export English JSON",
+					"import": "Import",
+					"remove": "Удалить",
+					"remove_selected": "Удалить выбранные",
+					"save": "Сохранить изменения",
+					"set_active": "Активировать",
+					"set_inactive": "Деактивировать",
+					"translate": "Перевести с помощью ИИ",
+					"upload": "Upload",
+					"upload_translation": "Upload translated JSON"
+				},
+				"confirm": {
+					"remove_locale": "Удалить этот язык? Его переводы и таблицы контента будут удалены."
+				},
+				"hints": {
+					"alias": "Псевдоним обслуживания строк UI — запросы для этого языка отображают строки целевого языка",
+					"locale_code": "Код языка BCP 47 для добавления (например, de-at)"
+				},
+				"labels": {
+					"active": "Активен",
+					"alias": "Псевдоним",
+					"alias_placeholder": "например, de-at",
+					"archived_locales": "Archived locales",
+					"available_locales": "Доступные подготовленные языки",
+					"code": "Код",
+					"default": "По умолчанию",
+					"locale_code": "Код языка",
+					"locales": "Языки",
+					"name": "Название",
+					"name_placeholder": "Отображаемое имя",
+					"remove": "Удалить"
+				},
+				"nav": "Языки",
+				"route_name": "yazyki",
+				"ui": {
+					"activate_locale_hint": "Already-supported locales - runs their prepared translations and marks them active.",
+					"add_locale_hint": "Добавляет язык в конфигурацию, заполняет его переводы и клонирует таблицы контента (генератор add-locale).",
+					"archived_locales_hint": "Curated archived translations can be imported into their matching live folders. Imported locales are supported but remain inactive.",
+					"available_locales_hint": "Для этих языков на диске уже есть подготовленные переводы - добавьте один в один клик (добавляется только в конфигурацию, не активируется).",
+					"busy": "Обработка — страница обновится по завершении.",
+					"locales_description": "Управление config/supported_locales.ts — коды языков, отображаемые имена, псевдонимы, активный список и язык по умолчанию.",
+					"locales_manage_hint": "Добавьте язык, чтобы создать его переводы + таблицы контента, или измените конфигурацию ниже напрямую.",
+					"locales_title": "Языки",
+					"modifying": "Вы собираетесь удалить",
+					"no_records": "Языки в config/supported_locales.ts не найдены.",
+					"records": "язык(и)",
+					"remove_selected_hint": "Удаляет выбранные языки — их переводы и таблицы контента удаляются.",
+					"save_hint": "Сохраняет непосредственно в config/supported_locales.ts. Перезагрузите маршруты для применения.",
+					"title": "Locale",
+					"upload_translation_hint": "Upload a translated export bundle. It is validated and added to Archived locales; use Import there to install it."
+				}
+			}
+		},
+		"apps/reeman/logs/locales/en-us.json": {
+			"source_hash": "e1361af8a4077cf426c446dbb0b14f3f1e8ec2ac5d9ab81ae62e0b4ccbf2f4eb",
+			"translations": {
+				"actions": {
+					"clear_log": "Очистить журнал"
+				},
+				"confirm": {
+					"clear_log": "Очистить журнал запуска?"
+				},
+				"labels": {
+					"action": "Действие",
+					"column": "Колонка",
+					"current_type": "Текущий тип",
+					"expected_type": "Ожидаемый тип",
+					"finished": "Завершено",
+					"result": "Результат",
+					"table": "Таблица",
+					"target": "Цель"
+				},
+				"nav": "Logs",
+				"ui": {
+					"busy": "Обработка — страница обновится по завершении.",
+					"compliance_issues": "Несоответствующие / неизвестные колонки",
+					"failed": "Неуспешно",
+					"last_runs": "Недавние запуски",
+					"logs_description": "Недавние действия reeman с записанным выводом.",
+					"logs_title": "Журнал запуска",
+					"no_runs": "Запусков пока нет — выберите действие выше.",
+					"ok": "OK"
+				}
+			}
+		},
+		"apps/reeman/modules/locales/en-us.json": {
+			"source_hash": "366aee398ffc089de834ddd7e207406ab9068c22fd93e512820e5608ab0fb002",
+			"translations": {
+				"actions": {
+					"abort_archive": "Cancel",
+					"abort_restore": "Cancel",
+					"archive": "Archive",
+					"bulk_action": "Удалить выбранные модули",
+					"bulk_action_2": "Альтернативное действие",
+					"cancel": "Отмена",
+					"confirm_archive": "Yes, archive",
+					"confirm_restore": "Yes, restore",
+					"do_it": "Да, сделать",
+					"new_module": "Новый модуль",
+					"restore": "Restore",
+					"save": "Сохранить",
+					"save_close": "Сохранить и закрыть"
+				},
+				"child_ui": {
+					"actions": "Действия",
+					"archive": "Archive",
+					"archiving": "Archiving…",
+					"edit": "Изменить",
+					"edit_title": "Изменить модуль",
+					"empty_text": "Модули не найдены.",
+					"error_archiving": "Error archiving record.",
+					"error_loading": "Ошибка при загрузке записи.",
+					"error_saving": "Ошибка при сохранении записи.",
+					"new_button": "+ Новый модуль",
+					"new_title": "Новый модуль",
+					"restore": "Restore"
+				},
+				"counts": {
+					"archived": "Archived",
+					"live": "Active",
+					"total": "Total"
+				},
+				"errors": {
+					"duplicate_key": "Запись с этим значением уже существует.",
+					"error_creating_record": "Произошла ошибка при сохранении записи.",
+					"must_be_selected": "Это поле обязательно.",
+					"title_required": "Требуется название."
+				},
+				"labels": {
+					"code": "Код",
+					"description": "Описание",
+					"name": "Название",
+					"table": "Таблица / Путь"
+				},
+				"messages": {
+					"bulk_archive_failed": "Bulk archive failed.",
+					"bulk_archive_no_ids": "No modules selected.",
+					"bulk_archived": "No modules archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
+					"bulk_errors": "|{count} модуль не удался|{count} модуля не удались|{count} модуля не удались|{count} модулей не удалось",
+					"record_archived": "Record archived",
+					"record_created": "Запись создана",
+					"record_restored": "Record restored",
+					"record_updated": "Запись обновлена"
+				},
+				"nav": "Модули",
+				"route_name": "moduli",
+				"scopes": {
+					"__all": "All",
+					"__archived": "Archived"
+				},
+				"search": {
+					"search_term": "Поиск модулей...",
+					"submit": "Поиск"
+				},
+				"selectors": {
+					"0": "Нет",
+					"1": "Да",
+					"all": "Все",
+					"per_page": "на странице",
+					"select_table": "-- Выбрать таблицу или путь --"
+				},
+				"ui": {
+					"apply_filters": "Применить",
+					"clear_all": "Удалить все",
+					"filter_not": "НЕ",
+					"loading_count": "Загрузка…",
+					"modifying": "Вы собираетесь изменить",
+					"no_records": "Модули не найдены.",
+					"records": "запись(и)",
+					"title": "Модули"
+				}
+			}
+		},
+		"apps/reeman/project/locales/en-us.json": {
+			"source_hash": "8d3623ea88d904592c22590700c8b5722f2dd5493adf764a6f4499276663d7d7",
+			"translations": {
+				"actions": {
+					"set_repo": "Установить репозиторий"
+				},
+				"labels": {
+					"current_repo": "Текущий репозиторий:",
+					"owner_repo": "Репозиторий GitHub (owner/repo)"
+				},
+				"nav": "Project",
+				"ui": {
+					"project_description": "Настройки уровня проекта.",
+					"project_title": "Проект",
+					"set_repo_hint": "Свяжите этот проект с репозиторием GitHub, чтобы отчеты о проблемах и метаданные package.json указывали в нужное место."
+				}
+			}
+		},
+		"apps/reeman/queues/locales/en-us.json": {
+			"source_hash": "e4147af4a5e2456d94ccf0411c0bf18cd2d11c71bbeb1079822b9f6316d8f9e8",
+			"translations": {
+				"actions": {
+					"cancel": "Отменить",
+					"clear_all": "Очистить все",
+					"clear_pending": "Ожидающие",
+					"confirm": "Подтвердить",
+					"delete": "Удалить",
+					"pause": "Приостановить рабочего процесса",
+					"resume": "Возобновить рабочего процесса",
+					"retry": "Повторить"
+				},
+				"labels": {
+					"actions": "Действия",
+					"attempts": "Попытки",
+					"created": "Создано",
+					"error": "Ошибка",
+					"id": "ID",
+					"last_run": "Последний запуск",
+					"payload": "Полезная нагрузка",
+					"pending": "Ожидающие",
+					"queue": "Очередь",
+					"scheduled": "Запланировано",
+					"type": "Тип"
+				},
+				"nav": "Очереди",
+				"route_name": "queues",
+				"ui": {
+					"backend": "Бэкенд",
+					"confirm_clear_all": "Очистить все задачи из этой очереди? Это невозможно отменить.",
+					"confirm_clear_pending": "Очистить все ожидающие задачи из этой очереди?",
+					"confirm_delete_job": "Удалить эту неудачную задачу навсегда? Это невозможно отменить.",
+					"error_loading": "Не удалось загрузить данные очереди",
+					"failed_heading": "Неудачные задачи",
+					"no_failed": "Нет неудачных задач",
+					"no_pending": "Нет ожидающих задач",
+					"no_queues": "Нет активных очередей",
+					"queues_heading": "Очереди",
+					"redis_unavailable": "Redis недоступен — функции очередей отключены. Письма отправляются напрямую через SMTP вместо помещения в очередь.",
+					"running_heading": "Running Jobs",
+					"title": "Менеджер очередей",
+					"worker_draining": "иссушается",
+					"worker_offline": "Не обнаружен рабочий процесс очереди — задачи не будут обрабатываться",
+					"worker_online": "Рабочий процесс очереди работает",
+					"worker_paused": "приостановлен",
+					"worker_running": "работает",
+					"worker_stopped": "остановлен"
+				}
+			}
+		},
+		"apps/reeman/rate_limits/locales/en-us.json": {
+			"source_hash": "d0fda146cbccd5bbf71c4e7d7e334ff4aa0a2873f563fa0d3c5ed37228234187",
+			"translations": {
+				"actions": {
+					"reset_all_counters": "Сбросить все счетчики"
+				},
+				"nav": "Лимиты скорости",
+				"route_name": "limity-skorosti",
+				"ui": {
+					"blocked": "ЗАБЛОКИРОВАНО",
+					"no_active_counters": "Нет активных счетчиков лимитов скорости",
+					"ok": "OK",
+					"requests": "запросов",
+					"reset_confirm": "Сбросить все активные счетчики лимитов скорости? Действие нельзя отменить.",
+					"seconds": "с",
+					"status": "Статус",
+					"title": "Лимиты скорости",
+					"total_redis_keys": "всего ключей Redis",
+					"ttl": "TTL"
+				}
+			}
+		},
+		"apps/reeman/reeman/locales/en-us.json": {
+			"source_hash": "157d37f6cbcbc79abd5b71ad0b885a71d86975691fda20ea6e41b2598e25afb3",
+			"translations": {
+				"actions": {
+					"reload_routes": "Перезагрузить маршруты",
+					"view_all": "Показать все"
+				},
+				"confirm": {
+					"reload_routes": "Перезагрузить маршруты сейчас? Подхватывает новые файлы маршрутов и переводы без перезапуска."
+				},
+				"labels": {
+					"action": "Action",
+					"columns": "Колонки",
+					"crud": "CRUD",
+					"finished": "Finished",
+					"foreign_keys": "FK",
+					"schema": "Схема",
+					"status": "Status",
+					"table": "Таблица",
+					"tables": "Таблицы",
+					"target": "Target",
+					"view": "Представление"
+				},
+				"nav": "Reeman",
+				"nav_prefix_title": "Reeman",
+				"ui": {
+					"busy": "Обработка — страница обновится по завершении.",
+					"description": "Веб-интерфейс диспетчера ресурсов Reepolee",
+					"last_runs": "Недавние запуски",
+					"no_runs": "Запусков пока нет — выберите действие выше.",
+					"no_tables": "Таблицы не найдены. Инициализирована ли база данных?",
+					"reload_routes_hint": "Горячая пересборка таблицы маршрутов и навигации с диска и обновление переводов. В разработке перезапуск сервера не требуется.",
+					"stats_crud": "С CRUD",
+					"stats_locales": "Языки",
+					"stats_modules": "Модули",
+					"stats_tables": "Таблицы",
+					"title": "Reeman"
+				}
+			}
+		},
+		"apps/reeman/refresh/locales/en-us.json": {
+			"source_hash": "ae1e1c2bf49982c592e180b2b81b045fa23f3974cc2a204013c49d2aeb1ddaba",
+			"translations": {
+				"actions": {
+					"add_locale": "Добавить язык",
+					"fields": "Только поля",
+					"full": "Полное обновление",
+					"refresh_crud": "Обновить CRUD",
+					"sync_locale_tables": "Синхронизировать языковые таблицы",
+					"sync_translations": "Синхронизировать переводы",
+					"translate": "Перевести с помощью ИИ"
+				},
+				"hints": {
+					"locale_code": "Код языка BCP 47 для добавления (например, de-at)"
+				},
+				"labels": {
+					"locale_code": "Код языка",
+					"route": "Маршрут",
+					"template_tags": "Теги шаблона"
+				},
+				"nav": "Refresh",
+				"selectors": {
+					"default": "(по умолчанию)"
+				},
+				"ui": {
+					"busy": "Обработка — страница обновится по завершении.",
+					"refresh_description": "Синхронизируйте переводы, управляйте языками и обновляйте языковые таблицы.",
+					"refresh_title": "Обновление и языки"
+				}
+			}
+		},
+		"apps/reeman/software_update/locales/en-us.json": {
+			"source_hash": "d9b7b55337a2f93599c152e54e877825980c8e4292073eb6b8b7d846295e7855",
+			"translations": {
+				"actions": {
+					"apply": "Apply",
+					"cancel": "Cancel",
+					"do_it": "Do it",
+					"hide_ignored": "Hide ignored files",
+					"ignore": "Ignore",
+					"ignore_selected": "Ignore selected",
+					"scan": "Scan",
+					"select_all": "Select all",
+					"select_folder": "Select folder...",
+					"show_not_ignored": "Show only diffed files",
+					"unignore": "Unignore",
+					"view_diff": "View diff"
+				},
+				"errors": {
+					"source_contains_project": "The upstream source cannot be a parent directory of this project.",
+					"source_empty": "Enter an upstream directory to scan.",
+					"source_equals_project": "The upstream source cannot be this project itself.",
+					"source_nested_in_project": "The upstream source cannot be inside this project.",
+					"source_not_directory": "That path exists but is not a directory.",
+					"source_not_found": "That directory could not be found.",
+					"source_not_sibling": "Choose an upstream directory next to this project."
+				},
+				"labels": {
+					"files": "files",
+					"ignored": "Ignored",
+					"latest_commit": "Latest commit",
+					"modified": "Modified",
+					"new": "New",
+					"project": "Project",
+					"project_only": "Project only",
+					"selected": "Selected",
+					"source_dir": "Upstream source directory",
+					"upstream": "Upstream"
+				},
+				"nav": "Software Update",
+				"ui": {
+					"confirm_apply_hint": "This copies the selected files from the upstream source into this project, overwriting local content for modified files.",
+					"confirm_ignore_hint": "This adds the selected files to the ignore list. They will be dimmed and unchecked in future scans.",
+					"ignored_by_pattern": "Ignored by pattern",
+					"ignored_exact": "Ignored",
+					"loading": "Loading…",
+					"no_changes": "No differing files between the upstream source and this project.",
+					"project_only_hint": "Exists only in this project. Never deleted by Reesync.",
+					"scan_expired": "That scan has expired. Scan the source directory again.",
+					"software_update_description": "Selective upstream adoption: review every differing file against a local upstream checkout, then copy only the files you choose into this project.",
+					"software_update_never_deletes": "Project-only files are informational and are never deleted.",
+					"software_update_title": "Software Update",
+					"source_changed": "The upstream has a newer commit than this scan. Rescan before reviewing files."
+				}
+			}
+		},
+		"apps/reeman/studio/locales/en-us.json": {
+			"source_hash": "7a6806073b6132e5d9c95c494b755578cc5605b243f9eaa99faee21536f3c652",
+			"translations": {
+				"actions": {
+					"adapt_schema": "Адаптировать схему",
+					"add_column": "Добавить колонку",
+					"add_foreign_key": "Добавить внешний ключ",
+					"cancel": "Отмена",
+					"copy": "Копировать",
+					"create": "Создать",
+					"delete": "Удалить",
+					"delete_column": "Удалить колонку",
+					"favorite": "Избранное",
+					"generate": "Создать",
+					"generate_view": "Создать представление",
+					"hide_system": "Скрыть системные колонки",
+					"new_table": "Новая таблица",
+					"save": "Сохранить",
+					"undo": "Отменить"
+				},
+				"labels": {
+					"all_types": "Все типы",
+					"auto_increment": "Автоинкремент",
+					"current": "текущий",
+					"ddl_preview": "Предпросмотр DDL",
+					"default": "По умолчанию",
+					"domain_type": "Доменный тип",
+					"domain_types": "Доменные типы",
+					"expected_type": "Ожидаемый тип",
+					"file": "Файл",
+					"generated": "Создано",
+					"name": "Название",
+					"nonstandard_sql": "Нестандартный SQL",
+					"nullability": "Допустимость NULL",
+					"other_fields": "Другие поля",
+					"sql_type": "Тип SQL",
+					"suggested": "предлагаемый",
+					"table": "Таблица",
+					"table_ids": "ID таблиц",
+					"tables": "Таблицы",
+					"unique": "Уникальный",
+					"view": "Представление",
+					"views": "Представления"
+				},
+				"messages": {
+					"adapt_schema": "Адаптировать схему к текущей модели?",
+					"delete_column": "Удалить эту колонку?",
+					"delete_table": "Удалить эту таблицу?",
+					"delete_view": "Удалить это представление?",
+					"generate_view": "Создать представление для этой таблицы?"
+				},
+				"nav": "DDL Studio",
+				"nav_prefix_title": "Студия",
+				"route_name": "studiya",
+				"selectors": {
+					"custom": "Пользовательский",
+					"select_file": "Выберите файл"
+				},
+				"ui": {
+					"description": "Визуальный редактор моделей SQL",
+					"empty_text": "Откройте файл из списка, чтобы начать редактирование.",
+					"empty_title": "Модель не загружена",
+					"no_objects": "Выберите таблицу или представление",
+					"title": "Студия"
+				}
+			}
+		},
+		"apps/reeman/translations/locales/en-us.json": {
+			"source_hash": "9fb8c978e1e08399043febe72d3402d9c28c300773d81cc33b33044ad642b888",
+			"translations": {
+				"actions": {
+					"add_group": "Добавить группу",
+					"add_namespace": "Добавить namespace",
+					"bulk_action": "Удалить выбранные",
+					"close": "Закрыть",
+					"create": "Создать",
+					"delete": "Удалить ключ",
+					"delete_namespace": "Удалить namespace",
+					"do_it": "Удалить",
+					"edit": "Изменить",
+					"save": "Сохранить изменения",
+					"save_close": "Сохранить и закрыть"
+				},
+				"messages": {
+					"delete_namespace_confirm": "Все переводы в \"{namespace}\" будут окончательно удалены.",
+					"no_groups": "Группы переводов не найдены.",
+					"record_updated": "Переводы обновлены",
+					"select_templates": "При необходимости предварительно заполните общими ключами:",
+					"shadowed_files_intro": "These locale files are ignored — a higher-priority app tree already owns the same namespace:",
+					"shadowed_files_superseded_by": "is superseded by",
+					"shadowed_files_title": "Shadowed translation files"
+				},
+				"nav": "Переводы",
+				"route_name": "perevody",
+				"search": {
+					"search_term": "Поиск ключей переводов...",
+					"submit": "Фильтровать"
+				},
+				"selectors": {
+					"all": "-- Все --",
+					"per_page": "на странице"
+				},
+				"ui": {
+					"bulk_delete_warning": "Это окончательно удалит",
+					"bulk_delete_warning_suffix": "группу(ы) ключей — включая каждый вложенный ключ и каждый язык.",
+					"filter_label": "Фильтровать по namespace",
+					"global_label": "(глобальный)",
+					"group_label": "Группа",
+					"key_label": "Ключ",
+					"keys_label": "Ключи",
+					"languages_label": "Языки",
+					"namespace_label": "Namespace",
+					"no_records": "Ключи переводов не найдены.",
+					"title": "Переводы"
+				}
+			}
+		},
+		"apps/reeman/users/locales/en-us.json": {
+			"source_hash": "9174b6af2b57e03f7906f48d0a4317902d22677b2ef90297814db4489c40c466",
+			"translations": {
+				"actions": {
+					"abort_archive": "Cancel",
+					"abort_restore": "Cancel",
+					"archive": "Archive",
+					"bulk_action": "Удалить выбранных пользователей",
+					"bulk_action_2": "Альтернативное действие",
+					"confirm_archive": "Yes, archive",
+					"confirm_restore": "Yes, restore",
+					"new_user": "Новый пользователь",
+					"restore": "Restore"
+				},
+				"counts": {
+					"archived": "Archived",
+					"live": "Active",
+					"total": "Total"
+				},
+				"labels": {
+					"avatar_filename": "Имя файла аватара",
+					"email": "Эл. почта",
+					"hashed_password": "Хешированный пароль",
+					"invitation_code": "Код приглашения",
+					"modules_tags": "Модули",
+					"name": "Имя",
+					"previous_hashed_password": "Предыдущий хешированный пароль",
+					"username": "Имя пользователя",
+					"verified_at": "Подтвержден"
+				},
+				"messages": {
+					"bulk_archive_no_ids": "No users selected.",
+					"bulk_archived": "No users archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
+					"bulk_errors": "|{count} пользователь не удался|{count} пользователя не удались|{count} пользователя не удались|{count} пользователей не удалось",
+					"record_archived": "Record archived",
+					"record_restored": "Record restored"
+				},
+				"modules_tags": {
+					"admin": "Администратор",
+					"default": "По умолчанию",
+					"examples": "Примеры",
+					"system": "Система",
+					"user": "Пользователь"
+				},
+				"nav": "Пользователи",
+				"route_name": "polzovateli",
+				"scopes": {
+					"__all": "All",
+					"__archived": "Archived"
+				},
+				"search": {
+					"search_term": "Поиск пользователей...",
+					"submit": "Поиск"
+				},
+				"selectors": {
+					"all": "Все"
+				},
+				"ui": {
+					"no_records": "Пользователи не найдены.",
+					"title": "Пользователи"
+				}
+			}
+		},
+		"apps/reeqa/baselines/locales/en-us.json": {
+			"source_hash": "3e854c2d70736b9679eb2ae02038902a93c8d200bc7ba9b86058bebeeaf2ccde",
+			"translations": {
+				"actions": {
+					"add_project": "Add a project",
+					"capture": "Capture baseline",
+					"page_sets": "Manage page sets"
+				},
+				"labels": {
+					"baseline_page_set": "View baseline page set",
+					"baseline_pages": "Baseline pages",
+					"baseline_updated": "Baseline captured",
+					"baseline_url": "Baseline base URL",
+					"capture_size": "Capture size",
+					"chrome": "Page capture",
+					"evidence_render": "Evidence video",
+					"image_diff": "Image comparison",
+					"latest_capture_pages": "Pages captured last time",
+					"latest_capture_urls": "URLs captured last time",
+					"pages": "pages",
+					"retained_urls": "Older baseline URLs retained",
+					"voiceover": "Evidence voiceover"
+				},
+				"nav": "Baselines",
+				"route_name": "baselines",
+				"status": {
+					"baseline_ready": "Baseline ready",
+					"no_baseline": "No baseline"
+				},
+				"ui": {
+					"active_run": "Visual run in progress",
+					"capture_hint": "Replaces the saved visual reference with fresh captures of the selected page set.",
+					"description": "Inspect and replace the saved visual reference for the active page set.",
+					"no_page_set": "Select or create a page set before capturing a baseline.",
+					"no_projects": "Register a project before capturing visual baselines.",
+					"title": "Visual baselines"
+				}
+			}
+		},
+		"apps/reeqa/command_checks/locales/en-us.json": {
+			"source_hash": "cb687317fe7b41877e7333866a7737ff9682e67be118b4118fdaf37809759c4f",
+			"translations": {
+				"actions": {
+					"add_project": "Add a project",
+					"cancel": "Cancel",
+					"clear": "Clear history",
+					"confirm_clear": "Clear completed",
+					"run_check": "Run check"
+				},
+				"command_checks": {
+					"description": "Run the allowlisted Bun commands defined for this project.",
+					"script_unavailable": "Package script not available",
+					"title": "Command checks"
+				},
+				"confirm": {
+					"clear": "Remove all completed QA run records?"
+				},
+				"nav": "Command Checks",
+				"route_name": "command-checks",
+				"ui": {
+					"active_run": "QA run in progress",
+					"description": "Run and review the allowlisted Bun command checks.",
+					"history_title": "Run history",
+					"no_projects": "Register a project before running command checks.",
+					"no_runs": "No command runs yet.",
+					"title": "Command Checks"
+				}
+			}
+		},
+		"apps/reeqa/dashboard/locales/en-us.json": {
+			"source_hash": "eaa963dc2c88163c3a2a5b1817489f27f11b6e033fa0da0011285d381c8bf53c",
+			"translations": {
+				"actions": {
+					"add_project": "Add project",
+					"capture_baselines": "Capture baselines",
+					"create_page_set": "Create page set",
+					"run_tests": "Run tests",
+					"view_all": "View all"
+				},
+				"labels": {
+					"duration": "Duration",
+					"pages": "pages",
+					"started": "Started",
+					"status": "Status",
+					"suite": "Suite"
+				},
+				"nav": "ReeQA",
+				"ui": {
+					"active_project": "Active project",
+					"active_run": "Active run",
+					"baselines_description": "Inspect and replace the saved visual references.",
+					"baselines_title": "Visual baselines",
+					"description": "Quality assurance for the Reepolee application and its tooling.",
+					"no_runs": "No QA runs yet.",
+					"page_sets_description": "Save named selections of baseline pages for focused runs.",
+					"page_sets_title": "Page sets",
+					"projects_description": "Register the Bun project directories ReeQA can run against.",
+					"projects_title": "QA projects",
+					"recent_runs": "Recent runs",
+					"results_description": "Review visual comparisons, command logs, videos, and GitHub issues.",
+					"results_title": "Results",
+					"run_tests_description": "Run visual comparisons and allowlisted command checks.",
+					"run_tests_title": "Run tests",
+					"stats_failed": "Failed",
+					"stats_passed": "Passed",
+					"stats_projects": "Projects",
+					"stats_results": "Results",
+					"stats_suites": "Command checks",
+					"title": "ReeQA"
+				}
+			}
+		},
+		"apps/reeqa/en-us.json": {
+			"source_hash": "7963afccf93435b2b52c27f4a8a203cfa14b900c1579c42363c73bf931c60e6f",
+			"translations": {
+				"nav_prefix_title": "ReeQA"
+			}
+		},
+		"apps/reeqa/page_sets/locales/en-us.json": {
+			"source_hash": "007f7f81ec729a9e9be0eae8195f981f60b9f28f3c3feb7e786e78d0eed670bb",
+			"translations": {
+				"actions": {
+					"add": "Add page set",
+					"add_project": "Add a project",
+					"cancel": "Cancel",
+					"clear": "Clear selection",
+					"confirm_delete": "Remove",
+					"create": "Create page set",
+					"delete": "Remove page set",
+					"manage_baseline": "Manage baseline",
+					"only_selected": "Only selected",
+					"save": "Save changes",
+					"select_visible": "Select visible",
+					"sort_alpha": "Sort: A–Z",
+					"sort_newest": "Sort: Newest first"
+				},
+				"confirm": {
+					"delete": "Remove this saved page set? Existing reports are kept."
+				},
+				"labels": {
+					"auto_evidence": "Automatically record evidence for failed runs",
+					"auto_recording": "Also record clean video for passing runs",
+					"baseline_pages": "baseline pages",
+					"capture_size": "Capture size",
+					"filter": "Filter sitemap pages",
+					"name": "Page set name",
+					"pages": "pages"
+				},
+				"nav": "Page sets",
+				"route_name": "page-sets",
+				"status": {
+					"no_baseline": "No baseline"
+				},
+				"ui": {
+					"active": "Active",
+					"auto_evidence_hint": "Records a narrated video for every changed or new page after each compare run, instead of requiring a manual click.",
+					"auto_recording_hint": "Records a plain, un-annotated video for every unchanged page after each compare run - the only way to get a video for a passing dynamic test.",
+					"description": "Save named selections of sitemap pages for focused visual and video runs.",
+					"edited_today": "Today",
+					"no_baseline": "Capture a baseline before selecting pages for this project.",
+					"no_projects": "Register a project before creating page sets.",
+					"no_sets": "No saved page sets yet. Create one to start running tests.",
+					"saved_sets": "Saved page sets",
+					"sitemap_error": "Could not load the project sitemap:",
+					"stale_pages": "saved page(s) are no longer in the current sitemap. Save the set to remove them.",
+					"title": "Page sets"
+				}
+			}
+		},
+		"apps/reeqa/projects/locales/en-us.json": {
+			"source_hash": "4131b3c5c8b77659c3d592a30c5569a828a28697330fee44db48906a08e58fe4",
+			"translations": {
+				"actions": {
+					"add": "Add project",
+					"cancel": "Cancel",
+					"delete": "Remove project",
+					"do_it": "Remove",
+					"duplicate": "Duplicate project",
+					"save": "Save project"
+				},
+				"confirm": {
+					"delete": "Remove this project from ReeQA? Existing run records are kept."
+				},
+				"labels": {
+					"base_url": "Running site URL",
+					"name": "Project name",
+					"path": "Absolute project path"
+				},
+				"nav": "Project",
+				"page_sets": {
+					"actions": {
+						"add": "Add page set",
+						"cancel": "Cancel",
+						"clear": "Clear selection",
+						"confirm_delete": "Remove",
+						"create": "Create page set",
+						"delete": "Remove page set",
+						"only_selected": "Only selected",
+						"save": "Save changes",
+						"select_visible": "Select visible",
+						"sort_alpha": "Sort: A–Z",
+						"sort_newest": "Sort: Newest first"
+					},
+					"confirm": {
+						"delete": "Remove this saved page set? Existing reports are kept."
+					},
+					"labels": {
+						"auto_evidence": "Automatically record evidence for failed runs",
+						"auto_recording": "Also record clean video for passing runs",
+						"baseline_pages": "baseline pages",
+						"capture_size": "Capture size",
+						"checkpoints": "checkpoints",
+						"filter": "Filter sitemap pages",
+						"kind": "Page set type",
+						"kind_urls": "URL list",
+						"kind_workflow": "Workflow",
+						"name": "Page set name",
+						"pages": "pages",
+						"steps": "Workflow steps (JSON)"
+					},
+					"status": {
+						"no_baseline": "No baseline"
+					},
+					"ui": {
+						"active": "Active",
+						"auto_evidence_hint": "Records a narrated video for every changed or new page after each compare run, instead of requiring a manual click.",
+						"auto_recording_hint": "Records a plain, un-annotated video for every unchanged page after each compare run - the only way to get a video for a passing dynamic test.",
+						"edited_today": "Today",
+						"no_sets": "No saved page sets yet. Create one to start running tests.",
+						"saved_sets": "Page sets",
+						"sitemap_error": "Could not load the project sitemap:",
+						"stale_pages": "saved page(s) are no longer in the current sitemap. Save the set to remove them.",
+						"steps_hint": "A JSON array of steps. Each step is <code>{\"type\":\"navigate\",\"url\":...}</code>, <code>{\"type\":\"click\",\"selector\":...}</code> (or <code>\"text\"</code> to click by visible text) or <code>{\"type\":\"fill\",\"selector\":...,\"value\":...}</code>. Add <code>\"checkpoint\": true</code> to capture and compare a screenshot at that step, <code>\"before_seconds\": 1</code> to pause before a step, <code>\"delay_seconds\": 3</code> to pause after a step, <code>\"outline_seconds\"</code> / <code>\"glide_seconds\"</code> to size a click's outline and cursor glide in the recording, and <code>\"value_env\": \"ADMIN_PASSWORD\"</code> to read a value from the project's own .env file instead of storing it here.",
+						"steps_placeholder": "[\n\t{ \"type\": \"navigate\", \"url\": \"https://example.com/login\" },\n\t{ \"type\": \"fill\", \"selector\": \"#username\", \"value_env\": \"ADMIN_USERNAME\" },\n\t{ \"type\": \"fill\", \"selector\": \"#password\", \"value_env\": \"ADMIN_PASSWORD\" },\n\t{ \"type\": \"click\", \"selector\": \"button[type=submit]\", \"checkpoint\": true }\n]"
+					}
+				},
+				"route_name": "projects",
+				"ui": {
+					"active": "Active",
+					"base_url_hint": "ReeQA reads sitemap.xml and captures pages from this URL.",
+					"description": "Manage the active QA project and its page sets.",
+					"no_projects": "No QA projects registered.",
+					"path_hint": "The directory must contain package.json. Suite commands remain controlled by ReeQA.",
+					"title": "Project"
+				}
+			}
+		},
+		"apps/reeqa/reports/locales/en-us.json": {
+			"source_hash": "72aaab48befe7546cd21855f62d90e75d984f5431d364209d5e3f00f53f6d196",
+			"translations": {
+				"actions": {
+					"accept": "Accept current",
+					"accept_change": "Accept change",
+					"back": "Back to reports",
+					"cancel": "Cancel",
+					"clear": "Clear reports",
+					"confirm_remove": "Remove",
+					"delete": "Remove",
+					"promote_to_docs": "Promote to docs",
+					"record_evidence": "Record evidence",
+					"record_recording": "Record video",
+					"show_all": "Show all",
+					"view_full_page": "View full-page captures",
+					"watch_recording": "Watch recording",
+					"watch_video": "Watch annotated comparison"
+				},
+				"breadcrumbs": {
+					"report": "Visual comparison",
+					"results": "Run & Results"
+				},
+				"confirm": {
+					"accept": "Update the saved visual baseline for this page?",
+					"clear": "Remove all completed comparison reports and their artifacts?",
+					"delete": "Remove this comparison report and its artifacts?"
+				},
+				"labels": {
+					"actions": "Actions",
+					"added": "Added",
+					"baseline": "Baseline",
+					"capture_size": "Capture size",
+					"changed": "Changed",
+					"changed_elements": "Changed elements",
+					"current": "Current",
+					"diff": "Diff",
+					"new": "New",
+					"page_set": "Page set",
+					"pages": "Pages",
+					"pixels_differ": "pixels differ",
+					"project": "Project",
+					"px_changed": "px changed",
+					"removed": "Removed",
+					"started": "Started",
+					"status": "Status",
+					"unchanged": "Unchanged",
+					"zoomed": "zoomed"
+				},
+				"nav": "Reports",
+				"route_name": "reports",
+				"status": {
+					"accepted": "Accepted",
+					"evidence_failed": "Evidence recording failed",
+					"evidence_recording": "Recording evidence…",
+					"promoted": "Promoted as",
+					"recording_failed": "Recording failed",
+					"recording_recording": "Recording…"
+				},
+				"ui": {
+					"description": "Review current captures against the saved visual baseline.",
+					"docs_filename_placeholder": "video-name.mp4",
+					"filtered_by": "Filtered by:",
+					"no_reports": "No visual comparison reports yet.",
+					"title": "Comparison reports"
+				}
+			}
+		},
+		"apps/reeqa/results/locales/en-us.json": {
+			"source_hash": "84eb793c896a19d2d7b61d58997b08c862b3c318a16ca45ada2f3fa368dd8354",
+			"translations": {
+				"actions": {
+					"cancel": "Cancel",
+					"clear": "Clear history",
+					"confirm_clear": "Clear completed"
+				},
+				"confirm": {
+					"clear": "Remove all completed QA run records and visual comparison reports? Saved baselines are kept."
+				},
+				"nav": "Results",
+				"route_name": "results",
+				"ui": {
+					"description": "Review visual comparisons and command output in one place.",
+					"history_description": "Visual comparisons and QA command runs, newest first.",
+					"history_title": "Result history",
+					"no_results": "No QA results yet.",
+					"qa_run_active": "QA run in progress",
+					"title": "Results",
+					"visual_run_active": "Visual run in progress"
+				}
+			}
+		},
+		"apps/reeqa/run_qa/locales/en-us.json": {
+			"source_hash": "77eb74e4f01a86481c2f0d2dfd90a37922e264de766ad764c93bd6bf163240c9",
+			"translations": {
+				"actions": {
+					"add_project": "Add a project",
+					"cancel": "Cancel",
+					"clear": "Clear history",
+					"compare": "Compare to baseline",
+					"confirm_clear": "Clear completed",
+					"manage_page_sets": "Manage page sets"
+				},
+				"baseline": {
+					"capture": "Capture baseline",
+					"capture_hint": "Replaces the saved visual reference with fresh captures of the selected page set.",
+					"description": "Capture or replace the saved visual reference for the active page set.",
+					"title": "Visual baseline"
+				},
+				"confirm": {
+					"clear": "Remove all completed visual comparison reports? Saved baselines are kept."
+				},
+				"labels": {
+					"baseline_details": "Baseline details",
+					"baseline_pages": "baseline pages",
+					"baseline_updated": "Baseline captured",
+					"baseline_url": "Baseline base URL",
+					"capture_size": "Capture size",
+					"changed": "changed",
+					"chrome": "Page capture",
+					"db_snapshot": "DB snapshot",
+					"evidence_render": "Evidence video",
+					"image_diff": "Image comparison",
+					"latest_capture_pages": "Pages captured last time",
+					"pages": "pages",
+					"voiceover": "Evidence voiceover"
+				},
+				"nav": "Run & Results",
+				"results": {
+					"history_description": "Visual comparisons, newest first.",
+					"history_title": "Result history",
+					"no_results": "No visual comparisons yet."
+				},
+				"route_name": "run-tests",
+				"schedule": {
+					"add": "Add schedule",
+					"description": "Automatically run the active page set's comparison or baseline capture on an interval.",
+					"every": "every",
+					"hours": "h",
+					"interval": "Interval (hours)",
+					"last_run": "last run",
+					"no_schedules": "No schedules yet.",
+					"operation": "Operation",
+					"remove": "Remove",
+					"title": "Schedule"
+				},
+				"status": {
+					"baseline_ready": "Baseline ready",
+					"no_baseline": "No baseline"
+				},
+				"ui": {
+					"db_snapshot_missing": "This baseline's database snapshot is missing. Recapture the baseline to restore a consistent test database.",
+					"description": "Capture baselines, run visual comparisons, and review results in one place.",
+					"no_page_set": "Select or create a page set before running page tests.",
+					"no_projects": "Register a project before running tests.",
+					"qa_run_active": "QA run in progress",
+					"title": "Run & Results",
+					"visual_run_active": "Visual run in progress"
+				},
+				"visual": {
+					"description": "Compare the active page set's baseline with the currently running site.",
+					"no_baseline_hint": "Capture a baseline for this page set before running a visual comparison.",
+					"title": "Visual comparison"
+				}
+			}
+		},
+		"apps/reeqa/runs/locales/en-us.json": {
+			"source_hash": "a5d5c6cdca0d4c3c8721d0137d1c1aec5d61d1d88a5d9af4f02be73db8a0df03",
+			"translations": {
+				"actions": {
+					"back": "Back to runs",
+					"cancel": "Cancel",
+					"cancel_run": "Cancel run",
+					"clear": "Clear completed",
+					"do_it": "Confirm"
+				},
+				"breadcrumbs": {
+					"results": "Command Checks",
+					"run": "QA run"
+				},
+				"confirm": {
+					"cancel_run": "Stop this running QA process?",
+					"clear": "Remove all completed QA run records?"
+				},
+				"labels": {
+					"duration": "Duration",
+					"exit_code": "Exit code",
+					"output": "Output",
+					"project": "Project",
+					"started": "Started",
+					"status": "Status",
+					"suite": "Suite"
+				},
+				"nav": "Runs",
+				"route_name": "runs",
+				"ui": {
+					"active_run": "Active run",
+					"description": "Persistent status and captured output from ReeQA commands.",
+					"no_runs": "No QA runs yet.",
+					"title": "Run history",
+					"waiting_output": "Waiting for output..."
+				}
+			}
+		},
+		"apps/reeqa/visual_runs/locales/en-us.json": {
+			"source_hash": "97d33bed0b74646b81e3770f721d8504f1cdff03a801b6ec89ed5062a8415fab",
+			"translations": {
+				"actions": {
+					"cancel": "Cancel",
+					"cancel_run": "Cancel run",
+					"do_it": "Stop run",
+					"open_report": "Open comparison report"
+				},
+				"breadcrumbs": {
+					"baselines": "Visual baselines",
+					"run_tests": "Run & Results",
+					"visual_run": "Visual run"
+				},
+				"confirm": {
+					"cancel_run": "Stop the active browser capture process?"
+				},
+				"labels": {
+					"changed": "Changed",
+					"duration": "Duration",
+					"new": "New",
+					"output": "Run log",
+					"page_set": "Page set",
+					"pages": "Pages captured",
+					"removed": "Removed"
+				},
+				"route_name": "visual_runs",
+				"ui": {
+					"waiting_output": "Waiting for capture output..."
+				}
+			}
+		},
+		"locales/en-us.json": {
+			"source_hash": "7c173649d1d870394b422b603f8037e8522d5c9b0937634f118eb4025d28192d",
+			"translations": {
+				"actions": {
+					"abort_archive": "Cancel",
+					"abort_delete": "Нет, не удалять",
+					"abort_restore": "Cancel",
+					"archive": "Archive",
+					"areyousure": "Вы уверены, что хотите удалить эту запись?",
+					"ascending": "По возрастанию",
+					"back": "Назад",
+					"bulk_action": "Основное действие",
+					"bulk_action_2": "Альтернативное действие",
+					"cancel": "Отмена",
+					"confirm_archive": "Yes, archive",
+					"confirm_delete": "Да, удалить",
+					"confirm_restore": "Yes, restore",
+					"delete": "Удалить",
+					"do_it": "Да, сделать",
+					"go_home": "← На главную",
+					"lang_mismatch_dismiss": "Оставить язык из ссылки",
+					"lang_mismatch_switch": "Использовать текущий язык",
+					"ok": "OK",
+					"restore": "Restore",
+					"save": "Сохранить",
+					"save_close": "Сохранить и закрыть",
+					"sending": "Отправка...",
+					"submitted": "Сохранение..."
+				},
+				"errors": {
+					"current_password_required": "Требуется текущий пароль",
+					"date_max": "Дата должна быть {max} или раньше.",
+					"date_min": "Дата должна быть {min} или позже.",
+					"date_not_future": "Дата не может быть в будущем.",
+					"date_required": "Это поле обязательно.",
+					"duplicate_key": "Код уже существует",
+					"email_invalid": "Должен быть действительный адрес эл. почты",
+					"email_not_sent": "Ошибка отправки эл. почты",
+					"email_required": "Требуется эл. почта",
+					"file_upload_failed": "Ошибка загрузки",
+					"file_upload_invalid_type": "Разрешены только определенные типы файлов",
+					"image_upload_failed": "Ошибка загрузки",
+					"image_upload_invalid_type": "Разрешены только файлы изображений",
+					"invalid_date": "Некорректная дата",
+					"invalid_datetime": "Некорректные дата и время",
+					"must_be_selected": "Обязательный выбор",
+					"name_invalid": "Некорректное имя",
+					"name_required": "Требуется имя",
+					"name_too_long": "Имя должно содержать не более 80 символов",
+					"nickname_too_long": "Псевдоним должен содержать не более 20 символов",
+					"password_confirm_required": "Требуется подтверждение пароля",
+					"password_too_short": "Пароль должен содержать не менее 8 символов",
+					"passwords_mismatch": "Пароли не совпадают",
+					"required": "Обязательно",
+					"tagline_invalid": "Некорректный слоган",
+					"username_exists": "Пользователь с таким именем пользователя уже существует.",
+					"username_required": "Требуется имя пользователя"
+				},
+				"hints": {
+					"date_format": "Date format: MM/DD/YYYY",
+					"date_format_value": "MM/DD/YYYY"
+				},
+				"labels": {
+					"folder": "Папка",
+					"nickname": "Псевдоним"
+				},
+				"localization": {
+					"add_language": "Добавить язык перевода",
+					"all_fields": "Все локализованные поля",
+					"copy_all_from": "Скопировать все поля из",
+					"copy_button": "Копировать",
+					"copy_hint": "Копируется один раз — последующие правки источника не отслеживаются",
+					"copy_original": "Скопировать исходное значение в буфер обмена",
+					"copy_this_field": "Скопировать это поле",
+					"generate_button": "Создать с помощью ИИ",
+					"has_errors": "Имеет ошибки валидации",
+					"has_translations": "Имеет переведенные значения",
+					"only_this_field": "Только это поле",
+					"open_in_new_tab": "Открыть в новой вкладке",
+					"open_original": "Открыть исходные записи в новой вкладке",
+					"original": "Оригинал",
+					"remove_translation": "Удалить перевод",
+					"remove_translation_message": "Удалить перевод для",
+					"remove_translation_title": "Удалить перевод?",
+					"reset_to_default": "Сбросить к значению по умолчанию",
+					"show_original": "Показать исходное значение",
+					"source_changed": "Исходное значение изменилось с момента копирования",
+					"source_changed_since_copy": "Исходное значение изменилось с момента копирования",
+					"source_value": "Исходное значение",
+					"translate_all_message": "Это первый перевод для",
+					"translate_all_title": "Перевести все локализованные поля?",
+					"use_original": "Использовать оригинал"
+				},
+				"messages": {
+					"bulk_delete_failed": "Не удалось выполнить массовое удаление.",
+					"file_upload_uploaded": "Загружено",
+					"image_upload_uploaded": "Загружено",
+					"record_created": "Запись создана",
+					"record_deleted": "Запись удалена",
+					"record_updated": "Запись обновлена"
+				},
+				"nav": {
+					"dashboard": "Панель",
+					"database": "База данных",
+					"examples": {
+						"signals": "Сигналы"
+					},
+					"locales": "Языки",
+					"logs": "Журналы",
+					"project": "Проект",
+					"refresh": "Обновить",
+					"routes": "Маршруты",
+					"studio": "Студия DDL",
+					"sync": "Sync",
+					"tables": "Таблицы"
+				},
+				"nav_auth": {
+					"invite_user": "Пригласить пользователя",
+					"login": "Войти"
+				},
+				"search": {
+					"search_term": "Поисковый запрос ...",
+					"submit": "Поиск"
+				},
+				"selectors": {
+					"0": "Нет",
+					"1": "Да",
+					"all": "Все записи",
+					"ascending": "По возрастанию",
+					"descending": "По убыванию",
+					"per_page": "на странице",
+					"select": "-- Выбрать --"
+				},
+				"ui": {
+					"app_switcher": "Apps",
+					"apply_filters": "Применить фильтры",
+					"apps": {
+						"main": "Main",
+						"reeman": "Reeman",
+						"reeqa": "ReeQA"
+					},
+					"auto_complete_no_results": "No results found",
+					"busy_poller_translating": "{count} translation job(s) running - translations appear when they finish.",
+					"clear_all": "Очистить все",
+					"file_upload_click": "Нажмите",
+					"file_upload_drag_drop": "перетащите",
+					"file_upload_here": "файл сюда",
+					"file_upload_or": "чтобы выбрать или",
+					"filter_not": "Не",
+					"image_upload_clear": "Удалить",
+					"image_upload_click": "Нажмите",
+					"image_upload_drag_drop": "перетащите",
+					"image_upload_edit": "Изменить",
+					"image_upload_edit_hint": "Обрежьте, измените размер или формат перед сохранением",
+					"image_upload_edit_title": "Изменить изображение",
+					"image_upload_fetch": "Получить",
+					"image_upload_folder": "Папка",
+					"image_upload_format": "Формат",
+					"image_upload_here": "изображение сюда",
+					"image_upload_or": "чтобы выбрать или",
+					"image_upload_original": "Оригинал",
+					"image_upload_paste_hint": "Нажмите Ctrl+V или Cmd+V, чтобы вставить изображение из буфера обмена",
+					"image_upload_preview": "Предпросмотр",
+					"image_upload_preview_empty": "Настройте параметры, чтобы увидеть предпросмотр",
+					"image_upload_quality": "Качество",
+					"image_upload_resize": "Изменить размер (необязательно)",
+					"image_upload_save": "Сохранить",
+					"image_upload_tab_paste": "Вставить",
+					"image_upload_tab_upload": "Загрузить",
+					"image_upload_tab_url": "URL",
+					"labels": "Фильтры",
+					"lang_mismatch_body": "Эта страница на языке",
+					"lang_mismatch_title": "Несоответствие языка",
+					"language_name": {
+						"en": "English",
+						"sl": "Slovenščina"
+					},
+					"language_names": {
+						"en": "Английский",
+						"sl": "Словенский"
+					},
+					"language_names_to": {
+						"en": "Английский",
+						"sl": "Словенский"
+					},
+					"modifying": "Вы собираетесь изменить",
+					"no_records": "Записи не найдены.",
+					"page_not_found": "Страница не найдена",
+					"page_not_found_description": "Извините, мы не можем отобразить эту страницу",
+					"records": "запись(и)",
+					"show_actions": "Show actions",
+					"show_less": "Show less",
+					"show_more": "Показать больше"
+				}
+			}
+		},
+		"platform/auth/invite/locales/en-us.json": {
+			"source_hash": "b2586ca95729dcecf76ad816c6a18cf96edadda50358d4f5225636af6af7dacd",
+			"translations": {
+				"actions": {
+					"submit": "Отправить приглашение"
+				},
+				"email": {
+					"body": "Здравствуйте, {username},\n\nВы были приглашены. Завершите регистрацию здесь:\n{url}",
+					"subject": "Вы были приглашены"
+				},
+				"errors": {
+					"email_exists": "Пользователь с таким адресом эл. почты уже существует.",
+					"email_required": "Требуется адрес эл. почты.",
+					"invitation_not_found": "Приглашение не найдено.",
+					"username_invalid": "Username can only contain lowercase letters, numbers, underscores, and hyphens."
+				},
+				"labels": {
+					"email": "Эл. почта приглашенного",
+					"username": "Имя пользователя"
+				},
+				"route_name": "priglashenie",
+				"ui": {
+					"confirm_title": "Приглашение отправлено",
+					"created_field": "Создано",
+					"email_field": "Эл. почта",
+					"email_label": "Эл. почта приглашенного",
+					"link_label": "Ссылка для регистрации:",
+					"send_another": "Отправить еще одно приглашение",
+					"success_message": "Приглашение успешно создано.",
+					"success_send_this_link": "Отправьте эту ссылку приглашенному:",
+					"title": "Пригласить пользователя",
+					"username_field": "Имя пользователя"
+				}
+			}
+		},
+		"platform/auth/locales/en-us.json": {
+			"source_hash": "1ac168d8072bae6961791abde4f9b18868ce0820038c20e8a4d857e109297633",
+			"translations": {
+				"route_name": "autentifikaciya"
+			}
+		},
+		"platform/auth/login/locales/en-us.json": {
+			"source_hash": "a476721e19681c6f4e7ed504ac3a144b20e889dfdd7500583ebfe7a8d1a586bc",
+			"translations": {
+				"actions": {
+					"submit": "Войти"
+				},
+				"errors": {
+					"account_not_verified": "Ваш аккаунт еще не подтвержден.",
+					"invalid_username_or_password": "Неверное имя пользователя или пароль."
+				},
+				"labels": {
+					"email": "Эл. почта",
+					"password": "Пароль",
+					"username": "Имя пользователя (можно эл. почту)"
+				},
+				"route_name": "vhod",
+				"ui": {
+					"title": "Войти"
+				}
+			}
+		},
+		"platform/auth/password/locales/en-us.json": {
+			"source_hash": "e01a3fbbfd3ccc659df1719ea29c41e9aaf24c04c2808375d00c57365674cdbb",
+			"translations": {
+				"actions": {
+					"cancel": "Отмена",
+					"submit": "Сменить пароль"
+				},
+				"errors": {
+					"incorrect_password": "Текущий пароль неверен."
+				},
+				"labels": {
+					"current_password": "Текущий пароль",
+					"password": "Новый пароль",
+					"password_confirm": "Подтвердите новый пароль"
+				},
+				"messages": {
+					"successful_save": "Пароль успешно изменен."
+				},
+				"route_name": "parol",
+				"ui": {
+					"no_password_set": "Пароль не задан. Свяжитесь с администратором.",
+					"title": "Сменить пароль"
+				}
+			}
+		},
+		"platform/auth/profile/locales/en-us.json": {
+			"source_hash": "c037c1622f5e9a6187d7db98a09a8e84fcd58a25b62cbef2570224d7dde6dd2f",
+			"translations": {
+				"actions": {
+					"cancel": "Отмена",
+					"submit": "Сохранить профиль"
+				},
+				"labels": {
+					"avatar": "Изображение аватара",
+					"name": "Полное имя",
+					"nickname": "Псевдоним"
+				},
+				"messages": {
+					"successful_save": "Профиль успешно сохранен."
+				},
+				"route_name": "profil",
+				"ui": {
+					"avatar_label": "Фото профиля",
+					"change_password": "Сменить пароль",
+					"logout": "Выйти",
+					"title": "Мой профиль"
+				}
+			}
+		},
+		"platform/auth/register/locales/en-us.json": {
+			"source_hash": "9c1affee98266ec44fdb1adbd93e5a583e3e070e3abf3734580a6acb4b952502",
+			"translations": {
+				"actions": {
+					"submit": "Завершить регистрацию"
+				},
+				"errors": {
+					"name_required": "Обязательное поле",
+					"password_confirm_required": "Обязательное поле",
+					"password_too_short": "Пароль должен содержать не менее 8 символов",
+					"passwords_mismatch": "Пароли не совпадают"
+				},
+				"labels": {
+					"name": "Полное имя",
+					"password": "Пароль (не менее 8 символов)",
+					"password_confirm": "Подтвердите пароль"
+				},
+				"route_name": "registraciya",
+				"ui": {
+					"already_used": "Это приглашение уже использовано. Войдите.",
+					"invalid_link": "Эта ссылка недействительна.",
+					"invalid_title": "Недействительное приглашение",
+					"registering_as": "Регистрация как:",
+					"title": "Завершить регистрацию"
+				}
+			}
+		}
+	}
+}
