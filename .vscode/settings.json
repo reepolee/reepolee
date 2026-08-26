@@ -1,5 +1,5 @@
 {
-	"customvscodeuicss.css": ".monaco-workbench .part { font-size: 18px !important; }",
+"git.openDiffOnClick": false,
 	"workbench.colorCustomizations": {
 		"titleBar.activeBackground": "#272822",
 		"titleBar.activeForeground": "#ffffff",

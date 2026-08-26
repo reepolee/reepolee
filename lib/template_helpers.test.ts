@@ -458,6 +458,29 @@ describe("template_helpers", () => {
 		});
 	});
 
+	describe("iso_duration_to_locale_string", () => {
+		test("formats an ISO 8601 duration with short style by default", () => {
+			expect(th.iso_duration_to_locale_string("P1DT8H31M38S", "short", "en-us")).toBe("1 day, 8 hr, 31 min, 38 sec");
+		});
+
+		test("uses the style passed by the template", () => {
+			expect(th.iso_duration_to_locale_string("P1DT8H31M38S", "long", "en-us")).toBe("1 day, 8 hours, 31 minutes, 38 seconds");
+		});
+
+		test("treats numeric values as seconds", () => {
+			expect(th.iso_duration_to_locale_string(118000, "short", "en-us")).toBe("1 day, 8 hr, 46 min, 40 sec");
+		});
+
+		test("uses the render context locale", () => {
+			const helpers = th.create_default_helpers({ locale: "sl-si" });
+			expect(helpers.iso_duration_to_locale_string("P1DT8H31M38S")).toBe("1 d, 8 h, 31 min in 38 sek.");
+		});
+
+		test("returns empty for an invalid duration", () => {
+			expect(th.iso_duration_to_locale_string("not-a-duration", "short", "en-us")).toBe("");
+		});
+	});
+
 	describe("js_date_to_iso_string - additional", () => test("converts Date to ISO string", () => {
 		const date = new Date("2026-05-15T10:30:00Z");
 		const result = th.format_datetime(date, "date", "iso");

@@ -115,6 +115,22 @@ export function unix_timestamp_to_locale_string(timestamp_input: unknown, locale
 	return format_datetime(timestamp_date, "timestamp", "locale", locale);
 }
 
+type Duration_format_style = NonNullable<Intl.DurationFormatOptions["style"]>;
+
+export function iso_duration_to_locale_string(duration_input: unknown, style: Duration_format_style = "short", locale?: string): string {
+	if (duration_input == null || duration_input === "") return "";
+
+	try {
+		const duration = typeof duration_input === "number"
+			? Temporal.Duration.from({ seconds: duration_input }).round({ largestUnit: "days" })
+			: Temporal.Duration.from(duration_input);
+		const formatter = new Intl.DurationFormat(locale, { style });
+		return formatter.format(duration);
+	} catch {
+		return "";
+	}
+}
+
 function format_iso(input: unknown, format: DatetimeFormat): string {
 	if (format === "date") {
 		if (typeof input === "string" && /^\d{4}-\d{2}-\d{2}$/.test(input)) { return input; }
@@ -360,6 +376,7 @@ export function create_default_helpers(data: any = {}): TemplateHelpers {
 		js_datetime_to_locale_string: (datetime_input: string | Date, l: string = locale) => format_datetime(datetime_input, "datetime", "locale", l),
 		js_timestamp_to_locale_string: (timestamp_input: string | Date, l: string = locale) => format_datetime(timestamp_input, "timestamp", "locale", l),
 		unix_timestamp_to_locale_string: (timestamp_input: unknown, l: string = locale) => unix_timestamp_to_locale_string(timestamp_input, l),
+		iso_duration_to_locale_string: (duration_input: unknown, style: Duration_format_style = "short") => iso_duration_to_locale_string(duration_input, style, locale),
 		js_date_to_iso_string: (date_input: string | Date) => format_datetime(date_input, "date", "iso"),
 		js_datetime_to_iso_string: (date_input: string | Date) => format_datetime(date_input, "datetime", "iso"),
 		js_timestamp_to_iso_string: (date_input: string | Date) => format_datetime(date_input, "timestamp", "iso"),
