@@ -217,6 +217,7 @@ not use the normal login, session, or CSRF flow.
 ```bash
 bun test					# Full suite (--parallel)
 bun run db:clone-test				# Clone development DB into the test DB (requires TEST_CONNECTION_STRING)
+bun run db:clone-production		# Replace production DB with development DB (requires confirmation)
 bun run sql <file.sql>				# Run SQL (file or stdin) against the dev DB - read-only by default, --allow-changes for writes
 bun run docs:check                       # Verify relative links across repository documentation
 ```

@@ -21,7 +21,7 @@
 		],
 		"issue_repo": "reepolee/reepolee-dev"
 	},
-	"version": "26.08.145",
+	"version": "26.08.146",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",
@@ -94,6 +94,7 @@
 		"add:user:alice": "bun generator/user alice alice@example.com a --modules system,user,reeman",
 		"add:user:bob": "bun generator/user bob bob@example.com b --modules user",
 		"db:clone-test": "bun scripts/clone_db.ts",
+		"db:clone-production": "bun scripts/copy_dev_to_production.ts",
 		"sql": "bun scripts/run_sql_dev.ts",
 		"vendor:check": "bun scripts/vendor_check.ts",
 		"postinstall": "bun run reepolee:install",
