@@ -1,0 +1,76 @@
+{
+	"actions": {
+		"add": "Dodaj projekt",
+		"cancel": "Prekliči",
+		"delete": "Odstrani projekt",
+		"do_it": "Odstrani",
+		"duplicate": "Podvoji projekt",
+		"edit": "Uredi projekt",
+		"save": "Shrani projekt"
+	},
+	"confirm": {
+		"delete": "Odstranim ta projekt iz ReeQA? Obstoječi zapisi zagonov ostanejo."
+	},
+	"labels": {
+		"base_url": "URL delujočega spletišča",
+		"name": "Ime projekta",
+		"path": "Absolutna pot projekta"
+	},
+	"nav": "Projekt",
+	"page_sets": {
+		"actions": {
+			"add": "Dodaj nabor strani",
+			"cancel": "Prekliči",
+			"clear": "Počisti izbiro",
+			"confirm_delete": "Odstrani",
+			"create": "Ustvari nabor strani",
+			"delete": "Odstrani nabor strani",
+			"only_selected": "Samo izbrano",
+			"save": "Shrani spremembe",
+			"select_visible": "Izberi vidno",
+			"sort_alpha": "Razvrsti: A–Ž",
+			"sort_newest": "Razvrsti: najnovejše najprej"
+		},
+		"confirm": {
+			"delete": "Odstranim ta shranjeni nabor strani? Obstoječa poročila ostanejo."
+		},
+		"labels": {
+			"auto_evidence": "Samodejno zabeleži dokaze za neuspešne zagone",
+			"auto_recording": "Posnemi tudi čisti video za uspešne zagone",
+			"baseline_pages": "strani izhodišča",
+			"capture_size": "Velikost zajema",
+			"checkpoints": "kontrolnih točk",
+			"filter": "Filtriraj strani zemljevida",
+			"kind": "Vrsta nabora strani",
+			"kind_urls": "Seznam URL-jev",
+			"kind_workflow": "Potek dela",
+			"name": "Ime nabora strani",
+			"pages": "strani",
+			"steps": "Koraki poteka dela (JSON)"
+		},
+		"status": {
+			"no_baseline": "Ni izhodišča"
+		},
+		"ui": {
+			"active": "Aktivno",
+			"auto_evidence_hint": "Po vsakem primerjalnem zagonu posname video s pripovedjo za vsako spremenjeno ali novo stran, namesto ročnega klika.",
+			"auto_recording_hint": "Po vsakem primerjalnem zagonu posname navaden, neoznačen video za vsako nespremenjeno stran - edini način za video pri uspešnem dinamičnem testu.",
+			"edited_today": "Danes",
+			"no_sets": "Še ni shranjenih naborov strani. Ustvarite enega za začetek zagonov testov.",
+			"saved_sets": "Nabori strani",
+			"sitemap_error": "Zemljevida strani projekta ni bilo mogoče naložiti:",
+			"stale_pages": "shranjene strani niso več v trenutnem zemljevidu. Shranite nabor, da jih odstranite.",
+			"steps_hint": "Polje JSON s koraki. Vsak korak je <code>{\"type\":\"navigate\",\"url\":...}</code>, <code>{\"type\":\"click\",\"selector\":...}</code> (ali <code>\"text\"</code> za klik po vidnem besedilu) ali <code>{\"type\":\"fill\",\"selector\":...,\"value\":...}</code>. Dodajte <code>\"checkpoint\": true</code>, da na tem koraku zajamete in primerjate posnetek zaslona; <code>\"before_seconds\": 1</code> za premor pred korakom; <code>\"delay_seconds\": 3</code> za premor po koraku; <code>\"outline_seconds\"</code> / <code>\"glide_seconds\"</code> za trajanje orisa in drsenja kazalca pri kliku v posnetku; z <code>\"value_env\": \"ADMIN_PASSWORD\"</code> preberete vrednost iz projektove datoteke .env, namesto da bi jo shranili tukaj.",
+			"steps_placeholder": "[\n\t{ \"type\": \"navigate\", \"url\": \"https://example.com/login\" },\n\t{ \"type\": \"fill\", \"selector\": \"#username\", \"value_env\": \"ADMIN_USERNAME\" },\n\t{ \"type\": \"fill\", \"selector\": \"#password\", \"value_env\": \"ADMIN_PASSWORD\" },\n\t{ \"type\": \"click\", \"selector\": \"button[type=submit]\", \"checkpoint\": true }\n]"
+		}
+	},
+	"route_name": "projekti",
+	"ui": {
+		"active": "Aktivno",
+		"base_url_hint": "ReeQA prebere sitemap.xml in zajame strani s tega URL-ja.",
+		"description": "Upravljajte aktivni projekt QA in njegove nabore strani.",
+		"no_projects": "Ni registriranih projektov QA.",
+		"path_hint": "Imenik mora vsebovati package.json. Ukazi sklopov ostanejo pod nadzorom ReeQA.",
+		"title": "Projekt"
+	}
+}

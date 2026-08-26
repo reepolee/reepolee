@@ -1,0 +1,64 @@
+{
+	"actions": {
+		"adapt_schema": "Prilagodi shemo",
+		"add_column": "Dodaj stolpec",
+		"add_foreign_key": "Dodaj tuji ključ",
+		"cancel": "Prekliči",
+		"copy": "Kopiraj",
+		"create": "Ustvari",
+		"delete": "Izbriši",
+		"delete_column": "Izbriši stolpec",
+		"favorite": "Priljubljeno",
+		"generate": "Generiraj",
+		"generate_view": "Generiraj pogled",
+		"hide_system": "Skrij sistemske stolpce",
+		"new_table": "Nova tabela",
+		"save": "Shrani",
+		"undo": "Razveljavi"
+	},
+	"labels": {
+		"all_types": "Vse vrste",
+		"auto_increment": "Samodejno povečevanje",
+		"current": "trenutno",
+		"ddl_preview": "DDL predogled",
+		"default": "Privzeto",
+		"domain_type": "Vrsta domene",
+		"domain_types": "Vrste domen",
+		"expected_type": "Pričakovana vrsta",
+		"file": "Datoteka",
+		"generated": "Generirano",
+		"name": "Ime",
+		"nonstandard_sql": "Nestandarden SQL",
+		"nullability": "Dovoljuje NULL",
+		"other_fields": "Druga polja",
+		"sql_type": "Vrsta SQL",
+		"suggested": "priporočeno",
+		"table": "Tabela",
+		"table_ids": "ID-ji tabel",
+		"tables": "Tabele",
+		"unique": "Enoličen",
+		"view": "Pogled",
+		"views": "Pogledi"
+	},
+	"messages": {
+		"adapt_schema": "Prilagodi shemo trenutnemu modelu?",
+		"delete_column": "Izbriši ta stolpec?",
+		"delete_table": "Izbriši to tabelo?",
+		"delete_view": "Izbriši ta pogled?",
+		"generate_view": "Generiraj pogled za to tabelo?"
+	},
+	"nav": "DDL Studio",
+	"nav_prefix_title": "Studio",
+	"route_name": "studio",
+	"selectors": {
+		"custom": "Po meri",
+		"select_file": "Izberi datoteko"
+	},
+	"ui": {
+		"description": "Vizualni urejevalnik modela SQL",
+		"empty_text": "Odpri datoteko s seznama za urejanje.",
+		"empty_title": "Noben model ni naložen",
+		"no_objects": "Izberi tabelo ali pogled",
+		"title": "Studio"
+	}
+}
