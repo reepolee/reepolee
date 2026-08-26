@@ -102,13 +102,13 @@ class TranslationRepository {
 	/**
 	 * Load translations from the canonical JSON tree.
 	 */
-	private async load_all_translations(target_locales: readonly string[]) {
+	private async load_all_translations(target_locales: readonly string[], project_dir?: string) {
 		const merged: Record<string, any> = {};
 		for (const locale of target_locales) {
 			merged[locale] = {};
 		}
 
-		const rows = await read_all_translation_rows();
+		const rows = await read_all_translation_rows(project_dir);
 		for (const row of rows) {
 			const { locale, namespace, key_path, translation } = row;
 			if (!target_locales.includes(locale)) continue;
@@ -144,7 +144,11 @@ class TranslationRepository {
 			if (typeof val === "object" && val !== null && !Array.isArray(val)) {
 				if (!target[key] || typeof target[key] !== "object" || Array.isArray(target[key])) { target[key] = {}; }
 				this.mark_missing_from(val, target[key], current_parts);
-			} else if (target[key] === undefined || target[key] === null || target[key] === "") {
+			} else if (target[key] === undefined || target[key] === null) {
+				// Only undefined/null count as missing. An empty string is a valid
+				// translation (e.g. an intentionally empty unit suffix) and must
+				// survive the fallback untouched - not be replaced with the
+				// "{key}" missing marker.
 				target[key] = `{${key}}`;
 			}
 		}

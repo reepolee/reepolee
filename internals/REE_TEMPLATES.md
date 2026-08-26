@@ -1355,7 +1355,7 @@ When `is_dev` is `true`:
 - **Live reload** is injected into every HTML response via `inject_live_reload()`.
 - **`toJSON` / `toPrettyJSON`** debug variables are available in templates.
 - **SSE endpoint** `/__reload` is registered for the live-reload client connection.
-- **File watcher** is started via `start_watcher(notify_clients)` to push reload events on file changes.
+- **File watcher** is started via `start_watcher(notify_clients)` to push reload events on file changes (templates, CSS, static scripts) and to reload in-memory translations + route maps when a `{locale}.json` file changes.
 
 ---
 
