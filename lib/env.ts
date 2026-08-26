@@ -40,9 +40,10 @@ export function sanitize_env_value(raw: string): string { return raw.replace(/^[
  *
  * The app runs against `PROD_CONNECTION_STRING` when started with `--prod`
  * (`bun start`), and against `DEV_CONNECTION_STRING` in every other mode.
- * Development tooling (reeman, generators, `scripts/`, marketplace installers)
- * reads `DEV_CONNECTION_STRING` directly and never resolves through here, so a
- * generator can never be pointed at the production database by accident.
+ * Development tooling (reeman, most generators, `scripts/`, marketplace
+ * installers) reads `DEV_CONNECTION_STRING` directly. The user generator is
+ * the deliberate exception: its explicit `--prod` flag reads
+ * `PROD_CONNECTION_STRING` to create a production user.
  */
 export const CONNECTION_STRING_VAR: "DEV_CONNECTION_STRING" | "PROD_CONNECTION_STRING" = Bun.argv.includes("--prod") ? "PROD_CONNECTION_STRING" : "DEV_CONNECTION_STRING";
 

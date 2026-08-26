@@ -35,12 +35,20 @@ export async function create_user(
 	modules: string = "system,examples",
 	connection_string?: string,
 ): Promise<Created_user> {
-	const { db_cli, close_db_cli } = await import("../config/db_cli");
-
 	// If a connection string is provided, create a fresh connection to bypass
-	// any stale db_cli (e.g. when .env was updated after reeman startup).
+	// db_cli. This is used by the --prod user-generator flag.
 	const use_fresh = !!connection_string;
-	const db = use_fresh ? new SQL(connection_string!) : db_cli;
+	let db: SQL;
+	let close_db_cli: (() => Promise<void>) | undefined;
+
+	if (use_fresh) {
+		db = new SQL(connection_string!);
+	} else {
+		const cli_db = await import("../config/db_cli");
+		db = cli_db.db_cli;
+		close_db_cli = cli_db.close_db_cli;
+	}
+
 	const keepalive = use_fresh ? setInterval(() => {}, 2_147_483_647) : null;
 
 	const normalized_username = username.trim().toLowerCase();
@@ -99,7 +107,7 @@ export async function create_user(
 			clearInterval(keepalive!);
 			await db.close();
 		} else {
-			await close_db_cli();
+			await close_db_cli!();
 		}
 	}
 }

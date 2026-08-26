@@ -4,7 +4,7 @@
  * Dev helper: create a confirmed user directly in the database, bypassing the invite flow.
  *
  * Usage:
- * bun generator/user <username> <email> <password> [--modules <mod1,mod2>]
+ * bun generator/user <username> <email> <password> [--modules <mod1,mod2>] [--prod]
  *
  * Examples:
  * bun generator/user alice alice@example.com secret123
@@ -12,13 +12,14 @@
  */
 
 import { create_user } from "./user_lib";
+import { require_env } from "$lib/env";
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 function print_usage() {
-	console.error("Usage: bun generator/user <username> <email> <password> [--modules <mod1,mod2>]");
+	console.error("Usage: bun generator/user <username> <email> <password> [--modules <mod1,mod2>] [--prod]");
 	console.error("");
 	console.error("Create a confirmed user directly in the database (no invite flow).");
 	console.error("");
@@ -29,12 +30,14 @@ function print_usage() {
 	console.error("");
 	console.error("Flags:");
 	console.error("  --modules <modules>   Comma-separated module tags (default: \"user\")");
+	console.error("  --prod                Use PROD_CONNECTION_STRING instead of the development database");
 	console.error("  --quiet               Suppress the success line (used by the installer)");
 	console.error("  --help                Print this usage and exit");
 	console.error("");
 	console.error("Examples:");
 	console.error("  bun generator/user alice alice@example.com secret123");
 	console.error("  bun generator/user admin admin@example.com s3cret --modules admin,editor");
+	console.error("  bun generator/user admin admin@example.com s3cret --prod");
 }
 
 function error_and_exit(message: string): never {
@@ -56,6 +59,7 @@ function parse_args() {
 	let email = "";
 	let password = "";
 	let quiet = false;
+	let prod = false;
 	const modules_parts: string[] = [];
 	const positionals: string[] = [];
 
@@ -65,6 +69,8 @@ function parse_args() {
 
 		if (arg === "--quiet") {
 			quiet = true;
+		} else if (arg === "--prod") {
+			prod = true;
 		} else if (arg === "--modules") {
 			// Consume all following non-flag args as module values
 			while (args[i + 1] && !args[i + 1]!.startsWith("--")) {
@@ -87,7 +93,7 @@ function parse_args() {
 	password = positionals[2] ?? "";
 	const modules = modules_parts.length > 0 ? modules_parts.join(",") : "";
 
-	return { username, email, password, modules, quiet };
+	return { username, email, password, modules, quiet, prod };
 }
 
 // ---------------------------------------------------------------------------
@@ -95,10 +101,11 @@ function parse_args() {
 // ---------------------------------------------------------------------------
 
 async function main() {
-	const { username, email, password, modules, quiet } = parse_args();
+	const { username, email, password, modules, quiet, prod } = parse_args();
+	const connection_string = prod ? require_env("PROD_CONNECTION_STRING") : undefined;
 
 	try {
-		const result = await create_user(username, email, password, modules);
+		const result = await create_user(username, email, password, modules, connection_string);
 		if (!quiet) { console.log(`\u2713 Created user ${result.username}`); }
 		process.exit(0);
 	} catch (error) {

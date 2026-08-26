@@ -150,6 +150,11 @@
 	a[role="button"],
 	.button {
 		@apply inline-flex h-10 cursor-pointer items-center justify-center whitespace-nowrap rounded-sm border border-transparent px-3 py-2 transition hover:scale-105;
+
+		&:disabled {
+			@apply cursor-not-allowed opacity-60;
+			transform: none;
+		}
 	}
 
 	.tab-btn {

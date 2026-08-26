@@ -21,7 +21,7 @@
 		],
 		"issue_repo": "reepolee/reepolee-dev"
 	},
-	"version": "26.08.144",
+	"version": "26.08.145",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",

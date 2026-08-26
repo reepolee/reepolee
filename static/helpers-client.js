@@ -136,3 +136,37 @@ function navigate_to(paramName, value) {
 	link.click();
 	document.body.removeChild(link);
 }
+
+/**
+ * Disable a form's submit buttons when it is actually submitted, so the form
+ * cannot be resubmitted while its request is in flight (double click, Enter
+ * key). Event delegation covers every form on the page - handwritten routes,
+ * generated CRUD, and forms inside dialogs - including ones rendered after
+ * this script runs.
+ *
+ * A submit that another handler canceled (event.defaultPrevented) is skipped:
+ * FormController (async validation) and the studio dialogs take over
+ * submission themselves and manage their own button state. Form-level
+ * listeners run before this document-level listener, so the cancel state is
+ * already set by the time this runs.
+ *
+ * Buttons associated via the `form` attribute (e.g. a dialog's confirm button
+ * pointing at a hidden form) are included - they are not DOM children of the
+ * form, so a plain form.querySelectorAll() would miss them.
+ */
+document.addEventListener("submit", (event) => {
+	const form = event.target;
+	if (!(form instanceof HTMLFormElement) || event.defaultPrevented) return;
+
+	const buttons = [...form.querySelectorAll('button[type="submit"], input[type="submit"]')];
+	if (form.id) {
+		buttons.push(...document.querySelectorAll(
+			`button[type="submit"][form="${CSS.escape(form.id)}"], input[type="submit"][form="${CSS.escape(form.id)}"]`
+		));
+	}
+	for (const button of buttons) {
+		if (button instanceof HTMLButtonElement || button instanceof HTMLInputElement) {
+			button.disabled = true;
+		}
+	}
+});
