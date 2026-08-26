@@ -1,0 +1,41 @@
+<nav class="flex flex-col min-h-0 flex-1 overflow-y-auto">
+	<!-- NAVIGATION START -->
+
+	{#if props.children}
+		{~ props.children }
+	{:else}
+		{#each props.nav_groups as group}
+			{#if !group.label || user_has_module(props.user, group.label)}
+				{#if group.label}
+					<details class="group mb-8" data-nav-module="{= group.label }" {#if !props.collapsed_nav_modules.includes(group.label) }open{/if}>
+						<summary class="flex cursor-pointer items-center px-4 text-xs font-semibold uppercase tracking-wider text-brand marker:content-none">
+							<span class="mr-2 transition-transform group-open:rotate-90">❯</span>
+							{= props.translations.nav_prefix_title?.[group.label]}
+						</summary>
+						<div class="mt-2 flex flex-col">
+							{#each group.items as entry}
+								<a href="{~ localized_path(entry.url) }" class="{= is_current(localized_path(entry.url)) } pl-6 hover:bg-neutral-100">{= nav_label(entry.nav_title_key)}</a>
+								{#if entry.nav_rule_after}
+									<hr class="mx-4 my-4 border-neutral-300" />
+								{/if}
+							{/each}
+						</div>
+					</details>
+				{:else}
+					{#each group.items as entry}
+						{#if user_has_module(props.user, entry.required_module)}
+							<a href="{~ localized_path(entry.url) }" class="{= is_current(localized_path(entry.url)) } pl-6 hover:bg-neutral-100">{= nav_label(entry.nav_title_key)}</a>
+							{#if entry.nav_rule_after}
+								<hr class="mx-4 my-4 border-neutral-300" />
+							{/if}
+						{/if}
+					{/each}
+					<div class="mb-8"></div>
+				{/if}
+
+			{/if}
+		{/each}
+	{/if}
+
+	<!-- NAVIGATION END -->
+</nav>
