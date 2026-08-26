@@ -44,7 +44,7 @@ export async function get_table_row_count(table_name: string): Promise<number> {
 	const cache = await load_ddl_cache();
 	const known = cache.tables.some((t) => t.name === table_name);
 	if (!known) return 0;
-	const escaped_name = table_name.replaceAll('"', '""');
-	const rows = await db.unsafe(`SELECT COUNT(*) AS cnt FROM "${escaped_name}"`) as { cnt: number; }[];
+	const escaped_name = table_name.replaceAll("`", "``");
+	const rows = await db.unsafe(`SELECT COUNT(*) AS cnt FROM \`${escaped_name}\``) as { cnt: number; }[];
 	return rows[0]?.cnt ?? 0;
 }

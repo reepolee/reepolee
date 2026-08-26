@@ -16,10 +16,13 @@ export const z_datetime_optional = z.string()
 	.refine((val) => val == null || val === "" || /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(val), { message: "invalid_datetime" })
 	.transform((val) => (val === "" ? null : val));
 
-export const z_datetime_required = z.string().min(1, "required").datetime({
-	local: true,
-	message: "invalid_datetime",
-}).nullish().refine((val) => val != null && val !== "", { message: "required" });
+export const z_datetime_required = z.string()
+	.nullish()
+	.refine((val) => val != null && val !== "", { message: "required" })
+	.pipe(z.string().min(1, "required").datetime({
+		local: true,
+		message: "invalid_datetime",
+	}));
 
 export function validate_schema<T extends z.ZodTypeAny>(schema: T, data: unknown, touched?: string[], messages?: Record<string, string>): [Record<string, string>, z.output<T> | null] {
 	const errors: Record<string, string> = {};
