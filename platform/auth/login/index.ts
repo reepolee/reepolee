@@ -78,7 +78,7 @@ export async function post_auth_login(req: BunRequest): Promise<Response> {
 
 	if (!user?.hashed_password || !user.verified_at || !password_valid) { return invalid_credentials(); }
 
-	const session_cookie = await create_user_session(user);
+	const session_cookie = await create_user_session(user, req);
 
 	// Determine redirect target - same-origin check to prevent open redirect
 	let redirect_target = "/";
@@ -130,7 +130,7 @@ export async function post_auth_logout(req: BunRequest): Promise<Response> {
 
 	const headers = new Headers({ Location: login_url, "Clear-Site-Data": "cache, storage" });
 
-	headers.append("Set-Cookie", build_clear_cookie().toString());
+	headers.append("Set-Cookie", build_clear_cookie(req).toString());
 
 	return new Response(null, { status: 303, headers });
 }

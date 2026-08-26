@@ -153,7 +153,7 @@ export async function post_auth_register(req: BunRequest): Promise<Response> {
 		});
 	}
 
-	const session_cookie = await create_user_session(updated);
+	const session_cookie = await create_user_session(updated, req);
 
 	const headers = new Headers({ Location: "/" });
 

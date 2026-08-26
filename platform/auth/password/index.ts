@@ -72,7 +72,7 @@ export async function post_auth_password(req: BunRequest): Promise<Response> {
 	if (!password_updated) { return new Response("Unable to update password", { status: 500 }); }
 	await destroy_user_sessions(user_id);
 
-	const session_cookie = await create_user_session(user_row);
+	const session_cookie = await create_user_session(user_row, req);
 
 	const toast_data = {
 		record_id: 1,
