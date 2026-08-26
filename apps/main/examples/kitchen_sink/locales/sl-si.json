@@ -1,0 +1,58 @@
+{
+	"descriptions": {
+		"card": "To je razdelek, podoben kartici, z obrobom in razmakom.",
+		"switch_pattern": "Blok `{{ }}` izračuna niz `role` iz vgrajenih globalnih spremenljivk **`is_dev`** in **`user`**, nato `{#switch}` razveji. To je idiomatični `.ree` vzorec za večsmerno razvejanje: **izračunaj eno vrednost v JS-ju, switch na njej.**",
+		"typography": "Običajno besedilo odstavka s krepkim in poševnim oblikovanjem."
+	},
+	"errors": {
+		"min_length_3": "Najmanj 3 znaki so obvezni",
+		"text_input_max": "Največ 100 znakov je dovoljenih"
+	},
+	"labels": {
+		"banners": "Pasice",
+		"buttons": "Gumbi",
+		"card_section": "Razdelek Kartice",
+		"cards": "Kartice in Odseki",
+		"checkbox_option": "Možnost Potrditvenega Okvira",
+		"code_example": "Primer Kode",
+		"date_input": "Vnos datuma",
+		"disabled_button": "Onemogočeni Gumb",
+		"email_input": "E-poštni Naslov",
+		"email_placeholder": "Vnesite e-poštni naslov",
+		"file_upload": "Nalaganje datoteke",
+		"form_elements": "Elementi Obrazca",
+
+		"heading_1": "Naslov 1",
+		"heading_2": "Naslov 2",
+		"heading_3": "Naslov 3",
+		"list_item": "Postavka seznama",
+		"option": "Možnost",
+		"primary_button": "Primarni Gumb",
+		"radio": "Radij",
+		"radio_options": "Možnosti Radijskega Gumba",
+		"secondary_button": "Sekundarni Gumb",
+		"select_dropdown": "Padajoči Seznam",
+		"selected_date": "Izbrani datum:",
+		"switch_pattern_title": "Switch Demo — Simulacija else-if",
+		"text_input": "Besedilni Vnos",
+		"text_placeholder": "Vnesite besedilo (min 3 znaki)",
+		"textarea": "Večvrstični Vnos",
+		"textarea_placeholder": "Vnesite več vrstic",
+		"typography": "Tipografija"
+	},
+	"messages": {
+		"error": "Napaka: Kaj je šlo narobe",
+		"info": "Info: To je obvestilo",
+		"role_dev": "🔧 Razvijalski način — vse funkcije odklenjene",
+		"role_guest": "🔒 Gost — prijavite se za polni dostop",
+		"role_user": "👤 Dobrodošli nazaj, prijavljeni uporabnik",
+		"success": "Uspešno: Operacija je bila uspešno izvedena",
+		"warning": "Opozorilo: Preglejte te informacije"
+	},
+	"nav": "Kuhinjsko korito",
+	"route_name": "kuhinskega-ponvice",
+	"ui": {
+		"description": "Prikaz komponent in primeri",
+		"title": "Kuhinjsko korito"
+	}
+}
