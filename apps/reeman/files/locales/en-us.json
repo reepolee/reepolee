@@ -1,0 +1,70 @@
+{
+	"actions": {
+		"abort_archive": "Cancel",
+		"abort_delete": "Cancel",
+		"abort_restore": "Cancel",
+		"archive": "Archive",
+		"back": "Back",
+		"bulk_action": "Archive selected files",
+		"cancel": "Cancel",
+		"confirm_archive": "Yes, archive",
+		"confirm_delete": "Yes, delete",
+		"confirm_restore": "Yes, restore",
+		"delete": "Delete this file permanently?",
+		"do_it": "Do it",
+		"new_file": "New File",
+		"restore": "Restore",
+		"save": "Save",
+		"save_close": "Save & close"
+	},
+	"counts": {
+		"archived": "Archived",
+		"live": "Active",
+		"total": "Total"
+	},
+	"labels": {
+		"description": "Description",
+		"file_size": "File Size",
+		"file_type": "File Type",
+		"filename": "Filename",
+		"folder": "Folder",
+		"mime_type": "Mime Type",
+		"original_filename": "Original Filename",
+		"s3_key": "S3 Key",
+		"tags": "Tags",
+		"title": "Title"
+	},
+	"messages": {
+		"record_archived": "Record archived",
+		"record_restored": "Record restored"
+	},
+	"nav": "Files",
+	"route_name": "files",
+	"scopes": {
+		"__all": "All",
+		"__archived": "Archived"
+	},
+	"selectors": {
+		"all": "All",
+		"per_page": "per page"
+	},
+	"ui": {
+		"file": "File",
+		"file_type": "Type",
+		"modifying": "Modifying",
+		"no_records": "No files found.",
+		"records": "records",
+		"title": "Files"
+	},
+	"v_labels": {
+		"description": "Description",
+		"file_size": "File Size",
+		"file_type": "File Type",
+		"filename": "Filename",
+		"folder": "Folder",
+		"mime_type": "MIME Type",
+		"original_filename": "Original Filename",
+		"tags": "Tags",
+		"title": "Title"
+	}
+}

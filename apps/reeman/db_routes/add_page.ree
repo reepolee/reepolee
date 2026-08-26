@@ -1,0 +1,51 @@
+{#layout("layout") }
+{#with props}
+	<div class="p-4">
+
+		<div class="flex items-center justify-between">
+			<div>
+				<h1 class="mb-1">{_ ui.add_page_title }</h1>
+				<p class="text-sm text-text-secondary">{_ ui.add_page_hint }</p>
+			</div>
+		</div>
+
+		{#if busy}
+			<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
+		{/if}
+
+		<form method="POST" action="{~ localized_path('/routes/add-page') }" class="mt-4 grid gap-4 max-w-[60ch]">
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+			<input type="hidden" name="return_to" value="/routes" />
+
+			<field-wrapper class="grid" data-field="prefix">
+				<div class="grid">
+					<label class="px-3" for="add-page-prefix">{_ labels.prefix}</label>
+					<input id="add-page-prefix" name="prefix" pattern="[a-z0-9_\-\/]*" list="reeman-modules" title="{_ hints.prefix }" />
+					<datalist id="reeman-modules">
+						{#each modules as m}
+							<option value="{= m.code }">{= m.name }</option>
+						{/each}
+					</datalist>
+				</div>
+			</field-wrapper>
+
+			<field-wrapper class="grid" data-field="folder_name">
+				<div class="grid">
+					<label class="px-3" for="add-page-folder">{_ labels.folder_name}</label>
+					<input id="add-page-folder" name="folder_name" required pattern="[a-z0-9][a-z0-9_\-]*" title="{_ hints.folder_name }" placeholder="my_page" />
+				</div>
+			</field-wrapper>
+
+			<div class="flex gap-2 items-center">
+				<button type="submit" id="add-page-submit" class="button primary" {#if busy}disabled{/if}>{_ actions.create }</button>
+				<a href="{~ localized_path('/routes') }" role="button" class="button secondary">{_ actions.cancel}</a>
+			</div>
+		</form>
+	</div>
+
+	<script>
+		document.querySelector("form").addEventListener("submit", () => {
+			document.querySelectorAll("form button").forEach((btn) => { btn.disabled = true; });
+		});
+	</script>
+{/with}

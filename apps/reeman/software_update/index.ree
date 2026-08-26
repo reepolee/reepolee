@@ -1,0 +1,396 @@
+{#layout("layout")}
+{#with props}
+	<div class="w-full p-4 space-y-6">
+
+		<header>
+			<h1 class="text-xl font-bold">{_ ui.software_update_title}</h1>
+			<p class="text-sm text-text-secondary mt-1">{_ ui.software_update_description}</p>
+			<p class="text-sm text-amber-700 mt-1">{_ ui.software_update_never_deletes}</p>
+		</header>
+
+		{#if form_error}
+			<app-banner type="red">{= form_error}</app-banner>
+		{/if}
+
+		{#if expired}
+			<app-banner type="yellow">{_ ui.scan_expired}</app-banner>
+		{/if}
+
+		{#if source_changed}
+			<app-banner type="yellow">{_ ui.source_changed}</app-banner>
+		{/if}
+
+		<form method="POST" action="{~ localized_path('/software-update/scan') }" class="flex flex-wrap items-end gap-3 rounded-md border border-border bg-surface-raised p-4">
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+			<button type="submit" class="button primary">{_ actions.scan}</button>
+			<field-wrapper class="grid w-auto max-w-full" data-field="source_dir">
+				<div class="grid">
+					<label class="px-3" for="source-dir-select">{_ labels.source_dir}</label>
+					<div class="flex gap-2">
+						<select id="source-dir-select" name="source_dir" class="w-auto max-w-full" required>
+							<option value="">{_ actions.select_folder}</option>
+						</select>
+					</div>
+					<validation-error class="mt-1" id="error-source_dir"></validation-error>
+				</div>
+			</field-wrapper>
+		</form>
+		<script>
+			(async () => {
+				try {
+					const res = await fetch('/software-update/browse');
+					const data = await res.json();
+					const select = document.getElementById('source-dir-select');
+					if (data.dirs && data.dirs.length > 0) {
+						for (const dir of data.dirs) {
+							const opt = document.createElement('option');
+							opt.value = dir;
+							opt.textContent = dir.split(/[\\/]/).pop();
+							if ('{= last_source }' === dir) opt.selected = true;
+							select.appendChild(opt);
+						}
+					} else {
+						select.style.display = 'none';
+					}
+				} catch {
+					document.getElementById('source-dir-select').style.display = 'none';
+				}
+			})();
+		</script>
+
+		{#if snapshot }
+			<section class="rounded-md border border-border bg-surface-raised p-4 space-y-3">
+				<p class="text-sm"><span class="font-semibold">{_ labels.upstream}:</span> <code class="text-xs">{= snapshot.source_root }</code></p>
+				<p class="text-sm"><span class="font-semibold">{_ labels.project}:</span> <code class="text-xs">{= snapshot.project_root }</code></p>
+				<div id="commit-info" data-source-root="{= snapshot.source_root }" class="text-sm text-text-secondary mt-2"></div>
+			</section>
+			<script>
+				(async () => {
+					try {
+						const source_root = document.getElementById('commit-info').dataset.sourceRoot;
+						const res = await fetch(`/software-update/commit-info?source=${encodeURIComponent(source_root)}`);
+						const data = await res.json();
+						if (data.commit_info) {
+							const el = document.getElementById('commit-info');
+							el.innerHTML = `<span class="font-semibold">{_ labels.latest_commit}:</span> <code class="text-xs">${data.commit_info.hash.substring(0, 7)}</code> - ${data.commit_info.message} <span class="text-xs opacity-70">(${data.commit_info.author}, ${data.commit_info.date})</span>`;
+						}
+					} catch {
+						// Not a git repo or error - ignore
+					}
+				})();
+			</script>
+
+			<div class="flex flex-wrap items-center gap-2 text-sm">
+				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="new" aria-pressed="false">{_ labels.new}: {= summary.new_count }</button>
+				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="modified" aria-pressed="false">{_ labels.modified}: {= summary.modified_count }</button>
+				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="project-only" aria-pressed="false">{_ labels.project_only}: {= summary.project_only_count }</button>
+				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="ignored" aria-pressed="false">{_ labels.ignored}: {= summary.ignored_count }</button>
+				<button type="button" class="button tertiary text-xs font-semibold" id="selected_count" data-software-update-filter="selected" aria-pressed="false">{_ labels.selected}: 0</button>
+			</div>
+
+			{#if snapshot.entries.length === 0 }
+				<p class="p-4">{_ ui.no_changes}</p>
+			{:else }
+				<form id="software_update_form" method="POST" action="{~ localized_path('/software-update/apply') }">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<input type="hidden" name="scan" value="{= scan_id }" />
+
+					<div class="flex items-center gap-2 mb-3">
+						<label class="flex items-center gap-2 text-sm font-semibold">
+							<input type="checkbox" id="global_select" data-role="group" data-scope="global" />
+							{_ actions.select_all}
+						</label>
+						<label class="flex items-center gap-2 text-sm text-text-secondary ml-4">
+							<input type="checkbox" id="show_not_ignored" />
+							{_ actions.show_not_ignored}
+						</label>
+						<label class="flex items-center gap-2 text-sm text-text-secondary ml-4">
+							<input type="checkbox" id="hide_ignored" checked />
+							{_ actions.hide_ignored}
+						</label>
+					</div>
+					<div class="mb-3 flex gap-2">
+						<button type="button" id="open_apply_dialog" commandfor="apply_dialog" command="show-modal" class="button primary" disabled>{_ actions.apply}</button>
+						<button type="button" id="open_ignore_dialog" commandfor="ignore_dialog" command="show-modal" class="button tertiary" disabled>{_ actions.ignore_selected}</button>
+					</div>
+
+					<div class="space-y-3">
+						{#each groups as group }
+							<details class="rounded-md border border-border bg-surface-raised" data-software-update-group open>
+								<summary class="cursor-pointer px-3 py-2 font-semibold flex items-center gap-2">
+									<input type="checkbox" data-role="group" data-scope="folder" onclick="event.stopPropagation()" />
+									<span>{= group.folder || "." }</span>
+								</summary>
+
+								<div class="divide-y divide-border">
+									{#each group.entries as entry }
+										<div class="px-3 py-2 {= entry.ignored ? 'opacity-50' : '' }" data-software-update-entry data-ignored="{= entry.ignored ? 'true' : 'false' }" data-state="{= entry.state }">
+											<div class="flex items-center gap-3 flex-wrap">
+												{#if entry.state !== "project-only" }
+													<input
+														type="checkbox"
+														name="selected"
+														value="{= entry.rel_path }"
+															data-role="item"
+															{#if entry.ignored }disabled{/if}
+														/>
+												{:else }
+													<input type="checkbox" disabled title="{_ ui.project_only_hint}" />
+												{/if}
+
+												<span class="rounded px-2 py-0.5 text-xs font-semibold {= entry.state === 'new' ? 'bg-green-100 text-green-700' : (entry.state === 'modified' ? 'bg-amber-100 text-amber-700' : 'bg-slate-200 text-slate-700') }">
+													{#if entry.state === "new" }{_ labels.new}{/if}
+													{#if entry.state === "modified" }{_ labels.modified}{/if}
+													{#if entry.state === "project-only" }{_ labels.project_only}{/if}
+												</span>
+
+												<span class="font-mono text-sm break-all">{= entry.rel_path }</span>
+
+												{#if entry.commit_info }
+													<span class="text-xs text-text-secondary" title="{= entry.commit_info.message }">
+														{= entry.commit_info.hash.slice(0, 7) } - {= entry.commit_info.message }
+													</span>
+												{/if}
+
+												{#if entry.ignored }
+													<span class="text-xs text-text-secondary">
+														{#if entry.is_exact_ignore }{_ ui.ignored_exact}{:else }{_ ui.ignored_by_pattern} <code>{= entry.ignore_pattern }</code>{/if}
+													</span>
+												{/if}
+
+												<span class="text-xs text-text-secondary ml-auto">
+													{#if entry.source_size !== null }{= entry.source_size } B{/if}
+												</span>
+
+												{#if entry.state !== "project-only" }
+													{#if entry.is_exact_ignore }
+														<button type="button" class="text-xs underline text-text-secondary" data-role="ignore-toggle" data-scan="{= scan_id }" data-rel-path="{= entry.rel_path }" data-ignore-action="remove">{_ actions.unignore}</button>
+													{/if}
+													{#if !entry.ignored }
+														<button type="button" class="text-xs underline text-text-secondary" data-role="ignore-toggle" data-scan="{= scan_id }" data-rel-path="{= entry.rel_path }" data-ignore-action="add">{_ actions.ignore}</button>
+													{/if}
+												{/if}
+											</div>
+
+											{#if entry.state !== "project-only" && !entry.ignored }
+												<details class="mt-2" data-diff-scan="{= scan_id }" data-diff-path="{= entry.rel_path }">
+													<summary class="cursor-pointer text-xs text-brand">{_ actions.view_diff}</summary>
+													<div class="diff-body mt-2 text-sm">{_ ui.loading}</div>
+												</details>
+											{/if}
+										</div>
+									{/each}
+								</div>
+							</details>
+						{/each}
+					</div>
+
+				</form>
+
+				<dialog id="apply_dialog" class="p-0 rounded-xl shadow-2xl w-120">
+					<div class="p-6">
+						<h2 class="text-lg font-semibold">{_ actions.apply}</h2>
+						<p class="text-sm text-text-secondary mt-2">{_ ui.confirm_apply_hint}</p>
+						<p class="mt-2"><span class="font-semibold text-brand" id="apply_new_count">0</span> {_ labels.new}, <span class="font-semibold text-brand" id="apply_modified_count">0</span> {_ labels.modified}.</p>
+						<p class="text-sm text-amber-700 mt-1">{_ ui.software_update_never_deletes}</p>
+						<div class="mt-6 flex justify-end gap-2">
+							<button type="button" class="button secondary" commandfor="apply_dialog" command="close">{_ actions.cancel}</button>
+							<button type="submit" form="software_update_form" class="button danger">{_ actions.do_it}</button>
+						</div>
+					</div>
+				</dialog>
+
+				<dialog id="ignore_dialog" class="p-0 rounded-xl shadow-2xl w-120">
+					<div class="p-6">
+						<h2 class="text-lg font-semibold">{_ actions.ignore_selected}</h2>
+						<p class="text-sm text-text-secondary mt-2">{_ ui.confirm_ignore_hint}</p>
+						<p class="mt-2"><span class="font-semibold text-brand" id="ignore_count">0</span> {_ labels.files}.</p>
+						<div class="mt-6 flex justify-end gap-2">
+							<button type="button" class="button secondary" commandfor="ignore_dialog" command="close">{_ actions.cancel}</button>
+							<button type="button" command="--confirm" commandfor="ignore_dialog" class="button danger">{_ actions.do_it}</button>
+						</div>
+					</div>
+				</dialog>
+
+				<form id="ignore_form" method="POST" action="{~ localized_path('/software-update/ignore-selected') }" style="display: none;">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<input type="hidden" name="scan" value="{= scan_id }" />
+				</form>
+			{/if}
+		{/if}
+	</div>
+
+	<script src="/dialog-confirm.js?v={= version}"></script>
+	<script>
+		(function () {
+			const form = document.getElementById("software_update_form");
+			if (!form) return;
+
+			const items = () => Array.from(form.querySelectorAll('input[data-role="item"]'));
+			const globalCb = document.getElementById("global_select");
+			const applyBtn = document.getElementById("open_apply_dialog");
+			const ignoreBtn = document.getElementById("open_ignore_dialog");
+			const selectedCount = document.getElementById("selected_count");
+			const newCount = document.getElementById("apply_new_count");
+			const modifiedCount = document.getElementById("apply_modified_count");
+			const ignoreCount = document.getElementById("ignore_count");
+			const showNotIgnored = document.getElementById("show_not_ignored");
+			const hideIgnored = document.getElementById("hide_ignored");
+			let activeFilter = "modified";
+
+			function updateIgnoreFilter() {
+				const onlyDiffed = showNotIgnored.checked;
+				const shouldHideIgnored = hideIgnored.checked;
+								document.querySelectorAll("[data-software-update-entry]").forEach((entry) => {
+					const item = entry.querySelector('input[data-role="item"]');
+					const matchesActiveFilter = !activeFilter
+						|| (activeFilter === "ignored" && entry.dataset.ignored === "true")
+						|| (activeFilter === "selected" && item?.checked)
+						|| (activeFilter !== "ignored" && activeFilter !== "selected" && entry.dataset.state === activeFilter);
+					const hiddenByAggregateFilter = (shouldHideIgnored && entry.dataset.ignored === "true") || (!activeFilter && onlyDiffed && entry.dataset.state === "project-only");
+					entry.hidden = !matchesActiveFilter || hiddenByAggregateFilter;
+				});
+								document.querySelectorAll("[data-software-update-group]").forEach((group) => {
+									const hasVisibleEntries = group.querySelector("[data-software-update-entry]:not([hidden])") !== null;
+					group.hidden = Boolean(activeFilter || onlyDiffed || shouldHideIgnored) && !hasVisibleEntries;
+				});
+								document.querySelectorAll("[data-software-update-filter]").forEach((button) => {
+									const active = button.dataset.softwareUpdateFilter === activeFilter;
+					button.setAttribute("aria-pressed", String(active));
+					button.classList.toggle("ring-2", active);
+					button.classList.toggle("ring-brand", active);
+				});
+			}
+
+				document.querySelectorAll("[data-software-update-filter]").forEach((button) => {
+				button.addEventListener("click", () => {
+					activeFilter = activeFilter === button.dataset.softwareUpdateFilter ? "" : button.dataset.softwareUpdateFilter;
+					updateIgnoreFilter();
+				});
+		});
+
+			function selectableItemsInScope(scope_el) {
+				return Array.from(scope_el.querySelectorAll('input[data-role="item"]')).filter((cb) => !cb.disabled);
+			}
+
+			function updateGroupCheckbox(group_cb, scope_el) {
+				const scoped = selectableItemsInScope(scope_el);
+				const checked = scoped.filter((cb) => cb.checked);
+				if (scoped.length === 0) {
+					group_cb.checked = false;
+					group_cb.indeterminate = false;
+					group_cb.disabled = true;
+					return;
+				}
+				group_cb.disabled = false;
+				group_cb.indeterminate = checked.length > 0 && checked.length < scoped.length;
+				group_cb.checked = checked.length === scoped.length;
+			}
+
+			function updateAll() {
+				document.querySelectorAll('details').forEach((details) => {
+					const group_cb = details.querySelector(':scope > summary > input[data-role="group"][data-scope="folder"]');
+					if (group_cb) updateGroupCheckbox(group_cb, details);
+				});
+				updateGroupCheckbox(globalCb, form);
+
+				const selected = items().filter((cb) => cb.checked);
+				const label = selectedCount.textContent.split(":")[0];
+				selectedCount.textContent = `${label}: ${selected.length}`;
+				applyBtn.disabled = selected.length === 0;
+				ignoreBtn.disabled = selected.length === 0;
+
+				let n = 0;
+				let m = 0;
+				for (const cb of selected) {
+					const row = cb.closest("div.px-3");
+					if (row && row.querySelector(".bg-green-100")) n++;
+					else if (row && row.querySelector(".bg-amber-100")) m++;
+				}
+				if (newCount) newCount.textContent = String(n);
+				if (modifiedCount) modifiedCount.textContent = String(m);
+				if (ignoreCount) ignoreCount.textContent = String(selected.length);
+			}
+
+			form.addEventListener("change", (e) => {
+				const target = e.target;
+				if (target === showNotIgnored || target === hideIgnored) {
+					updateIgnoreFilter();
+					return;
+				}
+				if (!(target instanceof HTMLInputElement) || target.type !== "checkbox") return;
+
+				if (target === globalCb) {
+					selectableItemsInScope(form).forEach((cb) => { cb.checked = globalCb.checked; });
+				} else if (target.dataset.role === "group" && target.dataset.scope === "folder") {
+					const details = target.closest("details");
+					if (details) selectableItemsInScope(details).forEach((cb) => { cb.checked = target.checked; });
+				}
+				updateAll();
+				updateIgnoreFilter();
+			});
+
+			updateAll();
+			updateIgnoreFilter();
+
+			// Lazy diff/preview loading - fetch once per <details data-diff-path>.
+			document.querySelectorAll("details[data-diff-path]").forEach((details) => {
+				details.addEventListener("toggle", async () => {
+					if (!details.open || details.dataset.loaded) return;
+					details.dataset.loaded = "1";
+					const body = details.querySelector(".diff-body");
+					const scan = details.getAttribute("data-diff-scan");
+					const path = details.getAttribute("data-diff-path");
+					try {
+						const res = await fetch(`/software-update/diff?scan=${encodeURIComponent(scan)}&path=${encodeURIComponent(path)}`);
+						body.innerHTML = await res.text();
+					} catch {
+						body.textContent = "Failed to load diff.";
+					}
+				});
+			});
+
+			// Ignore/unignore toggle - a plain button (not a nested <form>, which
+			// HTML disallows inside software_update_form and browsers silently reparent to
+			// the outer form's action) posts via fetch and reloads on the
+			// server's redirect target.
+			const csrfInput = form.querySelector('input[name="_csrf_token"]');
+			document.querySelectorAll('button[data-role="ignore-toggle"]').forEach((btn) => {
+				btn.addEventListener("click", async () => {
+					btn.disabled = true;
+					try {
+						const body = new URLSearchParams({
+							_csrf_token: csrfInput ? csrfInput.value : "",
+							scan: btn.getAttribute("data-scan") || "",
+							rel_path: btn.getAttribute("data-rel-path") || "",
+							ignore_action: btn.getAttribute("data-ignore-action") || "",
+						});
+						const res = await fetch("/software-update/ignore", { method: "POST", body, redirect: "follow" });
+						window.location.href = res.url;
+					} catch {
+						btn.disabled = false;
+					}
+				});
+			});
+
+			// Ignore selected - populate the hidden form with selected checkboxes
+			const ignoreForm = document.getElementById("ignore_form");
+			if (ignoreForm) {
+				document.getElementById("ignore_dialog").addEventListener("command", (e) => {
+					if (e.command !== "--confirm") return;
+					// Remove any existing selected inputs
+					ignoreForm.querySelectorAll('input[name="selected"]').forEach((el) => el.remove());
+					// Add selected checkboxes to the form
+					for (const cb of items().filter((cb) => cb.checked)) {
+						const input = document.createElement("input");
+						input.type = "hidden";
+						input.name = "selected";
+						input.value = cb.value;
+						ignoreForm.appendChild(input);
+					}
+					ignoreForm.submit();
+				});
+			}
+		})();
+	</script>
+{/with}
