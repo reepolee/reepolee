@@ -25,6 +25,7 @@ export const DEFAULT_HELPER_NAMES = [
 	"js_time_to_locale_string",
 	"js_datetime_to_locale_string",
 	"js_timestamp_to_locale_string",
+	"unix_timestamp_to_locale_string",
 	"js_date_to_iso_string",
 	"js_datetime_to_iso_string",
 	"js_timestamp_to_iso_string",

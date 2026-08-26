@@ -56,6 +56,9 @@ export async function generate_child_section_html(
 
 	if (child_fields_for_dialog.length > MAX_CHILD_DIALOG_FIELDS) { child_fields_for_dialog = child_fields_for_dialog.slice(0, MAX_CHILD_DIALOG_FIELDS); }
 
+	// The column-configured template helper (from the table.ts columns map), if any.
+	const helper_for = (name: string): string => (columns?.[name]?.helper ? String(columns[name]!.helper) : "");
+
 	// Render headers and cells with dynamic class from props.{child_columns_var}
 	// Headers are wrapped with {#with props} in the template, so labels use bare names.
 	let child_headers_html = child_grid_fields.map((f) => {
@@ -68,7 +71,8 @@ export async function generate_child_section_html(
 		"child",
 		"child",
 		"\t\t\t\t",
-		child_columns_var
+		child_columns_var,
+		helper_for(f.name)
 	)).join("\n");
 
 	if (child_grid_commented.length > 0) {
@@ -82,7 +86,8 @@ export async function generate_child_section_html(
 			"child",
 			"child",
 			"\t\t\t\t",
-			child_columns_var
+			child_columns_var,
+			helper_for(f.name)
 		)).map((line) => `\t\t\t<!-- ${line.trimStart()} -->`).join("\n")}`;
 	}
 

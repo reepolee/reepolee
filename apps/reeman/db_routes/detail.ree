@@ -18,11 +18,12 @@
 				<field-wrapper class="grid lg:col-span-2" data-field="grid_columns">
 					<div class="grid">
 						<label class="px-3">{_ labels.index_columns}</label>
-						<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) auto">
+						<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) minmax(0,22ch) auto">
 							<div class="col-span-full grid grid-cols-subgrid gap-2 px-3 py-2 font-semibold border-b border-border bg-surface">
 								<span class="ml-3">{_ labels.name}</span>
 								<span class="ml-3">{_ labels.width}</span>
 								<span class="ml-3">{_ labels.class}</span>
+								<span class="ml-3">{_ labels.helper}</span>
 								<span class="ml-3">{_ labels.filter}</span>
 							</div>
 							{#each route_settings.grid_columns as col}
@@ -34,6 +35,12 @@
 									</label>
 									<input name="grid_column_width" value="{= col.width }" aria-label="{_ labels.width}: {= col.name }" />
 									<input name="grid_column_class" value="{= col.class_name }" aria-label="{_ labels.class}: {= col.name }" />
+									<select name="grid_column_helper" aria-label="{_ labels.helper}: {= col.name }">
+										<option value="" {#if !col.helper}selected{/if}>{#if col.default_helper}{= col.default_helper } {_ labels.default }{:else}{_ labels.no_helper}{/if}</option>
+										{#each helper_names as h}
+											<option value="{= h }" {#if col.helper === h}selected{/if}>{= h }</option>
+										{/each}
+									</select>
 									<input type="checkbox" name="grid_filter_columns" value="{= col.name }" aria-label="{_ labels.filter}: {= col.name }" {#if col.filter}checked{/if} />
 								</div>
 							{/each}

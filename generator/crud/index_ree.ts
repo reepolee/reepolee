@@ -128,13 +128,16 @@ export async function generate_index_ree(options: IndexReeOptions): Promise<{ in
 	// Collect CU fields separately - they'll be rendered as commented-out entries
 	const commented = display_fields.filter((f) => !f.attributes?.omit && f.attributes?.omit_index === true && !(IGNORE_INDEX_FIELDS as readonly string[]).includes(f.name));
 
+	// The column-configured template helper (from the table.ts columns map), if any.
+	const helper_for = (name: string): string => (columns_override?.[name]?.helper ? String(columns_override[name]!.helper) : "");
+
 	// Per-field header source: use v_fields prefix if field is in v_fields, otherwise fields
 	// Headers are wrapped with {#with props} in the template, so labels use bare names.
 	const headers = filtered.map((f) => {
 		const label = find_v_field(f.name, v_fields) ? `{_ v_labels.${f.name} }` : `{_ labels.${f.name} }`;
 		return render_field_header(f, label);
 	}).join("\n");
-	const cells = filtered.map((f) => render_field_cell(f, "record")).join("\n");
+	const cells = filtered.map((f) => render_field_cell(f, "record", "default", "\t\t\t\t", "columns", helper_for(f.name))).join("\n");
 
 	// Generate commented-out headers/cells for CU fields (easy to re-enable)
 	let commented_headers = "";
@@ -145,7 +148,7 @@ export async function generate_index_ree(options: IndexReeOptions): Promise<{ in
 			const rendered = render_field_header(f, label);
 			return `\t\t\t\t<!-- ${rendered.trimStart()} -->`;
 		}).join("\n")}`;
-		commented_cells = `\n\t\t\t\t<!-- CU fields -- uncomment to show in index -->\n${commented.map((f) => render_field_cell(f, "record", "default", "\t\t\t\t")).map((line) => `\t\t\t\t<!-- ${line.trimStart()} -->`).join(
+		commented_cells = `\n\t\t\t\t<!-- CU fields -- uncomment to show in index -->\n${commented.map((f) => render_field_cell(f, "record", "default", "\t\t\t\t", "columns", helper_for(f.name))).map((line) => `\t\t\t\t<!-- ${line.trimStart()} -->`).join(
 			"\n"
 		)}`;
 	}

@@ -35,12 +35,47 @@ function columns_class_expr(field: FieldDef, col_prop: string, use_props_prefix:
  * use `{col_prop.}` prefix (e.g. `{= columns.fieldName.class }`). Values use the
  * explicit `{record_var}.` prefix (e.g. `{= record.name }`).
  */
+/**
+ * Minimal shape needed to resolve a column's type-based default helper.
+ * Satisfied structurally by both FieldDef (crud) and FormFieldDef (schema).
+ */
+export interface DefaultHelperField {
+	name: string;
+	type?: string | null;
+	// Index-signature so both FormFieldDef.attributes (ColumnAttributes) and the
+	// crud FieldDef.attributes satisfy it structurally. Only `column_type` is read.
+	attributes?: { column_type?: string | null } & Record<string, any>;
+}
+
+/**
+ * The built-in template helper the CRUD generator applies to a column's index
+ * cell by default, derived purely from the field's type/name. This is the same
+ * algorithm `render_field_cell` uses for its type-based cell - kept here as a
+ * pure function so reeman's helper dropdown can preselect the same helper the
+ * generator will emit. Returns "" when the generator uses the plain value.
+ */
+export function default_field_helper(field: DefaultHelperField): string {
+	if (is_boolean_field(field.name)) return "yes_no";
+	if (field.attributes?.column_type === CURRENCY_FIELD) return "display_currency";
+	switch (field.type) {
+		case "tags": return "tags";
+		case "datetime":
+		case "timestamp": return "js_datetime_to_locale_string";
+		case "date": return "js_date_to_locale_string";
+		case "image": return "image_thumbnail";
+		case "file": return "file_link";
+		case "markdown": return "md";
+		default: return "";
+	}
+}
+
 export function render_field_cell(
 	field: FieldDef,
 	record_var: string = "record",
 	ctx: "default" | "child" = "default",
 	indent: string = "\t\t\t\t",
 	col_prop: string = "columns",
+	helper: string = "",
 ): string {
 	// Cells use {props.col_prop.field.class} prefix so they work both inside {#with props}
 	// (where `props` falls through to the function parameter) and in standalone partials
@@ -51,6 +86,11 @@ export function render_field_cell(
 
 	// Use explicit record_var prefix (e.g. record.name, child.name) since {#with} context covers only columns
 	const record_val = `${record_var}.`;
+
+	// A column-configured template helper overrides the type-based default rendering.
+	if (helper) {
+		return `${indent}<div${cls_attr}>{~ ${helper}(${record_val}${field.name}) }</div>`;
+	}
 
 	switch (true) {
 		case is_boolean_field(field.name):

@@ -269,6 +269,9 @@ async function refresh_index_ree(
 	let index_filtered: FieldDef[];
 	let commented_index_fields: FieldDef[] = [];
 
+	// The column-configured template helper (from the table.ts columns map), if any.
+	const helper_for = (name: string): string => (columns?.[name]?.helper ? String(columns[name]!.helper) : "");
+
 	if (columns) {
 		const col_keys = Object.keys(columns);
 		const field_keys = col_keys.filter((k) => k !== "checkbox" && k !== "id" && columns[k]?.grid !== false);
@@ -291,7 +294,7 @@ async function refresh_index_ree(
 	}).join("\n");
 	let headers = `${id_header}\n${field_headers}`;
 
-	let cells = index_filtered.map((f) => render_field_cell(f, "record")).join("\n");
+	let cells = index_filtered.map((f) => render_field_cell(f, "record", "default", "\t\t\t\t", "columns", helper_for(f.name))).join("\n");
 
 	if (commented_index_fields.length > 0) {
 		headers += `\n\t\t\t\t<!-- CU fields - uncomment to show in index -->\n${commented_index_fields.map((f) => {
@@ -299,7 +302,7 @@ async function refresh_index_ree(
 			const label = find_v_field(f.name, v_fields) ? `{_ v_labels.${f.name} }` : `{_ labels.${f.name} }`;
 			return `\t\t\t\t<!-- <div${class_attr}>${label}</div> -->`;
 		}).join("\n")}`;
-		cells += `\n\t\t\t\t<!-- CU fields -- uncomment to show in index -->\n${commented_index_fields.map((f) => render_field_cell(f, "record", "default", "\t\t\t\t")).map((line) => `\t\t\t\t<!-- ${line.trimStart()} -->`).join(
+		cells += `\n\t\t\t\t<!-- CU fields -- uncomment to show in index -->\n${commented_index_fields.map((f) => render_field_cell(f, "record", "default", "\t\t\t\t", "columns", helper_for(f.name))).map((line) => `\t\t\t\t<!-- ${line.trimStart()} -->`).join(
 			"\n"
 		)}`;
 	}

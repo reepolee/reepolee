@@ -121,7 +121,7 @@ export async function get_child_tables(parent_table: string): Promise<{ table: s
 // write_table_file() will later decide about.
 // ---------------------------------------------------------------------------
 
-export async function get_grid_column_choices(table_name: string): Promise<{ name: string; default_selected: boolean; }[]> {
+export async function get_grid_column_choices(table_name: string): Promise<{ name: string; default_selected: boolean; width: string; class_name: string; filter: boolean; helper: string; }[]> {
 	try {
 		const { db_type } = await import("$lib/resolve_db_type");
 		const { load_ddl_cache, ddl_cache_to_schema_objects } = await import("../ddl_cache");

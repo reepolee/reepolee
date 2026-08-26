@@ -21,6 +21,8 @@ import { load_reeman_data } from "../reeman/page";
 import { discover_routes_with_schema } from "$generator/reeman/utils/route_scan";
 import { route_edit_paths_by_table } from "../db_routes/route_settings";
 
+import { DEFAULT_HELPER_NAMES } from "$lib/helper_names";
+
 export const reeman_db_tables_crud = {
 	"/tables": { GET: get_db_tables_index },
 	// Single-table CRUD generation used by the table detail form (was mounted
@@ -149,6 +151,7 @@ export async function get_db_table_detail(req: BunRequest): Promise<Response> {
 			table,
 			row_count,
 			grid_columns,
+			helper_names: DEFAULT_HELPER_NAMES,
 		},
 		ctx,
 	});

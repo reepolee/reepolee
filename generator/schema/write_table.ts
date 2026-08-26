@@ -12,6 +12,7 @@ import {
 } from "$config/db_structure";
 
 import { env_switch_on } from "$config/env_vars";
+import { default_field_helper } from "../crud/render_field_cell";
 import { canonical_sql_for_domain, generate_fields_object } from "./field_generator";
 import type { TypeMapper } from "./type_mapper";
 import type { FormFieldDef, GridColumnDefinition, SchemaObject } from "./types";
@@ -177,6 +178,9 @@ export interface GridColumnChoice {
 	width: string;
 	class_name: string;
 	filter: boolean;
+	helper: string;
+	/** The type-based helper the CRUD generator would apply if none is selected. */
+	default_helper: string;
 }
 
 function column_class(field: FormFieldDef): string {
@@ -231,6 +235,8 @@ export function list_grid_column_choices(
 		width: capped_width(field.attributes?.initial_width || COL_WIDTH_AUTO),
 		class_name: column_class(field),
 		filter: field.attributes?.filter === true,
+		helper: "",
+		default_helper: default_field_helper(field),
 	}));
 }
 
@@ -317,6 +323,7 @@ function build_column_lines(
 		const is_auto_hidden_fk = has_display_field_for_fk(f);
 		const filter_val = definition?.filter ?? (is_auto_hidden_fk || f.attributes?.filter);
 		const filter_prop = filter_val ? ", filter: true" : "";
+		const helper_prop = definition?.helper ? `, helper: ${JSON.stringify(definition.helper)}` : "";
 		// Commented (CU) entries never carry the cap-based hide - they are already hidden.
 		const grid_prop = is_auto_hidden_fk || (!commented && hidden_by_cap.has(f.name)) ? ", grid: false" : "";
 		const localized_prop = localize_content && is_localizable_string(f) ? ", localized: true" : "";
@@ -325,7 +332,7 @@ function build_column_lines(
 		const prefix = commented ? "  // " : "  ";
 		const width_value = JSON.stringify(width);
 		const class_value = JSON.stringify(cls);
-		return `${prefix}"${f.name}": { width: ${width_value}, class: ${class_value}${domain_prop}${filter_prop}${grid_prop}${localized_prop} },${mismatch_comment}`;
+		return `${prefix}"${f.name}": { width: ${width_value}, class: ${class_value}${domain_prop}${filter_prop}${helper_prop}${grid_prop}${localized_prop} },${mismatch_comment}`;
 	}
 
 	const lines: ColumnLine[] = [];
@@ -438,7 +445,9 @@ export const parent = ${JSON.stringify(schema_obj.parent, null, 2)};
 // Add compliant column to flag SQL mismatches against the canonical type.
 // grid - set to false to hide from index grid while keeping for filtering.
 // localized - set to true to give this column its own value per locale.
-const columns: Record<string, { width: string; class: string; domain?: string; filter?: boolean; grid?: boolean; localized?: boolean }> = ${columns_str}
+// helper - built-in template helper applied to this column's index-grid cell, e.g.
+// "js_date_to_locale_string" renders the value as {~ js_date_to_locale_string(record.field) }.
+const columns: Record<string, { width: string; class: string; domain?: string; filter?: boolean; helper?: string; grid?: boolean; localized?: boolean }> = ${columns_str}
 
 // Route param for URL paths - change to a different column for URL obscurity.
 ${route_param_export}
@@ -608,6 +617,28 @@ function set_true_flag_on_line(line: string, property: "filter", enabled: boolea
 	return `${trimmed_before_close}, ${property}: true${separator}${suffix}`;
 }
 
+/**
+ * Set or clear the optional `helper` property on one column line. An empty
+ * value removes any existing `, helper: "..."` clause; a non-empty value
+ * inserts/replaces it, kept after `filter` and before `grid`/`localized`.
+ */
+function set_helper_property_on_line(line: string, value: string): string {
+	const has_helper = /,\s*helper:\s*".*?"/.test(line);
+	if (!value) return has_helper ? line.replace(/,\s*helper:\s*".*?"/, "") : line;
+	const quoted = JSON.stringify(value);
+	if (has_helper) return line.replace(/,\s*helper:\s*".*?"/, `, helper: ${quoted}`);
+	const filter_index = line.indexOf(", filter:");
+	const grid_index = line.indexOf(", grid:");
+	const localized_index = line.indexOf(", localized:");
+	const later_property_indexes = [filter_index, grid_index, localized_index].filter((index) => index >= 0);
+	later_property_indexes.sort((a, b) => a - b);
+	const insert_index = later_property_indexes[0] ?? line.lastIndexOf("}");
+	if (insert_index < 0) return line;
+	const before_close = line.slice(0, insert_index);
+	const suffix = line.slice(insert_index);
+	return `${before_close.trimEnd()}, helper: ${quoted}${suffix}`;
+}
+
 export interface TableFileSettings {
 	pagination_strategy?: "cursor" | "offset";
 	render_strategy?: "stream" | "load";
@@ -632,6 +663,7 @@ function apply_grid_settings(source: string, settings: TableFileSettings): { sou
 		updated = set_string_property_on_line(updated, "width", definition.width);
 		updated = set_string_property_on_line(updated, "class", definition.class_name);
 		updated = set_true_flag_on_line(updated, "filter", definition.filter);
+		if (definition.helper !== undefined) updated = set_helper_property_on_line(updated, definition.helper);
 		if (selected) updated = set_grid_flag_on_line(updated, !selected.has(definition.name));
 		if (updated === match[0]) continue;
 		working_source = working_source.replace(match[0]!, updated);

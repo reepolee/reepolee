@@ -109,10 +109,12 @@ function parse_grid_form_settings(params: URLSearchParams): GridFormSettings {
 	const grid_column_widths = raw_grid_column_widths.map((width) => width.trim());
 	const raw_grid_column_classes = params.getAll("grid_column_class");
 	const grid_column_classes = raw_grid_column_classes.map((class_name) => class_name.trim());
+	const raw_grid_column_helpers = params.getAll("grid_column_helper");
+	const grid_column_helpers = raw_grid_column_helpers.map((helper) => helper.trim());
 	const raw_filter_columns = params.getAll("grid_filter_columns");
 	const filter_columns = new Set(raw_filter_columns);
 	const definition_names = new Set(grid_column_names);
-	const has_invalid_definition_lengths = grid_column_names.length !== grid_column_widths.length || grid_column_names.length !== grid_column_classes.length;
+	const has_invalid_definition_lengths = grid_column_names.length !== grid_column_widths.length || grid_column_names.length !== grid_column_classes.length || grid_column_names.length !== grid_column_helpers.length;
 	const has_blank_definition = grid_column_names.some((name, index) => !name || !grid_column_widths[index]);
 	const has_duplicate_definition = definition_names.size !== grid_column_names.length;
 	const has_unknown_selection = grid_columns.some((name) => !definition_names.has(name));
@@ -126,6 +128,7 @@ function parse_grid_form_settings(params: URLSearchParams): GridFormSettings {
 		width: grid_column_widths[index]!,
 		class_name: grid_column_classes[index]!,
 		filter: filter_columns.has(name),
+		helper: grid_column_helpers[index] || undefined,
 	}));
 	return { grid_columns, grid_column_definitions };
 }

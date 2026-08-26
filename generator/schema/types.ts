@@ -108,4 +108,11 @@ export interface GridColumnDefinition {
 	width: string;
 	class_name: string;
 	filter: boolean;
+	/**
+	 * Optional built-in template helper applied to this column's index-grid
+	 * cell, e.g. "js_date_to_locale_string" renders the value via
+	 * `{~ js_date_to_locale_string(record.field) }`. Empty means the default
+	 * type-based cell rendering.
+	 */
+	helper?: string;
 }

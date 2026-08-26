@@ -28,6 +28,12 @@ export interface ColumnDef {
 	class: string;
 	domain?: string;
 	filter?: boolean;
+	/**
+	 * Built-in template helper applied to this column's index-grid cell, e.g.
+	 * "js_date_to_locale_string". Empty/absent means the default type-based
+	 * cell rendering.
+	 */
+	helper?: string;
 	grid?: boolean;
 	localized?: boolean;
 }

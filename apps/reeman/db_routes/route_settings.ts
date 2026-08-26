@@ -1,6 +1,7 @@
 import { join } from "node:path";
 
 import { MAIN_APP } from "$config/paths";
+import { default_field_helper, type DefaultHelperField } from "$generator/crud/render_field_cell";
 import type { RouteSchema } from "$generator/reeman/utils/route_scan";
 import { load_table_module_fresh } from "$generator/schema/table_module_loader";
 
@@ -10,6 +11,10 @@ export interface RouteGridColumn {
 	width: string;
 	class_name: string;
 	filter: boolean;
+	/** Built-in template helper applied to this column's grid cell ("" = default). */
+	helper: string;
+	/** The type-based helper the CRUD generator would apply if none is selected. */
+	default_helper: string;
 }
 
 export interface RouteSettings {
@@ -38,6 +43,7 @@ type TableColumn = {
 	width: string;
 	class: string;
 	filter?: boolean;
+	helper?: string;
 	grid?: boolean;
 };
 
@@ -46,9 +52,11 @@ type TableModule = {
 	pagination_strategy: "cursor" | "offset";
 	render_strategy: "stream" | "load";
 	template_tags: "flat" | "tags";
+	/** Field metadata (type, attributes) keyed by column name, from table.generated.ts. */
+	fields?: Record<string, DefaultHelperField>;
 };
 
-export function route_settings_from_module(route: RouteSchema, table_module: TableModule): RouteSettings {
+export function route_settings_from_module(route: RouteSchema, table_module: TableModule, fields: Record<string, DefaultHelperField> | undefined = table_module.fields): RouteSettings {
 	const column_entries = Object.entries(table_module.columns);
 	const editable_entries = column_entries.filter(([name]) => name !== "checkbox" && name !== "id");
 	const grid_columns = editable_entries.map(([name, column]) => ({
@@ -57,6 +65,8 @@ export function route_settings_from_module(route: RouteSchema, table_module: Tab
 		width: column.width,
 		class_name: column.class,
 		filter: column.filter === true,
+		helper: column.helper ?? "",
+		default_helper: fields?.[name] ? default_field_helper(fields[name]!) : "",
 	}));
 
 	return {

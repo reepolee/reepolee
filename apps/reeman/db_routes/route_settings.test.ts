@@ -20,12 +20,33 @@ describe("route_settings_from_module", () => {
 		});
 
 		expect(settings.grid_columns).toEqual([
-			{ name: "name", default_selected: true, width: "auto", class_name: "font-semibold", filter: true },
-			{ name: "email", default_selected: false, width: "30ch", class_name: "", filter: false },
+			{ name: "name", default_selected: true, width: "auto", class_name: "font-semibold", filter: true, helper: "", default_helper: "" },
+			{ name: "email", default_selected: false, width: "30ch", class_name: "", filter: false, helper: "", default_helper: "" },
 		]);
 		expect(settings.pagination_strategy).toBe("cursor");
 		expect(settings.render_strategy).toBe("stream");
 		expect(settings.template_tags).toBe("tags");
+	});
+
+	test("preselects the type-based default helper from the route's fields", () => {
+		const route: RouteSchema = { table: "frameworks", prefix: "", url: "/frameworks" };
+		const settings = route_settings_from_module(route, {
+			columns: {
+				checkbox: { width: "10ch", class: "text-center" },
+				id: { width: "10ch", class: "", grid: false },
+				is_javascript: { width: "auto", class: "text-center" },
+				name: { width: "auto", class: "font-semibold", filter: true },
+			},
+			pagination_strategy: "cursor",
+			render_strategy: "stream",
+			template_tags: "tags",
+		}, {
+			is_javascript: { name: "is_javascript", type: "yes_no" },
+			name: { name: "name", type: "text" },
+		});
+
+		expect(settings.grid_columns).toContainEqual({ name: "is_javascript", default_selected: true, width: "auto", class_name: "text-center", filter: false, helper: "", default_helper: "yes_no" });
+		expect(settings.grid_columns).toContainEqual({ name: "name", default_selected: true, width: "auto", class_name: "font-semibold", filter: true, helper: "", default_helper: "" });
 	});
 });
 

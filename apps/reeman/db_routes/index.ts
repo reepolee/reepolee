@@ -20,6 +20,8 @@ import { load_reeman_data } from "../reeman/page";
 import { load_route_settings, route_edit_path } from "./route_settings";
 import type { Record as DbRouteRecord } from "./sql";
 
+import { DEFAULT_HELPER_NAMES } from "$lib/helper_names";
+
 export const reeman_db_routes_crud = {
 	"/routes": { GET: get_db_routes_index },
 	"/routes/bulk-refresh": { POST: post_bulk_refresh_routes },
@@ -149,6 +151,7 @@ async function render_db_route_detail(req: BunRequest, record: DbRouteRecord | u
 			record,
 			route_settings,
 			route_detail_path: route_edit_path(record.url),
+			helper_names: DEFAULT_HELPER_NAMES,
 		},
 		ctx,
 	});

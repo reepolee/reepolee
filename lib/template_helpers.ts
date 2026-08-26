@@ -108,6 +108,13 @@ export function format_datetime(input: unknown, format: DatetimeFormat = "date",
 	}
 }
 
+export function unix_timestamp_to_locale_string(timestamp_input: unknown, locale?: string): string {
+	if (typeof timestamp_input !== "number" || !Number.isFinite(timestamp_input)) return "";
+
+	const timestamp_date = new Date(timestamp_input * 1000);
+	return format_datetime(timestamp_date, "timestamp", "locale", locale);
+}
+
 function format_iso(input: unknown, format: DatetimeFormat): string {
 	if (format === "date") {
 		if (typeof input === "string" && /^\d{4}-\d{2}-\d{2}$/.test(input)) { return input; }
@@ -352,6 +359,7 @@ export function create_default_helpers(data: any = {}): TemplateHelpers {
 		js_time_to_locale_string: (date_input: string | Date, l: string = locale) => format_datetime(date_input, "time", "locale", l),
 		js_datetime_to_locale_string: (datetime_input: string | Date, l: string = locale) => format_datetime(datetime_input, "datetime", "locale", l),
 		js_timestamp_to_locale_string: (timestamp_input: string | Date, l: string = locale) => format_datetime(timestamp_input, "timestamp", "locale", l),
+		unix_timestamp_to_locale_string: (timestamp_input: unknown, l: string = locale) => unix_timestamp_to_locale_string(timestamp_input, l),
 		js_date_to_iso_string: (date_input: string | Date) => format_datetime(date_input, "date", "iso"),
 		js_datetime_to_iso_string: (date_input: string | Date) => format_datetime(date_input, "datetime", "iso"),
 		js_timestamp_to_iso_string: (date_input: string | Date) => format_datetime(date_input, "timestamp", "iso"),

@@ -446,6 +446,18 @@ describe("template_helpers", () => {
 		});
 	});
 
+	describe("unix_timestamp_to_locale_string", () => {
+		test("formats Unix seconds with the requested locale", () => {
+			const unix_seconds = 1778841045;
+			const expected = th.format_datetime(new Date(unix_seconds * 1000), "timestamp", "locale", "en-us");
+			expect(th.unix_timestamp_to_locale_string(unix_seconds, "en-us")).toBe(expected);
+		});
+
+		test("returns empty for a non-numeric timestamp", () => {
+			expect(th.unix_timestamp_to_locale_string("1778841045", "en-us")).toBe("");
+		});
+	});
+
 	describe("js_date_to_iso_string - additional", () => test("converts Date to ISO string", () => {
 		const date = new Date("2026-05-15T10:30:00Z");
 		const result = th.format_datetime(date, "date", "iso");
