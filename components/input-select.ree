@@ -1,0 +1,13 @@
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= props.attributes.name }">
+	<div class="grid">
+		<label class="px-3" for="{= props.attributes.name }">{= props.attributes.label}</label>
+		<select id="{= props.attributes.name }" name="{= props.attributes.name }">
+			<option value="">{_ selectors.select}</option>
+			{#each props.attributes.options ?? [] as option}
+				<option value="{= option }" {#if String(option) === String(props.attributes.value)} selected{/if}>{= option}</option>
+			{/each}
+		</select>
+		<validation-error class="mt-1" id="error-{= props.attributes.name }"></validation-error>
+	</div>
+	<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"><!-- hints.{~ props.attributes.name } --></p>
+</field-wrapper>
