@@ -58,7 +58,10 @@ export function handle_internal_endpoints(req: Request, url: URL): Response | Pr
  * themselves and pass through unchanged.
  */
 export async function call_route_handler(handler: unknown, req: Request, server?: Bun.Server<WebSocketData>, params: Record<string, string> = {}): Promise<Response> {
-	if (params && Object.keys(params).length > 0) { (req as any).params = params; }
+	// Always attach the matcher result. Bun requests may carry an undefined
+	// params property when the custom dispatcher matches a route with captures;
+	// assigning `{}` also keeps handlers safe on exact routes.
+	(req as any).params = params;
 
 	let response: Response;
 

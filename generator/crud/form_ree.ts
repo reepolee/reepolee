@@ -95,7 +95,10 @@ export async function generate_input_field(
 	// For nested CRUD, render parent FK field as hidden input
 	if (is_nested && parent_info && field.name === parent_info.fk_column) { return `<input type="hidden" name="${field.name}" value="{= props.record.${field.name} }" />`; }
 
-	if (template_tags === "tags") { return generate_tags_mode_field(field, fk_info, table_name, route_prefix); }
+	if (template_tags === "tags") {
+		const generated = generate_tags_mode_field(field, fk_info, table_name, route_prefix);
+		return generated;
+	}
 
 	const template_base = join(process.cwd(), "generator", "templates", "fields");
 	const html_type = FIELD_TO_HTML_TYPE[field.type] || field.type || "text";

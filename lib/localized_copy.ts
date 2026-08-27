@@ -14,31 +14,16 @@
 
 import { db } from "$config/db";
 import { default_locale, locale_names } from "$config/supported_locales";
-import { hash_localized_value, serialize_for_hash } from "$lib/localized_hash";
 import { locale_table } from "$lib/locale_tables";
+import { quote_identifier } from "$lib/sql_dialect";
 import { translate_json } from "$generator/translator";
 
 // Re-exported so callers of the copy API get the hashing helpers alongside it.
-export { hash_localized_value, serialize_for_hash };
-
-export interface StaleCopyNotice {
-	field_name: string;
-	locale_code: string;
-	copied_from_locale: string;
-}
-
-export function source_column(field_name: string): string { return `${field_name}_src`; }
-export function hash_column(field_name: string): string { return `${field_name}_hash`; }
-
-function quote(identifier: string): string {
-	if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(identifier)) throw new Error(`Unsafe SQL identifier: ${identifier}`);
-	return `"${identifier}"`;
-}
 
 /** One locale's row for a record, or undefined when that locale has none. */
 export async function get_locale_row(table_name: string, record_id: number, locale_code: string): Promise<Record<string, any> | undefined> {
 	const table = locale_table(table_name, locale_code);
-	const rows = (await db.unsafe(`SELECT * FROM ${quote(table)} WHERE ${quote("id")} = ? LIMIT 1`, [record_id])) as any[];
+	const rows = (await db.unsafe(`SELECT * FROM ${quote_identifier(table)} WHERE ${quote_identifier("id")} = ? LIMIT 1`, [record_id])) as any[];
 	return rows[0];
 }
 
@@ -85,14 +70,14 @@ export async function copy_localized_values(
 		const value = source_row[field_name];
 		if (value === null || value === undefined) continue;
 
-		assignments.push(`${quote(field_name)} = ?`, `${quote(source_column(field_name))} = ?`, `${quote(hash_column(field_name))} = ?`);
-		params.push(value, from_locale, hash_localized_value(value));
+		assignments.push(`${quote_identifier(field_name)} = ?`);
+		params.push(value);
 		copied++;
 	}
 
 	if (copied === 0) return 0;
 
-	await db.unsafe(`UPDATE ${quote(target_table)} SET ${assignments.join(", ")} WHERE ${quote("id")} = ?`, [...params, record_id]);
+	await db.unsafe(`UPDATE ${quote_identifier(target_table)} SET ${assignments.join(", ")} WHERE ${quote_identifier("id")} = ?`, [...params, record_id]);
 	return copied;
 }
 
@@ -144,64 +129,13 @@ export async function generate_localized_values(
 		// carried over verbatim - "translating" them means nothing.
 		const value = typeof translated[field_name] === "string" ? translated[field_name] : source_value;
 
-		assignments.push(`${quote(field_name)} = ?`, `${quote(source_column(field_name))} = ?`, `${quote(hash_column(field_name))} = ?`);
-		params.push(value, from_locale, hash_localized_value(source_value));
+		assignments.push(`${quote_identifier(field_name)} = ?`);
+		params.push(value);
 		generated++;
 	}
 
 	if (generated === 0) return 0;
 
-	await db.unsafe(`UPDATE ${quote(target_table)} SET ${assignments.join(", ")} WHERE ${quote("id")} = ?`, [...params, record_id]);
+	await db.unsafe(`UPDATE ${quote_identifier(target_table)} SET ${assignments.join(", ")} WHERE ${quote_identifier("id")} = ?`, [...params, record_id]);
 	return generated;
-}
-
-/**
- * Copied values whose source has changed since the copy was made. Drives the
- * "the original changed" notice on the affected panels.
- */
-export function stale_copy_notices(
-	record: Record<string, any>,
-	locale_rows: Record<string, Record<string, any>>,
-	field_names: readonly string[],
-): StaleCopyNotice[] {
-	const notices: StaleCopyNotice[] = [];
-
-	for (const [locale_code, row] of Object.entries(locale_rows)) {
-		for (const field_name of field_names) {
-			const copied_from = row[source_column(field_name)];
-			const copied_hash = row[hash_column(field_name)];
-			if (!copied_from || !copied_hash) continue;
-
-			const source_row = copied_from === default_locale ? record : locale_rows[copied_from];
-			if (!source_row) continue;
-
-			const current_hash = hash_localized_value(source_row[field_name]);
-			if (current_hash === copied_hash) continue;
-
-			notices.push({ field_name, locale_code, copied_from_locale: copied_from });
-		}
-	}
-
-	return notices;
-}
-
-/** Notices keyed like form state, for O(1) lookup while rendering panels. */
-export function stale_copy_map(notices: readonly StaleCopyNotice[]): Record<string, string> {
-	const map: Record<string, string> = {};
-	for (const notice of notices) {
-		map[`${notice.field_name}|${notice.locale_code}`] = notice.copied_from_locale;
-	}
-	return map;
-}
-
-/**
- * Clear provenance for fields the user edited by hand: an edited value is no
- * longer a copy, so the stale notice must stop firing for it.
- */
-export function clear_provenance_assignments(field_names: readonly string[]): { assignments: string[]; } {
-	const assignments: string[] = [];
-	for (const field_name of field_names) {
-		assignments.push(`${quote(source_column(field_name))} = NULL`, `${quote(hash_column(field_name))} = NULL`);
-	}
-	return { assignments };
 }

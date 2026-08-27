@@ -2,8 +2,8 @@
  * What a locale table is supposed to look like.
  *
  * A locale table is a structural clone of its base table (D4): same columns,
- * same types, FK targets rewritten to their locale-matched equivalents, plus
- * two provenance sidecars per localized field (D7).
+ * same types, base-table FK targets, plus two provenance sidecars per
+ * localized field (D7).
  *
  * This module computes the EXPECTATION only. Applying it is the syncer's job
  * (sync.ts) and reporting the difference is the consistency check's job
@@ -11,7 +11,7 @@
  * a locale table should be.
  */
 
-import { locale_hash_column, locale_source_column, locale_table_name } from "../naming";
+import { locale_table_name } from "../naming";
 import type { ColumnDef, ForeignKeyDef, SchemaObject } from "../schema/types";
 
 /** A column the locale table must have, in the dialect's own type language. */
@@ -81,26 +81,13 @@ function sidecar_column(name: string): ExpectedColumn {
 }
 
 /**
- * Rewrite an FK target to the locale-matched table when that target is itself
- * localized, else leave it pointing at the shared base table (D4).
+/**
+ * Locale clones intentionally have no foreign-key constraints. A localized
+ * row is a translation sidecar, not an independently constrained base record;
+ * constraining it can reject a locale save when the referenced value is only
+ * valid in the base table or when the locale is being edited before related
+ * localized data exists.
  */
-function rewrite_foreign_key(
-	fk: ForeignKeyDef,
-	locale_code: string,
-	default_locale_code: string,
-	localized_tables: ReadonlySet<string>,
-): ExpectedForeignKey {
-	const target_is_localized = localized_tables.has(fk.referenced_table_name);
-	const referenced_table = target_is_localized
-		? locale_table_name(fk.referenced_table_name, locale_code, default_locale_code)
-		: fk.referenced_table_name;
-
-	return {
-		column_name: fk.column_name,
-		referenced_table,
-		referenced_column: fk.referenced_column_name,
-	};
-}
 
 export interface ExpectedSchemaOptions {
 	base_schema: SchemaObject;
@@ -108,7 +95,7 @@ export interface ExpectedSchemaOptions {
 	localized_field_names: readonly string[];
 	locale_codes: readonly string[];
 	default_locale_code: string;
-	/** Every table that has localized fields - drives FK target rewriting. */
+	/** Retained for callers that discover all localized tables together. */
 	localized_tables: ReadonlySet<string>;
 }
 
@@ -119,7 +106,7 @@ export interface ExpectedSchemaOptions {
  * generating exactly what it generates today (D3).
  */
 export function expected_locale_tables(options: ExpectedSchemaOptions): ExpectedTable[] {
-	const { base_schema, localized_field_names, locale_codes, default_locale_code, localized_tables } = options;
+	const { base_schema, localized_field_names, locale_codes, default_locale_code } = options;
 
 	if (localized_field_names.length === 0) return [];
 
@@ -146,14 +133,9 @@ export function expected_locale_tables(options: ExpectedSchemaOptions): Expected
 			});
 		}
 
-		// Sidecars follow the cloned columns so a human reading the DDL sees the
-		// real shape first and the bookkeeping after it.
-		for (const field_name of localized_field_names) {
-			columns.push(sidecar_column(locale_source_column(field_name)));
-			columns.push(sidecar_column(locale_hash_column(field_name)));
-		}
-
-		const foreign_keys = base_schema.foreign_keys.map((fk) => rewrite_foreign_key(fk, locale_code, default_locale_code, localized_tables));
+		// Do not clone base-table foreign keys into locale sidecars. The base table
+		// remains the sole owner of relational constraints.
+		const foreign_keys: ExpectedForeignKey[] = [];
 
 		tables.push({
 			name: locale_table_name(base_schema.name, locale_code, default_locale_code),

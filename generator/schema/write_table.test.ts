@@ -3,13 +3,43 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { update_table_file_settings } from "./write_table";
+import { update_table_file_settings, write_table_file } from "./write_table";
+import type { TypeMapper } from "./type_mapper";
+import type { SchemaObject } from "./types";
 
 let temp_dir = "";
 
 afterEach(async () => {
 	if (temp_dir) await rm(temp_dir, { recursive: true, force: true });
 	temp_dir = "";
+});
+
+const text_mapper: TypeMapper = {
+	to_html_input: () => "text",
+	to_typescript: () => "string",
+};
+
+describe("write_table_file", () => {
+	test("does not localize the code identifier", async () => {
+		temp_dir = await mkdtemp(join(tmpdir(), "reepolee-table-localization-"));
+		const schema: SchemaObject = {
+			type: "table",
+			name: "metrics",
+			columns: [
+				{ name: "id", type_string: "int", comment: "", is_nullable: false, is_primary_key: true, is_auto_increment: true },
+				{ name: "code", type_string: "varchar(255)", comment: "", is_nullable: false, is_primary_key: false, is_auto_increment: false, is_unique: true },
+				{ name: "name", type_string: "varchar(255)", comment: "", is_nullable: true, is_primary_key: false, is_auto_increment: false },
+			],
+			foreign_keys: [],
+			has_view: false,
+		};
+
+		await write_table_file({ dir: temp_dir, schema_obj: schema, type_mapper: text_mapper, localize_content: true });
+		const generated = await Bun.file(join(temp_dir, "schema", "table.ts")).text();
+		expect(generated).toContain('"name": { width: "auto", class: "", localized: true }');
+		expect(generated).toContain('"code": { width: "auto", class: "", domain: "code" }');
+		expect(generated).not.toContain('"code": { width: "auto", class: "", domain: "code", localized: true }');
+	});
 });
 
 describe("update_table_file_settings", () => {

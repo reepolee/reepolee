@@ -20,11 +20,7 @@
 import { db } from "$config/db";
 import { cache } from "$lib/cache";
 import { all_locale_tables, clone_locales, locale_table } from "$lib/locale_tables";
-
-function quote(identifier: string): string {
-	if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(identifier)) throw new Error(`Unsafe SQL identifier: ${identifier}`);
-	return `"${identifier}"`;
-}
+import { quote_identifier } from "$lib/sql_dialect";
 
 export interface FanOutOptions {
 	table_name: string;
@@ -32,6 +28,13 @@ export interface FanOutOptions {
 	localized_columns: readonly string[];
 	/** Every writable column, in insert order. */
 	write_columns: readonly string[];
+	/** Base-owned columns that locale forms must never update. */
+	protected_columns?: readonly string[];
+}
+
+function writable_columns(options: FanOutOptions): string[] {
+	const protected_columns = new Set(options.protected_columns ?? []);
+	return options.write_columns.filter((column) => column !== "id" && !protected_columns.has(column));
 }
 
 /**
@@ -45,15 +48,15 @@ export async function fan_out_create(options: FanOutOptions, id: number | string
 	const locales_to_write = clone_locales();
 	if (locales_to_write.length === 0) return;
 
-	const columns = ["id", ...options.write_columns.filter((column) => column !== "id")];
-	const column_list = columns.map((column) => quote(column)).join(", ");
+	const columns = ["id", ...writable_columns(options)];
+	const column_list = columns.map((column) => quote_identifier(column)).join(", ");
 	const placeholders = columns.map(() => "?").join(", ");
 	const row = columns.map((column) => (column === "id" ? id : values[column] ?? null));
 
 	await db.begin(async (tx) => {
 		for (const locale_code of locales_to_write) {
 			const table = locale_table(options.table_name, locale_code);
-			await tx.unsafe(`INSERT INTO ${quote(table)} (${column_list}) VALUES (${placeholders})`, row);
+			await tx.unsafe(`INSERT INTO ${quote_identifier(table)} (${column_list}) VALUES (${placeholders})`, row);
 		}
 	});
 }
@@ -70,7 +73,7 @@ export async function fan_out_update(options: FanOutOptions, id: number | string
 	const localized = new Set(options.localized_columns);
 	const edited_table = locale_table(options.table_name, locale_code);
 
-	const updatable = options.write_columns.filter((column) => column !== "id");
+	const updatable = writable_columns(options);
 	const shared_columns = updatable.filter((column) => !localized.has(column));
 
 	await db.begin(async (tx) => {
@@ -81,9 +84,9 @@ export async function fan_out_update(options: FanOutOptions, id: number | string
 			const columns = table === edited_table ? updatable : shared_columns;
 			if (columns.length === 0) continue;
 
-			const assignments = columns.map((column) => `${quote(column)} = ?`).join(", ");
+			const assignments = columns.map((column) => `${quote_identifier(column)} = ?`).join(", ");
 			const params = columns.map((column) => values[column] ?? null);
-			await tx.unsafe(`UPDATE ${quote(table)} SET ${assignments} WHERE ${quote("id")} = ?`, [...params, id]);
+			await tx.unsafe(`UPDATE ${quote_identifier(table)} SET ${assignments} WHERE ${quote_identifier("id")} = ?`, [...params, id]);
 		}
 	});
 }
@@ -95,13 +98,14 @@ export async function fan_out_update(options: FanOutOptions, id: number | string
  * here has its provenance cleared: a value the user typed is no longer a copy,
  * so the stale-copy notice must stop firing for it.
  */
-export async function save_locale_values(table_name: string, id: number | string, by_locale: Record<string, Record<string, string>>): Promise<void> {
+export async function save_locale_values(table_name: string, id: number | string, by_locale: Record<string, Record<string, string>>, protected_columns: readonly string[] = []): Promise<void> {
+	const protected_set = new Set(protected_columns);
 	const entries = Object.entries(by_locale);
 	if (entries.length === 0) return;
 
 	await db.begin(async (tx) => {
 		for (const [locale_code, field_values] of entries) {
-			const field_names = Object.keys(field_values);
+			const field_names = Object.keys(field_values).filter((field_name) => !protected_set.has(field_name));
 			if (field_names.length === 0) continue;
 
 			const table = locale_table(table_name, locale_code);
@@ -109,11 +113,11 @@ export async function save_locale_values(table_name: string, id: number | string
 			const params: unknown[] = [];
 
 			for (const field_name of field_names) {
-				assignments.push(`${quote(field_name)} = ?`, `${quote(`${field_name}_src`)} = NULL`, `${quote(`${field_name}_hash`)} = NULL`);
+				assignments.push(`${quote_identifier(field_name)} = ?`);
 				params.push(field_values[field_name]);
 			}
 
-			await tx.unsafe(`UPDATE ${quote(table)} SET ${assignments.join(", ")} WHERE ${quote("id")} = ?`, [...params, id]);
+			await tx.unsafe(`UPDATE ${quote_identifier(table)} SET ${assignments.join(", ")} WHERE ${quote_identifier("id")} = ?`, [...params, id]);
 		}
 	});
 }
@@ -131,10 +135,10 @@ export async function fan_out_delete(table_name: string, id: number | string): P
 
 	await db.begin(async (tx) => {
 		for (const table of clones) {
-			await tx.unsafe(`DELETE FROM ${quote(table)} WHERE ${quote("id")} = ?`, [id]);
+			await tx.unsafe(`DELETE FROM ${quote_identifier(table)} WHERE ${quote_identifier("id")} = ?`, [id]);
 		}
 
-		const result = (await tx.unsafe(`DELETE FROM ${quote(table_name)} WHERE ${quote("id")} = ?`, [id])) as any;
+		const result = (await tx.unsafe(`DELETE FROM ${quote_identifier(table_name)} WHERE ${quote_identifier("id")} = ?`, [id])) as any;
 		affected = result?.affectedRows ?? result?.count ?? result?.changes ?? 0;
 	});
 

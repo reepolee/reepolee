@@ -27,6 +27,13 @@ describe("render_field_cell", () => {
 		expect(cell).toContain("class=\"child-field");
 		expect(cell).toContain("{~ md(child.name) }");
 	});
+
+	test("wraps a currency column in display_currency regardless of column_type casing", () => {
+		const upper = render_field_cell({ name: "price", type: "number" as const, attributes: { column_type: "DECIMAL(18,2)" } }, "record");
+		expect(upper).toContain("{~ display_currency(record.price) }");
+		const mixed = render_field_cell({ name: "price", type: "number" as const, attributes: { column_type: "Decimal(18,2)" } }, "record");
+		expect(mixed).toContain("{~ display_currency(record.price) }");
+	});
 });
 
 describe("default_field_helper", () => {
@@ -38,6 +45,10 @@ describe("default_field_helper", () => {
 
 	test("maps currency columns to display_currency by their SQL column type", () => {
 		expect(default_field_helper(typed_field("price", "number", { column_type: "decimal(18,2)" }))).toBe("display_currency");
+		// Dialects pass through the raw SQL type string (SQLite preserves declared
+		// casing), so the match must be case-insensitive like column_class().
+		expect(default_field_helper(typed_field("price", "number", { column_type: "DECIMAL(18,2)" }))).toBe("display_currency");
+		expect(default_field_helper(typed_field("price", "number", { column_type: "Decimal(18,2)" }))).toBe("display_currency");
 	});
 
 	test("maps typed fields to their matching helper", () => {

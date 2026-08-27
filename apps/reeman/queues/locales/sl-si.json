@@ -25,7 +25,7 @@
 	"nav": "Čakalne vrste",
 	"route_name": "cakalne-vrste",
 	"ui": {
-		"backend": "Backend",
+		"backend": "Pozaditelj",
 		"confirm_clear_all": "Počisti vsa opravila iz te čakalne vrste? Tega ni mogoče razveljaviti.",
 		"confirm_clear_pending": "Počisti vsa čakajoča opravila iz te vrste?",
 		"confirm_delete_job": "Izbriši to neuspelo opravilo za vedno? Tega ni mogoče razveljaviti.",

@@ -131,12 +131,12 @@
 	},
 	"ui": {
 		"app_switcher": "Aplikacije",
+		"apply_filters": "Uporabi filtre",
 		"apps": {
 			"main": "Glavna",
 			"reeman": "Reeman",
 			"reeqa": "ReeQA"
 		},
-		"apply_filters": "Uporabi filtre",
 		"auto_complete_no_results": "Ni najdenih zadetkov.",
 		"busy_poller_translating": "{count} prevajalskih opravil se izvaja - prevodi se prikažejo, ko se zaključijo.",
 		"clear_all": "Počisti vse",
@@ -187,7 +187,7 @@
 		"page_not_found_description": "Žal te strani ne moremo prikazati",
 		"records": "zapis(ov)",
 		"show_actions": "Prikaži dejanja",
-		"show_more": "Pokaži več",
-		"show_less": "Pokaži manj"
+		"show_less": "Pokaži manj",
+		"show_more": "Pokaži več"
 	}
 }

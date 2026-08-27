@@ -8,6 +8,8 @@ import { locale_clone_table_names } from "$generator/naming";
 import { any_busy } from "./lib/busy_state";
 import { load_runs, type RunRecord } from "./lib/state";
 import { list_sql_files, type SqlFileEntry } from "./lib/sql_files";
+import { get_users_table_created_at } from "../db_tables/sql.custom";
+import { db } from "$config/db";
 
 export type PageOverrides = {
 	form_error?: string;
@@ -61,11 +63,20 @@ export async function load_reeman_data(load: ReemanLoad = {}): Promise<ReemanDat
 					import("$generator/reeman/utils/route_scan"),
 				]);
 				const cache = await load_ddl_cache();
+				const users_created_at = await get_users_table_created_at();
+				const table_creation_times = await get_table_creation_times();
+				const bootstrap_cutoff = users_created_at ? new Date(users_created_at).getTime() : 0;
 				const crud_by_table = new Set(discover_existing_crud_tables().map((t) => t.name));
 				const all_names = cache.tables.map((t) => t.name);
 				const locale_clones = locale_clone_table_names(all_names, locales, default_locale);
 				const tables = cache.tables
 					.filter((t) => !locale_clones.has(t.name))
+					.filter((t) => t.name !== "users")
+					.filter((t) => !users_created_at || t.name !== "users")
+					.filter((t) => {
+						const created_at = table_creation_times.get(t.name.toLowerCase());
+						return !bootstrap_cutoff || (created_at !== undefined && new Date(created_at).getTime() > bootstrap_cutoff);
+					})
 					.map((t) => ({
 						name: t.name,
 						column_count: t.columns.length,
@@ -115,6 +126,11 @@ export async function load_reeman_data(load: ReemanLoad = {}): Promise<ReemanDat
 // ---------------------------------------------------------------------------
 // Connection summary - type + password-masked display string
 // ---------------------------------------------------------------------------
+
+async function get_table_creation_times(): Promise<Map<string, string>> {
+	const rows = await db.unsafe(`SELECT TABLE_NAME, CREATE_TIME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()`) as Array<{ TABLE_NAME?: string; CREATE_TIME?: Date | string | null }>;
+	return new Map(rows.filter((row) => row.TABLE_NAME && row.CREATE_TIME).map((row) => [row.TABLE_NAME!.toLowerCase(), new Date(row.CREATE_TIME!).toISOString()]));
+}
 
 function summarize_connection(): { type: string; display: string; } {
 	const raw = Bun.env.DEV_CONNECTION_STRING?.trim() || "";

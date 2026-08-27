@@ -40,9 +40,11 @@ function locale_required_response(requested: string | null, locales: readonly st
  * redirects locale switches to the localized URL.
  *
  * Precedence for page requests: ?locale= query > localized path > cookie >
- * default_locale. Matching is case-insensitive ("de-at" == "DE-AT") but
- * every value is normalized to the lowercase BCP 47 form immediately; the
- * header and cookie always carry that lowercase form.
+ * Accept-Language > default_locale. Matching is case-insensitive ("de-at" ==
+ * "DE-AT") but every value is normalized to the lowercase BCP 47 form
+ * immediately; the header and cookie always carry that lowercase form.
+ * Accept-Language is checked only when no cookie, query, or path locale is
+ * present (first visit). The derived locale is persisted as a cookie.
  *
  * JSON requests are stricter. With no explicit locale (query, path or cookie)
  * they must carry an `Accept-Language` naming a supported locale, or they get
@@ -98,6 +100,7 @@ export function set_locale(locales: readonly string[]): Middleware {
 
 		// Query param overrides everything
 		let final_locale: string;
+		let from_accept_language = false;
 		if (candidate) {
 			final_locale = candidate;
 		} else if (path_locale) {
@@ -105,7 +108,17 @@ export function set_locale(locales: readonly string[]): Middleware {
 		} else if (cookie_locale) {
 			final_locale = cookie_locale;
 		} else {
-			final_locale = default_locale;
+			// No cookie, no query, no localized path - try Accept-Language
+			// before falling back to default. On first visit this derives the
+			// locale from the browser's language preference and persists it.
+			const accept_language = req.headers.get("Accept-Language");
+			const detected = match_accept_language(accept_language, locales);
+			if (detected) {
+				final_locale = detected;
+				from_accept_language = true;
+			} else {
+				final_locale = default_locale;
+			}
 		}
 
 		// --- Inject X-Locale ---
@@ -141,6 +154,12 @@ export function set_locale(locales: readonly string[]): Middleware {
 		} else if (path_locale && cookie_locale && cookie_locale !== path_locale) {
 			// Locale from path differs from cookie - update cookie to match path
 			cookie_to_set = make_locale_cookie(path_locale, secure);
+		} else if (from_accept_language && !cookie_locale && final_locale !== default_locale) {
+			// Accept-Language derived a non-default locale on first visit - persist it
+			cookie_to_set = make_locale_cookie(final_locale, secure);
+		} else if (from_accept_language && cookie_locale && cookie_locale !== final_locale) {
+			// Accept-Language differs from stale cookie - update cookie
+			cookie_to_set = make_locale_cookie(final_locale, secure);
 		}
 
 		if (cookie_to_set) {

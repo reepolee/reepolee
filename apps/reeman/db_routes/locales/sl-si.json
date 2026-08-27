@@ -50,8 +50,8 @@
 		"delete_translations": "Izbriši prevode",
 		"display": "Prikaz",
 		"fields": "Polja",
+		"filter": "Pojem",
 		"folder_name": "Ime mape",
-		"filter": "Filter",
 		"helper": "Predloga pomoči",
 		"index_columns": "Stolpci za indeks",
 		"mode": "Način",
@@ -66,9 +66,9 @@
 		"table": "Tabela / Pot",
 		"table_name": "Ime tabele",
 		"template_tags": "Predloge polj",
-		"url": "Url",
-		"width": "Širina",
-		"where": "Pogoj"
+		"url": "URL",
+		"where": "Pogoj",
+		"width": "Širina"
 	},
 	"messages": {
 		"bulk_delete_failed": "Skupno brisanje ni uspelo.",

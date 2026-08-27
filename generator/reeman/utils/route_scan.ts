@@ -25,6 +25,8 @@ export interface RouteSchema {
 	parent?: string;
 	// Full URL path (e.g. "/system/users")
 	url: string;
+	/** Database table creation timestamp used to exclude bootstrap routes. */
+	created_at?: string | null;
 	/**
 	 * Custom route name when it differs from the DB table name.
 	 * Set when the directory name is different from TABLE_NAME in sql.ts.
@@ -146,6 +148,7 @@ export function discover_routes_with_schema(): RouteSchema[] {
 				table,
 				prefix: "",
 				url: `/${entry}`,
+				created_at: null,
 				route_name,
 			});
 
@@ -188,6 +191,7 @@ export function discover_routes_with_schema(): RouteSchema[] {
 					table: sub_table,
 					prefix: entry,
 					url: `/${entry}/${sub}`,
+					created_at: null,
 					route_name: sub_route,
 				});
 

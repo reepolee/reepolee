@@ -21,7 +21,7 @@
 {/if}
 
 <dialog id="{= dialog_id }" class="p-0 rounded-xl shadow-2xl {= width }">
-	<div class="p-6">
+	<div class="p-6 text-left">
 		<h2 class="text-lg font-semibold">{= title}</h2>
 		{#if message_text}
 			<p class="text-slate-600 mt-2">{= message_text}</p>

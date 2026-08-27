@@ -47,6 +47,7 @@ export interface DdlCachedTable {
 	comment: string;
 	columns: DdlCachedColumn[];
 	indexed_columns: string[];
+	unique_columns?: string[];
 	foreign_keys: DdlCachedForeignKey[];
 	inferred_foreign_keys: DdlCachedForeignKey[];
 	view_foreign_keys: DdlCachedForeignKey[];

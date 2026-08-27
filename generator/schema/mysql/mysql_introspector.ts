@@ -82,6 +82,15 @@ export class MySQLIntrospector implements DbIntrospector {
 				AND TABLE_NAME = ${table.name}
 			`) as RawMySQLColumn[];
 
+			const raw_unique_columns = (await this.db`
+				SELECT DISTINCT s.COLUMN_NAME
+				FROM INFORMATION_SCHEMA.STATISTICS s
+				WHERE s.TABLE_SCHEMA = DATABASE()
+				AND s.TABLE_NAME = ${table.name}
+				AND s.NON_UNIQUE = 0
+			`) as Array<{ COLUMN_NAME: string }>;
+			const unique_columns = raw_unique_columns.map((col) => col.COLUMN_NAME);
+
 			const columns = raw_columns.map((col) => ({
 				name: col.COLUMN_NAME,
 				type_string: col.COLUMN_TYPE,
@@ -89,6 +98,7 @@ export class MySQLIntrospector implements DbIntrospector {
 				is_nullable: col.IS_NULLABLE === "YES",
 				is_primary_key: col.COLUMN_KEY === "PRI",
 				is_auto_increment: col.EXTRA.includes("auto_increment"),
+				is_unique: col.COLUMN_KEY === "UNI" || col.COLUMN_KEY === "PRI",
 				is_generated: col.EXTRA.includes("VIRTUAL GENERATED") || col.EXTRA.includes("STORED GENERATED"),
 			}));
 
@@ -156,6 +166,7 @@ export class MySQLIntrospector implements DbIntrospector {
 				columns,
 				view_columns,
 				foreign_keys,
+				unique_columns,
 				has_view: view_set.has(view_name),
 				primary_key,
 			});

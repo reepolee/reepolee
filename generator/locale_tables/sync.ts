@@ -10,7 +10,7 @@
 
 import type { SQL } from "bun";
 
-import { locale_hash_column, locale_source_column } from "../naming";
+import {} from "../naming";
 import type { SchemaObject } from "../schema/types";
 import { add_column_ddl, create_table_ddl, drop_column_ddl, drop_table_ddl, type DbDialect } from "./ddl";
 import { compare_locale_tables, type ActualTable, type Drift } from "./compare";
@@ -262,10 +262,6 @@ export async function sync_locale_tables(options: SyncOptions): Promise<SyncResu
 	const drift_before = compare_locale_tables({ expected, actual, base_table: base_schema.name });
 	const actions: SyncAction[] = [];
 	const sidecar_names = new Set<string>();
-	for (const field_name of localized_field_names) {
-		sidecar_names.add(locale_source_column(field_name));
-		sidecar_names.add(locale_hash_column(field_name));
-	}
 
 	for (const expected_table of expected) {
 		const actual_table = actual.get(expected_table.name);

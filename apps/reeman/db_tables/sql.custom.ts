@@ -21,8 +21,12 @@ export async function refresh_db_tables(): Promise<DbTableSnapshot[]> {
 
 	const crud_by_table = new Set(discover_existing_crud_tables().map((t) => t.name));
 	const locale_clones = locale_clone_table_names(cache.tables.map((t) => t.name), locales, default_locale);
+	const users_created_at = await get_users_table_created_at();
+	const table_creation_times = await get_table_creation_times();
+	const bootstrap_cutoff = users_created_at ? new Date(users_created_at).getTime() : 0;
 	const rows = cache.tables
 		.filter((t) => !locale_clones.has(t.name) && t.name !== "db_tables" && t.name !== "db_routes")
+		.filter((t) => !bootstrap_cutoff || (table_creation_times.get(t.name.toLowerCase()) !== undefined && new Date(table_creation_times.get(t.name.toLowerCase())!).getTime() > bootstrap_cutoff))
 		.map((t) => {
 			const fk_columns = new Set([
 				...t.foreign_keys.map((fk) => fk.column_name),
@@ -38,6 +42,17 @@ export async function refresh_db_tables(): Promise<DbTableSnapshot[]> {
 		});
 
 	return rows.map((row, index) => ({ ...row, id: index + 1, display: row.name }));
+}
+
+export async function get_users_table_created_at(): Promise<string | null> {
+	const rows = await db.unsafe(`SELECT CREATE_TIME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users'`) as Array<{ CREATE_TIME?: Date | string | null }>;
+	const created_at = rows[0]?.CREATE_TIME;
+	return created_at ? new Date(created_at).toISOString() : null;
+}
+
+async function get_table_creation_times(): Promise<Map<string, string>> {
+	const rows = await db.unsafe(`SELECT TABLE_NAME, CREATE_TIME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()`) as Array<{ TABLE_NAME?: string; CREATE_TIME?: Date | string | null }>;
+	return new Map(rows.filter((row) => row.TABLE_NAME && row.CREATE_TIME).map((row) => [row.TABLE_NAME!.toLowerCase(), new Date(row.CREATE_TIME!).toISOString()]));
 }
 
 export async function get_table_row_count(table_name: string): Promise<number> {

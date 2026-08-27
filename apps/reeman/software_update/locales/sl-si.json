@@ -44,9 +44,9 @@
 		"no_changes": "Ni razlik med izvornim imenikom in tem projektom.",
 		"project_only_hint": "Obstaja samo v tem projektu. Reesync tega nikoli ne izbriše.",
 		"scan_expired": "Ta pregled je potekel. Znova preglej izvorni imenik.",
-		"source_changed": "Izvor vsebuje novejši commit od tega pregleda. Pred pregledom znova preglej imenik.",
 		"software_update_description": "Selektivno prevzemanje izvornih datotek: primerjaj vsako drugačno datoteko z lokalnim izvornim izvodom, nato prekopiraj v projekt samo izbrane datoteke.",
 		"software_update_never_deletes": "Datoteke, ki obstajajo samo v projektu, so informativne in se nikoli ne izbrišejo.",
-		"software_update_title": "Posodobitev programske opreme"
+		"software_update_title": "Posodobitev programske opreme",
+		"source_changed": "Izvor vsebuje novejši commit od tega pregleda. Pred pregledom znova preglej imenik."
 	}
 }

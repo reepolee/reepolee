@@ -6,7 +6,7 @@ import { render } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
 
 import { search_records } from "./sql";
-import { get_route_record_by_url } from "./sql.custom";
+import { get_route_record_by_url, refresh_db_routes } from "./sql.custom";
 
 import { wants_json } from "$lib/wants_json";
 import { strip_api_sensitive } from "$config/api_blocklist";
@@ -68,7 +68,10 @@ export async function get_db_routes_index(req: BunRequest): Promise<Response> {
 	const { labels } = ctx.translations;
 	const filter_definitions = enrich_filter_definitions(raw_filter_definitions, labels, filters, filter_not, {});
 
+	const all_records = (await refresh_db_routes()).filter((record) => record.table_name !== "users");
 	const result = await search_records(query, offset, limit_numeric, order_by, "", filter_clauses);
+	result.records = result.records.filter((record) => all_records.some((allowed) => allowed.url === record.url));
+	result.total = result.records.length;
 
 	if (wants_json(req)) {
 		if (!Bun.argv.includes("--dev")) return Response.json({ error: "not found" }, { status: 404 });

@@ -80,9 +80,9 @@
 	"selectors": {
 		"all": "All",
 		"all_filters": "All filters",
-		"user_filters": "User-created filters",
 		"no_module": "-- Without module (root) --",
-		"select_table": "-- Select table --"
+		"select_table": "-- Select table --",
+		"user_filters": "User-created filters"
 	},
 	"ui": {
 		"no_records": "No global scopes found.",

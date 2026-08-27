@@ -80,9 +80,9 @@
 	"selectors": {
 		"all": "Vsi",
 		"all_filters": "Vsi filtri",
-		"user_filters": "Uporabniški filtri",
 		"no_module": "-- Brez modula (koren) --",
-		"select_table": "-- Izberite tabelo --"
+		"select_table": "-- Izberite tabelo --",
+		"user_filters": "Uporabniški filtri"
 	},
 	"ui": {
 		"no_records": "Ni najdenih globalnih filtrov.",

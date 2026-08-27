@@ -131,12 +131,12 @@
 	},
 	"ui": {
 		"app_switcher": "Apps",
+		"apply_filters": "Apply filters",
 		"apps": {
 			"main": "Main",
 			"reeman": "Reeman",
 			"reeqa": "ReeQA"
 		},
-		"apply_filters": "Apply filters",
 		"auto_complete_no_results": "No results found",
 		"busy_poller_translating": "{count} translation job(s) running - translations appear when they finish.",
 		"clear_all": "Clear all",
@@ -187,7 +187,7 @@
 		"page_not_found_description": "Sorry, we can't display this page",
 		"records": "record(s)",
 		"show_actions": "Show actions",
-		"show_more": "Show more",
-		"show_less": "Show less"
+		"show_less": "Show less",
+		"show_more": "Show more"
 	}
 }

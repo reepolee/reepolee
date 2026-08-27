@@ -180,15 +180,11 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 	// costs one no-op call. Mirrors Phase 9 of generate_crud() - refresh is a
 	// separate return path that would otherwise skip it entirely.
 	log_step(`Syncing locale tables for ${table_name}`);
-	try {
-		const { format_sync_actions, run_locale_table_sync } = await import("../locale_tables/run");
-		const { results } = await run_locale_table_sync({ table: table_name });
-		for (const result of results) {
-			for (const description of format_sync_actions(result.actions)) console.log(`  ${description}`);
-		}
-	} catch (error) {
-		console.error("Error syncing locale tables:", error instanceof Error ? error.message : error);
-	}
+	const { format_sync_actions, run_locale_table_sync } = await import("../locale_tables/run");
+	const { results } = await run_locale_table_sync({ table: table_name });
+	const result = results.find((entry) => entry.base_table === table_name);
+	if (!result) throw new Error(`Locale table sync did not process localized table "${table_name}"`);
+	for (const description of format_sync_actions(result.actions)) console.log(`  ${description}`);
 
 	log_step(`Field refresh finished for ${table_name}`);
 	return true;

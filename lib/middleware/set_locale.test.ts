@@ -55,7 +55,7 @@ describe("set_locale middleware", () => {
 		expect(cookie).toContain("locale=sl-si");
 	});
 
-	test("defaults to default_locale when no param", async () => {
+	test("defaults to default_locale when no param and no Accept-Language", async () => {
 		const mw = set_locale(ALL);
 		const req = make_req();
 		let captured_req: any;
@@ -267,9 +267,9 @@ describe("set_locale Accept-Language (JSON requests)", () => {
 		expect(locale).toBe("sl-si");
 	});
 
-	test("ignored for ordinary page requests", async () => {
+	test("honoured for ordinary page requests without cookie", async () => {
 		const { locale } = await run({ "accept": "text/html", "accept-language": "sl-si" });
-		expect(locale).toBe("en-us");
+		expect(locale).toBe("sl-si");
 	});
 
 	test("weighted list picks the highest-quality allowed locale", async () => {
@@ -326,5 +326,117 @@ describe("set_locale Accept-Language (JSON requests)", () => {
 	test("inbound X-Locale is rejected, not honoured", async () => {
 		const { res } = await run({ "accept": "application/json", "x-locale": "sl-si" });
 		expect(res.status).toBe(400);
+	});
+});
+
+// Accept-Language on first-visit page requests: when there is no cookie,
+// no query param, and no localized path, the browser's Accept-Language
+// should be used to derive the locale and set a cookie.
+describe("set_locale Accept-Language (page requests - first visit)", () => {
+	test("derives locale from Accept-Language on first visit", async () => {
+		const mw = set_locale(ALL);
+		const req = make_req({ url: "http://localhost/", headers: { "accept-language": "sl-si" } });
+		let captured_req: any;
+		const next = async (r: any) => {
+			captured_req = r;
+			return new Response("OK");
+		};
+
+		const res = await mw(req, next);
+
+		expect(captured_req.headers.get("x-locale")).toBe("sl-si");
+		const cookie = res.headers.get("set-cookie");
+		expect(cookie).toContain("locale=sl-si");
+	});
+
+	test("cookie takes precedence over Accept-Language", async () => {
+		const mw = set_locale(ALL);
+		const req = make_req({ url: "http://localhost/", headers: { "cookie": "locale=en-us", "accept-language": "sl-si" } });
+		let captured_req: any;
+		const next = async (r: any) => {
+			captured_req = r;
+			return new Response("OK");
+		};
+
+		await mw(req, next);
+
+		expect(captured_req.headers.get("x-locale")).toBe("en-us");
+	});
+
+	test("query param takes precedence over Accept-Language", async () => {
+		const mw = set_locale(ALL);
+		const req = make_req({ url: "http://localhost/?locale=fr-fr", headers: { "accept-language": "sl-si" } });
+		let captured_req: any;
+		const next = async (r: any) => {
+			captured_req = r;
+			return new Response("OK");
+		};
+
+		await mw(req, next);
+
+		expect(captured_req.headers.get("x-locale")).toBe("fr-fr");
+	});
+
+	test("falls back to default when Accept-Language has no match", async () => {
+		const mw = set_locale(ALL);
+		const req = make_req({ url: "http://localhost/", headers: { "accept-language": "ja-jp" } });
+		let captured_req: any;
+		const next = async (r: any) => {
+			captured_req = r;
+			return new Response("OK");
+		};
+
+		await mw(req, next);
+
+		expect(captured_req.headers.get("x-locale")).toBe("en-us");
+	});
+
+	test("weighted list picks highest-quality allowed locale", async () => {
+		const mw = set_locale(ALL);
+		const req = make_req({ url: "http://localhost/", headers: { "accept-language": "de-de,sl-si;q=0.9,en-us;q=0.8" } });
+		let captured_req: any;
+		const next = async (r: any) => {
+			captured_req = r;
+			return new Response("OK");
+		};
+
+		await mw(req, next);
+
+		expect(captured_req.headers.get("x-locale")).toBe("sl-si");
+	});
+
+	test("sets cookie when Accept-Language differs from default", async () => {
+		const mw = set_locale(ALL);
+		const req = make_req({ url: "http://localhost/", headers: { "accept-language": "sl-si" } });
+		const next = async (r: any) => new Response("OK");
+
+		const res = await mw(req, next);
+
+		const cookie = res.headers.get("set-cookie");
+		expect(cookie).toContain("locale=sl-si");
+	});
+
+	test("does not set cookie when Accept-Language matches default", async () => {
+		const mw = set_locale(ALL);
+		const req = make_req({ url: "http://localhost/", headers: { "accept-language": "en-us" } });
+		const next = async (r: any) => new Response("OK");
+
+		const res = await mw(req, next);
+
+		// No cookie set - the default is already in effect
+		const cookie = res.headers.get("set-cookie");
+		expect(cookie).toBeNull();
+	});
+
+	test("does not set cookie when Accept-Language matches existing cookie", async () => {
+		const mw = set_locale(ALL);
+		const req = make_req({ url: "http://localhost/", headers: { "cookie": "locale=sl-si", "accept-language": "sl-si" } });
+		const next = async (r: any) => new Response("OK");
+
+		const res = await mw(req, next);
+
+		// Cookie already matches - no Set-Cookie needed
+		const cookie = res.headers.get("set-cookie");
+		expect(cookie).toBeNull();
 	});
 });

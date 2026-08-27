@@ -50,8 +50,8 @@
 		"delete_translations": "Delete translations",
 		"display": "Display",
 		"fields": "Fields",
-		"folder_name": "Folder name",
 		"filter": "Filter",
+		"folder_name": "Folder name",
 		"helper": "Template helper",
 		"index_columns": "Index columns",
 		"mode": "Mode",
@@ -67,8 +67,8 @@
 		"table_name": "Table Name",
 		"template_tags": "Template tags",
 		"url": "Url",
-		"width": "Width",
-		"where": "Where"
+		"where": "Where",
+		"width": "Width"
 	},
 	"messages": {
 		"bulk_delete_failed": "Bulk delete failed.",

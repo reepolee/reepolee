@@ -292,13 +292,14 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 	const autocomplete_display_options = has_autocomplete ? "\tautocomplete_display_values," : "";
 
 	const localization_import = localized
-		? `import { enqueue } from "$queue/index";\nimport { copy_localized_values, generate_localized_values, get_locale_rows, stale_copy_notices } from "$lib/localized_copy";\nimport { build_localization_props, localized_input_form_state, parse_copy_request, parse_generate_request, parse_localized_form, validate_localized_inputs } from "$lib/localized_form";\nimport { locales } from "$config/supported_locales";\nimport { invalidate_all_locales, save_locale_values } from "$lib/locale_write";\n`
+		? `import { enqueue } from "$queue/index";\nimport { copy_localized_values, generate_localized_values, get_locale_rows } from "$lib/localized_copy";\nimport { build_localization_props, localized_input_form_state, parse_copy_request, parse_generate_request, parse_localized_form, validate_localized_inputs } from "$lib/localized_form";\nimport { locales } from "$config/supported_locales";\nimport { invalidate_all_locales, save_locale_values } from "$lib/locale_write";\n`
 		: "";
 	// The CSS-only tab switcher pre-selects whichever locale tab the visitor
 	// last used, read from a plain cookie - no JS is needed to restore it.
 	const preferred_locale_arg = localized ? `, preferred_locale: get_cookie(req, "preferred_locale") ?? undefined` : "";
 	const localization_config = localized
-		? `\nconst LOCALIZED_FIELDS = ${JSON.stringify(localized_fields.map((f) => ({ field_name: f.field_name, label: f.label, input_type: f.input_type, upload_folder: f.upload_folder })))} as const;\nconst LOCALIZED_FIELD_NAMES = LOCALIZED_FIELDS.map((field) => field.field_name);\n`
+		? `\nconst LOCALIZED_FIELDS = ${JSON.stringify(localized_fields.map((f) => ({ field_name: f.field_name, label: f.label, input_type: f.input_type, upload_folder: f.upload_folder })))} as const;\nconst LOCALIZED_FIELD_NAMES = LOCALIZED_FIELDS.map((field) => field.field_name);
+const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !localized_fields.some((localized_field) => localized_field.field_name === field.name)).map((field) => field.name))} as readonly string[];\n`
 		: "";
 	// Translations are validated against the same Zod rules as the source field.
 	const validation_schema_import = localized ? ", schema" : "";
@@ -307,13 +308,16 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 	// every other locale separately via locale_rows. Passing ctx.locale here
 	// would fetch the *visitor's* UI-locale row instead, so browsing the editor
 	// in a non-default locale would show that locale's text in both tabs.
+	// The localization editor must always receive the base/default-locale row.
+	// Non-default values are loaded separately into locale_rows; passing
+	// ctx.locale here makes the selected UI locale appear as the Original tab.
 	const read_locale_arg = "";
 	// entity_path() points at the edit page (/products/1/edit); the copy route
 	// hangs off the record itself, so build it from base_path().
 	const copy_action_expr = `\`\${base_path()}/\${record.${route_param_value}}/copy-locale\``;
 
 	const load_localization = localized
-		? `const locale_rows = await get_locale_rows(TABLE_NAME, Number(record.id), locales);\n\tconst notices = stale_copy_notices(record, locale_rows, LOCALIZED_FIELD_NAMES);\n\tconst localization = build_localization_props({ fields: LOCALIZED_FIELDS, record, locale_rows, notices, copy_action: ${copy_action_expr}${preferred_locale_arg} });`
+		? `const locale_rows = await get_locale_rows(TABLE_NAME, Number(record.id), locales);\n\tconst localization = build_localization_props({ fields: LOCALIZED_FIELDS, record, locale_rows, copy_action: ${copy_action_expr}${preferred_locale_arg} });`
 		: "";
 	const localization_data = localized ? "localization," : "";
 	const parse_localization = localized
@@ -328,7 +332,7 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 		: "";
 	// Each non-default locale's row takes its own submitted values. Editing a
 	// value by hand clears its provenance - it is no longer a copy.
-	const save_localization = localized ? `await save_locale_values(TABLE_NAME, Number(id), localized_inputs);` : "";
+	const save_localization = localized ? `await save_locale_values(TABLE_NAME, Number(id), localized_inputs, LOCALE_PROTECTED_COLUMNS);` : "";
 	// Save-time failures (e.g. update_record throwing) must still re-render the
 	// full editor - including per-field language controls and panels - rather
 	// than falling back to a bare English-only form. Re-fetch the record fresh
@@ -412,7 +416,7 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 			// would tell fan_out_update the visitor's UI locale is "the edited
 			// locale", writing the base form's fields into that locale's table as
 			// full localized columns and overwriting its real translation.
-			"sql.edit_locale_arg": "",
+			"sql.edit_locale_arg": localized ? ", ctx.locale" : "",
 			"localization.config": localization_config,
 			"edit.load_localization": load_localization,
 			"edit.localization_data": localization_data,
@@ -437,8 +441,8 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 			"import.bun": bun_import,
 			route_param: route_param_value,
 			"route.param_imports": has_custom_route_param ? `import { get_record_by_route_param, ${archive_record_by_route_param_fn} } from "./sql";\n` : "",
-			"edit.get_lookup": has_custom_route_param ? `const ${route_param_value} = req.params.${route_param_value} || "";\n\tconst record = await get_record_by_route_param(${route_param_value}${archive_route_param_include_arg});` : is_auto_increment_pk ? `const id = Number(req.params.id || 0);\n\tconst record = await get_record_by_id(id${read_locale_arg}${archive_include_arg});` : `const id = req.params.id ? String(req.params.id) : "";\n\tconst record = await get_record_by_id(id${read_locale_arg}${archive_include_arg});`,
-			"edit.post_lookup": has_custom_route_param ? `const ${route_param_value} = req.params.${route_param_value} || "";\n\tconst lookup_record = await get_record_by_route_param(${route_param_value}${archive_route_param_include_arg});\n\tconst id = lookup_record?.id || "";` : is_auto_increment_pk ? `const id = Number(req.params.id || 0);` : `const id = req.params.id ? String(req.params.id) : "";`,
+			"edit.get_lookup": has_custom_route_param ? `const ${route_param_value} = req.params.${route_param_value} || "";\n\tconst record = await get_record_by_route_param(${route_param_value}${archive_route_param_include_arg});` : is_auto_increment_pk ? `const id = Number((req.params as Record<string, string> | undefined)?.id || 0);\n\tconst record = await get_record_by_id(id${read_locale_arg}${archive_include_arg});` : `const id = req.params.id ? String(req.params.id) : "";\n\tconst record = await get_record_by_id(id${read_locale_arg}${archive_include_arg});`,
+			"edit.post_lookup": has_custom_route_param ? `const ${route_param_value} = req.params.${route_param_value} || "";\n\tconst lookup_record = await get_record_by_route_param(${route_param_value}${archive_route_param_include_arg});\n\tconst id = lookup_record?.id || "";` : is_auto_increment_pk ? `const id = Number((req.params as Record<string, string> | undefined)?.id || 0);` : `const id = req.params.id ? String(req.params.id) : "";`,
 			"edit.post_delete_call": has_custom_route_param ? `await ${archive_record_by_route_param_fn}(${route_param_value}${archive_delete_arg})` : `await ${archive_record_fn}(id${archive_delete_arg})`,
 			"edit.post_delete_catch_lookup": has_custom_route_param ? `await get_record_by_route_param(${route_param_value})` : `await get_record_by_id(id${read_locale_arg})`,
 			"sql.read_locale_arg": read_locale_arg,

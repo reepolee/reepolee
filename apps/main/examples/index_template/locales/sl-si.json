@@ -5,7 +5,7 @@
 		"method": "Metoda",
 		"owner": "Lastnik",
 		"path": "Pot",
-		"status": "Status"
+		"status": "Stanje"
 	},
 	"nav": "Predloga indeksa",
 	"route_name": "predloga-indeksa"

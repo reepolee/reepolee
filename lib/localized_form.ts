@@ -13,7 +13,6 @@
  */
 
 import { default_locale, locale_names, locales } from "$config/supported_locales";
-import { stale_copy_map, type StaleCopyNotice } from "$lib/localized_copy";
 
 /** A localized field plus the bits the panel component needs to render it. */
 export interface LocalizedFormField {
@@ -50,7 +49,7 @@ export interface BuildLocalizationOptions {
 	/** Overrides the resolved values, e.g. when re-rendering after a failed save. */
 	values?: Record<string, string | number | boolean>;
 	errors?: Record<string, string>;
-	notices?: readonly StaleCopyNotice[];
+	notices?: readonly unknown[];
 	copy_action: string;
 	/** Defaults to copy_action with its last segment swapped, since every
 	 *  generated route follows the same `.../copy-locale` convention. */
@@ -74,7 +73,7 @@ export function localized_input_name(field_name: string, locale_code: string): s
  * own row. A locale with no row yet (a clone created after the record) falls
  * back to the base value, which is what the syncer would have backfilled.
  */
-function resolve_values(
+export function resolve_localized_values(
 	fields: readonly LocalizedFormField[],
 	record: Record<string, any>,
 	locale_rows: Record<string, Record<string, any>>,
@@ -98,9 +97,9 @@ export function build_localization_props(options: BuildLocalizationOptions): Loc
 	const { fields, record, locale_rows = {}, errors = {}, notices = [], copy_action } = options;
 	const generate_action = options.generate_action ?? copy_action.replace(/\/copy-locale$/, "/generate-locale");
 
-	const resolved_values = resolve_values(fields, record, locale_rows);
+	const resolved_values = resolve_localized_values(fields, record, locale_rows);
 	const values = { ...resolved_values, ...(options.values ?? {}) };
-	const stale = stale_copy_map(notices);
+	const stale: Record<string, string> = {};
 
 	// The panel component wants presentation names, not storage ones.
 	const panel_fields = fields.map((field) => ({

@@ -272,7 +272,7 @@ export async function load_table_schema(table_name: string, options: {
 	// No column_names guard: it existed for build_localized_sql_source, which
 	// needed the full column list to build a COALESCE overlay. Locale-suffixed
 	// tables query one physical table directly, so the list is not needed.
-	const { localization_enabled, localized_fields } = read_localization(table_name, columns, fields, is_auto_increment_pk);
+	const { localization_enabled, localized_fields } = read_localization(table_name, columns, fields, foreign_keys, is_auto_increment_pk);
 	const id_type = is_auto_increment_pk ? "number" : "number | string";
 	const id_type_interface = is_auto_increment_pk ? "number" : "string";
 	let route_param_value = route_param || "id";
@@ -361,6 +361,7 @@ function read_localization(
 	table_name: string,
 	columns: Record<string, ColumnDef> | null,
 	fields: FieldDef[],
+	foreign_keys: ForeignKeyMap,
 	is_auto_increment_pk: boolean,
 ): { localization_enabled: boolean; localized_fields: LocalizedFieldMeta[]; } {
 	const fields_by_name = new Map(fields.map((field) => [field.name, field]));
@@ -377,6 +378,8 @@ function read_localization(
 		if ((LOCALIZATION_SYSTEM_FIELDS as readonly string[]).includes(field_name)) throw new Error(`System field ${table_name}.${field_name} cannot be localized`);
 		const field = fields_by_name.get(field_name);
 		if (!field) throw new Error(`Localized field ${table_name}.${field_name} must be a base-table field`);
+		if (field.attributes?.domain_type === "code") throw new Error(`Identifier field ${table_name}.${field_name} cannot be localized`);
+		if (foreign_keys.has(field_name)) throw new Error(`Foreign-key field ${table_name}.${field_name} cannot be localized`);
 		if (UNLOCALIZABLE_TYPES.includes(field.type)) throw new Error(`Field type ${field.type} is not supported for localized field ${table_name}.${field_name}`);
 
 		localized_fields.push({

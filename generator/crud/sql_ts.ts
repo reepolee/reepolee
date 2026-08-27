@@ -157,6 +157,11 @@ export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 	const locale_arg = localized ? ", locale_code" : "";
 	const cache_key_locale = localized ? ", locale_code" : "";
 	const localized_column_names = localized_fields.map((field) => field.field_name);
+	// Locale sidecars only own localized content. Every other column remains
+	// base-owned and is never writable through a locale form.
+	const locale_protected_columns = fields
+		.filter((field) => !localized_column_names.includes(field.name))
+		.map((field) => field.name);
 	const localized_import = localized
 		? `import { all_locale_tables, locale_table } from "$lib/locale_tables";\nimport { fan_out_create, fan_out_delete, fan_out_update, invalidate_all_locales } from "$lib/locale_write";\n`
 		: "";

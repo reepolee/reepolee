@@ -273,6 +273,7 @@ async function introspect_database(): Promise<DdlCacheData> {
 				view_name,
 				view_columns,
 				view_definition: view_sql,
+				unique_columns: schema.unique_columns,
 				primary_key: schema.primary_key,
 			});
 		}
@@ -347,6 +348,7 @@ export function ddl_cache_to_schema_objects(cache: DdlCacheData): { all_schemas:
 			columns,
 			view_columns: view_columns && view_columns.length > 0 ? view_columns : undefined,
 			foreign_keys,
+			unique_columns: table.unique_columns,
 			has_view: table.has_view,
 			primary_key: table.primary_key,
 		});

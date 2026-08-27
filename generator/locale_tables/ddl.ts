@@ -55,6 +55,8 @@ export function create_table_ddl(table: ExpectedTable, dialect: DbDialect, gener
 	const column_lines = concrete_columns.map((column) => `\t${column_ddl(column, dialect)}`);
 	const generated_lines = generated_column_lines.map((line) => `\t${line}`);
 
+	// Locale sidecars deliberately do not emit foreign keys. Keep this generic
+	// for callers that may provide them, but expected locale tables provide none.
 	const fk_lines = table.foreign_keys.map((fk) => {
 		const column = quote_identifier(fk.column_name, dialect);
 		const target_table = quote_identifier(fk.referenced_table, dialect);

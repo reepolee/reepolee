@@ -261,10 +261,24 @@ function build_column_lines(
 		all_tables_indexes
 	);
 
+	const unique_field_names = new Set([
+		...(schema_obj.unique_columns ?? []),
+		...schema_obj.columns.filter((column) => column.is_primary_key || column.is_unique === true).map((column) => column.name),
+	].map((name) => name.toLowerCase()));
+	const foreign_key_field_names = new Set(
+		source_fields
+			.filter((field) => field.type === "foreign_key")
+			.map((field) => field.name.toLowerCase()),
+	);
+
 	function is_localizable_string(f: FormFieldDef): boolean {
 		return (
 			(LOCALIZABLE_STRING_TYPES as readonly string[]).includes(f.type) &&
 			!(LOCALIZATION_SYSTEM_FIELDS as readonly string[]).includes(f.name) &&
+			// Unique and foreign-key fields identify or relate records; they are
+			// shared metadata and must never be written to locale sidecars.
+			!unique_field_names.has(f.name.toLowerCase()) &&
+			!foreign_key_field_names.has(f.name.toLowerCase()) &&
 			base_table_field_names.has(f.name)
 		);
 	}

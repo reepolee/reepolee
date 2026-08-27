@@ -112,6 +112,7 @@ export class SQLiteIntrospector implements DbIntrospector {
 				is_nullable: col.notnull === 0,
 				is_primary_key: col.pk > 0,
 				is_auto_increment: col.pk > 0,
+				is_unique: col.pk > 0,
 				is_generated: col.hidden > 0,
 			}));
 
@@ -131,6 +132,14 @@ export class SQLiteIntrospector implements DbIntrospector {
 				: undefined;
 
 			const raw_foreign_keys = (await this.db.unsafe(`PRAGMA foreign_key_list(${table_name})`)) as RawSQLiteForeignKey[];
+
+			const unique_columns = new Set<string>();
+			for (const index of (await this.db.unsafe(`PRAGMA index_list(${table_name})`)) as any[]) {
+				if (index.unique !== 1 && String(index.origin || "") !== "pk") continue;
+				for (const info of (await this.db.unsafe(`PRAGMA index_info(${index.name})`)) as any[]) {
+					if (info.name) unique_columns.add(String(info.name));
+				}
+			}
 
 			const foreign_keys: ForeignKeyDef[] = raw_foreign_keys.map((fk) => ({
 				constraint_name: `fk_${table_name}_${fk.from}`,
@@ -174,6 +183,7 @@ export class SQLiteIntrospector implements DbIntrospector {
 				columns,
 				view_columns,
 				foreign_keys,
+				unique_columns: [...unique_columns],
 				has_view,
 				primary_key,
 			});

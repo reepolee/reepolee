@@ -17,6 +17,7 @@
  *   printf 'SELECT 1;' | bun run sql
  *   printf 'UPDATE users SET name = "x" WHERE id = 1;' | bun run sql --allow-changes
  *   bun run sql path/to/file.sql --allow-changes --limit=50
+ *   bun run sql --test "SELECT * FROM metrics"
  *
  * Read-only by default: only a single SELECT per statement is allowed and
  * returned records are capped. Pass --allow-changes to permit write
@@ -24,6 +25,7 @@
  *
  * Flags:
  *   --allow-changes  Permit writes/DDL (default: read-only)
+ *   --test           Use TEST_CONNECTION_STRING
  *   --limit=N        Cap returned records per statement (default 100, max 1000)
  *
  * Options may appear before or after the file path.
@@ -33,14 +35,24 @@
  */
 
 // Route the DB startup banner (config/db.ts) to stderr so stdout carries only
-// the JSON result - same mechanism scripts/mcp/start.ts uses for the MCP.
-Bun.env.MCP_STDIO = "true";
+// the JSON result - same mechanism scripts/mcp/start.ts uses for the MCP.Bun.env.MCP_STDIO = "true";
+
+const use_test_connection = process.argv.includes("--test");
+const selected_connection = use_test_connection
+	? Bun.env.TEST_CONNECTION_STRING
+	: Bun.env.DEV_CONNECTION_STRING;
+if (!selected_connection) {
+	console.error(`✗ Missing ${use_test_connection ? "TEST_CONNECTION_STRING" : "DEV_CONNECTION_STRING"}`);
+	process.exit(1);
+}
 
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
-const { close_db } = await import("$config/db");
-const { db_type } = await import("$lib/resolve_db_type");
+const { SQL } = await import("bun");
+const sql_connection = new SQL(selected_connection);
+const db_type: "mysql" | "sqlite" = selected_connection.toLowerCase().startsWith("mysql:") ? "mysql" : "sqlite";
+const close_db = async () => { await sql_connection.close(); };
 const { normalize_query_limit, run_sql, run_sql_read_only, split_sql_statements } = await import("$lib/sql_runner");
 import type { ReadOnlySqlRunnerResult, SqlRunnerResult } from "$lib/sql_runner";
 
@@ -116,8 +128,8 @@ try {
 	for (const statement of statements) {
 		try {
 			const result = allow_changes
-				? cap_records(await run_sql(statement), limit)
-				: await run_sql_read_only(statement, undefined, limit);
+				? cap_records(await run_sql(statement, sql_connection), limit)
+				: await run_sql_read_only(statement, sql_connection, limit);
 			results.push({ statement, meta: result.meta, records: result.records, truncated: result.truncated });
 		} catch (error) {
 			failed += 1;

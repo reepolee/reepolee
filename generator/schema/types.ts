@@ -5,6 +5,7 @@ export interface ColumnDef {
 	is_nullable: boolean;
 	is_primary_key: boolean;
 	is_auto_increment: boolean;
+	is_unique?: boolean;
 	is_generated?: boolean;
 }
 
@@ -67,6 +68,8 @@ export interface SchemaObject {
 	columns: ColumnDef[];
 	view_columns?: ColumnDef[];
 	foreign_keys: ForeignKeyDef[];
+	/** Column names that participate in UNIQUE/PRIMARY indexes (including composite indexes). */
+	unique_columns?: string[];
 	has_view: boolean;
 	parent?: ParentInfo;
 	primary_key?: PrimaryKeyInfo;
