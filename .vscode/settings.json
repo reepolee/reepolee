@@ -1,0 +1,76 @@
+{
+"git.openDiffOnClick": false,
+	"workbench.colorCustomizations": {
+		"titleBar.activeBackground": "#272822",
+		"titleBar.activeForeground": "#ffffff",
+		"titleBar.inactiveBackground": "#272822",
+		"titleBar.inactiveForeground": "#ffff00",
+	},
+	"[html]": {
+		"editor.defaultFormatter": "vscode.html-language-features"
+	},
+	"[ree]": {
+		"editor.defaultFormatter": "reepolee.ree-templates",
+		"editor.formatOnSave": true
+	},
+	"[typescript]": {
+		"editor.formatOnSave": false
+	},
+	"[javascript]": {
+		"editor.formatOnSave": false
+	},
+	"scm.defaultViewMode": "tree",
+	"terminal.integrated.cwd": "${workspaceFolder}",
+	"diffEditor.wordWrap": "off",
+	"search.exclude": {
+		"**/*.test.ts": true,
+		"**/*.spec.ts": true
+	},
+	"files.associations": {
+		"*.ree": "ree",
+		"*.css": "tailwindcss"
+	},
+	"tailwindCSS.includeLanguages": {
+		"ree": "html"
+	},
+	"vsicons.associations.files": [
+		{
+			"icon": "ree",
+			"extensions": [
+				"ree"
+			],
+			"format": "svg"
+		}
+	],
+	"vsicons.associations.folders": [
+		{
+			"icon": "ree",
+			"extensions": [
+				"ree-templates"
+			],
+			"format": "svg"
+		}
+	],
+	"emeraldwalk.runonsave": {
+		"commands": [
+			{
+				"match": "\\.(sql)$",
+				"cmd": "cd \"${workspaceFolder}\" && reesql \"${file}\""
+			},
+			{
+				"match": "\\.(js|ts)$",
+				"cmd": "cd \"${workspaceFolder}\" && reettier \"${file}\""
+			}
+		]
+	},
+	"files.exclude": {
+		"**/*.test.ts": true,
+		"**/*.spec.ts": true,
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true,
+		"**/Thumbs.db": true
+	},
+}

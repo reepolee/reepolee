@@ -1,0 +1,47 @@
+{
+	"actions": {
+		"add_group": "Dodaj skupino",
+		"add_namespace": "Dodaj imenski prostor",
+		"bulk_action": "Izbriši izbrano",
+		"close": "Zapri",
+		"create": "Ustvari",
+		"delete": "Izbriši ključ",
+		"delete_namespace": "Izbriši imenski prostor",
+		"do_it": "Izbriši",
+		"edit": "Uredi",
+		"save": "Shrani spremembe",
+		"save_close": "Shrani in zapri"
+	},
+	"messages": {
+		"delete_namespace_confirm": "Vsi prevodi v \"{namespace}\" bodo trajno izbrisani.",
+		"no_groups": "Ni najdenih skupin prevodov.",
+		"record_updated": "Prevodi posodobljeni",
+		"select_templates": "Neobvezno prednapolni s pogostimi ključi:",
+		"shadowed_files_intro": "Te prevajalske datoteke so prezrte — aplikacijsko drevo z višjo prednostjo že ima prevod za isti imenski prostor:",
+		"shadowed_files_superseded_by": "nadomešča jo",
+		"shadowed_files_title": "Neupoštevane prevajalske datoteke"
+	},
+	"nav": "Prevodi",
+	"route_name": "prevodi",
+	"search": {
+		"search_term": "Išči prevode...",
+		"submit": "Filtriraj"
+	},
+	"selectors": {
+		"all": "-- Vsi --",
+		"per_page": "na stran"
+	},
+	"ui": {
+		"bulk_delete_warning": "S tem boste trajno izbrisali",
+		"bulk_delete_warning_suffix": "skupin(o) ključev - vključno z vsemi gnezdenimi ključi in vsemi jeziki.",
+		"filter_label": "Filtriraj po imenskem prostoru",
+		"global_label": "(globalno)",
+		"group_label": "Skupina",
+		"key_label": "Ključ",
+		"keys_label": "Ključi",
+		"languages_label": "Jeziki",
+		"namespace_label": "Imenski prostor",
+		"no_records": "Ni najdenih prevodov.",
+		"title": "Prevodi"
+	}
+}

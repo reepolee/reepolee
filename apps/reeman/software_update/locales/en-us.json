@@ -1,0 +1,52 @@
+{
+	"actions": {
+		"apply": "Apply",
+		"cancel": "Cancel",
+		"do_it": "Do it",
+		"hide_ignored": "Hide ignored files",
+		"ignore": "Ignore",
+		"ignore_selected": "Ignore selected",
+		"scan": "Scan",
+		"select_all": "Select all",
+		"select_folder": "Select folder...",
+		"show_not_ignored": "Show only diffed files",
+		"unignore": "Unignore",
+		"view_diff": "View diff"
+	},
+	"errors": {
+		"source_contains_project": "The upstream source cannot be a parent directory of this project.",
+		"source_empty": "Enter an upstream directory to scan.",
+		"source_equals_project": "The upstream source cannot be this project itself.",
+		"source_nested_in_project": "The upstream source cannot be inside this project.",
+		"source_not_directory": "That path exists but is not a directory.",
+		"source_not_found": "That directory could not be found.",
+		"source_not_sibling": "Choose an upstream directory next to this project."
+	},
+	"labels": {
+		"files": "files",
+		"ignored": "Ignored",
+		"latest_commit": "Latest commit",
+		"modified": "Modified",
+		"new": "New",
+		"project": "Project",
+		"project_only": "Project only",
+		"selected": "Selected",
+		"source_dir": "Upstream source directory",
+		"upstream": "Upstream"
+	},
+	"nav": "Software Update",
+	"ui": {
+		"confirm_apply_hint": "This copies the selected files from the upstream source into this project, overwriting local content for modified files.",
+		"confirm_ignore_hint": "This adds the selected files to the ignore list. They will be dimmed and unchecked in future scans.",
+		"ignored_by_pattern": "Ignored by pattern",
+		"ignored_exact": "Ignored",
+		"loading": "Loading…",
+		"no_changes": "No differing files between the upstream source and this project.",
+		"project_only_hint": "Exists only in this project. Never deleted by Reesync.",
+		"scan_expired": "That scan has expired. Scan the source directory again.",
+		"software_update_description": "Selective upstream adoption: review every differing file against a local upstream checkout, then copy only the files you choose into this project.",
+		"software_update_never_deletes": "Project-only files are informational and are never deleted.",
+		"software_update_title": "Software Update",
+		"source_changed": "The upstream has a newer commit than this scan. Rescan before reviewing files."
+	}
+}
