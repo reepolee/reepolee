@@ -20,36 +20,65 @@
 			<app-banner type="yellow">{_ ui.source_changed}</app-banner>
 		{/if}
 
-		<form method="POST" action="{~ localized_path('/software-update/scan') }" class="flex flex-wrap items-end gap-3 rounded-md border border-border bg-surface-raised p-4">
+		{#if snapshot }
+			<app-banner type="green">
+				{_ ui.scan_complete}: {= props.summary?.new_count ?? 0 } {_ labels.new}, {= props.summary?.modified_count ?? 0 } {_ labels.modified}, {= props.summary?.project_only_count ?? 0 } {_ labels.project_only}.
+			</app-banner>
+		{/if}
+
+		<form id="software_update_scan_form" method="POST" action="{~ localized_path('/software-update/scan') }" class="flex flex-wrap items-end gap-3 rounded-md border border-border bg-surface-raised p-4">
 			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
-			<button type="submit" class="button primary">{_ actions.scan}</button>
+			<button id="software_update_scan_button" type="submit" class="button primary">{_ actions.scan}</button>
 			<field-wrapper class="grid w-auto max-w-full" data-field="source_dir">
 				<div class="grid">
 					<label class="px-3" for="source-dir-select">{_ labels.source_dir}</label>
 					<div class="flex gap-2">
-						<select id="source-dir-select" name="source_dir" class="w-auto max-w-full" required>
+						<select id="source-dir-select" name="source_dir" class="w-auto max-w-full" data-last-source="{= last_source }" required>
 							<option value="">{_ actions.select_folder}</option>
 						</select>
 					</div>
 					<validation-error class="mt-1" id="error-source_dir"></validation-error>
 				</div>
 			</field-wrapper>
+			<app-banner id="software_update_scan_status" type="yellow" class="w-full" hidden aria-live="polite">
+				{_ ui.scanning}
+			</app-banner>
 		</form>
 		<script>
+			(() => {
+				const scan_form = document.getElementById("software_update_scan_form");
+				const scan_button = document.getElementById("software_update_scan_button");
+				const scan_status = document.getElementById("software_update_scan_status");
+				if (!scan_form || !scan_button || !scan_status) return;
+
+				scan_form.addEventListener("submit", () => {
+					scan_button.disabled = true;
+					scan_status.hidden = false;
+				});
+			})();
+
 			(async () => {
 				try {
 					const res = await fetch('/software-update/browse');
 					const data = await res.json();
 					const select = document.getElementById('source-dir-select');
+					const last_source = select.dataset.lastSource || '';
+					if (last_source) {
+						const opt = document.createElement('option');
+						opt.value = last_source;
+						opt.textContent = last_source.split(/[\\/]/).pop();
+						opt.selected = true;
+						select.appendChild(opt);
+					}
 					if (data.dirs && data.dirs.length > 0) {
 						for (const dir of data.dirs) {
+							if (last_source === dir) continue;
 							const opt = document.createElement('option');
 							opt.value = dir;
 							opt.textContent = dir.split(/[\\/]/).pop();
-							if ('{= last_source }' === dir) opt.selected = true;
 							select.appendChild(opt);
 						}
-					} else {
+					} else if (!last_source) {
 						select.style.display = 'none';
 					}
 				} catch {
@@ -81,10 +110,10 @@
 			</script>
 
 			<div class="flex flex-wrap items-center gap-2 text-sm">
-				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="new" aria-pressed="false">{_ labels.new}: {= summary.new_count }</button>
-				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="modified" aria-pressed="false">{_ labels.modified}: {= summary.modified_count }</button>
-				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="project-only" aria-pressed="false">{_ labels.project_only}: {= summary.project_only_count }</button>
-				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="ignored" aria-pressed="false">{_ labels.ignored}: {= summary.ignored_count }</button>
+				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="new" aria-pressed="false">{_ labels.new}: {= props.summary?.new_count ?? 0 }</button>
+				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="modified" aria-pressed="false">{_ labels.modified}: {= props.summary?.modified_count ?? 0 }</button>
+				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="project-only" aria-pressed="false">{_ labels.project_only}: {= props.summary?.project_only_count ?? 0 }</button>
+				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="ignored" aria-pressed="false">{_ labels.ignored}: {= props.summary?.ignored_count ?? 0 }</button>
 				<button type="button" class="button tertiary text-xs font-semibold" id="selected_count" data-software-update-filter="selected" aria-pressed="false">{_ labels.selected}: 0</button>
 			</div>
 
@@ -114,15 +143,15 @@
 						<button type="button" id="open_ignore_dialog" commandfor="ignore_dialog" command="show-modal" class="button tertiary" disabled>{_ actions.ignore_selected}</button>
 					</div>
 
-					<div class="space-y-3">
-						{#each groups as group }
-							<details class="rounded-md border border-border bg-surface-raised" data-software-update-group open>
-								<summary class="cursor-pointer px-3 py-2 font-semibold flex items-center gap-2">
+					<div class="space-y-1">
+						{#each props.groups ?? [] as group }
+							<details class="rounded-md bg-surface-raised" data-software-update-group data-tree-node data-tree-folder="{= group.folder }" data-tree-parent="{= group.parent ?? '' }" open>
+								<summary class="cursor-pointer px-3 py-2 font-semibold flex items-center gap-2 hover:bg-neutral-50">
 									<input type="checkbox" data-role="group" data-scope="folder" onclick="event.stopPropagation()" />
 									<span>{= group.folder || "." }</span>
 								</summary>
 
-								<div class="divide-y divide-border">
+								<div class="space-y-1">
 									{#each group.entries as entry }
 										<div class="px-3 py-2 {= entry.ignored ? 'opacity-50' : '' }" data-software-update-entry data-ignored="{= entry.ignored ? 'true' : 'false' }" data-state="{= entry.state }">
 											<div class="flex items-center gap-3 flex-wrap">
@@ -181,6 +210,7 @@
 										</div>
 									{/each}
 								</div>
+								<div data-tree-children class="ml-5 pl-2 space-y-1"></div>
 							</details>
 						{/each}
 					</div>
@@ -237,6 +267,16 @@
 			const showNotIgnored = document.getElementById("show_not_ignored");
 			const hideIgnored = document.getElementById("hide_ignored");
 			let activeFilter = "modified";
+
+			const treeNodes = Array.from(document.querySelectorAll("[data-tree-node]"));
+			const nodeByFolder = new Map(treeNodes.map((node) => [node.dataset.treeFolder, node]));
+			for (const node of treeNodes) {
+				const parent = node.dataset.treeParent;
+				if (!parent) continue;
+				const parentNode = nodeByFolder.get(parent);
+				const children = parentNode?.querySelector(":scope > [data-tree-children]");
+				if (children) children.appendChild(node);
+			}
 
 			function updateIgnoreFilter() {
 				const onlyDiffed = showNotIgnored.checked;

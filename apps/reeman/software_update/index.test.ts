@@ -11,7 +11,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import type { BunRequest } from "bun";
 
-import { get_software_update_browse, get_software_update_diff, post_software_update_apply, post_software_update_ignore, post_software_update_scan, software_update_crud, type Software_update_runtime } from "./index";
+import { get_software_update_browse, get_software_update_diff, group_by_folder, post_software_update_apply, post_software_update_ignore, post_software_update_scan, software_update_crud, type Software_update_runtime } from "./index";
 import { save_snapshot } from "./lib/snapshot";
 import type { ScanSnapshot } from "./lib/types";
 import { diff_directories } from "./lib/diff";
@@ -37,6 +37,26 @@ function make_runtime(base: string): Required<Software_update_runtime> {
 		last_source_file: join(base, "last-source.json"),
 	};
 }
+
+test("groups scan entries into a collapsible directory tree", () => {
+	const entry: ScanSnapshot["entries"][number] = {
+		rel_path: "apps/reeman/software_update/index.ts",
+		state: "modified",
+		source_hash: "source",
+		dest_hash: "dest",
+		source_size: 1,
+		dest_size: 1,
+		commit_info: null,
+		ignored: false,
+		ignore_pattern: null,
+		is_exact_ignore: false,
+	};
+
+	const groups = group_by_folder([entry]);
+	expect(groups.map((group) => group.folder)).toEqual(["apps", "apps/reeman", "apps/reeman/software_update"]);
+	expect(groups.find((group) => group.folder === "apps/reeman")?.parent).toBe("apps");
+	expect(groups.find((group) => group.folder === "apps/reeman/software_update")?.entries).toEqual([entry]);
+});
 
 test("registers and serves the upstream folder browser endpoint", async () => {
 	const browse_route = software_update_crud["/software-update/browse"];

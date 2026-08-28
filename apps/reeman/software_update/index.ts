@@ -51,17 +51,37 @@ function summarize(entries: ScanEntry[]): ScanSummary {
 	return { new_count, modified_count, project_only_count, ignored_count, selectable_count };
 }
 
-function group_by_folder(entries: ScanEntry[]): { folder: string; entries: ScanEntry[] }[] {
-	const groups = new Map<string, ScanEntry[]>();
+type Folder_group = {
+	folder: string;
+	parent: string | null;
+	entries: ScanEntry[];
+};
+
+export function group_by_folder(entries: ScanEntry[]): Folder_group[] {
+	const groups = new Map<string, Folder_group>();
+	const ensure_group = (folder: string): Folder_group => {
+		const existing = groups.get(folder);
+		if (existing) return existing;
+		const slash_index = folder.lastIndexOf("/");
+		const parent = slash_index === -1 ? null : folder.slice(0, slash_index);
+		const group = { folder, parent, entries: [] };
+		groups.set(folder, group);
+		return group;
+	};
+
 	for (const entry of entries) {
 		const slash_index = entry.rel_path.lastIndexOf("/");
 		const folder = slash_index === -1 ? "" : entry.rel_path.slice(0, slash_index);
-		if (!groups.has(folder)) groups.set(folder, []);
-		groups.get(folder)!.push(entry);
+		ensure_group(folder).entries.push(entry);
+
+		let parent = folder;
+		while (parent) {
+			ensure_group(parent);
+			const parent_slash_index = parent.lastIndexOf("/");
+			parent = parent_slash_index === -1 ? "" : parent.slice(0, parent_slash_index);
+		}
 	}
-	return [...groups.entries()]
-		.sort(([a], [b]) => a.localeCompare(b))
-		.map(([folder, folder_entries]) => ({ folder, entries: folder_entries }));
+	return [...groups.values()].sort((a, b) => a.folder.localeCompare(b.folder));
 }
 
 function toast_redirect(req: BunRequest, message: string, type: "green" | "red" | "yellow" = "green", target = BASE_PATH): Response {
@@ -92,7 +112,16 @@ export async function get_software_update_page(req: BunRequest, form_error = "",
 
 	if (!snapshot) {
 		return render("index", {
-			data: { form_error: form_error_message, last_source, snapshot: null, source_changed: false, expired: Boolean(scan_id) },
+			data: {
+				form_error: form_error_message,
+				last_source,
+				snapshot: null,
+				scan_id: "",
+				summary: summarize([]),
+				groups: [],
+				source_changed: false,
+				expired: Boolean(scan_id),
+			},
 			ctx,
 		});
 	}
