@@ -1,0 +1,74 @@
+{
+	"actions": {
+		"bulk_action": "Izbriši izbrane prevede",
+		"bulk_action_2": "Kopiraj dejanje 2",
+		"cancel": "Prekliči",
+		"do_it": "Da, izvedi",
+		"new_translation": "Nov preved",
+		"save": "Shrani",
+		"save_close": "Shrani & zapri"
+	},
+	"child_ui": {
+		"actions": "Dejanja",
+		"delete": "Izbriši",
+		"deleting": "Izbrišem…",
+		"edit": "Uredi",
+		"edit_title": "Uredi preved",
+		"empty_text": "Ni najdenih prevedov.",
+		"error_deleting": "Napaka pri brisanju zapisa.",
+		"error_loading": "Napaka pri nalaganju zapisa.",
+		"error_saving": "Napaka pri shranjevanju zapisa.",
+		"new_button": "+ Nov preved",
+		"new_title": "Nov preved"
+	},
+	"errors": {
+		"duplicate_key": "Zapis z tem vrednostom že obstaja.",
+		"error_creating_record": "Se je pri shranjevanju zapisa pojavila napaka.",
+		"key_path_required": "Pot ključa je obvezna.",
+		"locale_required": "Jezik je obvezan.",
+		"must_be_selected": "To polje je obvezno.",
+		"namespace_required": "Ime prostora je obvezno.",
+		"title_required": "Naslov je obvezen.",
+		"translation_required": "Preved je obvezen.",
+		"value_required_or_use_original": "Vnesite prevedeno vrednost ali odstranite to jezik."
+	},
+	"labels": {
+		"display": "Prikaži",
+		"key_path": "Pot ključa",
+		"locale": "Jezik",
+		"namespace": "Ime prostora",
+		"table": "Tabela / Pot",
+		"translation": "Preved"
+	},
+	"messages": {
+		"bulk_delete_failed": "Kopiraj brisanje je spodletelo.",
+		"bulk_delete_no_ids": "Ni izbranih prevedov.",
+		"bulk_deleted": "Ni prevedov izbranih|{count} preveden brisan|{count} prevedov brisan|{count} prevedov brisan|{count} prevedov brisan",
+		"bulk_errors": "|{count} prevedjen pa ješe|{count} prevedov ješe pa ješe|{count} prevedov ješe pa ješe|{count} prevedov ješe pa ješe",
+		"record_created": "Zapis ustvarjen",
+		"record_updated": "Zapis posodobljen"
+	},
+	"nav_prefix_title": "Administracija",
+	"route_name": "prevedi",
+	"search": {
+		"search_term": "Išči prevede...",
+		"submit": "Išči"
+	},
+	"selectors": {
+		"0": "Ne",
+		"1": "Da",
+		"all": "Vsi",
+		"per_page": "na stran",
+		"select_table": "-- Izberite tabelo ali pot --"
+	},
+	"ui": {
+		"apply_filters": "Uporabite",
+		"clear_all": "Počisti vse",
+		"filter_not": "NI",
+		"loading_count": "Nalagam…",
+		"modifying": "Približujete se spremenitvi",
+		"no_records": "Ni najdenih prevedov.",
+		"records": "zapis(ov)",
+		"title": "Preved"
+	}
+}

@@ -1,0 +1,196 @@
+{#layout("dashboard/layout")}
+{#with props}
+	<div class="w-full p-4 space-y-6">
+		<ree-breadcrumbs items="{= breadcrumb_items }"></ree-breadcrumbs>
+		{#if form_error}<app-banner type="red">{= props.form_error }</app-banner>{/if}
+		{#if report}
+			<header data-report-run-id="{= report.id }">
+				<div class="flex flex-wrap items-center gap-2">
+					<h1 class="text-xl font-bold">{= report.project_name }</h1>
+					<span class="pill-layout text-xs font-bold {= report.status_class }">{= report.status_label }</span>
+				</div>
+				<p class="mt-1 text-sm text-text-secondary">{= report.started_display } - {= report.duration_display }</p>
+				<div class="mt-2 flex flex-wrap items-center gap-2 text-sm"><span class="font-semibold">{_ labels.page_set}:</span><span class="pill-layout bg-neutral-200">{= report.page_selection_label }</span>{#if report.capture_size_label}<span class="pill-layout bg-neutral-200">{_ labels.capture_size}: {= report.capture_size_label }</span>{/if}</div>
+				{#if report.status !== 'queued' && report.status !== 'running' && report.status !== 'canceling'}<div class="mt-3 flex flex-wrap gap-2"><confirm-dialog trigger-class="button tertiary text-xs" confirm-class="button danger" form-path="/reports/delete" title="{_ actions.delete}" trigger-text="{_ actions.delete}" message="{_ confirm.delete}" confirm-text="{_ actions.confirm_remove}" cancel-text="{_ actions.cancel}" extra-field-name="run_id" extra-field-value="{= report.id }"></confirm-dialog></div>{/if}
+			</header>
+
+			<section class="grid gap-3 report-status-filters" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr))">
+				<button type="button" class="report-status-filter rounded-md border border-border bg-surface-raised p-4 text-left" data-status="changed"><div class="text-xs font-semibold uppercase text-text-secondary">{_ labels.changed}</div><div class="mt-1 text-2xl font-bold text-warning">{= report.changed_count }</div></button>
+				<button type="button" class="report-status-filter rounded-md border border-border bg-surface-raised p-4 text-left" data-status="new"><div class="text-xs font-semibold uppercase text-text-secondary">{_ labels.new}</div><div class="mt-1 text-2xl font-bold text-primary">{= report.new_count }</div></button>
+				<button type="button" class="report-status-filter rounded-md border border-border bg-surface-raised p-4 text-left" data-status="removed"><div class="text-xs font-semibold uppercase text-text-secondary">{_ labels.removed}</div><div class="mt-1 text-2xl font-bold text-brand">{= report.removed_count }</div></button>
+				<button type="button" class="report-status-filter rounded-md border border-border bg-surface-raised p-4 text-left" data-status="unchanged"><div class="text-xs font-semibold uppercase text-text-secondary">{_ labels.unchanged}</div><div class="mt-1 text-2xl font-bold text-success">{= report.unchanged_count }</div></button>
+			</section>
+			<div class="report-status-filter-active hidden items-center gap-2 text-sm text-text-secondary"><span>{_ ui.filtered_by} <span class="report-status-filter-active-label font-semibold"></span></span><button type="button" class="button tertiary text-xs report-status-filter-reset">{_ actions.show_all}</button></div>
+
+			<section class="space-y-4">
+				{#each report.pages as page}
+					<article class="overflow-hidden rounded-md border border-border bg-surface-raised" data-status="{= page.status }" data-page-id="{= page.id }">
+						<header class="flex flex-wrap items-center gap-2 border-b border-border p-3">
+							<span class="pill-layout text-xs font-bold">{= page.status }</span>
+							{#if page.accepted_at}<span class="pill-layout pill-yes text-xs font-semibold">{_ status.accepted}</span>{/if}
+							<a href="{= page.url }" target="_blank" class="min-w-0 break-all text-sm font-semibold text-brand hover:underline">{= page.url }</a>
+						</header>
+						{#if page.changed_elements && page.changed_elements.length > 0}
+							<div class="border-b border-border px-3 py-2">
+								<div class="text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ labels.changed_elements}</div>
+								<ul class="mt-1 list-none space-y-1">
+									{#each page.changed_elements as element}
+										<li class="m-0 flex flex-wrap items-center gap-2 text-xs">
+											<span class="pill-layout text-xs font-bold {#if element.reason === 'added'}pill-yes{:else}{#if element.reason === 'removed'}bg-brand text-white{:else}bg-warning text-white{/if}{/if}">{#if element.reason === 'added'}{_ labels.added}{:else}{#if element.reason === 'removed'}{_ labels.removed}{:else}{_ labels.changed}{/if}{/if}</span>
+											<code>{= element.tag }{#if element.id}#{= element.id }{/if}</code>
+											{#if element.detail}<span class="text-text-secondary">{= element.detail }</span>{:else}{#if element.text}<span>"{= element.text }"</span>{/if}{/if}
+										</li>
+									{/each}
+								</ul>
+							</div>
+						{/if}
+						{#if page.status === 'changed' || page.status === 'new'}
+							<details class="mx-3 mt-3 rounded-md border border-border p-3 evidence-video {#if !page.video_path}hidden{/if}" open><summary class="cursor-pointer font-semibold">{_ actions.watch_video}</summary><video class="mt-3 h-[60vh] w-auto max-w-full mx-auto rounded-md bg-black" controls preload="auto" {#if page.video_path}src="/reports/asset?path={~ urlencode(page.video_path) }"{/if}></video></details>
+							<div class="mx-3 mt-3 flex flex-wrap items-center gap-2 evidence-notice {#if page.video_path}hidden{/if}">
+								<span class="pill-layout bg-primary text-xs font-semibold text-white evidence-recording {#if page.evidence_status !== 'queued' && page.evidence_status !== 'running'}hidden{/if}">{_ status.evidence_recording}</span>
+								<span class="pill-layout bg-brand text-xs font-semibold text-white evidence-error {#if page.evidence_status !== 'failed'}hidden{/if}">{= page.evidence_error || translations.status.evidence_failed }</span>
+								<form method="post" action="/reports/record-evidence" class="evidence-record-form {#if page.evidence_status === 'queued' || page.evidence_status === 'running'}hidden{/if}"><input type="hidden" name="_csrf_token" value="{= csrf_token }" /><input type="hidden" name="evidence_key" value="{= `${report.id}|${page.id}` }" /><button type="submit" class="button tertiary text-xs">{_ actions.record_evidence}</button></form>
+							</div>
+						{/if}
+						{#if page.status === 'unchanged'}
+							<details class="mx-3 mt-3 rounded-md border border-border p-3 recording-video {#if !page.recording_path}hidden{/if}" open><summary class="cursor-pointer font-semibold">{_ actions.watch_recording}</summary><video class="mt-3 h-[60vh] w-auto max-w-full mx-auto rounded-md bg-black" controls preload="auto" {#if page.recording_path}src="/reports/asset?path={~ urlencode(page.recording_path) }"{/if}></video></details>
+							<div class="mx-3 mt-3 flex flex-wrap items-center gap-2 recording-notice {#if page.recording_path}hidden{/if}">
+								<span class="pill-layout bg-primary text-xs font-semibold text-white recording-recording {#if page.recording_status !== 'queued' && page.recording_status !== 'running'}hidden{/if}">{_ status.recording_recording}</span>
+								<span class="pill-layout bg-brand text-xs font-semibold text-white recording-error {#if page.recording_status !== 'failed'}hidden{/if}">{= page.recording_error || translations.status.recording_failed }</span>
+								<form method="post" action="/reports/record-recording" class="recording-record-form {#if page.recording_status === 'queued' || page.recording_status === 'running'}hidden{/if}"><input type="hidden" name="_csrf_token" value="{= csrf_token }" /><input type="hidden" name="recording_key" value="{= `${report.id}|${page.id}` }" /><button type="submit" class="button tertiary text-xs">{_ actions.record_recording}</button></form>
+							</div>
+							{#if page.recording_path}
+								<div class="mx-3 mt-3 flex flex-wrap items-center gap-2">
+									{#if page.promoted_as}<span class="pill-layout pill-yes text-xs font-semibold">{_ status.promoted} {= page.promoted_as }</span>{/if}
+									<form method="post" action="/reports/promote-recording" class="flex flex-wrap items-center gap-2"><input type="hidden" name="_csrf_token" value="{= csrf_token }" /><input type="hidden" name="promote_key" value="{= `${report.id}|${page.id}` }" /><input type="text" name="filename" placeholder="{_ ui.docs_filename_placeholder}" value="{= page.promoted_as }" class="rounded-md border border-border px-2 py-1 text-xs" required /><button type="submit" class="button tertiary text-xs">{_ actions.promote_to_docs}</button></form>
+								</div>
+							{/if}
+						{/if}
+						{#if page.diff_zoom_path}
+							<div class="grid gap-3 p-3" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr))">
+								<figure><figcaption class="mb-1 text-xs font-semibold uppercase text-text-secondary">{_ labels.baseline} ({_ labels.zoomed})</figcaption><a href="/reports/asset?path={~ urlencode(page.baseline_path) }" target="_blank"><img src="/reports/asset?path={~ urlencode(page.baseline_zoom_path) }" alt="Baseline capture, zoomed to the change" class="w-full rounded border border-border bg-neutral-900" loading="lazy" /></a></figure>
+								<figure><figcaption class="mb-1 text-xs font-semibold uppercase text-text-secondary">{_ labels.current} ({_ labels.zoomed})</figcaption><a href="/reports/asset?path={~ urlencode(page.current_path) }" target="_blank"><img src="/reports/asset?path={~ urlencode(page.current_zoom_path) }" alt="Current capture, zoomed to the change" class="w-full rounded border border-border bg-neutral-900" loading="lazy" /></a></figure>
+								<figure><figcaption class="mb-1 text-xs font-semibold uppercase text-text-secondary">{_ labels.diff} - {#if page.diff_bounds_width}{= page.diff_bounds_width }×{= page.diff_bounds_height } {_ labels.px_changed}{:else}{= page.difference_pixels } {_ labels.pixels_differ}{/if} ({_ labels.zoomed})</figcaption><a href="/reports/asset?path={~ urlencode(page.diff_path) }" target="_blank"><img src="/reports/asset?path={~ urlencode(page.diff_zoom_path) }" alt="Visual difference, zoomed to the change" class="w-full rounded border border-border bg-white" loading="lazy" /></a></figure>
+							</div>
+							<details class="mx-3 mb-3 rounded-md border border-border p-3"><summary class="cursor-pointer font-semibold">{_ actions.view_full_page}</summary>
+								<div class="mt-3 grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr))">
+									<figure><figcaption class="mb-1 text-xs font-semibold uppercase text-text-secondary">{_ labels.baseline}</figcaption><a href="/reports/asset?path={~ urlencode(page.baseline_path) }" target="_blank"><img src="/reports/asset?path={~ urlencode(page.baseline_path) }" alt="Baseline capture" class="w-full rounded border border-border bg-neutral-900" loading="lazy" /></a></figure>
+									<figure><figcaption class="mb-1 text-xs font-semibold uppercase text-text-secondary">{_ labels.current}</figcaption><a href="/reports/asset?path={~ urlencode(page.current_path) }" target="_blank"><img src="/reports/asset?path={~ urlencode(page.current_path) }" alt="Current capture" class="w-full rounded border border-border bg-neutral-900" loading="lazy" /></a></figure>
+									<figure><figcaption class="mb-1 text-xs font-semibold uppercase text-text-secondary">{_ labels.diff} - {= page.difference_pixels } {_ labels.pixels_differ}</figcaption><a href="/reports/asset?path={~ urlencode(page.diff_path) }" target="_blank"><img src="/reports/asset?path={~ urlencode(page.diff_path) }" alt="Visual difference" class="w-full rounded border border-border bg-white" loading="lazy" /></a></figure>
+								</div>
+							</details>
+						{:else}
+							{#if page.status !== 'unchanged'}
+								<div class="grid gap-3 p-3" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr))">
+									{#if page.baseline_path}<figure><figcaption class="mb-1 text-xs font-semibold uppercase text-text-secondary">{_ labels.baseline}</figcaption><a href="/reports/asset?path={~ urlencode(page.baseline_path) }" target="_blank"><img src="/reports/asset?path={~ urlencode(page.baseline_path) }" alt="Baseline capture" class="w-full rounded border border-border bg-neutral-900" loading="lazy" /></a></figure>{/if}
+									{#if page.current_path}<figure><figcaption class="mb-1 text-xs font-semibold uppercase text-text-secondary">{_ labels.current}</figcaption><a href="/reports/asset?path={~ urlencode(page.current_path) }" target="_blank"><img src="/reports/asset?path={~ urlencode(page.current_path) }" alt="Current capture" class="w-full rounded border border-border bg-neutral-900" loading="lazy" /></a></figure>{/if}
+									{#if page.diff_path}<figure><figcaption class="mb-1 text-xs font-semibold uppercase text-text-secondary">{_ labels.diff} - {= page.difference_pixels } {_ labels.pixels_differ}</figcaption><a href="/reports/asset?path={~ urlencode(page.diff_path) }" target="_blank"><img src="/reports/asset?path={~ urlencode(page.diff_path) }" alt="Visual difference" class="w-full rounded border border-border bg-white" loading="lazy" /></a></figure>{/if}
+								</div>
+							{/if}
+						{/if}
+						{#if page.status !== 'unchanged' && !page.accepted_at}
+							<div class="border-t border-border p-3"><confirm-dialog trigger-class="button primary text-xs" confirm-class="button primary" form-path="/reports/accept" title="{_ actions.accept}" trigger-text="{_ actions.accept}" message="{_ confirm.accept}" confirm-text="{_ actions.accept_change}" cancel-text="{_ actions.cancel}" extra-field-name="accept_key" extra-field-value="{= `${report.id}|${page.id}` }"></confirm-dialog></div>
+						{/if}
+					</article>
+				{/each}
+			</section>
+		{/if}
+	</div>
+	<script>
+		(function () {
+			var filter_buttons = document.querySelectorAll('.report-status-filter');
+			var articles = document.querySelectorAll('[data-status]');
+			var active_banner = document.querySelector('.report-status-filter-active');
+			var active_label = document.querySelector('.report-status-filter-active-label');
+			var reset_button = document.querySelector('.report-status-filter-reset');
+			var active_status = null;
+
+			function apply_filter() {
+				articles.forEach(function (article) {
+					article.hidden = active_status !== null && article.dataset.status !== active_status;
+				});
+				filter_buttons.forEach(function (button) {
+					button.classList.toggle('ring-2', button.dataset.status === active_status);
+					button.classList.toggle('ring-brand', button.dataset.status === active_status);
+				});
+				if (active_status) {
+					active_banner.classList.remove('hidden');
+					active_banner.classList.add('flex');
+					active_label.textContent = active_status;
+				} else {
+					active_banner.classList.add('hidden');
+					active_banner.classList.remove('flex');
+				}
+			}
+
+			filter_buttons.forEach(function (button) {
+				button.addEventListener('click', function () {
+					active_status = active_status === button.dataset.status ? null : button.dataset.status;
+					apply_filter();
+				});
+			});
+			reset_button.addEventListener('click', function () { active_status = null; apply_filter(); });
+		})();
+	</script>
+	<script>
+		// When the server broadcasts that an evidence video finished, swap the
+		// page's "recording" notice for the video in place - no reload. The
+		// video element is always rendered but hidden until a path arrives over
+		// the app's existing /__reload WebSocket.
+		(function () {
+			var root = document.querySelector('[data-report-run-id]');
+			if (!root) return;
+			var run_id = root.dataset.reportRunId;
+			function connect() {
+				var protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+				var ws = new WebSocket(protocol + '//' + location.host + '/__reload');
+				ws.onmessage = function (event) {
+					try {
+						var data = JSON.parse(event.data);
+						if (data.run_id !== run_id) return;
+						if (data.type === 'reeqa_evidence_ready') {
+							var article = document.querySelector('[data-page-id="' + data.page_id + '"]');
+							if (!article) return;
+							var details = article.querySelector('.evidence-video');
+							var notice = article.querySelector('.evidence-notice');
+							if (data.video_path) {
+								var video = details ? details.querySelector('video') : null;
+								if (video) video.src = '/reports/asset?path=' + encodeURIComponent(data.video_path);
+								if (details) details.classList.remove('hidden');
+								if (notice) notice.classList.add('hidden');
+							} else {
+								var recordingPill = article.querySelector('.evidence-recording');
+								var errorPill = article.querySelector('.evidence-error');
+								var form = article.querySelector('.evidence-record-form');
+								if (recordingPill) recordingPill.classList.add('hidden');
+								if (errorPill) { errorPill.textContent = data.error || errorPill.textContent; errorPill.classList.remove('hidden'); }
+								if (form) form.classList.remove('hidden');
+							}
+						} else if (data.type === 'reeqa_recording_ready') {
+							var recArticle = document.querySelector('[data-page-id="' + data.page_id + '"]');
+							if (!recArticle) return;
+							var recDetails = recArticle.querySelector('.recording-video');
+							var recNotice = recArticle.querySelector('.recording-notice');
+							if (data.recording_path) {
+								var recVideo = recDetails ? recDetails.querySelector('video') : null;
+								if (recVideo) recVideo.src = '/reports/asset?path=' + encodeURIComponent(data.recording_path);
+								if (recDetails) recDetails.classList.remove('hidden');
+								if (recNotice) recNotice.classList.add('hidden');
+							} else {
+								var recPill = recArticle.querySelector('.recording-recording');
+								var recError = recArticle.querySelector('.recording-error');
+								var recForm = recArticle.querySelector('.recording-record-form');
+								if (recPill) recPill.classList.add('hidden');
+								if (recError) { recError.textContent = data.error || recError.textContent; recError.classList.remove('hidden'); }
+								if (recForm) recForm.classList.remove('hidden');
+							}
+						}
+					} catch (error) {}
+				};
+				ws.onclose = function () { setTimeout(connect, 2000); };
+			}
+			connect();
+		})();
+	</script>
+	<script src="/dialog-confirm.js?v={= version}"></script>
+{/with}

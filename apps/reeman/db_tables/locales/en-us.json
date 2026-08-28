@@ -1,0 +1,102 @@
+{
+	"actions": {
+		"bulk_action": "Delete selected db tables",
+		"bulk_action_2": "Bulk action 2",
+		"cancel": "Cancel",
+		"do_it": "Yes, do it",
+		"fields": "Fields only",
+		"force": "Force overwrite",
+		"full": "Full refresh",
+		"generate_crud": "Generate CRUD",
+		"new_db_table": "New Db Table",
+		"refresh_crud": "Refresh CRUD",
+		"save": "Save",
+		"save_close": "Save & close",
+		"schema_only": "Schema only",
+		"translate": "Translate via AI"
+	},
+	"child_ui": {
+		"actions": "Actions",
+		"delete": "Delete",
+		"deleting": "Deleting…",
+		"edit": "Edit",
+		"edit_title": "Edit Db_table",
+		"empty_text": "No db tables found.",
+		"error_deleting": "Error deleting record.",
+		"error_loading": "Error loading record.",
+		"error_saving": "Error saving record.",
+		"new_button": "+ New Db_table",
+		"new_title": "New Db_table"
+	},
+	"errors": {
+		"duplicate_key": "A record with this value already exists.",
+		"error_creating_record": "An error occurred while saving the record.",
+		"has_crud_required": "Has crud is required.",
+		"must_be_selected": "This field is required.",
+		"name_required": "Name is required.",
+		"title_required": "Title is required.",
+		"value_required_or_use_original": "Enter a translated value or remove this language."
+	},
+	"hints": {
+		"prefix": "Optional URL path prefix for generated routes (e.g. admin). Leave blank to mount at the root.",
+		"route_name": "Optional URL name that replaces the table name (e.g. my-users)"
+	},
+	"labels": {
+		"class": "Class",
+		"column_count": "Column Count",
+		"default": "(default)",
+		"display": "Display",
+		"filter": "Filter",
+		"fk_count": "Fk Count",
+		"has_crud": "Has Crud",
+		"helper": "Template helper",
+		"index_columns": "Index columns",
+		"mode": "Mode",
+		"name": "Name",
+		"no_helper": "None (default)",
+		"pagination": "Pagination",
+		"prefix": "Prefix",
+		"readonly": "Read-only",
+		"render_strategy": "Render strategy",
+		"route_name": "Route name (optional)",
+		"row_count": "Row count",
+		"table": "Table / Route",
+		"template_tags": "Template tags",
+		"width": "Width"
+	},
+	"messages": {
+		"bulk_delete_failed": "Bulk delete failed.",
+		"bulk_delete_no_ids": "No db tables selected.",
+		"bulk_deleted": "No db tables deleted|{count} db_table deleted|{count} db_tables deleted|{count} db_tables deleted|{count} db_tables deleted",
+		"bulk_errors": "|{count} db_table failed|{count} db_tables failed|{count} db_tables failed|{count} db_tables failed",
+		"record_created": "Record created",
+		"record_updated": "Record updated"
+	},
+	"nav": "Db tables",
+	"route_name": "db_tables",
+	"search": {
+		"search_term": "Search db tables...",
+		"submit": "Search"
+	},
+	"selectors": {
+		"0": "No",
+		"1": "Yes",
+		"all": "All",
+		"default": "(keep current)",
+		"per_page": "per page",
+		"select_table": "-- Select table or route --"
+	},
+	"ui": {
+		"apply_filters": "Apply",
+		"busy": "Processing — the page will refresh when complete.",
+		"clear_all": "Clear all",
+		"filter_not": "NOT",
+		"loading_count": "Loading…",
+		"modifying": "You are about to modify",
+		"no_records": "No db tables found.",
+		"no_selectable_columns": "No selectable index columns - generator defaults will be used.",
+		"records": "record(s)",
+		"refresh_skip_hint": "Tables without existing CRUD are skipped.",
+		"title": "Db Table"
+	}
+}

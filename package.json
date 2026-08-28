@@ -1,0 +1,110 @@
+{
+	"name": "reepolee",
+	"project-type": "template",
+	"ree": {
+		"project_family": "reepolee",
+		"template_roots": [
+			"apps/main",
+			"apps/reeman",
+			"apps/reeqa",
+			"platform"
+		],
+		"component_roots": [
+			"components"
+		],
+		"translation_provider": "route-json",
+		"translation_roots": [
+			"apps/main",
+			"apps/reeman",
+			"apps/reeqa",
+			"platform"
+		],
+		"issue_repo": "reepolee/reepolee-dev"
+	},
+	"version": "26.08.155",
+	"license": "MIT",
+	"private": false,
+	"description": "Long-lived Apps without deps and build on Bun",
+	"sponsor": {
+		"url": "https://github.com/sponsors/alesvaupotic"
+	},
+	"author": {
+		"name": "Aleš Vaupotič",
+		"email": "ales@reepolee.com",
+		"url": "https://github.com/alesvaupotic/"
+	},
+	"type": "module",
+	"module": "apps/main/server.ts",
+	"scripts": {
+		"dev": "bun scripts/dev_run.ts --app",
+		"dev:reeman": "bun scripts/dev_run.ts --reeman",
+		"dev:reeqa": "bun scripts/dev_run.ts --reeqa",
+		"dev:all": "bun scripts/dev_run.ts --app --reeman --reeqa --worker",
+		"dev:all:agent": "bun scripts/dev_run.ts --app --reeman --agent",
+		"dev:worker": "bun scripts/dev_run.ts --app --worker",
+		"worker": "bun worker.ts",
+		"start": "bun apps/main/server.ts --prod",
+		"start:test": "bun apps/main/server.ts --prod --test",
+		"smoke:integration": "bun scripts/smoke-integration.ts",
+		"agent": "bun css:build && bun --hot apps/main/server.ts --dev --agent",
+		"agent:reeman": "bun css:build && bun --hot apps/reeman/server.ts --dev --agent",
+		"agent:reeqa": "bun css:build && bun --hot apps/reeqa/server.ts --dev --agent",
+		"start:reeqa": "bun apps/reeqa/server.ts --prod",
+		"css:once": "tw -i ./css/app.css -o ./static/app.css --minify",
+		"css:watch": "tw -i ./css/app.css -o ./static/app.css --watch=always --minify",
+		"css:build": "tw -i ./css/app.css -o ./static/app.css --minify",
+		"format": "reettier",
+		"service:install": "sudo journalctl --rotate -u reepolee && sudo journalctl --vacuum-time=1s -u reepolee && sudo cp ./operations/reepolee.service /etc/systemd/system/reepolee.service",
+		"service:autostart": "sudo systemctl enable reepolee",
+		"service:start": "sudo systemctl start reepolee",
+		"service:stop": "sudo systemctl stop reepolee",
+		"service:remove": "sudo systemctl stop reepolee && sudo systemctl disable reepolee && sudo rm /etc/systemd/system/reepolee.service && sudo systemctl daemon-reload",
+		"service:reload": "sudo systemctl daemon-reload",
+		"service:logs": "journalctl -u reepolee -f",
+		"get:zod": "mkdir -p vendor && curl -fsSL https://cdn.jsdelivr.net/npm/zod@4.4.3/+esm -o vendor/zod.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/zod@4.4.3/LICENSE -o vendor/zod.min.js.LICENSE.txt",
+		"get:zod-types": "bun scripts/cli.ts zod-types",
+		"get:hljs": "mkdir -p vendor && curl -fsSL https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/+esm -o vendor/highlight.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/LICENSE -o vendor/highlight.min.js.LICENSE.txt",
+		"get:xlsx": "mkdir -p vendor && curl -fsSL https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js -o vendor/xlsx.full.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/xlsx@0.18.5/LICENSE -o vendor/xlsx.full.min.js.LICENSE.txt",
+		"get:temporal": "mkdir -p vendor && curl -fsSL https://esm.sh/@js-temporal/polyfill@0.5.1/es2022/polyfill.bundle.mjs -o vendor/temporal.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/@js-temporal/polyfill@0.5.1/LICENSE -o vendor/temporal.min.js.LICENSE.txt",
+		"get:signals": "mkdir -p static && curl -L https://esm.sh/alien-deepsignals@0.4.3/es2022/alien-deepsignals.bundle.mjs -o static/alien-deepsignals.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/alien-deepsignals@0.4.3/LICENSE -o static/alien-deepsignals.min.js.LICENSE.txt",
+		"get:dpu": "mkdir -p static && curl -fsSL https://raw.githubusercontent.com/GoogleChromeLabs/html-setters-polyfill/main/index.min.js -o static/dpu.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/html-setters-polyfill/LICENSE -o static/dpu.min.js.LICENSE.txt",
+		"get:tsc": "bun scripts/cli.ts tsc --version=7.0.2",
+		"get:tw": "bun scripts/cli.ts tw --version=4.3.3",
+		"get:vips": "bun scripts/cli.ts vips --version=8.18.4",
+		"get:reettier": "bun scripts/cli.ts reettier",
+		"get:reesql": "bun scripts/cli.ts reesql",
+		"get:pre": "bun scripts/install/prerequisites.ts",
+		"naming:check": "bun scripts/naming_check.ts",
+		"docs:check": "bun scripts/docs_check.ts",
+		"test": "bun test --parallel",
+		"test:dev": "bun test --parallel ./tests-dev/ ./marketplace/",
+		"test:user": "bun test --parallel ./lib/ ./apps/main/ ./platform/ ./config/ ./components/ ./integration.test.ts",
+		"test:coverage": "bun test --parallel --coverage",
+		"typecheck": "tsc --noEmit",
+		"typecheck:ratchet": "bun scripts/typecheck_ratchet.ts",
+		"git:hooks": "git config core.hooksPath .githooks",
+		"git:ship": "bun scripts/git_ship.ts",
+		"git:production": "git push origin main:production --force",
+		"mcp": "bun run scripts/mcp/start.ts",
+		"mcp:check": "bun run scripts/mcp/self_check.ts",
+		"mcp:check:mutations": "bun run scripts/mcp/self_check.ts --mutations",
+		"mcp:check:exit": "bun run scripts/mcp/self_check.ts --notification-exit",
+		"reeman": "bun generator/reeman.ts",
+		"add:user": "bun generator/user",
+		"add:user:alice": "bun generator/user alice alice@example.com a --modules system,user,reeman",
+		"add:user:bob": "bun generator/user bob bob@example.com b --modules user",
+		"db:clone-test": "bun scripts/clone_db.ts",
+		"db:clone-production": "bun scripts/copy_dev_to_production.ts",
+		"sql": "bun scripts/run_sql_dev.ts",
+		"vendor:check": "bun scripts/vendor_check.ts",
+		"postinstall": "bun run reepolee:install",
+		"reepolee:install": "bun scripts/install.ts",
+		"reepolee:uninstall": "bun scripts/uninstall.ts"
+	},
+	"bun-create": {
+		"postinstall": "bun scripts/install.ts"
+	},
+	"devDependencies": {
+		"@types/bun": "1.4.0"
+	}
+}
