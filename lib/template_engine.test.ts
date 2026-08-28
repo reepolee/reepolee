@@ -476,11 +476,11 @@ describe("TemplateEngine", () => {
 				// Use props.emptyData to reference empty data instead of {} which confuses the parser
 				writeFileSync(join(dir, "page.ree"), "{#include(\"_header\", props.emptyData )}");
 
-				const default_variant = await engine.render("page", { lang: TEST_DEFAULT_LOCALE, emptyData: {} });
+				const default_variant = await engine.render("page", { locale: TEST_DEFAULT_LOCALE, emptyData: {} });
 				expect(without_stamps(default_variant)).toBe("<header>Hello</header>");
 
 				const missing_language = (TEST_DEFAULT_LOCALE as string) === "alternate" ? "fallback" : "alternate";
-				const fallback = await engine.render("page", { lang: missing_language, emptyData: {} });
+				const fallback = await engine.render("page", { locale: missing_language, emptyData: {} });
 				expect(without_stamps(fallback)).toBe("<header>Hello</header>");
 			})
 		);
@@ -1000,7 +1000,7 @@ describe("TemplateEngine", () => {
 			expect(result.content).toContain("Base");
 		}));
 
-		test("load_localized falls back to default lang then bare file", with_temp_dir(async (dir, engine) => {
+		test("load_localized falls back to the default locale then bare file", with_temp_dir(async (dir, engine) => {
 			writeFileSync(join(dir, "page.ree"), "Default fallback");
 			const result = await engine.load_localized("page", "de");
 			expect(result.content).toContain("Default fallback");
@@ -1010,9 +1010,9 @@ describe("TemplateEngine", () => {
 			writeFileSync(join(dir, "greet.en-us.ree"), "Hello");
 			writeFileSync(join(dir, "greet.sl-si.ree"), "Zdravo");
 			writeFileSync(join(dir, "greet.ree"), "Hi");
-			const en = await engine.render("greet", { lang: "en-us" });
+			const en = await engine.render("greet", { locale: "en-us" });
 			expect(en).toBe("Hello");
-			const sl = await engine.render("greet", { lang: "sl-si" });
+			const sl = await engine.render("greet", { locale: "sl-si" });
 			expect(sl).toBe("Zdravo");
 		}));
 	});
@@ -1099,8 +1099,8 @@ describe("TemplateEngine", () => {
 			writeFileSync(join(dir, "page.ree"), "Base");
 			writeFileSync(join(dir, "page.sl-si.ree"), "Pozdrav");
 			await precompile_templates(engine);
-			expect(await engine.render("page", { lang: "sl-si" })).toBe("Pozdrav");
-			expect(await engine.render("page", { lang: "en-us" })).toBe("Base");
+			expect(await engine.render("page", { locale: "sl-si" })).toBe("Pozdrav");
+			expect(await engine.render("page", { locale: "en-us" })).toBe("Base");
 			expect(await engine.render("page")).toBe("Base");
 		}));
 
@@ -1423,8 +1423,8 @@ describe("TemplateEngine", () => {
 				writeFileSync(join(components_dir, "partial.ree"), "<p>Base</p>");
 				writeFileSync(join(components_dir, "partial.sl-si.ree"), "<p>Pozdrav</p>");
 				await precompile_templates(engine);
-				expect(await engine.render("page", { lang: "sl-si", locale: "sl-si", inc: {} })).toBe("<main><p>Pozdrav</p></main>");
-				expect(await engine.render("page", { lang: "en-us", locale: "en-us", inc: {} })).toBe("<main><p>Base</p></main>");
+				expect(await engine.render("page", { locale: "sl-si", inc: {} })).toBe("<main><p>Pozdrav</p></main>");
+				expect(await engine.render("page", { locale: "en-us", inc: {} })).toBe("<main><p>Base</p></main>");
 			} finally {
 				rmSync(project_root, { recursive: true, force: true });
 			}

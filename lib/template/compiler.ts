@@ -443,7 +443,7 @@ export function compile_to_code(processed_template: string, slot_fns: CompiledFn
 	});
 
 	let code = "let __output = \"\";\n";
-	code += "const { user, is_dev, lang, csrf_token, helpers = {} } = props;\n";
+	code += "const { user, is_dev, locale, csrf_token, helpers = {} } = props;\n";
 	let layout_result: LayoutInfo | null = null;
 
 	// eslint-disable-next-line no-control-regex

@@ -292,7 +292,7 @@ class TemplateEngine {
 
 	async render(name: string, props: Record<string, any> = {}): Promise<string> {
 		const current_name = name; // used by relative includes within this template
-		const lang = props?.lang;
+		const locale = props?.locale;
 
 		// Prod fast path: precompiled/cached templates render with zero disk
 		// I/O. name_variants maps name -> locale-resolved cache keys, built by
@@ -300,17 +300,17 @@ class TemplateEngine {
 		// clear_cache()), fall through to the disk-based path below, which
 		// lazily compiles and caches as before.
 		if (this.cache) {
-			const resolved = this.resolve_cached_name(name, lang);
+			const resolved = this.resolve_cached_name(name, locale);
 			const compiled_fn = resolved !== undefined ? this.compiled_cache[resolved] : undefined;
 			if (compiled_fn) { return await this.run_compiled(compiled_fn, props, current_name); }
 		}
 
-		// Resolve localized variant if language is available:
-		// {name}.{lang}.ree -> {name}.{default_locale}.ree -> {name}.ree
+		// Resolve localized variant when a locale is available:
+		// {name}.{locale}.ree -> {name}.{default_locale}.ree -> {name}.ree
 		let resolved_name = name;
 		let template: string;
-		if (lang) {
-			const result = await this.load_localized(name, lang);
+		if (locale) {
+			const result = await this.load_localized(name, locale);
 			template = result.content;
 			resolved_name = result.resolved_name;
 		} else {
@@ -331,11 +331,11 @@ class TemplateEngine {
 	 * precompile index - the in-memory equivalent of load_localized()'s
 	 * {name.locale -> name.default_locale -> name} fallback chain.
 	 */
-	private resolve_cached_name(name: string, lang: string | undefined): string | undefined {
+	private resolve_cached_name(name: string, locale: string | undefined): string | undefined {
 		const variants = this.name_variants.get(name);
 		if (!variants) return undefined;
-		if (lang) {
-			const exact = variants.get(lang.toLowerCase());
+		if (locale) {
+			const exact = variants.get(locale.toLowerCase());
 			if (exact) return exact;
 			const def = variants.get(this.default_locale);
 			if (def) return def;

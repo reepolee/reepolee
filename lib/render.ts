@@ -259,7 +259,7 @@ export async function render_to_string(template: string, options: RenderOptions)
 		} : {}),
 	};
 
-	// Create helpers with complete data including lang, user, etc.
+	// Create helpers with complete data including locale, user, etc.
 	const merged_helpers = create_template_helpers(render_data);
 	render_data.helpers = merged_helpers;
 
