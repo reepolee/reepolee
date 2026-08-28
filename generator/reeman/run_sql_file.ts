@@ -3,7 +3,7 @@
  * Run SQL file - select and execute a .sql file against the database
  */
 
-import { join } from "node:path";
+import { isAbsolute, join } from "node:path";
 
 import { db_cli } from "$config/db_cli";
 
@@ -115,23 +115,30 @@ export async function run_sql_file(): Promise<void> {
 
 /**
  * Run a .sql file against the configured database.
+ *
+ * Path policy is the caller's: the web action pins the allowlist to
+ * sql/<dialect>/** via validate_sql_file_path before calling (see
+ * action_run_sql); the CLI contract accepts any path - absolute paths are
+ * used as-is, relative paths resolve against the project root.
+ *
+ * @param path - .sql file to run, absolute or relative to the project root
  * @param force - skip the confirmation prompt (for non-interactive CLI use)
  */
-export async function execute_sql_file(relative_path: string, force: boolean = false): Promise<boolean> {
-	const file_path = join(process.cwd(), relative_path);
+export async function execute_sql_file(path: string, force: boolean = false): Promise<boolean> {
+	const file_path = isAbsolute(path) ? path : join(process.cwd(), path);
 	const file = Bun.file(file_path);
 
 	if (!(await file.exists())) {
-		console.log(`  ${color(`File not found: ${relative_path}`, RED)}`);
+		console.log(`  ${color(`File not found: ${path}`, RED)}`);
 		return false;
 	}
 
 	const file_content = await file.text();
 
-	console.log(`  ${color("✓", GREEN)} Selected: ${color(BOLD + relative_path, CYAN)}`);
+	console.log(`  ${color("✓", GREEN)} Selected: ${color(BOLD + path, CYAN)}`);
 	console.log(`  ${dim(`${file_content.split("\n").length} lines`)}`);
 
-	const proceed = force || (await confirm(`Run "${relative_path}" against the database?`, "n"));
+	const proceed = force || (await confirm(`Run "${path}" against the database?`, "n"));
 
 	if (!proceed) {
 		console.log(`  ${color("Cancelled.", YELLOW)}`);
@@ -184,17 +191,17 @@ export async function execute_sql_file(relative_path: string, force: boolean = f
 		const { invalidate_cache } = await import("../ddl_cache");
 		invalidate_cache();
 
-		console.log(`\n  ${color("✓ Done", GREEN)} Executed ${statements.length} statement(s) from ${relative_path}`);
+		console.log(`\n  ${color("✓ Done", GREEN)} Executed ${statements.length} statement(s) from ${path}`);
 		console.log(`  ${dim("DDL cache invalidated - schema changes will be picked up on next use.")}`);
 
 		// Show the native DB CLI command on screen (useful when sqlite3/mysql
 		// are available without Bun), but log the reeman equivalent instead -
 		// it's what .reepolee/reeman.sh|ps1 can actually replay without
 		// requiring those external binaries to be installed.
-		const sql_cli_cmd = build_sql_cli_command(conn_str, relative_path);
+		const sql_cli_cmd = build_sql_cli_command(conn_str, path);
 		const cli_cmd = process.platform === "win32" ? sql_cli_cmd.ps1 : sql_cli_cmd.sh;
-		const reeman_cmd = `bun reeman run-sql-file ${relative_path} --force`;
-		await show_cli_tip(cli_cmd, `Ran SQL file: ${relative_path}`, { sh: reeman_cmd, ps1: reeman_cmd });
+		const reeman_cmd = `bun reeman run-sql-file ${path} --force`;
+		await show_cli_tip(cli_cmd, `Ran SQL file: ${path}`, { sh: reeman_cmd, ps1: reeman_cmd });
 		return true;
 	} catch (err) {
 		console.log(`  ${color(`Error: ${err}`, RED)}`);

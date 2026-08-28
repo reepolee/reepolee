@@ -113,13 +113,16 @@ function parse_grid_form_settings(params: URLSearchParams): GridFormSettings {
 	const grid_column_helpers = raw_grid_column_helpers.map((helper) => helper.trim());
 	const raw_filter_columns = params.getAll("grid_filter_columns");
 	const filter_columns = new Set(raw_filter_columns);
+	const raw_readonly_columns = params.getAll("grid_readonly_columns");
+	const readonly_columns = new Set(raw_readonly_columns);
 	const definition_names = new Set(grid_column_names);
 	const has_invalid_definition_lengths = grid_column_names.length !== grid_column_widths.length || grid_column_names.length !== grid_column_classes.length || grid_column_names.length !== grid_column_helpers.length;
 	const has_blank_definition = grid_column_names.some((name, index) => !name || !grid_column_widths[index]);
 	const has_duplicate_definition = definition_names.size !== grid_column_names.length;
 	const has_unknown_selection = grid_columns.some((name) => !definition_names.has(name));
 	const has_unknown_filter = raw_filter_columns.some((name) => !definition_names.has(name));
-	if (has_invalid_definition_lengths || has_blank_definition || has_duplicate_definition || has_unknown_selection || has_unknown_filter) {
+	const has_unknown_readonly = raw_readonly_columns.some((name) => !definition_names.has(name));
+	if (has_invalid_definition_lengths || has_blank_definition || has_duplicate_definition || has_unknown_selection || has_unknown_filter || has_unknown_readonly) {
 		return { error: "Invalid grid column definitions." };
 	}
 
@@ -129,6 +132,7 @@ function parse_grid_form_settings(params: URLSearchParams): GridFormSettings {
 		class_name: grid_column_classes[index]!,
 		filter: filter_columns.has(name),
 		helper: grid_column_helpers[index] || undefined,
+		readonly: readonly_columns.has(name),
 	}));
 	return { grid_columns, grid_column_definitions };
 }

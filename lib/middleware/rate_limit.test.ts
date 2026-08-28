@@ -538,27 +538,40 @@ describe("rate_limit_mw", () => {
 		}
 	});
 
-	test("fails loudly in production when rate limiting is disabled", () => {
+	test("allows rate limiting to be disabled in production for load tests", () => {
 		const original_argv = [...process.argv];
 		const original_rate_limiting = process.env.RATE_LIMITING;
 		const original_redis_url = process.env.REDIS_URL;
 		const original_trust_proxy = process.env.TRUST_PROXY;
-		const original_exit = process.exit;
-		(process as any).exit = ((code?: number) => { throw new Error(`process.exit(${code})`); }) as any;
-
 		try {
 			process.argv.splice(0, process.argv.length, ...original_argv.filter((arg) => arg !== "--test"), "--prod");
 			process.env.RATE_LIMITING = "false";
 			process.env.REDIS_URL = "redis://127.0.0.1:6379";
 			process.env.TRUST_PROXY = "cloudflare";
 
-			expect(() => rate_limit.rate_limit_mw(mock_store())).toThrow("process.exit(1)");
+			expect(typeof rate_limit.rate_limit_mw(mock_store())).toBe("function");
 		} finally {
 			process.argv.splice(0, process.argv.length, ...original_argv);
 			process.env.RATE_LIMITING = original_rate_limiting;
 			process.env.REDIS_URL = original_redis_url;
 			process.env.TRUST_PROXY = original_trust_proxy;
-			(process as any).exit = original_exit;
+		}
+	});
+
+	test("bypasses rate limiting in development even when enabled", async () => {
+		const original_argv = [...process.argv];
+		const original_rate_limiting = process.env.RATE_LIMITING;
+		const store = mock_store({ incr: async () => 999 });
+
+		try {
+			process.argv.splice(0, process.argv.length, ...original_argv, "--dev");
+			process.env.RATE_LIMITING = "true";
+			const middleware = rate_limit.rate_limit_mw(store);
+			const response = await middleware(mock_req({ method: "POST", url: "http://localhost/login" }), async () => new Response("OK"));
+			expect(await response.text()).toBe("OK");
+		} finally {
+			process.argv.splice(0, process.argv.length, ...original_argv);
+			process.env.RATE_LIMITING = original_rate_limiting;
 		}
 	});
 

@@ -28,6 +28,8 @@ export interface FanOutOptions {
 	localized_columns: readonly string[];
 	/** Every writable column, in insert order. */
 	write_columns: readonly string[];
+	/** Columns that may change after creation. Defaults to `write_columns`. */
+	update_columns?: readonly string[];
 	/** Base-owned columns that locale forms must never update. */
 	protected_columns?: readonly string[];
 }
@@ -35,6 +37,11 @@ export interface FanOutOptions {
 function writable_columns(options: FanOutOptions): string[] {
 	const protected_columns = new Set(options.protected_columns ?? []);
 	return options.write_columns.filter((column) => column !== "id" && !protected_columns.has(column));
+}
+
+function updatable_columns(options: FanOutOptions): string[] {
+	const update_options = { ...options, write_columns: options.update_columns ?? options.write_columns };
+	return writable_columns(update_options);
 }
 
 /**
@@ -73,7 +80,8 @@ export async function fan_out_update(options: FanOutOptions, id: number | string
 	const localized = new Set(options.localized_columns);
 	const edited_table = locale_table(options.table_name, locale_code);
 
-	const updatable = writable_columns(options);
+	const requested_columns = new Set(Object.keys(values));
+	const updatable = updatable_columns(options).filter((column) => requested_columns.has(column));
 	const shared_columns = updatable.filter((column) => !localized.has(column));
 
 	await db.begin(async (tx) => {

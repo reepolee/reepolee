@@ -34,6 +34,11 @@ function load_tags_imports(tags_fields: FieldDef[]): string {
 // ---------------------------------------------------------------------------
 
 function generate_form_params(fields: FieldDef[]): string { return entry_fields(fields, false).map((f) => `\t\t${f.name}: params.get(\`${f.name}\`)?.trim() || "",`).join("\n"); }
+function generate_original_form_params(fields: FieldDef[]): string { return entry_fields(fields, false).map((f) => `\t\t${f.name}: params.get(\`_original_${f.name}\`)?.trim() || "",`).join("\n"); }
+function generate_readonly_record_values(readonly_fields: ReadonlySet<string>): string {
+	if (readonly_fields.size === 0) return "";
+	return `\n\tObject.assign(data, {\n${[...readonly_fields].map((field_name) => `\t\t${field_name}: String(current_record.${field_name} ?? ""),`).join("\n")}\n\t});`;
+}
 
 function generate_validate_params(fields: FieldDef[]): string { return entry_fields(fields, false).map((f) => `\t\t${f.name}: body.${f.name} || "",`).join("\n"); }
 
@@ -158,6 +163,8 @@ export interface GenerateIndexConfig {
 	is_auto_increment_pk?: boolean;
 	localization_enabled?: boolean;
 	localized_fields?: LocalizedFieldMeta[];
+	/** Fields displayed on edit forms but never accepted from the request. */
+	readonly_fields?: ReadonlySet<string>;
 }
 
 // ---------------------------------------------------------------------------
@@ -165,7 +172,7 @@ export interface GenerateIndexConfig {
 // ---------------------------------------------------------------------------
 
 export async function generate_index_ts(config: GenerateIndexConfig): Promise<string> {
-	const { table_name, fields, column_names = [], view_column_names = [], sort_options, view_name, has_view, first_field, foreign_keys, columns = null, route_prefix = "", crud_name = "", route_param_value = "id", is_nested = false, parent_info = null, pagination_strategy = "cursor", render_strategy = "load", route_name = "", is_auto_increment_pk = true, localization_enabled = false, localized_fields = [] } = config;
+	const { table_name, fields, column_names = [], view_column_names = [], sort_options, view_name, has_view, first_field, foreign_keys, columns = null, route_prefix = "", crud_name = "", route_param_value = "id", is_nested = false, parent_info = null, pagination_strategy = "cursor", render_strategy = "load", route_name = "", is_auto_increment_pk = true, localization_enabled = false, localized_fields = [], readonly_fields = new Set<string>() } = config;
 	const parts_dir = join(process.cwd(), "generator", "templates", "index");
 	const tmpl = select_templates({ pagination_strategy, render_strategy, is_nested, has_view });
 
@@ -292,7 +299,7 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 	const autocomplete_display_options = has_autocomplete ? "\tautocomplete_display_values," : "";
 
 	const localization_import = localized
-		? `import { enqueue } from "$queue/index";\nimport { copy_localized_values, generate_localized_values, get_locale_rows } from "$lib/localized_copy";\nimport { build_localization_props, localized_input_form_state, parse_copy_request, parse_generate_request, parse_localized_form, validate_localized_inputs } from "$lib/localized_form";\nimport { locales } from "$config/supported_locales";\nimport { invalidate_all_locales, save_locale_values } from "$lib/locale_write";\n`
+		? `import { enqueue } from "$queue/index";\nimport { copy_localized_values, generate_localized_values, get_locale_rows } from "$lib/localized_copy";\nimport { build_localization_props, localized_input_form_state, parse_changed_localized_form, parse_copy_request, parse_generate_request, validate_localized_inputs } from "$lib/localized_form";\nimport { locales } from "$config/supported_locales";\nimport { invalidate_all_locales, save_locale_values } from "$lib/locale_write";\n`
 		: "";
 	// The CSS-only tab switcher pre-selects whichever locale tab the visitor
 	// last used, read from a plain cookie - no JS is needed to restore it.
@@ -321,7 +328,7 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 		: "";
 	const localization_data = localized ? "localization," : "";
 	const parse_localization = localized
-		? `const localized_inputs = parse_localized_form(params, LOCALIZED_FIELDS);\n\tconst localized_values = localized_input_form_state(localized_inputs);`
+		? `const localized_inputs = parse_changed_localized_form(params, LOCALIZED_FIELDS);\n\tconst localized_values = localized_input_form_state(localized_inputs);`
 		: "";
 	const validate_localization = localized
 		? `const localized_errors = validate_localized_inputs(localized_inputs, schema, ctx.translations.errors);`
@@ -389,6 +396,8 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 			"field.first": first_field,
 			"create.params": generate_form_params(fields),
 			"update.params": generate_form_params(fields),
+			"update.original_params": generate_original_form_params(fields),
+			"update.readonly_values": generate_readonly_record_values(readonly_fields),
 			"validate.params": generate_validate_params(fields),
 			"empty.record": generate_empty_record(fields),
 			"empty.errors": generate_empty_errors(fields),

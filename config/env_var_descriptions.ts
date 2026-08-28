@@ -57,7 +57,7 @@ export const ENV_VAR_DESCRIPTIONS: Record<string, string> = {
 	BUNDLE_JS: "Set to \"true\" to additionally minify grouped output via Bun.build. Off by default: bundled scripts are hand-authored globals, and dead-code elimination can drop declarations used only by inline scripts. No effect when GROUP_JS=false.",
 
 	// -- Rate limiting --
-	RATE_LIMITING: "Brute-force protection on /login, /password and /register. Required in production; off unless \"true\" (or \"on\").",
+	RATE_LIMITING: "Brute-force protection on /login, /password and /register in production. Ignored in --dev; set \"true\" (or \"on\") to enable it in production. Production warns when it is off.",
 	TRUST_PROXY: "How the limiter finds the real client IP: \"cloudflare\" (CF-Connecting-IP trusted, origin firewall must allow only Cloudflare) or \"direct\" (socket peer address, no proxy in front). Production requires one of the two.",
 
 	// -- Redis (optional) --

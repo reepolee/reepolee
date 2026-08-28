@@ -94,6 +94,7 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 			table_name,
 			route_dir,
 			fields,
+			columns,
 			foreign_keys,
 			route_prefix,
 			is_nested,
@@ -183,8 +184,13 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 	const { format_sync_actions, run_locale_table_sync } = await import("../locale_tables/run");
 	const { results } = await run_locale_table_sync({ table: table_name });
 	const result = results.find((entry) => entry.base_table === table_name);
-	if (!result) throw new Error(`Locale table sync did not process localized table "${table_name}"`);
-	for (const description of format_sync_actions(result.actions)) console.log(`  ${description}`);
+	// A non-localized table has no clone tables to create/alter/drop - an empty
+	// report is the no-op outcome, not an error (see the run.ts contract).
+	if (!result) {
+		log_step(`No locale clone tables to sync for ${table_name}`);
+	} else {
+		for (const description of format_sync_actions(result.actions)) console.log(`  ${description}`);
+	}
 
 	log_step(`Field refresh finished for ${table_name}`);
 	return true;
@@ -198,6 +204,7 @@ async function refresh_form_ree(
 	table_name: string,
 	route_dir: string,
 	fields: FieldDef[],
+	columns: Record<string, ColumnDef> | null,
 	foreign_keys: ForeignKeyMap,
 	route_prefix: string,
 	is_nested: boolean,
@@ -223,6 +230,10 @@ async function refresh_form_ree(
 	const old_section = old_section_match[1]!;
 
 	const localized_names = new Set(localized_fields.map((field) => field.field_name));
+	const readonly_names = new Set<string>();
+	for (const [name, column] of Object.entries(columns ?? {})) {
+		if (column?.readonly === true) readonly_names.add(name);
+	}
 	const filtered = entry_fields(fields, false);
 	const input_fields_promises = filtered.map((f) => generate_field_block(
 		f,
@@ -232,7 +243,8 @@ async function refresh_form_ree(
 		is_nested,
 		parent_info ?? null,
 		template_tags,
-		localized_names
+		localized_names,
+		readonly_names
 	));
 	const new_field_blocks = await Promise.all(input_fields_promises);
 

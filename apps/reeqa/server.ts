@@ -13,7 +13,7 @@ import { bootstrap } from "$lib/bootstrap";
 import { handle_inspector_message } from "$lib/inspector_ws";
 import { handle_create_issue } from "$lib/issue_reporter";
 import { canonical_locale } from "$lib/locale";
-import { clients, notify_clients, notify_evidence_ready, notify_recording_ready } from "$lib/livereload";
+import { clients, is_same_origin_upgrade, notify_clients, notify_evidence_ready, notify_recording_ready } from "$lib/livereload";
 import type { WebSocketData } from "$lib/livereload";
 import { log_error } from "$lib/logger";
 import { handle_open_request } from "$lib/open_in_editor";
@@ -105,6 +105,7 @@ function create_dev_fetch_handler() {
 		const url = new URL(req.url);
 
 		if (url.pathname === "/__reload") {
+			if (!is_same_origin_upgrade(req)) { return new Response("Forbidden", { status: 403 }); }
 			const cookie_header = req.headers.get("Cookie") ?? "";
 			const locale_match = cookie_header.match(/(?:^|;\s*)locale=([^;]+)/);
 			const raw_locale = locale_match?.[1];

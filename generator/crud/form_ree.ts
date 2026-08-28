@@ -145,6 +145,16 @@ export async function generate_input_field(
  * identifier inside that with-block, so it must be qualified here;
  * {_ }/{- } translation lookups (labels., selectors.) are unaffected.
  */
+/**
+ * A readonly field's form markup: label plus the raw value as a static box,
+ * no editor. Wrapped in the standard <field-wrapper> so the grid layout and
+ * the smart-merge regex (helpers.ts) treat it like any other field - the box
+ * keeps its position on refresh instead of being dropped and re-appended.
+ */
+function generate_readonly_field_block(field: FieldDef): string {
+	return `<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="${field.name}">\n\t<div class="grid gap-1">\n\t\t<div class="ml-3">{_ labels.${field.name}}</div>\n\t\t<div class="px-3 py-2 break-all bg-surface-sunken rounded-sm border border-border">{= props.record.${field.name} }</div>\n\t</div>\n</field-wrapper>`;
+}
+
 export async function generate_field_block(
 	field: FieldDef,
 	foreign_keys: ForeignKeyMap,
@@ -154,7 +164,9 @@ export async function generate_field_block(
 	parent_info: ParentInfo | null,
 	template_tags: "flat" | "tags",
 	localized_names: ReadonlySet<string>,
+	readonly_names: ReadonlySet<string> = new Set(),
 ): Promise<string> {
+	if (readonly_names.has(field.name)) return generate_readonly_field_block(field);
 	const input_field = await generate_input_field(field, foreign_keys, table_name, route_prefix, is_nested, parent_info, template_tags);
 	if (!localized_names.has(field.name)) return input_field;
 	const slot_safe_input_field = input_field.replace(/\brecord\./g, "props.record.");
@@ -175,6 +187,8 @@ export interface FormReeOptions {
 	localization_enabled?: boolean;
 	localized_fields?: readonly LocalizedFieldMeta[];
 	template_tags?: "flat" | "tags";
+	/** Fields whose value is displayed on the form without an editor. */
+	readonly_fields?: ReadonlySet<string>;
 }
 
 // ---------------------------------------------------------------------------
@@ -237,6 +251,7 @@ export async function generate_form_ree(options: FormReeOptions): Promise<string
 	const errors_init = filtered.map((f) => `${f.name}: '{= props.errors.${f.name} || \`\` }'`).join(", ");
 
 	const localized_names = new Set(localized_fields.map((field) => field.field_name));
+	const readonly_names = options.readonly_fields ?? new Set<string>();
 	const input_fields_promises = filtered.map(async (field) => generate_field_block(
 		field,
 		foreign_keys,
@@ -245,9 +260,14 @@ export async function generate_form_ree(options: FormReeOptions): Promise<string
 		is_nested,
 		parent_info,
 		template_tags,
-		localized_names
+		localized_names,
+		readonly_names
 	));
 	const input_fields = (await Promise.all(input_fields_promises)).join("\n\n");
+	const original_fields = filtered
+		.filter((field) => !readonly_names.has(field.name))
+		.map((field) => `<input type="hidden" name="_original_${field.name}" value="{= props.record.${field.name} }" />`)
+		.join("\n");
 
 	const form_template_path = join(process.cwd(), "generator", "templates", "form.ree");
 	const html = await Bun.file(form_template_path).text();
@@ -270,6 +290,7 @@ export async function generate_form_ree(options: FormReeOptions): Promise<string
 	return apply_template(html, {
 		"table.exact": effective_route_name,
 		"form.input_fields": form_body,
+		"form.original_fields": original_fields,
 		"form.layout_class": layout_class,
 		"form.localization_script": localization_enabled ? `<script src="/localized-form.js?v={= version}" defer></script>` : "",
 		"archive.form_restore_button": archive_form_restore_button(has_archive),

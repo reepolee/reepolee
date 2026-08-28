@@ -29,6 +29,34 @@ import { BOOLEAN_PREFIXES, FILE_SUFFIXES, IMAGE_SUFFIXES } from "$config/db_stru
 import { ask, color, confirm, dim, GREEN, header, multi_select, show_cli_tip, show_cli_tips, YELLOW } from "./ui";
 
 // ---------------------------------------------------------------------------
+// Import bounds - uploaded workbooks and JSON are untrusted input. A highly
+// compressed XLSX can decompress to millions of rows/cells (zip-bomb
+// amplification), so parsing is bounded before schema inference or SQL
+// rendering run (adversarial review 2026-08-25).
+// ---------------------------------------------------------------------------
+
+export const MAX_IMPORT_SHEETS = 50;
+export const MAX_IMPORT_ROWS = 50_000;
+export const MAX_IMPORT_COLUMNS = 256;
+export const MAX_IMPORT_CELLS = 2_000_000;
+// Raw file bound applied BEFORE any decompression (XLSX) or parse (JSON):
+// JSON parsing and zip decompression can amplify memory well beyond the
+// on-disk size, so the file itself is capped first (adversarial review
+// 2026-08-25). 100 MB is far above legit imports while bounding the spike.
+export const MAX_IMPORT_FILE_BYTES = 100 * 1024 * 1024;
+
+/**
+ * Reject an import file whose on-disk size exceeds MAX_IMPORT_FILE_BYTES.
+ * Call before XLSX.read / JSON.parse - the steps that amplify memory.
+ * Negative sizes (Bun reports -1 for unknown/unseekable files) pass.
+ */
+export function assert_import_size_bytes(byte_length: number, kind: string): void {
+	if (byte_length >= 0 && byte_length > MAX_IMPORT_FILE_BYTES) {
+		throw new Error(`The ${kind} is ${(byte_length / (1024 * 1024)).toFixed(1)} MB - the import limit is ${MAX_IMPORT_FILE_BYTES / (1024 * 1024)} MB. Split the file.`);
+	}
+}
+
+// ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
@@ -108,17 +136,26 @@ export interface InferredSchema {
 // ---------------------------------------------------------------------------
 
 export function extract_rows(parsed: unknown): Record<string, unknown>[] {
-	if (Array.isArray(parsed)) return parsed as Record<string, unknown>[];
-
-	if (parsed && typeof parsed === "object") {
+	let rows: Record<string, unknown>[];
+	if (Array.isArray(parsed)) {
+		rows = parsed as Record<string, unknown>[];
+	} else if (parsed && typeof parsed === "object") {
 		const obj = parsed as Record<string, unknown>;
-		if (Array.isArray(obj.data)) return obj.data as Record<string, unknown>[];
-
-		const array_values = Object.values(obj).filter((v) => Array.isArray(v));
-		if (array_values.length === 1) return array_values[0] as Record<string, unknown>[];
+		if (Array.isArray(obj.data)) {
+			rows = obj.data as Record<string, unknown>[];
+		} else {
+			const array_values = Object.values(obj).filter((v) => Array.isArray(v));
+			if (array_values.length === 1) rows = array_values[0] as Record<string, unknown>[];
+			else throw new Error(`Could not find a row array. Expected { "data": [...] } or a bare [...] array.`);
+		}
+	} else {
+		throw new Error(`Could not find a row array. Expected { "data": [...] } or a bare [...] array.`);
 	}
 
-	throw new Error(`Could not find a row array. Expected { "data": [...] } or a bare [...] array.`);
+	if (rows.length > MAX_IMPORT_ROWS) {
+		throw new Error(`The import contains ${rows.length} rows - the limit is ${MAX_IMPORT_ROWS}. Split the file.`);
+	}
+	return rows;
 }
 
 function has_numeric_data_primary_key(rows: Record<string, unknown>[]): boolean {
@@ -165,6 +202,74 @@ export function normalize_import_rows(rows: Record<string, unknown>[]): Record<s
 // Schema inference
 // ---------------------------------------------------------------------------
 
+// Column names become SQL identifiers verbatim (they are quoted at render
+// time, but quoting alone would silently legitimize names the rest of the
+// stack - domain types, CRUD generation - cannot use).
+const IDENTIFIER_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/;
+
+export function validate_column_key(key: string): string {
+	if (!IDENTIFIER_PATTERN.test(key)) {
+		throw new Error(`Invalid column name in import data: "${key}" - use letters, digits, and underscores, starting with a letter or underscore.`);
+	}
+	return key;
+}
+
+/**
+ * Transliterate a spreadsheet column header into an ASCII SQL identifier:
+ * diacritics are decomposed (Š -> S, č -> c) - the NFD pass covers the
+ * Latin-script alphabets (central EU langs, Indonesian, Vietnamese, ...).
+ * Any remaining character that is not a letter, digit, or underscore becomes
+ * an underscore. Case is preserved - only characters that are invalid in an
+ * identifier are touched, so headers that are already valid (first_name,
+ * UserId) pass through unchanged. Returns "" when nothing usable remains
+ * (Greek, Cyrillic, CJK, ... headers) - transliterate_row_keys then names
+ * that column column_{index} instead of inventing a script-specific mapping.
+ */
+export function transliterate_column_key(key: string): string {
+	const decomposed = key.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+	let ascii = decomposed.replace(/[^A-Za-z0-9_]+/g, "_").replace(/^_+|_+$/g, "");
+	if (/^[0-9]/.test(ascii)) ascii = `_${ascii}`;
+	return ascii;
+}
+
+/**
+ * Rewrite row keys through transliterate_column_key, deduplicating any
+ * collisions the normalization creates ("Name" + "Näme" both map to "Name",
+ * so the second becomes "Name_2", skipping an existing "Name_2"). Headers
+ * that yield no usable ASCII (Greek, Cyrillic, CJK, ...) become column_N by
+ * their 1-based position. Must run before infer_columns so column names and
+ * row keys stay in sync - build_insert_block reads rows by the column name.
+ */
+export function transliterate_row_keys(rows: Record<string, unknown>[]): Record<string, unknown>[] {
+	if (rows.length === 0) return rows;
+
+	// Derive column names once from the first row's key order - every row
+	// shares the same headers, so the dedup and column_N fallbacks must be
+	// identical across rows.
+	const first_row = rows[0] as Record<string, unknown>;
+	const names = new Map<string, string>();
+	const used = new Set<string>();
+	let column_index = 0;
+	for (const key of Object.keys(first_row)) {
+		column_index++;
+		let name = transliterate_column_key(key) || `column_${column_index}`;
+		if (used.has(name)) {
+			const base = name;
+			let n = 2;
+			while (used.has(`${base}_${n}`)) n++;
+			name = `${base}_${n}`;
+		}
+		used.add(name);
+		names.set(key, name);
+	}
+
+	return rows.map((row) => {
+		const out: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(row)) out[names.get(key) ?? key] = value;
+		return out;
+	});
+}
+
 function bucket_length(max_len: number): number {
 	const buckets = [15, 30, 50, 100, 191, 255];
 	for (const b of buckets) { if (max_len <= b) return b; }
@@ -188,10 +293,14 @@ export function infer_columns(rows: Record<string, unknown>[], dialect: DomainDi
 	for (const row of rows) {
 		for (const key of Object.keys(row)) {
 			if (!seen_keys.has(key)) {
+				validate_column_key(key);
 				seen_keys.add(key);
 				ordered_keys.push(key);
 			}
 		}
+	}
+	if (ordered_keys.length > MAX_IMPORT_COLUMNS) {
+		throw new Error(`The import has ${ordered_keys.length} columns - the limit is ${MAX_IMPORT_COLUMNS}.`);
 	}
 
 	// "id" is handled separately as the primary key when every row has a
@@ -263,6 +372,16 @@ function sql_escape(value: string): string {
 	return value.replace(/'/g, "''");
 }
 
+/**
+ * Quote an identifier for the target dialect. Column names are validated to
+ * `[A-Za-z_][A-Za-z0-9_]*` by infer_columns/validate_column_key, so quoting is
+ * defense-in-depth - it also keeps reserved words (order, group, ...) valid
+ * without renaming them.
+ */
+function sql_ident(name: string, dialect: DomainDialect): string {
+	return dialect === "mysql" ? `\`${name.replaceAll("`", "``")}\`` : `"${name.replaceAll('"', '""')}"`;
+}
+
 function sql_literal(value: unknown): string {
 	if (value === null || value === undefined) return "NULL";
 	if (typeof value === "boolean") return value ? "1" : "0";
@@ -307,27 +426,28 @@ function synthetic_primary_key_name(columns: InferredColumn[], pk_from_data: boo
 	return columns.some((column) => column.name.toLowerCase() === "id") ? "row_id" : "id";
 }
 
-function column_name_width(columns: InferredColumn[], primary_key_name: string): number {
+function column_name_width(columns: InferredColumn[], primary_key_name: string, quote: (n: string) => string): number {
 	const all_names = [primary_key_name, ...columns.map((c) => c.name), "display", "created_at", "updated_at", "archived_at", "archived_by_user_id"];
-	return Math.max(...all_names.map((n) => n.length)) + 2;
+	return Math.max(...all_names.map((n) => quote(n).length)) + 2;
 }
 
 export function build_mysql_sql(opts: BuildSqlOptions): string {
 	const { table, columns, pk_from_data, display_column, soft_fk_columns, rows } = opts;
 	const primary_key_name = synthetic_primary_key_name(columns, pk_from_data);
-	const name_w = column_name_width(columns, primary_key_name);
+	const q = (n: string) => sql_ident(n, "mysql");
+	const name_w = column_name_width(columns, primary_key_name, q);
 
-	const lines: string[] = [`DROP TABLE IF EXISTS ${table};`, "", `CREATE TABLE ${table} (`];
+	const lines: string[] = [`DROP TABLE IF EXISTS ${q(table)};`, "", `CREATE TABLE ${q(table)} (`];
 
 	const col_lines: string[] = [];
-	col_lines.push(`    ${primary_key_name.padEnd(name_w)}INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'ICU'`);
+	col_lines.push(`    ${q(primary_key_name).padEnd(name_w)}INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'ICU'`);
 	for (const col of columns) {
 		const sql_type = canonical_sql_type(col, "mysql");
 		const nullability = col.nullable ? "DEFAULT NULL" : `NOT NULL DEFAULT ${default_literal(col)}`;
-		col_lines.push(`    ${col.name.padEnd(name_w)}${sql_type} ${nullability} COMMENT 'ICU'`);
+		col_lines.push(`    ${q(col.name).padEnd(name_w)}${sql_type} ${nullability} COMMENT 'ICU'`);
 	}
 	const display_ref = display_column === "id" ? "id" : display_column;
-	col_lines.push(`    ${"display".padEnd(name_w)}VARCHAR(255) GENERATED ALWAYS AS (${display_ref}) VIRTUAL`);
+	col_lines.push(`    ${"display".padEnd(name_w)}VARCHAR(255) GENERATED ALWAYS AS (${q(display_ref)}) VIRTUAL`);
 	col_lines.push(`    ${"created_at".padEnd(name_w)}TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP`);
 	col_lines.push(`    ${"updated_at".padEnd(name_w)}TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`);
 	col_lines.push(`    ${"archived_at".padEnd(name_w)}TIMESTAMP    NULL DEFAULT NULL`);
@@ -337,8 +457,8 @@ export function build_mysql_sql(opts: BuildSqlOptions): string {
 	lines.push(`) COMMENT '';`);
 	lines.push("");
 
-	for (const fk of soft_fk_columns) { lines.push(`CREATE INDEX ${table}_${fk} ON ${table}(${fk});`); }
-	lines.push(`CREATE INDEX ${table}_archived_at ON ${table}(archived_at);`);
+	for (const fk of soft_fk_columns) { lines.push(`CREATE INDEX ${q(`${table}_${fk}`)} ON ${q(table)}(${q(fk)});`); }
+	lines.push(`CREATE INDEX ${q(`${table}_archived_at`)} ON ${q(table)}(${q("archived_at")});`);
 	if (soft_fk_columns.length > 0) {
 		lines.push("");
 		lines.push(`-- ${soft_fk_columns.join(", ")} look like foreign keys but the target table is`);
@@ -347,7 +467,7 @@ export function build_mysql_sql(opts: BuildSqlOptions): string {
 
 	if (rows.length > 0) {
 		lines.push("");
-		lines.push(build_insert_block(table, columns, pk_from_data, rows, "INSERT IGNORE INTO"));
+		lines.push(build_insert_block(table, columns, pk_from_data, rows, "INSERT IGNORE INTO", "mysql"));
 	}
 
 	return `${lines.join("\n")}\n`;
@@ -356,19 +476,20 @@ export function build_mysql_sql(opts: BuildSqlOptions): string {
 export function build_sqlite_sql(opts: BuildSqlOptions): string {
 	const { table, columns, pk_from_data, display_column, soft_fk_columns, rows } = opts;
 	const primary_key_name = synthetic_primary_key_name(columns, pk_from_data);
-	const name_w = column_name_width(columns, primary_key_name);
+	const q = (n: string) => sql_ident(n, "sqlite");
+	const name_w = column_name_width(columns, primary_key_name, q);
 
-	const lines: string[] = [`DROP TABLE IF EXISTS ${table};`, "", `CREATE TABLE ${table} (`];
+	const lines: string[] = [`DROP TABLE IF EXISTS ${q(table)};`, "", `CREATE TABLE ${q(table)} (`];
 
 	const col_lines: string[] = [];
-	col_lines.push(`    ${primary_key_name.padEnd(name_w)}INTEGER   PRIMARY KEY`);
+	col_lines.push(`    ${q(primary_key_name).padEnd(name_w)}INTEGER   PRIMARY KEY`);
 	for (const col of columns) {
 		const sql_type = canonical_sql_type(col, "sqlite");
 		const nullability = col.nullable ? "" : `NOT NULL DEFAULT ${default_literal(col)}`;
-		col_lines.push(`    ${col.name.padEnd(name_w)}${sql_type} ${nullability}`.trimEnd());
+		col_lines.push(`    ${q(col.name).padEnd(name_w)}${sql_type} ${nullability}`.trimEnd());
 	}
 	const display_ref = display_column === "id" ? "id" : display_column;
-	col_lines.push(`    ${"display".padEnd(name_w)}TEXT      GENERATED ALWAYS AS (${display_ref}) VIRTUAL`);
+	col_lines.push(`    ${"display".padEnd(name_w)}TEXT      GENERATED ALWAYS AS (${q(display_ref)}) VIRTUAL`);
 	col_lines.push(`    ${"created_at".padEnd(name_w)}TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP`);
 	col_lines.push(`    ${"updated_at".padEnd(name_w)}TIMESTAMP DEFAULT CURRENT_TIMESTAMP`);
 	col_lines.push(`    ${"archived_at".padEnd(name_w)}TIMESTAMP DEFAULT NULL`);
@@ -378,11 +499,11 @@ export function build_sqlite_sql(opts: BuildSqlOptions): string {
 	lines.push(");");
 	lines.push("");
 
-	for (const fk of soft_fk_columns) { lines.push(`CREATE INDEX ${table}_${fk} ON ${table}(${fk});`); }
-	lines.push(`CREATE INDEX ${table}_archived_at ON ${table}(archived_at);`);
+	for (const fk of soft_fk_columns) { lines.push(`CREATE INDEX ${q(`${table}_${fk}`)} ON ${q(table)}(${q(fk)});`); }
+	lines.push(`CREATE INDEX ${q(`${table}_archived_at`)} ON ${q(table)}(${q("archived_at")});`);
 
 	lines.push(
-		`CREATE TRIGGER ${table}_updated_at_trigger AFTER UPDATE ON ${table} FOR EACH ROW WHEN NEW.updated_at IS OLD.updated_at BEGIN UPDATE ${table} SET updated_at = CURRENT_TIMESTAMP WHERE ${primary_key_name} = NEW.${primary_key_name}; END;`
+		`CREATE TRIGGER ${q(`${table}_updated_at_trigger`)} AFTER UPDATE ON ${q(table)} FOR EACH ROW WHEN NEW.${q("updated_at")} IS OLD.${q("updated_at")} BEGIN UPDATE ${q(table)} SET ${q("updated_at")} = CURRENT_TIMESTAMP WHERE ${q(primary_key_name)} = NEW.${q(primary_key_name)}; END;`
 	);
 
 	if (soft_fk_columns.length > 0) {
@@ -393,7 +514,7 @@ export function build_sqlite_sql(opts: BuildSqlOptions): string {
 
 	if (rows.length > 0) {
 		lines.push("");
-		lines.push(build_insert_block(table, columns, pk_from_data, rows, "INSERT OR IGNORE INTO"));
+		lines.push(build_insert_block(table, columns, pk_from_data, rows, "INSERT OR IGNORE INTO", "sqlite"));
 	}
 
 	return `${lines.join("\n")}\n`;
@@ -404,14 +525,16 @@ function build_insert_block(
 	columns: InferredColumn[],
 	pk_from_data: boolean,
 	rows: Record<string, unknown>[],
-	insert_verb: string
+	insert_verb: string,
+	dialect: DomainDialect
 ): string {
+	const q = (n: string) => sql_ident(n, dialect);
 	const col_names = pk_from_data ? ["id", ...columns.map((c) => c.name)] : columns.map((c) => c.name);
 	const value_rows = rows.map((row) => {
 		const values = col_names.map((name) => sql_literal(row[name]));
 		return `(${values.join(",")})`;
 	});
-	return `${insert_verb} ${table} (${col_names.join(", ")}) VALUES\n${value_rows.join(",\n")};`;
+	return `${insert_verb} ${q(table)} (${col_names.map(q).join(", ")}) VALUES\n${value_rows.join(",\n")};`;
 }
 
 // ---------------------------------------------------------------------------
@@ -473,12 +596,46 @@ export function validate_slug(slug: string): string {
 	return trimmed;
 }
 
+/**
+ * Bound a worksheet BEFORE materializing its rows: decode the !ref range and
+ * reject sheets whose declared dimensions exceed the import caps. A crafted
+ * workbook can declare (and decompress to) enormous ranges - checking the
+ * range up front avoids unbounded zip-decompressed memory and CPU.
+ *
+ * A missing !ref is NOT silently passed: sheet_to_json returns zero rows for
+ * such a sheet, silently dropping its data - reject it instead.
+ */
+export function assert_sheet_within_bounds(name: string, worksheet: Record<string, unknown>): void {
+	const ref = worksheet["!ref"];
+	if (typeof ref !== "string" || !ref) {
+		throw new Error(`Sheet "${name}" has no declared cell range (!ref) and cannot be imported.`);
+	}
+	const range = XLSX.utils.decode_range(ref);
+	const row_count = range.e.r - range.s.r + 1;
+	const column_count = range.e.c - range.s.c + 1;
+	if (row_count > MAX_IMPORT_ROWS) {
+		throw new Error(`Sheet "${name}" has ${row_count} rows - the import limit is ${MAX_IMPORT_ROWS}. Split the file.`);
+	}
+	const cell_count = row_count * column_count;
+	if (cell_count > MAX_IMPORT_CELLS) {
+		throw new Error(`Sheet "${name}" expands to ${cell_count} cells - the import limit is ${MAX_IMPORT_CELLS}.`);
+	}
+}
+
 export function workbook_to_sheets(data: ArrayBuffer | Uint8Array): WorkbookSheet[] {
+	assert_import_size_bytes(data.byteLength, "workbook");
 	const workbook = XLSX.read(data, { type: "array", cellDates: true, cellNF: false, cellText: false });
+	if (workbook.SheetNames.length > MAX_IMPORT_SHEETS) {
+		throw new Error(`The workbook has ${workbook.SheetNames.length} sheets - the import limit is ${MAX_IMPORT_SHEETS}.`);
+	}
 	return workbook.SheetNames.map((name: string) => {
 		const worksheet = workbook.Sheets[name];
+		assert_sheet_within_bounds(name, worksheet);
 		const rows = XLSX.utils.sheet_to_json(worksheet, { defval: null, raw: true }) as Record<string, unknown>[];
-		return { name, rows };
+		// Headers become SQL identifiers verbatim; transliterate them to ASCII
+		// here so every spreadsheet consumer (preview, single-sheet and
+		// all-sheets conversion) sees the same column names validation accepts.
+		return { name, rows: transliterate_row_keys(rows) };
 	});
 }
 
@@ -525,6 +682,7 @@ export async function convert_json_to_sql(
 	const file = Bun.file(input_path);
 	if (!(await file.exists())) throw new Error(`File not found: ${json_path}`);
 
+	assert_import_size_bytes(file.size, "JSON file");
 	const parsed = JSON.parse(await file.text());
 	const rows = normalize_import_rows(extract_rows(parsed));
 	const schema = infer_columns(rows, "mysql");
@@ -788,6 +946,7 @@ export async function run_data_to_sql(): Promise<void> {
 	}
 	let rows: Record<string, unknown>[];
 	try {
+		assert_import_size_bytes(file.size, "JSON file");
 		rows = extract_rows(JSON.parse(await file.text()));
 	} catch (err) {
 		console.log(`  ${color(`Could not parse ${import_path}: ${err}`, YELLOW)}`);

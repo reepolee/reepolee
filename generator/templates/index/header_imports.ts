@@ -7,7 +7,7 @@ __import.archive__import { enrich_filter_definitions, get_filter_definitions, re
 import { render, render_to_string } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
 
-import { get_record_by_id, create_record, update_record, __archive.record_fn__, search_records__nested.import____archive.sql_imports__, TABLE_NAME } from "./sql";
+import { get_record_by_id, create_record, update_record, __archive.record_fn__, search_records__nested.import____archive.sql_imports__, TABLE_NAME, UPDATE_COLUMNS } from "./sql";
 __import.ree_icon__import { cache } from "$lib/cache";
 __import.view__
 import { default_locale } from "$config/supported_locales";

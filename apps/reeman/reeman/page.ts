@@ -128,6 +128,9 @@ export async function load_reeman_data(load: ReemanLoad = {}): Promise<ReemanDat
 // ---------------------------------------------------------------------------
 
 async function get_table_creation_times(): Promise<Map<string, string>> {
+	// information_schema is MySQL-only; SQLite has no per-table creation
+	// timestamps, so degrade to an empty map (bootstrap-cutoff filter off).
+	if (db_type !== "mysql") return new Map();
 	const rows = await db.unsafe(`SELECT TABLE_NAME, CREATE_TIME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()`) as Array<{ TABLE_NAME?: string; CREATE_TIME?: Date | string | null }>;
 	return new Map(rows.filter((row) => row.TABLE_NAME && row.CREATE_TIME).map((row) => [row.TABLE_NAME!.toLowerCase(), new Date(row.CREATE_TIME!).toISOString()]));
 }

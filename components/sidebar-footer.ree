@@ -1,22 +1,6 @@
 <footer class="bottom flex flex-col gap-2 px-4 py-4">
 	<div class="flex items-center gap-2">
-		{#if props.active_locales.length <= 5}
-			<div class="flex flex-wrap items-center gap-1 " aria-label="Language">
-				{#each props.active_locales as locale}
-					{#if props.locale === locale}
-						<span aria-current="true" class="text-xs px-2 py-1 font-bold" title="{= props.locale_names?.[locale] || locale }">{= locale_short_code(locale) }</span>
-					{:else}
-						<a href="?locale={= locale }" class="text-xs px-2 py-1 rounded border border-transparent no-underline hover:border-neutral-300 hover:bg-neutral-100" title="{= props.locale_names?.[locale] || locale }">{= locale_short_code(locale) }</a>
-					{/if}
-				{/each}
-			</div>
-		{:else}
-			<select aria-label="Language" onchange="location.href=this.value" class="text-base w-36 px-2 py-1">
-				{#each props.active_locales as locale}
-					<option value="?locale={= locale }" {#if props.locale === locale}selected{/if}>{= props.locale_names?.[locale] || locale}</option>
-				{/each}
-			</select>
-		{/if}
+		<locale-switcher></locale-switcher>
 		<button id="theme-toggle" aria-label="Toggle dark mode" class="ml-auto cursor-pointer px-2 py-1 text-xs rounded border border-transparent hover:border-neutral-300 hover:bg-neutral-100">🌙</button>
 	</div>
 	<div class="flex items-center gap-2 font-semibold pl-2" title="{= Bun.env.DEV_CONNECTION_STRING || '' }">

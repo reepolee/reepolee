@@ -40,6 +40,7 @@ mock.module("$main/routes", () => ({
 mock.module("$lib/livereload", () => ({
 	clients: new Set(),
 	notify_clients: () => {},
+	is_same_origin_upgrade: () => true,
 	inject_live_reload: (html: string) => html,
 	inject_issue_reporter: (html: string) => html,
 	inject_inspector: (html: string) => html,

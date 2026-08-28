@@ -17,7 +17,7 @@
 			<field-wrapper class="grid lg:col-span-2" data-field="grid_columns">
 				<div class="grid">
 					<label class="px-3">{_ labels.index_columns}</label>
-					<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) minmax(0,35ch) auto">
+					<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) minmax(0,35ch) auto auto">
 						{#if grid_columns.length === 0}
 							<p class="col-span-full p-3">{_ ui.no_selectable_columns}</p>
 						{:else}
@@ -27,6 +27,7 @@
 								<span class="ml-3">{_ labels.class}</span>
 								<span class="ml-3">{_ labels.helper}</span>
 								<span class="">{_ labels.filter}</span>
+								<span class="">{_ labels.readonly}</span>
 							</div>
 							{#each grid_columns as col}
 								<div class="col-span-full grid grid-cols-subgrid items-center gap-2 px-3 py-2 border-b border-border last:border-b-0">
@@ -44,6 +45,7 @@
 										{/each}
 									</select>
 									<input type="checkbox" name="grid_filter_columns" value="{= col.name }" aria-label="{_ labels.filter}: {= col.name }" {#if col.filter}checked{/if} />
+									<input type="checkbox" name="grid_readonly_columns" value="{= col.name }" aria-label="{_ labels.readonly}: {= col.name }" {#if col.readonly}checked{/if} />
 								</div>
 							{/each}
 						{/if}

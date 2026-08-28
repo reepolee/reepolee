@@ -14,8 +14,7 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 	const bp = base_path();
 	let redirect_url = localized_url(bp, _lang);
 	if (save_action === "stay") {
-		// Save: stay on edit page - id is always available from the lookup above
-		redirect_url = localized_url(entity_path(id), _lang);
+		redirect_url = localized_url(entity_path(__route_param__), _lang);
 	} else if (is_list_return_url(return_url_from_form, bp)) {
 		redirect_url = return_url_from_form!;
 	} else {
@@ -75,6 +74,18 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 	const data = {
 		__update.params__
 	};
+	const current_record = await get_record_by_id(id__sql.read_locale_arg__);
+	if (!current_record) {
+		return render("notfound", {
+			data:{ title: "404 Not Found" },
+			status: 404,
+			ctx,
+		});
+	}
+	__update.readonly_values__
+	const original_data = {
+		__update.original_params__
+	};
 
 	__edit.parse_localization__
 
@@ -113,7 +124,8 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 
 	let record;
 	try {
-		record = await update_record(id, valid_data__sql.edit_locale_arg__);
+		const changed_data = Object.fromEntries(Object.entries(valid_data).filter(([field_name, value]) => UPDATE_COLUMNS.includes(field_name) && String(value) !== original_data[field_name]));
+		record = await update_record(id, changed_data__sql.edit_locale_arg__);
 		__edit.save_localization__
 		await cache.invalidate(TABLE_NAME);
 		sql_log({s:"Update", "t":`${feature}`, r:{...record}}, ctx.user?.username)

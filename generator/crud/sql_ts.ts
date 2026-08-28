@@ -126,6 +126,7 @@ export interface SqlTsOptions {
 	column_names?: string[];
 	localization_enabled?: boolean;
 	localized_fields?: LocalizedFieldMeta[];
+	readonly_fields?: ReadonlySet<string>;
 }
 
 export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
@@ -147,6 +148,7 @@ export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 		column_names = [],
 		localization_enabled = false,
 		localized_fields = [],
+		readonly_fields = new Set(),
 	} = options;
 
 	// Content localization only reaches search_records for plain (non-nested)
@@ -168,9 +170,12 @@ export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 	// LOCALIZED_COLUMNS is read by the runtime locale-table guard and by the
 	// write fan-out, which needs to know which columns must NOT be copied
 	// across locales.
+	const write_column_names = entry_fields(fields, false).map((field) => field.name);
+	const update_column_names = write_column_names.filter((field_name) => !readonly_fields.has(field_name));
+	const update_columns_config = `\nexport const UPDATE_COLUMNS = ${JSON.stringify(update_column_names)} as const;`;
 	const localized_config = localized
-		? `\nexport const LOCALIZED_COLUMNS = ${JSON.stringify(localized_column_names)} as const;\nexport const WRITE_COLUMNS = ${JSON.stringify(entry_fields(fields, false).map((f) => f.name))} as const;\nconst FAN_OUT = { table_name: TABLE_NAME, localized_columns: LOCALIZED_COLUMNS as readonly string[], write_columns: WRITE_COLUMNS as readonly string[] };\n`
-		: "";
+		? `\nexport const LOCALIZED_COLUMNS = ${JSON.stringify(localized_column_names)} as const;\nexport const WRITE_COLUMNS = ${JSON.stringify(write_column_names)} as const;${update_columns_config}\nconst FAN_OUT = { table_name: TABLE_NAME, localized_columns: LOCALIZED_COLUMNS as readonly string[], write_columns: WRITE_COLUMNS as readonly string[], update_columns: UPDATE_COLUMNS as readonly string[] };\n`
+		: update_columns_config;
 	// The physical table for a request's locale (D3): the base table for the
 	// default locale, `<table>_<locale>` otherwise. Resolved once per call
 	// rather than threaded into every query as a parameter.
@@ -205,7 +210,7 @@ export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 	// For non-auto-increment PKs, include id in insert fields since user provides it
 	const insert_fields = editable.map((f) => f.name).join(", ");
 	const insert_values = editable.map((f) => `\${record.${f.name}}`).join(", ");
-	const update_set = editable.filter((f) => f.name !== "id")
+	const update_set = editable.filter((f) => f.name !== "id" && !readonly_fields.has(f.name))
 		.map((f) => `${f.name} = \${record.${f.name}}`)
 		.join(", ");
 
@@ -326,7 +331,7 @@ export async function restore_record(id: ${id_type}): Promise<boolean> {
 		: "";
 	const update_fan_out = localized
 		? `await fan_out_update(FAN_OUT, id, record as unknown as { [key: string]: unknown }, locale_code);\n\t\t\tawait invalidate_all_locales(TABLE_NAME);`
-		: `await db\`UPDATE ${table_name} SET ${update_set} WHERE id = \${id}\`;`;
+		: `const changed_entries = Object.entries(record).filter(([field_name]) => UPDATE_COLUMNS.includes(field_name as typeof UPDATE_COLUMNS[number]));\n\t\t\tif (changed_entries.length > 0) {\n\t\t\t\tconst assignments = changed_entries.map(([field_name]) => \`\${field_name} = ?\`).join(", ");\n\t\t\t\tconst params = changed_entries.map(([, value]) => value);\n\t\t\t\tawait db.unsafe(\`UPDATE ${table_name} SET \${assignments} WHERE id = ?\`, [...params, id]);\n\t\t\t}`;
 	// Archiving is an UPDATE, never a DELETE. The `AND archived_at IS NULL`
 	// guard makes re-archiving a no-op instead of overwriting the original
 	// audit values with a second, later archiver.

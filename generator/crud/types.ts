@@ -36,6 +36,8 @@ export interface ColumnDef {
 	helper?: string;
 	grid?: boolean;
 	localized?: boolean;
+	/** Display this column's value on forms without an editor (never editable). */
+	readonly?: boolean;
 }
 
 export interface ParentInfo {

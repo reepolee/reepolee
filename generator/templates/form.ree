@@ -30,6 +30,10 @@
 			__form.input_fields__
 			<!-- GEN:FIELDS:END -->
 
+			<!-- GEN:ORIGINALS:START -->
+			__form.original_fields__
+			<!-- GEN:ORIGINALS:END -->
+
 			<!-- Store referrer URL as hidden field -->
 			<input type="hidden" id="return_url" name="_return_url" value="" />
 

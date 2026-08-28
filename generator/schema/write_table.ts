@@ -181,6 +181,8 @@ export interface GridColumnChoice {
 	helper: string;
 	/** The type-based helper the CRUD generator would apply if none is selected. */
 	default_helper: string;
+	/** Whether this column is marked readonly in the existing table.ts columns map. */
+	readonly: boolean;
 }
 
 function column_class(field: FormFieldDef): string {
@@ -237,6 +239,7 @@ export function list_grid_column_choices(
 		filter: field.attributes?.filter === true,
 		helper: "",
 		default_helper: default_field_helper(field),
+		readonly: field.attributes?.readonly === true,
 	}));
 }
 
@@ -341,12 +344,13 @@ function build_column_lines(
 		// Commented (CU) entries never carry the cap-based hide - they are already hidden.
 		const grid_prop = is_auto_hidden_fk || (!commented && hidden_by_cap.has(f.name)) ? ", grid: false" : "";
 		const localized_prop = localize_content && is_localizable_string(f) ? ", localized: true" : "";
+		const readonly_prop = definition?.readonly ? ", readonly: true" : "";
 
 		const mismatch_comment = domain_mismatch_comment(f, domain, compliant);
 		const prefix = commented ? "  // " : "  ";
 		const width_value = JSON.stringify(width);
 		const class_value = JSON.stringify(cls);
-		return `${prefix}"${f.name}": { width: ${width_value}, class: ${class_value}${domain_prop}${filter_prop}${helper_prop}${grid_prop}${localized_prop} },${mismatch_comment}`;
+		return `${prefix}"${f.name}": { width: ${width_value}, class: ${class_value}${domain_prop}${filter_prop}${helper_prop}${grid_prop}${localized_prop}${readonly_prop} },${mismatch_comment}`;
 	}
 
 	const lines: ColumnLine[] = [];
@@ -390,7 +394,7 @@ export interface WriteTableConfig {
 }
 
 export async function write_table_file(config: WriteTableConfig): Promise<void> {
-	const { dir, schema_obj, type_mapper, all_tables_columns, all_tables_indexes, all_schemas, pagination_strategy = "offset", render_strategy = "load", template_tags = "flat", grid_columns, grid_column_definitions, localize_content: localize_content_override } = config;
+	const { dir, schema_obj, type_mapper, all_tables_columns, all_tables_indexes, pagination_strategy = "offset", render_strategy = "load", template_tags = "flat", grid_columns, grid_column_definitions, localize_content: localize_content_override } = config;
 	const table_ts_path = `${dir}/schema/table.ts`;
 	const exists = await Bun.file(table_ts_path).exists();
 	// An existing table.ts is never rewritten wholesale. New DB columns are merged
@@ -417,27 +421,10 @@ export async function write_table_file(config: WriteTableConfig): Promise<void> 
 	columns_lines.push("}");
 	const columns_str = columns_lines.join("\n");
 
-	// Auto-detect route_param: if another table references this one via FK,
-	// use the referenced column as the route_param (e.g. equipment_items FK
-	// references equipment.code -> route_param = "code").
-	// Fall back to "id" if no reverse FK is found.
-	let route_param = "id";
-	if (all_schemas) {
-		for (const schema of all_schemas) {
-			if (schema.name === schema_obj.name) continue;
-			for (const fk of schema.foreign_keys) {
-				if (fk.referenced_table_name.toLowerCase() === schema_obj.name.toLowerCase()) {
-					if (fk.referenced_column_name !== "id") {
-						route_param = fk.referenced_column_name;
-						break;
-					}
-				}
-			}
-			if (route_param !== "id") break;
-		}
-		if (route_param !== "id") { console.log(`Auto-detected route_param="${route_param}" for "${schema_obj.name}" (FK target)`); }
-	}
-	const route_param_export = `const route_param = "${route_param}";`;
+	// URLs use the primary key unless the application owner explicitly changes
+	// table.ts. A reverse foreign key identifies a relationship, not a stable
+	// public route identifier.
+	const route_param_export = 'const route_param = "id";';
 
 	// Field type is now controlled via DB column comments - put "autocomplete", "textarea",
 	// or "markdown" directly in the column comment to set the field type. JSON-style comments
@@ -459,9 +446,10 @@ export const parent = ${JSON.stringify(schema_obj.parent, null, 2)};
 // Add compliant column to flag SQL mismatches against the canonical type.
 // grid - set to false to hide from index grid while keeping for filtering.
 // localized - set to true to give this column its own value per locale.
+// readonly - set to true to display this column's value on forms without an editor.
 // helper - built-in template helper applied to this column's index-grid cell, e.g.
 // "js_date_to_locale_string" renders the value as {~ js_date_to_locale_string(record.field) }.
-const columns: Record<string, { width: string; class: string; domain?: string; filter?: boolean; helper?: string; grid?: boolean; localized?: boolean }> = ${columns_str}
+const columns: Record<string, { width: string; class: string; domain?: string; filter?: boolean; helper?: string; grid?: boolean; localized?: boolean; readonly?: boolean }> = ${columns_str}
 
 // Route param for URL paths - change to a different column for URL obscurity.
 ${route_param_export}
@@ -612,17 +600,16 @@ function set_string_property_on_line(line: string, property: "width" | "class", 
 	return line.replace(property_pattern, `${property}: ${JSON.stringify(value)}`);
 }
 
-function set_true_flag_on_line(line: string, property: "filter", enabled: boolean): string {
+function set_true_flag_on_line(line: string, property: "filter" | "readonly", enabled: boolean): string {
 	const property_pattern = new RegExp(`,\\s*${property}:\\s*true`);
 	if (!enabled) return line.replace(property_pattern, "");
 	if (property_pattern.test(line)) return line;
-	const grid_index = line.indexOf(", grid:");
-	const localized_index = line.indexOf(", localized:");
-	const later_property_indexes = [grid_index, localized_index];
-	const valid_later_property_indexes = later_property_indexes.filter((index) => index >= 0);
-	valid_later_property_indexes.sort((a, b) => a - b);
-	const first_later_property = valid_later_property_indexes[0];
-	const insert_index = first_later_property ?? line.lastIndexOf("}");
+	const later_property_indexes = [line.indexOf(", grid:"), line.indexOf(", localized:")].filter((index) => index >= 0);
+	// filter sits before grid/localized; readonly goes after them, right before
+	// the closing brace.
+	const insert_index = property === "filter"
+		? (later_property_indexes[0] ?? line.lastIndexOf("}"))
+		: line.lastIndexOf("}");
 	if (insert_index < 0) return line;
 	const before_close = line.slice(0, insert_index);
 	const trimmed_before_close = before_close.trimEnd();
@@ -678,6 +665,7 @@ function apply_grid_settings(source: string, settings: TableFileSettings): { sou
 		updated = set_string_property_on_line(updated, "class", definition.class_name);
 		updated = set_true_flag_on_line(updated, "filter", definition.filter);
 		if (definition.helper !== undefined) updated = set_helper_property_on_line(updated, definition.helper);
+		if (definition.readonly !== undefined) updated = set_true_flag_on_line(updated, "readonly", definition.readonly);
 		if (selected) updated = set_grid_flag_on_line(updated, !selected.has(definition.name));
 		if (updated === match[0]) continue;
 		working_source = working_source.replace(match[0]!, updated);

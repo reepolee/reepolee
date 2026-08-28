@@ -9,6 +9,8 @@
  * breaks the whole server at startup.
  */
 
+import { join } from "node:path";
+
 import { clean_output, capture_output } from "./lib/capture";
 import { clear_busy, get_busy, GLOBAL_BUSY_KEY, set_busy, type BusyEntry } from "./lib/busy_state";
 import { record_run, update_run } from "./lib/state";
@@ -269,6 +271,14 @@ export async function action_backup_database(): Promise<ActionResult> {
 
 export async function action_run_sql(params: { path: string; }): Promise<ActionResult> {
 	return run_captured_action("run-sql-file", params.path, async () => {
+		// The web form only ever offers sql/<dialect>/** paths, but the POST body
+		// is client-controlled: pin the allowlist to the project's own dialect
+		// folder before anything is resolved or executed (adversarial review
+		// 2026-08-25). This is the sole containment point - execute_sql_file is
+		// deliberately unguarded so the CLI keeps its any-path contract.
+		const { db_type } = await import("$lib/resolve_db_type");
+		const { validate_sql_file_path } = await import("$generator/reeman/sql_path");
+		validate_sql_file_path(params.path, { allowed_root: join(process.cwd(), "sql", db_type) });
 		const { execute_sql_file } = await import("$generator/reeman/run_sql_file");
 		const ok = await execute_sql_file(params.path, true);
 		// Running SQL may have repaired the DDL (e.g. recreated a missing table

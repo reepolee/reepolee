@@ -90,6 +90,7 @@ function parse_grid_column_definitions(raw: string): GridColumnDefinition[] {
 			width: candidate.width,
 			class_name: candidate.class_name,
 			filter: candidate.filter,
+			readonly: candidate.readonly === true,
 		});
 	}
 	return definitions;

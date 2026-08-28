@@ -56,6 +56,7 @@
 		"no_helper": "None (default)",
 		"pagination": "Pagination",
 		"prefix": "Prefix",
+		"readonly": "Read-only",
 		"render_strategy": "Render strategy",
 		"route_name": "Route name (optional)",
 		"row_count": "Row count",

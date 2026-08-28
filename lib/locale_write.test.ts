@@ -84,4 +84,22 @@ describe("locale writes", () => {
 		expect(after_base.code).toBe("metric-changed");
 		expect(after_sl.code).toBe("metric-changed");
 	});
+
+	test("does not update columns excluded from update_columns", async () => {
+		await fan_out_update(
+			{
+				table_name: "metrics",
+				localized_columns: ["name"],
+				write_columns: ["code", "name"],
+				update_columns: ["name"],
+			},
+			1,
+			{ code: "metric-changed", name: "Updated name" },
+			"en-us",
+		);
+
+		const base = await row("metrics");
+		expect(base.code).toBe("metric-1");
+		expect(base.name).toBe("Updated name");
+	});
 });

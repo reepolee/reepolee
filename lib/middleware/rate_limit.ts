@@ -346,14 +346,17 @@ export { check_rate_limit, extract_identity, rate_limited_response, resolve_scop
  * limiter either way.
  */
 export function rate_limit_mw(store?: RateLimitStore): Middleware {
+	// Local development must not be coupled to the production security switch.
+	// This keeps a production-ready RATE_LIMITING=true in .env from throttling
+	// rapid form submits and validation requests under --dev.
+	if (process.argv.includes("--dev")) {
+		return (_req: BunRequest, next) => next(_req);
+	}
+
 	const rate_limiting_on = env_switch_on("RATE_LIMITING");
 
 	if (is_production()) {
-		if (!rate_limiting_on) {
-			console.error("\u001b[31m✗ Production requires RATE_LIMITING=true.\u001b[0m");
-			process.exit(1);
-		}
-		if (!TRUSTED_PROXY_MODES.includes(trusted_proxy())) {
+		if (rate_limiting_on && !TRUSTED_PROXY_MODES.includes(trusted_proxy())) {
 			console.error("\u001b[31m✗ Production requires TRUST_PROXY=cloudflare (Cloudflare-only origin firewall) or TRUST_PROXY=direct (no proxy in front).\u001b[0m");
 			process.exit(1);
 		}
@@ -393,7 +396,7 @@ export function rate_limit_mw(store?: RateLimitStore): Middleware {
 	const argv = process.argv;
 	if (argv.includes("--prod") && !argv.includes("--test") && !argv.includes("--agent")) {
 		console.warn(
-			"\u001b[33m⚠ RATE_LIMITING is not enabled - brute-force protection on /login, /password, /register is OFF. Set RATE_LIMITING=true (requires REDIS_URL).\u001b[0m"
+			"\u001b[33m⚠ RATE_LIMITING is not enabled - brute-force protection on /login, /password, /register is OFF. Set RATE_LIMITING=true to re-enable it.\u001b[0m"
 		);
 	}
 

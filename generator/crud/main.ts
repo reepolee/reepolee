@@ -87,6 +87,7 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 			localization_enabled: meta.localization_enabled,
 			localized_fields: meta.localized_fields,
 			template_tags: meta.template_tags,
+			readonly_fields: readonly_field_names(meta.columns),
 		}));
 
 		log_step(`Generating index.ree for ${table_name}`);
@@ -143,6 +144,7 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 	await safe_writer(join(meta.route_dir, "index.ts"), await generate_index_ts({
 		localization_enabled: meta.localization_enabled,
 		localized_fields: meta.localized_fields,
+		readonly_fields: readonly_field_names(meta.columns),
 		table_name,
 		fields: meta.fields,
 		column_names: meta.column_names,
@@ -184,6 +186,7 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 		column_names: meta.column_names,
 		localization_enabled: meta.localization_enabled,
 		localized_fields: meta.localized_fields,
+		readonly_fields: readonly_field_names(meta.columns),
 	}));
 
 	// sql.custom.ts: extension point for custom queries - never regenerated
@@ -219,6 +222,15 @@ export { integrate_nested_child } from "./nested_integration";
  * Phase 6: Format generated files and optionally sync AI translations.
  */
 export { format_dirs, format_file } from "./file_writer";
+
+/** Columns whose table.ts `columns` entry carries `readonly: true`. */
+function readonly_field_names(columns: Record<string, { readonly?: boolean; }> | null): Set<string> {
+	const names = new Set<string>();
+	for (const [name, column] of Object.entries(columns ?? {})) {
+		if (column?.readonly === true) names.add(name);
+	}
+	return names;
+}
 
 /**
  * Generate CRUD files for a given database table.

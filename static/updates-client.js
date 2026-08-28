@@ -60,7 +60,20 @@ function connect_updates_channel() {
 		} catch {}
 	};
 
-	ws.onclose = () => {
+	ws.onclose = (event) => {
+		// Explicit rejection: the server completed the handshake and closed
+		// with an application code (4401 no session, 4403 cross-origin). The
+		// server will keep rejecting, so retrying every second would hammer it
+		// for the page's whole lifetime. Stop, and reconnect once when the tab
+		// becomes visible again (e.g. right after logging in elsewhere) - the
+		// codes must match apps/main/server.ts WS_REJECT_*.
+		if (event.code === 4401 || event.code === 4403) {
+			document.addEventListener("visibilitychange", function resume() {
+				document.removeEventListener("visibilitychange", resume);
+				if (document.visibilityState === "visible") connect_updates_channel();
+			});
+			return;
+		}
 		if (was_open) {
 			// Server restarted - reload so the page picks up fresh data.
 			setTimeout(() => window.location.reload(), 500);

@@ -21,7 +21,7 @@
 import { join } from "node:path";
 import { bootstrap } from "$lib/bootstrap";
 import { env_available } from "$config/env_vars";
-import { clients, notify_clients } from "$lib/livereload";
+import { clients, is_same_origin_upgrade, notify_clients } from "$lib/livereload";
 import type { WebSocketData } from "$lib/livereload";
 import { log_error } from "$lib/logger";
 import { initialize_render } from "$lib/render";
@@ -117,6 +117,7 @@ function create_dev_fetch_handler() {
 		// lib/route.ts's resolve_locale) so inspector i18n messages on this
 		// socket resolve translations for the page's own locale.
 		if (url.pathname === "/__reload") {
+			if (!is_same_origin_upgrade(req)) { return new Response("Forbidden", { status: 403 }); }
 			const cookie_header = req.headers.get("Cookie") ?? "";
 			const raw_locale = cookie_header.match(/(?:^|;\s*)locale=([^;]+)/)?.[1];
 			const locale = canonical_locale(raw_locale ? decodeURIComponent(raw_locale) : null) ?? default_locale;

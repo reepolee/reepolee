@@ -2,6 +2,7 @@ import { db } from "$config/db";
 import { load_ddl_cache } from "$generator/ddl_cache";
 import { locale_clone_table_names } from "$generator/naming";
 import { default_locale, locales } from "$config/supported_locales";
+import { db_type } from "$lib/resolve_db_type";
 
 export interface DbTableSnapshot {
 	id: number;
@@ -45,12 +46,18 @@ export async function refresh_db_tables(): Promise<DbTableSnapshot[]> {
 }
 
 export async function get_users_table_created_at(): Promise<string | null> {
+	// information_schema is MySQL-only; SQLite's sqlite_master stores no creation
+	// time. Return null so callers disable the bootstrap-cutoff filter entirely.
+	if (db_type !== "mysql") return null;
 	const rows = await db.unsafe(`SELECT CREATE_TIME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users'`) as Array<{ CREATE_TIME?: Date | string | null }>;
 	const created_at = rows[0]?.CREATE_TIME;
 	return created_at ? new Date(created_at).toISOString() : null;
 }
 
 async function get_table_creation_times(): Promise<Map<string, string>> {
+	// information_schema is MySQL-only; SQLite has no per-table creation
+	// timestamps, so degrade to an empty map (bootstrap-cutoff filter off).
+	if (db_type !== "mysql") return new Map();
 	const rows = await db.unsafe(`SELECT TABLE_NAME, CREATE_TIME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()`) as Array<{ TABLE_NAME?: string; CREATE_TIME?: Date | string | null }>;
 	return new Map(rows.filter((row) => row.TABLE_NAME && row.CREATE_TIME).map((row) => [row.TABLE_NAME!.toLowerCase(), new Date(row.CREATE_TIME!).toISOString()]));
 }

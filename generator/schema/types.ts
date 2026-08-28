@@ -118,4 +118,6 @@ export interface GridColumnDefinition {
 	 * type-based cell rendering.
 	 */
 	helper?: string;
+	/** Display this column's value on forms without an editor (never editable). */
+	readonly?: boolean;
 }

@@ -3,6 +3,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+import { parse_crud_flags } from "../reeman/cli_crud";
 import { update_table_file_settings, write_table_file } from "./write_table";
 import type { TypeMapper } from "./type_mapper";
 import type { SchemaObject } from "./types";
@@ -40,9 +41,47 @@ describe("write_table_file", () => {
 		expect(generated).toContain('"code": { width: "auto", class: "", domain: "code" }');
 		expect(generated).not.toContain('"code": { width: "auto", class: "", domain: "code", localized: true }');
 	});
+
+	test("uses id for routes even when a child foreign key targets code", async () => {
+		temp_dir = await mkdtemp(join(tmpdir(), "reepolee-route-param-"));
+		const schema: SchemaObject = {
+			type: "table",
+			name: "sensors",
+			columns: [
+				{ name: "id", type_string: "int", comment: "", is_nullable: false, is_primary_key: true, is_auto_increment: true },
+				{ name: "code", type_string: "varchar(255)", comment: "", is_nullable: false, is_primary_key: false, is_auto_increment: false, is_unique: true },
+			],
+			foreign_keys: [],
+			has_view: false,
+		};
+		const child_schema: SchemaObject = {
+			type: "table",
+			name: "metrics",
+			columns: [],
+			foreign_keys: [{ column_name: "sensor_code", referenced_table_name: "sensors", referenced_column_name: "code" }],
+			has_view: false,
+		};
+
+		await write_table_file({ dir: temp_dir, schema_obj: schema, type_mapper: text_mapper, all_schemas: [schema, child_schema] });
+		const generated = await Bun.file(join(temp_dir, "schema", "table.ts")).text();
+		expect(generated).toContain('const route_param = "id";');
+		expect(generated).not.toContain('const route_param = "code";');
+	});
 });
 
 describe("update_table_file_settings", () => {
+	test("preserves a read-only grid definition passed through the CRUD CLI", () => {
+		const definitions = encodeURIComponent(JSON.stringify([
+			{ name: "code", width: "10ch", class_name: "", filter: false, readonly: true },
+		]));
+
+		const flags = parse_crud_flags(["sensors", "--grid-column-definitions", definitions]);
+
+		expect(flags.grid_column_definitions).toEqual([
+			{ name: "code", width: "10ch", class_name: "", filter: false, readonly: true },
+		]);
+	});
+
 	test("updates editable grid and strategy values without removing other properties", async () => {
 		temp_dir = await mkdtemp(join(tmpdir(), "reepolee-table-settings-"));
 		const table_path = join(temp_dir, "table.ts");

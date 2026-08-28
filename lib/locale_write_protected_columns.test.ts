@@ -8,9 +8,11 @@ describe("locale write contract", () => {
 			table_name: "sensors",
 			localized_columns: ["label"],
 			write_columns: ["id", "label", "device_id", "created_at"],
+			update_columns: ["label"],
 			protected_columns: ["device_id", "created_at"],
 		};
 
 		expect(options.protected_columns).toEqual(["device_id", "created_at"]);
+		expect(options.update_columns).toEqual(["label"]);
 	});
 });

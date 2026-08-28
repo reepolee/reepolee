@@ -7,8 +7,14 @@ import { join } from "node:path";
 //   inspector i18n messages on this connection resolve against the same
 //   locale the page was rendered in.
 // - "updates" (dev + prod) - CRUD mutation notifications for the "updated
-//   records" marker (route/action/id payloads, see notify_updates).
-export type WebSocketData = { type: "livereload"; locale: string; } | { type: "updates"; };
+//   records" marker (route/action/id payloads, see notify_updates). The
+//   upgrade is rejected for anonymous visitors and `user_id` records which
+//   session the socket belongs to (adversarial review 2026-08-25). Rejected
+//   upgrades complete the handshake and close immediately with `reject_code`
+//   (4401 no session, 4403 cross-origin) so the client can tell an explicit
+//   rejection apart from a server that is merely still booting and stop its
+//   retry loop (adversarial review 2026-08-25).
+export type WebSocketData = { type: "livereload"; locale: string; } | { type: "updates"; user_id: number | null; reject_code?: number };
 
 let _client_script: string | null = null;
 let _issue_reporter_script: string | null = null;
@@ -69,6 +75,25 @@ declare global {
 
 globalThis.__reepolee_livereload_clients ??= new Set<Bun.ServerWebSocket<WebSocketData>>();
 export const clients = globalThis.__reepolee_livereload_clients;
+
+/**
+ * Same-origin gate for WebSocket upgrade requests. Browsers always send an
+ * Origin header on the handshake, so a cross-site page cannot open a
+ * WebSocket to a developer's localhost and speak the socket protocol;
+ * non-browser clients send no Origin and pass (they are not CSRF-able).
+ * Upgrade handlers in the three app servers share this so the checks cannot
+ * drift apart.
+ */
+export function is_same_origin_upgrade(req: Request): boolean {
+	const origin = req.headers.get("Origin");
+	if (!origin) return true;
+	try {
+		return new URL(origin).host === new URL(req.url).host;
+	} catch {
+		return false;
+	}
+}
+
 export async function inject_live_reload(html_content: string): Promise<string> {
 	const script = await get_client_script();
 	const tag = `<script>

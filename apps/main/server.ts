@@ -25,11 +25,14 @@
  */
 
 import { join } from "node:path";
+import type { BunRequest } from "bun";
+
 import { bootstrap } from "$lib/bootstrap";
 import { env_available } from "$config/env_vars";
 import { canonical_locale } from "$lib/locale";
-import { clients, notify_clients } from "$lib/livereload";
+import { clients, is_same_origin_upgrade, notify_clients } from "$lib/livereload";
 import type { WebSocketData } from "$lib/livereload";
+import { resolve_session } from "$platform/auth/middleware";
 import { log_error } from "$lib/logger";
 import { initialize_render } from "$lib/render";
 import { handle_create_issue } from "$lib/issue_reporter";
@@ -96,9 +99,35 @@ if (is_test && Bun.env.TEST_PORT) { console.log(`🧪 Test mode port: ${Bun.env.
 
 const fallback_opts = { is_dev, static_dirs };
 
+// WebSocket close codes (3000-4999 are application codes). A plain 401/403 on
+// an upgrade surfaces to the client as close code 1006 - identical to a server
+// that never answered - so the /__updates rejection completes the handshake
+// and closes with one of these codes instead. The client (updates-client.js)
+// stops its 1s retry loop on them (adversarial review 2026-08-25).
+const WS_REJECT_UNAUTHORIZED = 4401; // no authenticated session
+const WS_REJECT_FORBIDDEN = 4403; // cross-origin handshake
+
+/**
+ * Reject a /__updates upgrade in a way the client can distinguish from a dead
+ * server: complete the handshake and close immediately with the application
+ * code. Falls back to a plain HTTP response if the upgrade itself fails.
+ */
+function reject_upgrade(req: Request, server: Bun.Server<WebSocketData>, code: number, reason: string): Response {
+	if (server.upgrade(req, { data: { type: "updates", user_id: null, reject_code: code } })) {
+		return new Response(); // handshake completes; open() closes with `code`
+	}
+	return new Response(reason, { status: code === WS_REJECT_UNAUTHORIZED ? 401 : 403 });
+}
+
 // WebSocket config
 const websocket_config = {
-	open(ws: any) { clients.add(ws); },
+	open(ws: any) {
+		// Rejected upgrades (anonymous / cross-origin) complete the handshake
+		// only so the client can read the close code - never admit them to the
+		// pool that notify_clients / notify_updates broadcast to.
+		if (ws.data?.reject_code) { ws.close(ws.data.reject_code); return; }
+		clients.add(ws);
+	},
 	message(ws: Bun.ServerWebSocket<WebSocketData>, message: string | Buffer) {
 		// Dev-only inspector messages (i18n/class get/update). Only livereload
 		// sockets carry a locale and only they speak the inspector protocol -
@@ -124,6 +153,7 @@ function create_dev_fetch_handler() {
 		// resolution as lib/route.ts's resolve_locale) so inspector i18n
 		// messages on this socket resolve translations for the page's own locale.
 		if (url.pathname === "/__reload") {
+			if (!is_same_origin_upgrade(req)) { return new Response("Forbidden", { status: 403 }); }
 			const cookie_header = req.headers.get("Cookie") ?? "";
 			const raw_locale = cookie_header.match(/(?:^|;\s*)locale=([^;]+)/)?.[1];
 			const locale = canonical_locale(raw_locale ? decodeURIComponent(raw_locale) : null) ?? default_locale;
@@ -134,8 +164,15 @@ function create_dev_fetch_handler() {
 		// listen here for record mutations so they can surface an "updated"
 		// marker with a reload link (issue #336). Same upgrade path in the prod
 		// handler - the channel is a production feature, not a dev tool.
+		// The payload carries routes, record ids and the mutating user's display
+		// name, so the handshake requires a logged-in session and the same origin
+		// (adversarial review 2026-08-25). Rejections use upgrade-then-close so
+		// the client can stop retrying instead of hammering every second.
 		if (url.pathname === "/__updates") {
-			if (server.upgrade(req, { data: { type: "updates" } })) { return new Response(); }
+			if (!is_same_origin_upgrade(req)) return reject_upgrade(req, server, WS_REJECT_FORBIDDEN, "Forbidden");
+			const auth = await resolve_session(req as BunRequest);
+			if (!auth.session) return reject_upgrade(req, server, WS_REJECT_UNAUTHORIZED, "Unauthorized");
+			if (server.upgrade(req, { data: { type: "updates", user_id: auth.current_user?.id ?? null } })) { return new Response(); }
 		}
 
 		// Dev-only GitHub issue reporter (Ctrl+Shift+I overlay)
@@ -191,7 +228,10 @@ function create_prod_fetch_handler() {
 		// This is the production path: Bun's native `routes:` never sees
 		// /__updates (not a registered route), so it reaches this fallback.
 		if (url.pathname === "/__updates") {
-			if (server.upgrade(req, { data: { type: "updates" } })) { return new Response(); }
+			if (!is_same_origin_upgrade(req)) return reject_upgrade(req, server, WS_REJECT_FORBIDDEN, "Forbidden");
+			const auth = await resolve_session(req as BunRequest);
+			if (!auth.session) return reject_upgrade(req, server, WS_REJECT_UNAUTHORIZED, "Unauthorized");
+			if (server.upgrade(req, { data: { type: "updates", user_id: auth.current_user?.id ?? null } })) { return new Response(); }
 		}
 
 		// Internal admin endpoints

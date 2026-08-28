@@ -56,6 +56,7 @@
 		"no_helper": "Brez (privzeto)",
 		"pagination": "Straničenje",
 		"prefix": "Predpona",
+		"readonly": "Samo za branje",
 		"render_strategy": "Način izrisa",
 		"route_name": "Ime poti (neobvezno)",
 		"row_count": "Število vrstic",

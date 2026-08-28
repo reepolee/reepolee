@@ -155,6 +155,27 @@ export function parse_localized_form(params: URLSearchParams, fields: readonly L
 }
 
 /**
+ * Keep only translated values that differ from the snapshot rendered with the
+ * form. This gives locale rows the same PATCH semantics as the base record:
+ * two editors changing different fields do not overwrite each other.
+ */
+export function parse_changed_localized_form(params: URLSearchParams, fields: readonly LocalizedFormField[]): Record<string, Record<string, string>> {
+	const submitted = parse_localized_form(params, fields);
+
+	for (const [locale_code, field_values] of Object.entries(submitted)) {
+		for (const field_name of Object.keys(field_values)) {
+			const input_name = localized_input_name(field_name, locale_code);
+			if (field_values[field_name] === params.get(`_original_${input_name}`)) {
+				delete field_values[field_name];
+			}
+		}
+		if (Object.keys(field_values).length === 0) delete submitted[locale_code];
+	}
+
+	return submitted;
+}
+
+/**
  * Validate every submitted translation against the same per-field Zod rule the
  * source field uses, so a translation can never bypass a constraint enforced
  * on the original.

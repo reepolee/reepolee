@@ -3,8 +3,11 @@
  * DB connection and query helpers - uses db_cli singleton instead of creating temp connections.
  */
 
+import { join } from "node:path";
+
 import { db_cli } from "$config/db_cli";
 import { INTERNAL_TABLE_PREFIX } from "$config/db_structure";
+import { MAIN_APP } from "$config/paths";
 import { default_locale, locales } from "$config/supported_locales";
 
 import { locale_clone_table_names } from "../naming";
@@ -121,7 +124,7 @@ export async function get_child_tables(parent_table: string): Promise<{ table: s
 // write_table_file() will later decide about.
 // ---------------------------------------------------------------------------
 
-export async function get_grid_column_choices(table_name: string): Promise<{ name: string; default_selected: boolean; width: string; class_name: string; filter: boolean; helper: string; }[]> {
+export async function get_grid_column_choices(table_name: string): Promise<{ name: string; default_selected: boolean; width: string; class_name: string; filter: boolean; helper: string; readonly: boolean; }[]> {
 	try {
 		const { db_type } = await import("$lib/resolve_db_type");
 		const { load_ddl_cache, ddl_cache_to_schema_objects } = await import("../ddl_cache");
@@ -148,11 +151,41 @@ export async function get_grid_column_choices(table_name: string): Promise<{ nam
 		const type_mapper = await type_mapper_factory();
 
 		const table_column_map = build_table_column_map(all_schemas);
-		return list_grid_column_choices(schema_obj, type_mapper, table_column_map, all_indexes);
+		const choices = list_grid_column_choices(schema_obj, type_mapper, table_column_map, all_indexes);
+
+		// Pre-check the checkbox from the existing table.ts columns map (a saved
+		// readonly flag), not just column-comment attributes. Best-effort: no
+		// generated route yet means no saved state, so attribute defaults stand.
+		const existing_readonly = await existing_readonly_columns(table_name);
+		for (const choice of choices) {
+			const saved = existing_readonly.get(choice.name);
+			if (saved !== undefined) choice.readonly = saved;
+		}
+		return choices;
 	} catch (err) {
 		console.log(`  ${color(`Error listing index columns for "${table_name}": ${err}`, RED)}`);
 		return [];
 	}
+}
+
+/** Which of the table's columns carry `readonly: true` in its table.ts columns map. */
+async function existing_readonly_columns(table_name: string): Promise<Map<string, boolean>> {
+	const readonly = new Map<string, boolean>();
+	try {
+		const { discover_routes_with_schema } = await import("./utils/route_scan");
+		const { load_table_module_fresh } = await import("../schema/table_module_loader");
+		const route = discover_routes_with_schema().find((r) => r.table === table_name);
+		if (!route) return readonly;
+		const dir_name = route.route_name ?? route.table;
+		const parts = [MAIN_APP, ...(route.prefix ? [route.prefix] : []), dir_name, "schema", "table.ts"];
+		const module = await load_table_module_fresh<{ columns?: Record<string, { readonly?: unknown; }> }>(join(...parts));
+		for (const [name, column] of Object.entries(module.columns ?? {})) {
+			readonly.set(name, column?.readonly === true);
+		}
+	} catch {
+		// No schema module yet - defaults stand.
+	}
+	return readonly;
 }
 
 // ---------------------------------------------------------------------------
