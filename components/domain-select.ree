@@ -1,0 +1,59 @@
+{{
+	const attrs = props.attributes || {};
+	const selectedDomain = attrs["selected-domain"] || "";
+	const selectedNonCompliant = attrs["selected-non-compliant"] === "true";
+	const selectedTypeString = attrs["selected-type-string"] || "";
+	const required = attrs.required === "true";
+	const domainGroups = props.domain_groups || [];
+	const currentLabel = props.translations?.labels?.current || "current";
+	const suggestedLabel = props.translations?.labels?.suggested || "suggested";
+	// Rendered server-side so the trigger shows its final label on first
+	// paint - sync_trigger() only needs to re-run this after a user picks a
+	// new domain, not on page load, which would otherwise shift layout.
+	const selectedTriggerText = selectedDomain
+		? (selectedNonCompliant
+			? `${selectedDomain} - ${selectedTypeString} (${currentLabel})`
+			: (() => {
+				for (const group of domainGroups) {
+					const match = group.domains.find((domain) => domain.name === selectedDomain);
+					if (match) return `${match.name} - ${match.sql_type}`;
+				}
+				return selectedDomain;
+			})())
+		: "-";
+}}
+<div class="domain-select relative">
+	<select class="studio-column-domain hidden" name="column_domain" {#if required}required{/if}>
+		<option value="">-</option>
+		{#each domainGroups as group}
+			<optgroup label="{= group.name }">
+				{#each group.domains as domain}
+					{#if domain.name === selectedDomain && selectedNonCompliant}
+						<option
+							value="{= domain.name }"
+							data-sql-type="{= selectedTypeString }"
+							data-current="1"
+							selected
+							>{= domain.name} - {= selectedTypeString} ({= currentLabel})</option>
+						{/if}
+						<option
+							value="{= domain.name }"
+							data-sql-type="{= domain.type_string }"
+							{#if domain.name === selectedDomain && !selectedNonCompliant}selected{/if}
+							>{= domain.name} - {= domain.sql_type}{#if domain.name === selectedDomain && selectedNonCompliant} ({= suggestedLabel}){/if}</option>
+						{/each}
+					</optgroup>
+				{/each}
+			</select>
+			<button type="button" class="domain-select-trigger w-full truncate rounded-sm border border-border bg-surface-raised px-3 py-1 text-left" aria-haspopup="listbox">{= selectedTriggerText }</button>
+			<div class="domain-select-menu" popover role="listbox">
+				{#each domainGroups as group}
+					<div class="domain-select-group" role="group" aria-label="{= group.name }">
+						<div class="domain-select-group-header">{= group.name}</div>
+						{#each group.domains as domain}
+							<div class="domain-select-option" role="option" tabindex="-1" data-value="{= domain.name }" data-sql-type="{= domain.type_string }" data-label="{= domain.name } - {= domain.sql_type}">{= domain.name} - {= domain.sql_type}</div>
+						{/each}
+					</div>
+				{/each}
+			</div>
+		</div>
