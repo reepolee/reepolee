@@ -1,0 +1,36 @@
+{
+	"actions": {
+		"add_project": "Dodaj projekt",
+		"capture": "Zajemi izhodišče",
+		"page_sets": "Upravljaj nabore strani"
+	},
+	"labels": {
+		"baseline_page_set": "Prikaži nabor strani izhodišča",
+		"baseline_pages": "Strani izhodišča",
+		"baseline_updated": "Izhodišče zajeto",
+		"baseline_url": "Osnovni URL izhodišča",
+		"capture_size": "Velikost zajema",
+		"chrome": "Zajem strani",
+		"evidence_render": "Dokazni video",
+		"image_diff": "Primerjava slik",
+		"latest_capture_pages": "Nazadnje zajete strani",
+		"latest_capture_urls": "Nazadnje zajeti URL-ji",
+		"pages": "strani",
+		"retained_urls": "Ohranjeni starejši URL-ji izhodišč",
+		"voiceover": "Glasovna pripoved"
+	},
+	"nav": "Izhodišča",
+	"route_name": "izhodisca",
+	"status": {
+		"baseline_ready": "Izhodišče pripravljeno",
+		"no_baseline": "Ni izhodišča"
+	},
+	"ui": {
+		"active_run": "Vizualni zagon v teku",
+		"capture_hint": "Nadomesti shranjeno vizualno referenco s svežimi zajemi izbranega nabora strani.",
+		"description": "Preglejte in zamenjajte shranjeno vizualno referenco za aktivni nabor strani.",
+		"no_page_set": "Pred zajemom izhodišča izberite ali ustvarite nabor strani.",
+		"no_projects": "Pred zajemom vizualnih izhodišč registrirajte projekt.",
+		"title": "Vizualna izhodišča"
+	}
+}
