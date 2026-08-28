@@ -54,7 +54,7 @@ export async function get_users_table_created_at(): Promise<string | null> {
 	return created_at ? new Date(created_at).toISOString() : null;
 }
 
-async function get_table_creation_times(): Promise<Map<string, string>> {
+export async function get_table_creation_times(): Promise<Map<string, string>> {
 	// information_schema is MySQL-only; SQLite has no per-table creation
 	// timestamps, so degrade to an empty map (bootstrap-cutoff filter off).
 	if (db_type !== "mysql") return new Map();

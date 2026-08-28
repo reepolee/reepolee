@@ -8,8 +8,7 @@ import { locale_clone_table_names } from "$generator/naming";
 import { any_busy } from "./lib/busy_state";
 import { load_runs, type RunRecord } from "./lib/state";
 import { list_sql_files, type SqlFileEntry } from "./lib/sql_files";
-import { get_users_table_created_at } from "../db_tables/sql.custom";
-import { db } from "$config/db";
+import { get_table_creation_times, get_users_table_created_at } from "../db_tables/sql.custom";
 
 export type PageOverrides = {
 	form_error?: string;
@@ -126,14 +125,6 @@ export async function load_reeman_data(load: ReemanLoad = {}): Promise<ReemanDat
 // ---------------------------------------------------------------------------
 // Connection summary - type + password-masked display string
 // ---------------------------------------------------------------------------
-
-async function get_table_creation_times(): Promise<Map<string, string>> {
-	// information_schema is MySQL-only; SQLite has no per-table creation
-	// timestamps, so degrade to an empty map (bootstrap-cutoff filter off).
-	if (db_type !== "mysql") return new Map();
-	const rows = await db.unsafe(`SELECT TABLE_NAME, CREATE_TIME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()`) as Array<{ TABLE_NAME?: string; CREATE_TIME?: Date | string | null }>;
-	return new Map(rows.filter((row) => row.TABLE_NAME && row.CREATE_TIME).map((row) => [row.TABLE_NAME!.toLowerCase(), new Date(row.CREATE_TIME!).toISOString()]));
-}
 
 function summarize_connection(): { type: string; display: string; } {
 	const raw = Bun.env.DEV_CONNECTION_STRING?.trim() || "";

@@ -5,7 +5,7 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-		<link rel="stylesheet" href='/app{~ props.is_dev ? "-dev" :"" }.css?v={= props.version }' />
+		<link rel="stylesheet" href='/app.css?v={= props.version }' />
 		<title>{= props.translations?.ui?.title || props.site_name}</title>
 
 		<script src="/helpers-client.js?v={= props.version }"></script>
