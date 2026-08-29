@@ -1,0 +1,16 @@
+{
+	"mcpServers": {
+		"reepolee": {
+			"command": "bun",
+			"args": [
+				"run",
+				"scripts/mcp/start.ts"
+			],
+			"cwd": "C:/Users/ales/code/labs/reepolee-dev",
+			"env": {
+				"MCP_ENABLE_MUTATIONS": "TRUE",
+				"MCP_ENABLE_TEMPLATE_RENDER": "TRUE"
+			}
+		}
+	}
+}
