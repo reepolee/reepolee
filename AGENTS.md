@@ -136,9 +136,9 @@ manual into comments.
 ## Discovering the reepolee MCP server
 
 This repo ships an MCP server (`scripts/mcp/`) that may already be connected to your
-session as **`reepolee`**. Its tools are prefixed `mcp__reepolee__*`. **Check for these
-tools first and prefer them** over hand-rolled equivalents - they are project-aware and
-safer:
+session under a client-configured server name. Its tools may be exposed with a prefix such
+as `mcp__<server_name>__*`. **Check for the project MCP tools first and prefer them**
+over hand-rolled equivalents - they are project-aware and safer:
 
 - Adding a user? Use `run_generator` with `name="user"` (wraps `generator/user.ts`) - do
   not hand-write an `INSERT`. `run_sql` is read-only (SELECT/EXPLAIN/PRAGMA/SHOW only) and

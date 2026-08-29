@@ -6,7 +6,7 @@
 				"run",
 				"scripts/mcp/start.ts"
 			],
-			"cwd": "C:/Users/ales/code/labs/reepolee-dev",
+			"cwd": ".",
 			"env": {
 				"MCP_STDIO": "TRUE",
 				"MCP_ENABLE_MUTATIONS": "TRUE",
