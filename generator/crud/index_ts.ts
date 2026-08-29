@@ -299,7 +299,7 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 	const autocomplete_display_options = has_autocomplete ? "\tautocomplete_display_values," : "";
 
 	const localization_import = localized
-		? `import { enqueue } from "$queue/index";\nimport { copy_localized_values, generate_localized_values, get_locale_rows } from "$lib/localized_copy";\nimport { build_localization_props, localized_input_form_state, parse_changed_localized_form, parse_copy_request, parse_generate_request, validate_localized_inputs } from "$lib/localized_form";\nimport { locales } from "$config/supported_locales";\nimport { invalidate_all_locales, save_locale_values } from "$lib/locale_write";\n`
+		? `import { enqueue } from "$queue/index";\nimport { copy_localized_values, generate_localized_values, get_locale_rows } from "$lib/localized_copy";\nimport { build_localization_props, localized_input_form_state, parse_changed_localized_form, parse_copy_request, parse_generate_request, validate_localized_inputs, validate_touched_localized_inputs } from "$lib/localized_form";\nimport { locales } from "$config/supported_locales";\nimport { invalidate_all_locales, save_locale_values } from "$lib/locale_write";\n`
 		: "";
 	// The CSS-only tab switcher pre-selects whichever locale tab the visitor
 	// last used, read from a plain cookie - no JS is needed to restore it.
@@ -332,6 +332,15 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 		: "";
 	const validate_localization = localized
 		? `const localized_errors = validate_localized_inputs(localized_inputs, schema, ctx.translations.errors);`
+		: "";
+	// Per-field blur validation: a user leaving a translation input sends
+	// `touched: ["_lv[field][locale]"]` to */validate. The client has no schema
+	// locally, so the endpoint mirrors the base validation and also validates
+	// the touched <field>|<locale> pair(s), returning errors keyed the same way
+	// the localized panel's per-locale `#error-<field>|<locale>` elements expect.
+	const validate_localized_touched = localized
+		? `	const localized_errors = validate_touched_localized_inputs(body, touched, LOCALIZED_FIELDS, schema, ctx.translations.errors);
+	Object.assign(errors, localized_errors);`
 		: "";
 	const localization_errors_check = localized ? " || Object.keys(localized_errors).length > 0" : "";
 	const localization_error_data = localized
@@ -399,6 +408,7 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 			"update.original_params": generate_original_form_params(fields),
 			"update.readonly_values": generate_readonly_record_values(readonly_fields),
 			"validate.params": generate_validate_params(fields),
+			"validate.localized": validate_localized_touched,
 			"empty.record": generate_empty_record(fields),
 			"empty.errors": generate_empty_errors(fields),
 			"new.get_foreign_key_options": generate_select_fields_loader(foreign_keys),

@@ -199,6 +199,38 @@ export function validate_localized_inputs(
 	}
 
 	return errors;
+}/**
+ * Server-side counterpart to the client's per-field blur validation for
+ * localized (translation) inputs, which submit as `_lv[<field>][<locale>]`.
+ *
+ * Validates only the touched field+locale pairs, against the same base-field
+ * Zod rule (`validate_localized_inputs`) any save uses, so the client can show
+ * the error inline as the user tabs through the form. Returns errors keyed by
+ * `localized_value_key` (`<field>|<locale>`), which is also the localized
+ * panel's per-locale error element (`#error-<field>|<locale>`).
+ */
+export function validate_touched_localized_inputs(
+	body: Record<string, any>,
+	touched: readonly string[],
+	fields: readonly LocalizedFormField[],
+	schema: { shape: Record<string, { safeParse: (value: unknown) => { success: boolean; error?: { issues: Array<{ message: string; }>; }; }; }>; },
+	messages?: Record<string, string>,
+): Record<string, string> {
+	const by_locale: Record<string, Record<string, string>> = {};
+
+	for (const name of touched) {
+		if (typeof name !== "string") continue;
+		const match = /^_lv\[(.+)\]\[([a-zA-Z0-9-]+)\]$/.exec(name);
+		// Both capture groups are present whenever the regex matches.
+		if (!match) continue;
+		const field_name = match[1]!;
+		const locale = match[2]!;
+		if (!fields.some((field) => field.field_name === field_name)) continue;
+		(by_locale[locale] ??= {})[field_name] = String(body[name] ?? "");
+	}
+
+	if (Object.keys(by_locale).length === 0) return {};
+	return validate_localized_inputs(by_locale, schema, messages);
 }
 
 /** Values keyed for the form, so a failed save re-renders what was typed. */

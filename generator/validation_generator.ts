@@ -80,12 +80,19 @@ export function generate_zod_fields_from_array(fields: FieldDef[], type: "index"
 				schema = field.required ? "z_datetime_required" : "z_datetime_optional";
 			} else if (field.type === "tags") {
 				schema = "z.string()";
-			} else if (field.type === "select" && field.attributes?.options) {
-				schema = `z.enum(${JSON.stringify(field.attributes.options)})`;
+			} else if (field.type === "select" && Array.isArray(field.attributes?.options) && field.attributes.options.length > 0) {
+				// select-with-options is an enum of the declared options. The empty
+				// placeholder <option value=""> from select.ree submits as "", which
+				// must reach the required check with a friendly key - so add "" as a
+				// sentinel member and refine it away, instead of chaining .min()
+				// (Zod 4.5 enums have no .min/.max). Off-list values are rejected by
+				// the enum itself; min/max are not applicable to a discrete option set.
+				const select_options = [...field.attributes.options, ""];
+				schema = `z.enum(${JSON.stringify(select_options)})`;
 
-				if (field.min !== undefined) { schema += `.min(${field.min}, "${field.name}_invalid")`; }
-				if (field.max !== undefined) { schema += `.max(${field.max}, "${field.name}_invalid")`; }
-				if (field.min === undefined && field.required) { schema += `.min(1, "${field.name}_required")`; }
+				if (field.min === undefined && field.required) {
+					schema += `.refine((v) => v !== "", { message: "${field.name}_required" })`;
+				}
 			} else {
 				schema = "z.string()";
 
@@ -158,9 +165,9 @@ export function collect_validation_error_keys(fields: FieldDef[], foreign_keys?:
 			if (field.required) { keys.set("required", "This field is required."); }
 		} else if (field.type === "tags") {
 			// z.string() with no constraints - emits nothing.
-		} else if (field.type === "select" && field.attributes?.options) {
-			if (field.min !== undefined) { keys.set(`${field.name}_invalid`, `${label} is not a valid choice.`); }
-			if (field.max !== undefined) { keys.set(`${field.name}_invalid`, `${label} is not a valid choice.`); }
+		} else if (field.type === "select" && Array.isArray(field.attributes?.options) && field.attributes.options.length > 0) {
+			// A required select emits `name_required` when the empty placeholder
+			// is submitted; off-list values are rejected by the enum itself.
 			if (field.min === undefined && field.required) { keys.set(`${field.name}_required`, `${label} is required.`); }
 		} else {
 			if (field.min === undefined && field.required) { keys.set(`${field.name}_required`, `${label} is required.`); }

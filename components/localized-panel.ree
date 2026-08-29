@@ -67,7 +67,7 @@
 				{/if}
 			{/if}
 		{/if}
-		<p class="localized-error text-brand text-xs px-3" id="error-{= key }">{= error }</p>
+		<validation-error class="localized-error mt-1" id="error-{= key }">{= error }</validation-error>
 	</div>
 	<p class="localized-stale-notice text-xs px-3 mt-1 lg:mt-0 lg:self-center" data-localized-stale {#if !stale_from}hidden{/if}>
 		{#if stale_from}

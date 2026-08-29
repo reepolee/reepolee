@@ -132,7 +132,7 @@ Downloaded via `bun get:pre` scripts into `vendor/` and imported via `$vendor/` 
 
 | Package                          | Source            | Local path                    | Purpose                                                            |
 | -------------------------------- | ----------------- | ----------------------------- | ------------------------------------------------------------------ |
-| **Zod v4.4.3**                   | jsDelivr CDN      | `vendor/zod.min.js`           | Runtime schema validation                                          |
+| **Zod v4.5.4**                   | jsDelivr CDN      | `vendor/zod.min.js`           | Runtime schema validation                                          |
 | **highlight.js v11.11.1**        | jsDelivr CDN      | `vendor/highlight.min.js`     | Code syntax highlighting                                           |
 | **@js-temporal/polyfill v0.5.1** | jsDelivr CDN      | `vendor/temporal.min.js`      | Temporal API polyfill                                              |
 

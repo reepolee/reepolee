@@ -15,6 +15,15 @@ async function post_json(url, body) {
 	return [res.status, data];
 }
 
+// A localized (translation) input submits as name `_lv[<field>][<locale>]`;
+// the server and the localized panel key its error as `<field>|<locale>`
+// (and the panel's error element id is `#error-<field>|<locale>`). Map between
+// the two so per-field blur validation and submit errors target the right slot.
+function field_error_key(name) {
+	const match = /^_lv\[(.+)\]\[([a-zA-Z0-9-]+)\]$/.exec(name || "");
+	return match ? `${match[1]}|${match[2]}` : name;
+}
+
 async function form_validate_field(form, field) {
 	if (!form || !field) return;
 
@@ -25,7 +34,8 @@ async function form_validate_field(form, field) {
 		});
 
 		if (!form.errors) form.errors = {};
-		form.errors[field] = data?.errors?.[field] || "";
+		const key = field_error_key(field);
+		form.errors[key] = data?.errors?.[key] || "";
 	} catch  {}
 }
 
@@ -214,10 +224,15 @@ class FormController {
 
 	render_errors() {
 		for (const field of this._get_fields()) {
-			const el = $(`#error-${field}`);
+			const key = field_error_key(field);
+			// Look up by id directly: a localized panel's error id carries a `|`
+			// (e.g. `error-name|sl-si`) that CSS `#...` selectors treat as a
+			// namespace separator and would throw on. getElementById handles
+			// any id verbatim.
+			const el = document.getElementById("error-" + key);
 			if (!el) continue;
 
-			el.innerHTML = this.errors[field] || "";
+			el.innerHTML = this.errors[key] || "";
 		}
 	}
 }

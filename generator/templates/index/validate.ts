@@ -8,6 +8,7 @@ export async function post___table.exact___validate(req: BunRequest): Promise<Re
 	};
 
 	const [errors,valid_data] = validate_touched(data, touched, ctx.translations.errors);
+__validate.localized__
 	const success = Object.keys(errors).length === 0;
 
 	return Response.json({ success, errors }, { status: 200 });

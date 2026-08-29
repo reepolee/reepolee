@@ -13,7 +13,9 @@ mock.module("$config/supported_locales", () => ({
 	locale_aliases: {},
 }));
 
-import { parse_changed_localized_form, resolve_localized_values } from "./localized_form";
+import { z } from "$vendor/zod.min.js";
+
+import { parse_changed_localized_form, resolve_localized_values, validate_touched_localized_inputs } from "./localized_form";
 
 describe("resolve_localized_values", () => {
 	test("keeps the default locale on the base row when the UI locale is Slovenian", () => {
@@ -40,4 +42,55 @@ test("keeps only changed translated fields", () => {
 		{ field_name: "name", label: "Name", input_type: "text" },
 		{ field_name: "label", label: "Label", input_type: "text" },
 	])).toEqual({ "sl-si": { label: "Spremenjena oznaka" } });
+});
+
+describe("validate_touched_localized_inputs", () => {
+	const fields = [{ field_name: "name", label: "Name", input_type: "text" }];
+	const schema = z.object({ name: z.string().min(1, "name_required") });
+
+	test("validates a touched translation input and keys the error as <field>|<locale>", () => {
+		const errors = validate_touched_localized_inputs(
+			{ "_lv[name][sl-si]": "" },
+			["_lv[name][sl-si]"],
+			fields,
+			schema,
+		);
+		expect(errors).toEqual({ "name|sl-si": "name_required" });
+	});
+
+	test("returns no errors for a valid touched translation", () => {
+		const errors = validate_touched_localized_inputs(
+			{ "_lv[name][sl-si]": "Slovenian name" },
+			["_lv[name][sl-si]"],
+			fields,
+			schema,
+		);
+		expect(errors).toEqual({});
+	});
+
+	test("ignores non-localized touched names and unknown fields", () => {
+		expect(validate_touched_localized_inputs({ name: "" }, ["name"], fields, schema)).toEqual({});
+		expect(validate_touched_localized_inputs({}, ["_lv[nope][sl-si]"], fields, schema)).toEqual({});
+	});
+
+	test("honors the messages map for translated error text", () => {
+		const errors = validate_touched_localized_inputs(
+			{ "_lv[name][sl-si]": "" },
+			["_lv[name][sl-si]"],
+			fields,
+			schema,
+			{ name_required: "Name is required." },
+		);
+		expect(errors).toEqual({ "name|sl-si": "Name is required." });
+	});
+
+	test("only validates the touched field/locale pair", () => {
+		const errors = validate_touched_localized_inputs(
+			{ "_lv[name][en-us]": "", "_lv[name][sl-si]": "" },
+			["_lv[name][en-us]"],
+			fields,
+			schema,
+		);
+		expect(errors).toEqual({ "name|en-us": "name_required" });
+	});
 });

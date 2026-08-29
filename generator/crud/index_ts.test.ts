@@ -33,6 +33,45 @@ describe("generate_index_ts localized save", () => {
 		expect(source).toContain("await save_locale_values(TABLE_NAME, Number(id), localized_inputs, LOCALE_PROTECTED_COLUMNS);");
 		expect(source).toContain('const LOCALIZED_FIELDS = [{"field_name":"name"');
 	});
+
+	test("wires per-field blur validation for translation inputs into the validate handler", async () => {
+		const source = await generate_index_ts({
+			table_name: "metrics",
+			fields,
+			column_names: ["id", "name"],
+			view_column_names: [],
+			sort_options: "[]",
+			view_name: "v_metrics",
+			has_view: false,
+			first_field: "name",
+			foreign_keys: new Map(),
+			localization_enabled: true,
+			localized_fields: [{ field_name: "name", label: "name", input_type: "text" }],
+		});
+
+		expect(source).toContain(
+			"const localized_errors = validate_touched_localized_inputs(body, touched, LOCALIZED_FIELDS, schema, ctx.translations.errors);",
+		);
+		expect(source).toContain("Object.assign(errors, localized_errors);");
+		expect(source).toContain("validate_touched_localized_inputs } from \"$lib/localized_form\";");
+	});
+
+	test("keeps the validate handler localization-free for a non-localized route", async () => {
+		const source = await generate_index_ts({
+			table_name: "sensors",
+			fields,
+			column_names: ["id", "code", "name"],
+			view_column_names: [],
+			sort_options: "[]",
+			view_name: "v_sensors",
+			has_view: false,
+			first_field: "name",
+			foreign_keys: new Map(),
+			route_param_value: "code",
+		});
+
+		expect(source).not.toContain("validate_touched_localized_inputs");
+	});
 });
 
 test("uses a configured route parameter for the save-and-stay redirect", async () => {
