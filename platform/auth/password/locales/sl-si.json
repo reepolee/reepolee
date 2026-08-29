@@ -1,0 +1,22 @@
+{
+	"actions": {
+		"cancel": "Prekini",
+		"submit": "Spremeni geslo"
+	},
+	"errors": {
+		"incorrect_password": "Trenutno geslo je napačno."
+	},
+	"labels": {
+		"current_password": "Trenutno geslo",
+		"password": "Novo geslo",
+		"password_confirm": "Potrdite novo geslo"
+	},
+	"messages": {
+		"successful_save": "Geslo je bilo uspešno spremenjeno."
+	},
+	"route_name": "geslo",
+	"ui": {
+		"no_password_set": "Geslo ni nastavljeno. Kontaktirajte skrbnika.",
+		"title": "Spremeni geslo"
+	}
+}
