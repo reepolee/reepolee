@@ -6,12 +6,31 @@
 The project includes a **Model Context Protocol (MCP) server** under `scripts/mcp/` that
 exposes project capabilities as tools for AI assistants.
 
-- **Entry point:** `scripts/mcp/start.ts` enables protocol-safe stdio before loading `index.ts` (registration), with `db.ts`, `project.ts`, and `operations.ts` providing tool groups.
-- **Start:** `bun run mcp`. Config in `mcp.json` at project root.
-- **Protocol:** JSON-RPC 2.0 over stdio. Compatible with Claude Desktop, VS Code, Cursor, and any MCP client.
-- **Transport contract:** stdout contains JSON-RPC frames only. Startup and diagnostic output goes to stderr. Closing client stdin shuts down database connections and exits cleanly.
-- **Exposure:** Local stdio only. Do not expose this process, its stdio, or an MCP bridge on a network port.
+- **Entry points:** `scripts/mcp/start.ts` provides STDIO and `scripts/mcp/http.ts` provides Streamable HTTP. Both load the shared registration and dispatcher in `index.ts`; `db.ts`, `project.ts`, and `operations.ts` provide tool groups.
+- **Start:** `bun run mcp` for STDIO or `bun run mcp:http` for Streamable HTTP. The checked-in `mcp.json` remains the STDIO registration.
+- **Protocol:** JSON-RPC 2.0 over newline-delimited STDIO or MCP Streamable HTTP.
+- **STDIO contract:** stdout contains JSON-RPC frames only. Startup and diagnostic output goes to stderr. Closing client stdin shuts down database connections and exits cleanly.
+- **HTTP contract:** `http://127.0.0.1:${MCP_HTTP_PORT}/mcp`, bearer authentication via `MCP_HTTP_TOKEN`, per-client sessions, and a public loopback `/health` endpoint. The server does not bind to LAN interfaces.
 - **Dependencies:** Bun native APIs only (no npm deps).
+
+## Streamable HTTP and PM2
+
+Set a random bearer token of at least 32 characters in `MCP_HTTP_TOKEN`. The HTTP port defaults to `2401` and can be changed with `MCP_HTTP_PORT`. Start it directly with `bun run mcp:http`, or from the repository root under PM2:
+
+```sh
+pm2 start operations/mcp.config.cjs
+```
+
+Codex stores MCP configuration in `~/.codex/config.toml` or a trusted project's `.codex/config.toml`. Point it at the shared server and make the same token available in the environment that launches Codex:
+
+```toml
+[mcp_servers.reepolee]
+url = "http://127.0.0.1:2401/mcp"
+bearer_token_env_var = "MCP_HTTP_TOKEN"
+required = true
+```
+
+Run `pm2 restart reepolee-mcp --update-env` after changing the token or other MCP environment values. Keep `instances: 1`: mutation tools are serialized inside this process, but separate PM2 instances would not share that lock.
 
 ## Template tools
 
@@ -46,6 +65,7 @@ filtering, and clean shutdown with:
 
 ```sh
 bun run mcp:check
+bun run mcp:check:http
 bun run mcp:check:mutations
 bun run mcp:check:exit
 ```

@@ -13,7 +13,7 @@ import { unlink } from "node:fs/promises";
 import { join } from "node:path";
 
 import { normalize_locale } from "$lib/locale";
-import { delete_file_translation, list_translation_files, read_all_translation_rows } from "$lib/translation_files";
+import { delete_file_translation, list_locale_translation_files, read_all_translation_rows } from "$lib/translation_files";
 
 // ---------------------------------------------------------------------------
 // Exported API - callable from other modules
@@ -179,22 +179,52 @@ export async function remove_locale_from_system(locale_code: string, options: Re
 	// Step 4: Delete translation files and cross-language references
 	// -------------------------------------------------------------------
 	console.log("\n📝 Deleting translation files...");
+
+	// Locate every on-disk file for this locale by filename, not through the
+	// namespace scan. list_translation_files() aborts on a duplicate pair (an
+	// adjacent file + a locales/ subdir file in one namespace), which on a
+	// derived project can silently skip the whole deletion while reporting
+	// success. Matching purely on filename deletes both halves of such a pair.
+	let locale_files: string[] = [];
 	try {
-		const files = await list_translation_files();
-		const locale_files = files.filter((item) => item.locale === locale_code);
-		for (const item of locale_files) await unlink(item.file);
-
-		const rows = await read_all_translation_rows();
-		const locale_name_key = `ui.locale_names.${locale_code}`;
-		const language_name_to_key = `ui.language_names_to.${locale_code}`;
-		const cross_references = rows.filter((row) => row.key_path === locale_name_key || row.key_path === language_name_to_key);
-		for (const row of cross_references) await delete_file_translation(row.locale, row.namespace, row.key_path);
-
-		console.log(`   ✓ Deleted ${locale_files.length} translation files for "${locale_code}"`);
-		console.log("   ✓ Cleaned up cross-language references");
+		locale_files = await list_locale_translation_files(locale_code);
 	} catch (err) {
-		console.log(`   ⚠ Could not delete translation files: ${err}`);
+		console.log(`   ⚠ Could not enumerate translation files for "${locale_code}": ${err instanceof Error ? err.message : err}`);
 	}
+
+	let deleted_count = 0;
+	const delete_failures: string[] = [];
+	for (const file of locale_files) {
+		try {
+			await unlink(file);
+			deleted_count++;
+		} catch (err) {
+			delete_failures.push(`${file}: ${err instanceof Error ? err.message : String(err)}`);
+		}
+	}
+
+	const clean_cross_references = async (): Promise<boolean> => {
+		try {
+			const rows = await read_all_translation_rows();
+			const locale_name_key = `ui.locale_names.${locale_code}`;
+			const language_name_to_key = `ui.language_names_to.${locale_code}`;
+			const cross_references = rows.filter((row) => row.key_path === locale_name_key || row.key_path === language_name_to_key);
+			for (const row of cross_references) await delete_file_translation(row.locale, row.namespace, row.key_path);
+			return true;
+		} catch (err) {
+			console.log(`   ⚠ Could not clean cross-language references: ${err instanceof Error ? err.message : err}`);
+			return false;
+		}
+	};
+	const cross_references_cleaned = await clean_cross_references();
+
+	if (delete_failures.length === 0) {
+		console.log(`   ✓ Deleted ${deleted_count} translation files for "${locale_code}"`);
+	} else {
+		console.log(`   ⚠ Deleted ${deleted_count} translation file(s) for "${locale_code}"; ${delete_failures.length} failed:`);
+		for (const failure of delete_failures) console.log(`     - ${failure}`);
+	}
+	if (cross_references_cleaned) console.log("   ✓ Cleaned up cross-language references");
 
 	// -------------------------------------------------------------------
 	// Drop this locale's clone tables

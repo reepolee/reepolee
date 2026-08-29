@@ -19,9 +19,14 @@
 			"apps/reeqa",
 			"platform"
 		],
-		"issue_repo": "reepolee/reepolee-dev"
+		"issue_repo": [
+			"reepolee/reepolee-dev",
+			"reepolee/reesql",
+			"reepolee/reettier",
+			"reepolee/ree-templates"
+		]
 	},
-	"version": "26.08.155",
+	"version": "26.08.156",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",
@@ -86,7 +91,9 @@
 		"git:ship": "bun scripts/git_ship.ts",
 		"git:production": "git push origin main:production --force",
 		"mcp": "bun run scripts/mcp/start.ts",
+		"mcp:http": "bun run scripts/mcp/http.ts",
 		"mcp:check": "bun run scripts/mcp/self_check.ts",
+		"mcp:check:http": "bun run scripts/mcp/http_self_check.ts",
 		"mcp:check:mutations": "bun run scripts/mcp/self_check.ts --mutations",
 		"mcp:check:exit": "bun run scripts/mcp/self_check.ts --notification-exit",
 		"reeman": "bun generator/reeman.ts",

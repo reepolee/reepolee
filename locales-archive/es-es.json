@@ -3,6 +3,12 @@
 	"source_locale": "en-us",
 	"target_locale": "es-es",
 	"files": {
+		"apps/main/admin/en-us.json": {
+			"source_hash": "1cb73ca3f533ea9d372ca0df96d7ee1af3c323e3c80783c0cc9cd4b8b26923e2",
+			"translations": {
+				"nav_prefix_title": "Admin"
+			}
+		},
 		"apps/main/examples/index_template/locales/en-us.json": {
 			"source_hash": "2fbb2388bb2286aaf6834cfb998cfc8b3737216262cc9845b3405a58711303f8",
 			"translations": {
@@ -32,10 +38,11 @@
 			}
 		},
 		"apps/main/examples/kitchen_sink/locales/en-us.json": {
-			"source_hash": "6122d0e71f4f75bde7611454041b10312fc05c4d4738d2e37eb404fb8eb7f00e",
+			"source_hash": "77d0742bfd30001d1dc7ad537b8276030f5da924eef9f58264b90786bff12c5b",
 			"translations": {
 				"descriptions": {
 					"card": "Esta es una sección tipo tarjeta con borde y relleno.",
+					"switch_pattern": "The `{{ }}` block pre-computes a `role` string from the built-in **`is_dev`** and **`user`** globals, then `{#switch}` dispatches. This is the idiomatic `.ree` pattern for multi-way branching: **compute one value in JS, switch on it.**",
 					"typography": "Texto de párrafo normal con formato de negrita y cursiva."
 				},
 				"errors": {
@@ -66,6 +73,7 @@
 					"secondary_button": "Botón secundario",
 					"select_dropdown": "Menú desplegable",
 					"selected_date": "Fecha seleccionada:",
+					"switch_pattern_title": "Switch Demo — Simulating else-if",
 					"text_input": "Campo de texto",
 					"text_placeholder": "Introduzca texto (mín. 3 caracteres)",
 					"textarea": "Área de texto",
@@ -75,6 +83,9 @@
 				"messages": {
 					"error": "Error: Algo salió mal",
 					"info": "Información: Esto es informativo",
+					"role_dev": "🔧 Developer mode — all features unlocked",
+					"role_guest": "🔒 Guest — sign in for full access",
+					"role_user": "👤 Welcome back, authenticated user",
 					"success": "Éxito: La operación se completó correctamente",
 					"warning": "Advertencia: Revise esta información"
 				},
@@ -133,9 +144,10 @@
 			}
 		},
 		"apps/reeman/database/locales/en-us.json": {
-			"source_hash": "2e9d017a2d9cabbccafa5da5e8345f70ab6c51e10ca97f7c06892dfcddbb2cef",
+			"source_hash": "19123763dbe635849dae0ecc30ab3bb04bc80d31d234274645860d2efc8ec458",
 			"translations": {
 				"actions": {
+					"backup_sql": "Backup to SQL",
 					"check_compliance": "Comprobar cumplimiento de dominio",
 					"data_to_sql": "DATOS a SQL",
 					"open_in_studio": "Abrir en Studio",
@@ -189,7 +201,7 @@
 			}
 		},
 		"apps/reeman/db_routes/locales/en-us.json": {
-			"source_hash": "93e059a979c09a6112129712bf77aee358a8def6085acf671f1a1d721c9a041d",
+			"source_hash": "b4da1d725607994e775d878da8840ea885de98bc9943bc1b09e26d402d44b852",
 			"translations": {
 				"actions": {
 					"add_condition": "Añadir condición",
@@ -237,20 +249,30 @@
 					"prefix": "Prefijo de módulo opcional. Déjelo vacío para colocarlo directamente en /routes."
 				},
 				"labels": {
+					"class": "Class",
+					"default": "(default)",
 					"delete_translations": "Eliminar traducciones",
 					"display": "Mostrar",
 					"fields": "Campos",
+					"filter": "Filter",
 					"folder_name": "Nombre de carpeta",
+					"helper": "Template helper",
+					"index_columns": "Index columns",
 					"mode": "Modo",
 					"module": "Módulo",
+					"name": "Name",
+					"no_helper": "None (default)",
 					"order_by": "Ordenar por",
+					"pagination": "Pagination",
 					"prefix": "Prefijo",
 					"removable": "Eliminable",
+					"render_strategy": "Render strategy",
 					"table": "Tabla / Ruta",
 					"table_name": "Nombre de tabla",
 					"template_tags": "Etiquetas de plantilla",
 					"url": "URL",
-					"where": "Dónde"
+					"where": "Dónde",
+					"width": "Width"
 				},
 				"messages": {
 					"bulk_delete_failed": "Falló la eliminación masiva.",
@@ -295,7 +317,7 @@
 			}
 		},
 		"apps/reeman/db_tables/locales/en-us.json": {
-			"source_hash": "f470f987f079463a06dbec121459c9c374f426169e89792411251c206b961db2",
+			"source_hash": "52bd9a0712af1ec100d2f8f517b4e20f311a01f4da20c2d1b0373dbc8e9910b2",
 			"translations": {
 				"actions": {
 					"bulk_action": "Eliminar tablas de BD seleccionadas",
@@ -340,20 +362,27 @@
 					"route_name": "Nombre de URL opcional que sustituye al nombre de la tabla (p. ej. my-users)"
 				},
 				"labels": {
+					"class": "Class",
 					"column_count": "Número de columnas",
+					"default": "(default)",
 					"display": "Mostrar",
+					"filter": "Filter",
 					"fk_count": "Número de FK",
 					"has_crud": "Tiene CRUD",
+					"helper": "Template helper",
 					"index_columns": "Columnas de índice",
 					"mode": "Modo",
 					"name": "Nombre",
+					"no_helper": "None (default)",
 					"pagination": "Paginación",
 					"prefix": "Prefijo",
+					"readonly": "Read-only",
 					"render_strategy": "Estrategia de renderizado",
 					"route_name": "Nombre de ruta (opcional)",
 					"row_count": "Número de filas",
 					"table": "Tabla / Ruta",
-					"template_tags": "Etiquetas de plantilla"
+					"template_tags": "Etiquetas de plantilla",
+					"width": "Width"
 				},
 				"messages": {
 					"bulk_delete_failed": "Falló la eliminación masiva.",
@@ -576,7 +605,7 @@
 			}
 		},
 		"apps/reeman/global_scopes/locales/en-us.json": {
-			"source_hash": "8f727f3b475b56ee57187e136f410e49e9b38d24fd8d444a8e41d38888d7d886",
+			"source_hash": "04f18b03ace5a06395e1a9c3af9660ae55857906922c907e94fb5126db5b34ac",
 			"translations": {
 				"actions": {
 					"abort_archive": "Cancelar",
@@ -658,8 +687,10 @@
 				},
 				"selectors": {
 					"all": "Todos",
+					"all_filters": "All filters",
 					"no_module": "-- Sin módulo (raíz) --",
-					"select_table": "-- Seleccionar tabla --"
+					"select_table": "-- Seleccionar tabla --",
+					"user_filters": "User-created filters"
 				},
 				"ui": {
 					"no_records": "No se encontraron ámbitos globales.",
@@ -1014,7 +1045,7 @@
 			}
 		},
 		"apps/reeman/reeman/locales/en-us.json": {
-			"source_hash": "157d37f6cbcbc79abd5b71ad0b885a71d86975691fda20ea6e41b2598e25afb3",
+			"source_hash": "2470c17f7f906d1a1f93f39bdebcbc773aff2813b92e8da77a76bb3264647d13",
 			"translations": {
 				"actions": {
 					"reload_routes": "Recargar rutas",
@@ -1025,16 +1056,9 @@
 				},
 				"labels": {
 					"action": "Acción",
-					"columns": "Columnas",
-					"crud": "CRUD",
 					"finished": "Finalizado",
-					"foreign_keys": "FKs",
-					"schema": "Esquema",
 					"status": "Estado",
-					"table": "Tabla",
-					"tables": "Tablas",
-					"target": "Destino",
-					"view": "Vista"
+					"target": "Destino"
 				},
 				"nav": "Reeman",
 				"nav_prefix_title": "Reeman",
@@ -1043,7 +1067,6 @@
 					"description": "Interfaz web para el gestor de recursos de Reepolee",
 					"last_runs": "Ejecuciones recientes",
 					"no_runs": "Aún no hay ejecuciones: elija una acción arriba.",
-					"no_tables": "No se encontraron tablas. ¿Está inicializada la base de datos?",
 					"reload_routes_hint": "Reconstruye en caliente la tabla de rutas y la navegación desde el disco y actualiza las traducciones. No se necesita reiniciar el servidor en desarrollo.",
 					"stats_crud": "Con CRUD",
 					"stats_locales": "Idiomas",
@@ -1085,7 +1108,7 @@
 			}
 		},
 		"apps/reeman/software_update/locales/en-us.json": {
-			"source_hash": "d9b7b55337a2f93599c152e54e877825980c8e4292073eb6b8b7d846295e7855",
+			"source_hash": "ab999bc3a11638f6ff33e3e0bc42ce9d4b8a10bd7342cc4f6c2cec7b93df0e86",
 			"translations": {
 				"actions": {
 					"apply": "Aplicar",
@@ -1131,7 +1154,9 @@
 					"loading": "Loading…",
 					"no_changes": "No hay archivos diferentes entre la fuente de origen y este proyecto.",
 					"project_only_hint": "Exists only in this project. Never deleted by Reesync.",
+					"scan_complete": "Scan complete. Review the differences below before applying files",
 					"scan_expired": "That scan has expired. Scan the source directory again.",
+					"scanning": "Scanning the upstream and this project. Reesync is walking and comparing every file; this can take a moment for large checkouts.",
 					"software_update_description": "Selective upstream adoption: review every differing file against a local upstream checkout, then copy only the files you choose into this project.",
 					"software_update_never_deletes": "Project-only files are informational and are never deleted.",
 					"software_update_title": "Actualización de software",
@@ -1489,7 +1514,7 @@
 			}
 		},
 		"apps/reeqa/projects/locales/en-us.json": {
-			"source_hash": "4131b3c5c8b77659c3d592a30c5569a828a28697330fee44db48906a08e58fe4",
+			"source_hash": "28d342c94282fac82543641ed10c663191fa9fb65d606d7c382555da9ad06480",
 			"translations": {
 				"actions": {
 					"add": "Añadir proyecto",
@@ -1497,6 +1522,7 @@
 					"delete": "Quitar proyecto",
 					"do_it": "Quitar",
 					"duplicate": "Duplicar proyecto",
+					"edit": "Edit project",
 					"save": "Guardar proyecto"
 				},
 				"confirm": {

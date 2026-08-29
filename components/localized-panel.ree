@@ -1,5 +1,5 @@
 {{
-	const locale = props.attributes.locale;
+	const panel_locale = props.attributes.locale;
 	const loc = props.attributes.localization ?? {};
 	const locale_names = loc.locale_names ?? {};
 	const tab_group = props.attributes["tab-group"];
@@ -10,8 +10,8 @@
 	const field_name = props.attributes["field-name"] ?? props.attributes.field?.name;
 	const field = props.attributes.field ?? (loc.fields ?? []).find((candidate) => candidate.name === field_name) ?? { name: field_name, type: "text" };
 
-	const key = field.name + "|" + locale;
-	const input_name = "_lv[" + field.name + "][" + locale + "]";
+	const key = field.name + "|" + panel_locale;
+	const input_name = "_lv[" + field.name + "][" + panel_locale + "]";
 
 	// Every locale holds a real row, so every panel has a real value - a value
 	// cloned from the default locale is stored and edited like any other. There
@@ -40,8 +40,8 @@
 }}
 <div
 	data-localized-panel
-	data-locale="{= locale }"
-	data-locale-label="{= locale_names[locale] || locale }"
+	data-locale="{= panel_locale }"
+	data-locale-label="{= locale_names[panel_locale] || panel_locale }"
 	data-field="{= field.name }"
 	data-tab-group="{= tab_group }"
 	class="localized-field-panel localized-tab-panel grid lg:col-span-2 lg:grid-cols-subgrid"

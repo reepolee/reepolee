@@ -114,6 +114,8 @@ export const KNOWN_ENV_VARS: readonly string[] = [
 	"MCP_ENABLE_MUTATIONS",
 	"MCP_READONLY_CONNECTION_STRING",
 	"MCP_SERVER_PORT",
+	"MCP_HTTP_PORT",
+	"MCP_HTTP_TOKEN",
 
 	// -- Internal admin endpoints (optional) --
 	"INTERNAL_ADMIN_ENDPOINTS",

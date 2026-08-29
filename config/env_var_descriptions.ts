@@ -99,10 +99,12 @@ export const ENV_VAR_DESCRIPTIONS: Record<string, string> = {
 	HF_TOKEN: "Hugging Face API token.",
 
 	// -- MCP server --
-	MCP_ENABLE_TEMPLATE_RENDER: "Set to \"true\" to let the MCP server render .ree templates, which executes local code. Off by default. Local stdio only - never expose the MCP bridge on a network port.",
+	MCP_ENABLE_TEMPLATE_RENDER: "Set to \"true\" to let the MCP server render .ree templates, which executes local code. Off by default. For Streamable HTTP, keep the server on 127.0.0.1 and require MCP_HTTP_TOKEN.",
 	MCP_ENABLE_MUTATIONS: "Set to \"true\" to allow MCP tools that write (generators, translation edits). Off by default.",
 	MCP_READONLY_CONNECTION_STRING: "MySQL only: a SELECT-only database user for MCP inspection. \"N/A\" means SQLite inspection uses its own read-only URL instead.",
 	MCP_SERVER_PORT: "Port reported to MCP clients by the `project` tool as the app's server port. Defaults to 2400.",
+	MCP_HTTP_PORT: "Loopback port for the MCP Streamable HTTP endpoint. Defaults to 2401.",
+	MCP_HTTP_TOKEN: "Bearer token required by the MCP Streamable HTTP endpoint. Must be at least 32 characters. Generate with: openssl rand -hex 32",
 
 	// -- Internal admin endpoints --
 	INTERNAL_ADMIN_ENDPOINTS: "Set to \"true\" to expose the internal translation-reload and rate-limit endpoints. Off by default; enable only where those endpoints are needed, together with RELOAD_SECRET.",

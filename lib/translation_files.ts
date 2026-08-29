@@ -282,6 +282,34 @@ export async function list_translation_files(project_dir: string = process.cwd()
 }
 
 /**
+ * Every on-disk `{locale}.json` file for one locale, across every app root,
+ * the platform tree, and the project root. This is deliberately *not* routed
+ * through `list_translation_files()` so it cannot abort on a duplicate pair
+ * (an adjacent file plus a `locales/` subdir file in the same namespace). A
+ * removal wants every such file gone - both of a duplicate pair - so we match
+ * purely on filename and return whatever exists. Used by
+ * `remove_locale_from_system` and surfaced for cleanup tooling.
+ */
+export async function list_locale_translation_files(locale: string, project_dir: string = process.cwd()): Promise<string[]> {
+	const filename = `${locale}.json`;
+	const matches: string[] = [];
+
+	const collect = (root: string): Promise<void> => walk_translation_files(root).then((files) => {
+		for (const file of files) if (basename(file) === filename) matches.push(file);
+	});
+
+	for (const root of translation_roots(project_dir)) await collect(root);
+
+	// Project root: adjacent `{locale}.json` and `locales/{locale}.json`.
+	const root_adjacent = join(project_dir, filename);
+	if (existsSync(root_adjacent)) matches.push(root_adjacent);
+	const root_locales = join(project_dir, "locales", filename);
+	if (existsSync(root_locales)) matches.push(root_locales);
+
+	return [...new Set(matches)];
+}
+
+/**
  * Files found on disk that are shadowed by a higher-priority app tree's file
  * for the same (namespace, locale) and therefore ignored. Surfaces the
  * console.warn emitted during scanning so the UI can show users why a locale

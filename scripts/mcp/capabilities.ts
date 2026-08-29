@@ -1,6 +1,6 @@
 import { env_switch_on } from "$config/env_vars";
 
-const MUTATION_TOOL_NAMES = new Set([
+export const MUTATION_TOOL_NAMES = new Set([
 	"add_translations",
 	"refresh_crud",
 	"reload_translations",
@@ -11,6 +11,15 @@ const MUTATION_TOOL_NAMES = new Set([
 	"spreadsheet_to_sql",
 	"run_sql_dev",
 ]);
+
+const SERIAL_TOOL_NAMES = new Set([
+	...MUTATION_TOOL_NAMES,
+	"check_domain_compliance",
+]);
+
+export function requires_serial_mcp_execution(name: string): boolean {
+	return SERIAL_TOOL_NAMES.has(name);
+}
 
 export function has_mcp_mutation_capability(value = Bun.env.MCP_ENABLE_MUTATIONS): boolean {
 	return env_switch_on("MCP_ENABLE_MUTATIONS", { MCP_ENABLE_MUTATIONS: value });

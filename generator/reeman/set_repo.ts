@@ -46,7 +46,14 @@ export async function set_repo(owner_repo?: string): Promise<string | null> {
 	const pkg_path = join(process.cwd(), "package.json");
 	const pkg = await Bun.file(pkg_path).json();
 	pkg.ree ??= {};
-	pkg.ree.issue_repo = target;
+	// issue_repo is a list of "owner/repo" targets - the first entry is the
+	// default for dev-mode issue reports and the rest are offered as choices in
+	// the New Issue dialog. set-repo appends a repo rather than replacing the
+	// list, so several linked repos can coexist.
+	const raw = pkg.ree.issue_repo;
+	const existing = Array.isArray(raw) ? raw.map(String) : (raw ? [String(raw)] : []);
+	const next = [...new Set([...existing, target])];
+	pkg.ree.issue_repo = next;
 	await Bun.write(pkg_path, `${JSON.stringify(pkg, null, "\t")}\n`);
 	console.log(`  ${color("✓", GREEN)} Updated package.json (ree.issue_repo)`);
 

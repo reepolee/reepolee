@@ -216,6 +216,21 @@ class MarkdownEditor extends HTMLElement {
 		this.surface_el.dataset.empty = markdown ? "false" : "true";
 		this.textarea.dispatchEvent(new Event("input", { bubbles: true }));
 	}
+
+	/**
+	 * Empty the editor - clears both the contenteditable surface and the
+	 * underlying form textarea, e.g. when a form built once is reset between
+	 * submissions (issue #417).
+	 */
+	clear() {
+		this.raw_mode = false;
+		this.surface_el.innerHTML = "<p></p>";
+		this.surface_el.dataset.empty = "true";
+		this.surface_el.hidden = false;
+		this.textarea.value = "";
+		this.textarea.classList.add("hidden");
+		this.textarea.dispatchEvent(new Event("input", { bubbles: true }));
+	}
 }
 
 function selection_covers_root(range, root) {

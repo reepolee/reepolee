@@ -1,7 +1,7 @@
 <field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= props.attributes.name }">
 	<div class="grid">
 		<label class="px-3 flex items-center gap-2" for="{= props.attributes.name }">
-			<input type="checkbox" id="{= props.attributes.name }" name="{= props.attributes.name }" {#if props.attributes.value} checked{/if} />
+			<input type="checkbox" id="{= props.attributes.name }" name="{= props.attributes.name }" value="1" {#if props.attributes.value} checked{/if} />
 			{= props.attributes.label}
 		</label>
 		<validation-error class="mt-1" id="error-{= props.attributes.name }"></validation-error>

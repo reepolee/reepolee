@@ -25,7 +25,7 @@ import { clients, is_same_origin_upgrade, notify_clients } from "$lib/livereload
 import type { WebSocketData } from "$lib/livereload";
 import { log_error } from "$lib/logger";
 import { initialize_render } from "$lib/render";
-import { handle_create_issue } from "$lib/issue_reporter";
+import { handle_create_issue, handle_issue_repos } from "$lib/issue_reporter";
 import { handle_inspector_message } from "$lib/inspector_ws";
 import { handle_open_request } from "$lib/open_in_editor";
 import { handle_generic_upload_endpoints } from "$lib/upload_endpoints";
@@ -126,6 +126,7 @@ function create_dev_fetch_handler() {
 
 		// Dev-only GitHub issue reporter (Ctrl+Shift+I overlay)
 		if (req.method === "POST" && url.pathname === "/__issue") { return handle_create_issue(req); }
+		if (req.method === "GET" && url.pathname === "/__issue_repos") { return handle_issue_repos(req); }
 
 		// Dev-only "open in editor" for the inspector (Meta+Shift / Alt+Shift overlay)
 		if (req.method === "POST" && url.pathname === "/__ree_open") { return handle_open_request(process.cwd(), url); }

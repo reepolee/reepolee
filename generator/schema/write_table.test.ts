@@ -58,7 +58,7 @@ describe("write_table_file", () => {
 			type: "table",
 			name: "metrics",
 			columns: [],
-			foreign_keys: [{ column_name: "sensor_code", referenced_table_name: "sensors", referenced_column_name: "code" }],
+			foreign_keys: [{ constraint_name: "fk_metrics_sensor_code", column_name: "sensor_code", referenced_table_name: "sensors", referenced_column_name: "code" }],
 			has_view: false,
 		};
 

@@ -268,9 +268,10 @@ export async function post_locales_install_archived(req: BunRequest): Promise<Re
 
 	const { action_install_archived_locale } = await import("../reeman/actions");
 	const result = await action_install_archived_locale({ locale_code });
+	const error_detail = result.error || result.output;
 	return toast_redirect(
 		req,
-		result.ok ? `Reeman: imported ${locale_code} from the locale archive.` : `Reeman: failed to import ${locale_code}${result.error ? ` - ${result.error}` : ""}.`,
+		result.ok ? `Reeman: imported ${locale_code} from the locale archive.` : `Reeman: failed to import ${locale_code}${error_detail ? ` - ${error_detail}` : ""}.`,
 		result.ok ? "green" : "red",
 	);
 }

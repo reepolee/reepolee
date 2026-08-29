@@ -57,7 +57,7 @@ import { env_switch_on } from "$config/env_vars";
 import { default_locale, locales } from "$config/supported_locales";
 import { list_components } from "./project";
 import { COMPONENTS_DIR, PLATFORM_ROOT, PROJECT_ROOT, ROUTES_DIR } from "./paths";
-import { filter_mcp_tools } from "./capabilities";
+import { filter_mcp_tools, requires_serial_mcp_execution } from "./capabilities";
 import { template_tools } from "./tools_template";
 import { project_tools } from "./tools_project";
 import { db_tools } from "./tools_db";
@@ -68,9 +68,11 @@ import { operations_tools } from "./tools_operations";
 // ---------------------------------------------------------------------------
 
 const SERVER_VERSION = pkg.version;
+const MCP_PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"] as const;
 let shutdown_promise: Promise<void> | null = null;
+let serial_tool_queue: Promise<void> = Promise.resolve();
 
-function shutdown_mcp_server(): Promise<void> {
+export function shutdown_mcp_server(): Promise<void> {
 	if (shutdown_promise) return shutdown_promise;
 	shutdown_promise = (async () => {
 		await Promise.allSettled([close_db_cli(), close_db()]);
@@ -78,10 +80,24 @@ function shutdown_mcp_server(): Promise<void> {
 	return shutdown_promise;
 }
 
+async function run_tool_handler(name: string, handler: (args: Record<string, any>) => Promise<any>, args: Record<string, any>): Promise<any> {
+	if (!requires_serial_mcp_execution(name)) return await handler(args);
+
+	const run = serial_tool_queue.then(() => handler(args));
+	serial_tool_queue = run.then(() => undefined, () => undefined);
+	return await run;
+}
+
 function assert_template_rendering_enabled(): void {
 	if (!env_switch_on("MCP_ENABLE_TEMPLATE_RENDER")) {
 		throw new Error("Template rendering executes local code and requires MCP_ENABLE_TEMPLATE_RENDER=true");
 	}
+}
+
+function negotiated_protocol_version(requested_version: unknown): string {
+	if (typeof requested_version !== "string") return MCP_PROTOCOL_VERSIONS[0];
+	const supported_version = MCP_PROTOCOL_VERSIONS.find((version) => version === requested_version);
+	return supported_version ?? MCP_PROTOCOL_VERSIONS[0];
 }
 
 const engine = new TemplateEngine({
@@ -156,65 +172,61 @@ function get_tool_schemas() { return exposed_tools.map(({ name, description, inp
 // Message handler
 // ---------------------------------------------------------------------------
 
-async function handle_message(msg: any): Promise<void> {
+export async function handle_mcp_message(msg: any, exit_process = false): Promise<string | null> {
 	const { jsonrpc, id, method, params } = msg;
 
 	if (jsonrpc !== "2.0") {
-		if (id) console.error(json_rpc_error(id, -32600, "Invalid Request: not JSON-RPC 2.0"));
-		return;
+		return id !== undefined ? json_rpc_error(id, -32600, "Invalid Request: not JSON-RPC 2.0") : null;
 	}
 
 	switch (method) {
 		case "initialize":
 			{
+				const protocol_version = negotiated_protocol_version(params?.protocolVersion);
 				const response = json_rpc(id, {
-					protocolVersion: "2024-11-05",
+					protocolVersion: protocol_version,
 					capabilities: { tools: {} },
 					serverInfo: { name: "reepolee", version: SERVER_VERSION },
 				});
-				process.stdout.write(response);
-				break;
+				return response;
 			}
 		case "notifications/initialized":
 			{
 				// No-op - client confirmed initialization
-				break;
+				return null;
 			}
 		case "tools/list":
 			{
 				const response = json_rpc(id, { tools: get_tool_schemas() });
-				process.stdout.write(response);
-				break;
+				return response;
 			}
 		case "tools/call":
 			{
 				const { name, arguments: args } = params || {};
 				const handler = tool_map.get(name);
 				if (!handler) {
-					process.stdout.write(json_rpc_error(id, -32601, `Tool not found: ${name}`));
-					break;
+					return json_rpc_error(id, -32601, `Tool not found: ${name}`);
 				}
 				try {
-					const result = await handler(args || {});
-					process.stdout.write(json_rpc(id, result));
+					const result = await run_tool_handler(name, handler, args || {});
+					return json_rpc(id, result);
 				} catch (e: any) {
-					process.stdout.write(json_rpc_error(id, -32603, `Tool error: ${e.message}`, { stack: e.stack }));
+					return json_rpc_error(id, -32603, `Tool error: ${e.message}`, { stack: e.stack });
 				}
-				break;
 			}
 		case "notifications/cancelled":
 			{
-				break;
+				return null;
 			}
 		case "notifications/exit":
 			{
 				await shutdown_mcp_server();
-				process.exit(0);
+				if (exit_process) process.exit(0);
+				return null;
 			}
 		default:
 			{
-				if (id) { process.stdout.write(json_rpc_error(id, -32601, `Method not found: ${method}`)); }
-				break;
+				return id !== undefined ? json_rpc_error(id, -32601, `Method not found: ${method}`) : null;
 			}
 	}
 }
@@ -243,7 +255,8 @@ async function main() {
 			if (!trimmed) continue;
 			try {
 				const msg = JSON.parse(trimmed);
-				await handle_message(msg);
+				const response = await handle_mcp_message(msg, true);
+				if (response) process.stdout.write(response);
 			} catch (e: any) {
 				console.error(`[ree-mcp] Parse error: ${e.message}`);
 			}
@@ -253,7 +266,9 @@ async function main() {
 	await shutdown_mcp_server();
 }
 
-main().catch((err) => {
-	console.error("[ree-mcp] Fatal:", err);
-	shutdown_mcp_server().finally(() => process.exit(1));
-});
+if (Bun.env.MCP_TRANSPORT === "stdio") {
+	main().catch((err) => {
+		console.error("[ree-mcp] Fatal:", err);
+		shutdown_mcp_server().finally(() => process.exit(1));
+	});
+}

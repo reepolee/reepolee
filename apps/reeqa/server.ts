@@ -11,7 +11,7 @@ import { default_locale } from "$config/supported_locales";
 import { env_available } from "$config/env_vars";
 import { bootstrap } from "$lib/bootstrap";
 import { handle_inspector_message } from "$lib/inspector_ws";
-import { handle_create_issue } from "$lib/issue_reporter";
+import { handle_create_issue, handle_issue_repos } from "$lib/issue_reporter";
 import { canonical_locale } from "$lib/locale";
 import { clients, is_same_origin_upgrade, notify_clients, notify_evidence_ready, notify_recording_ready } from "$lib/livereload";
 import type { WebSocketData } from "$lib/livereload";
@@ -117,6 +117,9 @@ function create_dev_fetch_handler() {
 
 		if (req.method === "POST" && url.pathname === "/__issue") {
 			return handle_create_issue(req);
+		}
+		if (req.method === "GET" && url.pathname === "/__issue_repos") {
+			return handle_issue_repos(req);
 		}
 
 		// The evidence job runs in the queue worker (a separate process), so it

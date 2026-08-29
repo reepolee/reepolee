@@ -5,13 +5,19 @@ import type { RouteDefinition } from "$lib/route_builder";
 import type { BunRequest } from "bun";
 
 import { set_repo } from "$generator/reeman/set_repo";
+import { list_issue_repos } from "$lib/issue_reporter";
 
 const BASE_PATH = "/project";
 const OWNER_REPO_RE = /^[\w.-]+\/[\w.-]+$/;
 
+/** The default issue-report repo (the first configured entry), if any. */
 async function read_current_repo(): Promise<string> {
-	const pkg = await Bun.file("package.json").json();
-	return (pkg?.ree?.issue_repo as string | undefined) ?? "";
+	try {
+		const repos = await list_issue_repos();
+		return repos[0] ?? "";
+	} catch {
+		return "";
+	}
 }
 
 export async function get_project_page(req: BunRequest, form_error = ""): Promise<Response> {

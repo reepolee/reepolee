@@ -141,7 +141,23 @@ function normalize_bundle_path(path: string, target_locale: string): string {
 	return path;
 }
 
-export async function parse_and_validate_translation_bundle(input: unknown, project_dir: string = process.cwd()): Promise<TranslationBundle> {
+export interface ParseTranslationBundleOptions {
+	/**
+	 * Lenient mode is used by the install/import path. Import must never fail
+	 * on stale translations (issue #418): entries whose source path no longer
+	 * exists (deleted/renamed route) are skipped instead of rejecting the
+	 * whole bundle, and translated leaves are copied as-is without comparing
+	 * them against the current en-us tree - missing or outdated keys fall back
+	 * to en-us at render time and are the user's to fix. Structural integrity
+	 * (shape, string leaves, hash format) is still enforced so install never
+	 * writes a corrupt file. Strict mode (default) keeps full validation for
+	 * freshly uploaded bundles.
+	 */
+	lenient?: boolean;
+}
+
+export async function parse_and_validate_translation_bundle(input: unknown, project_dir: string = process.cwd(), options: ParseTranslationBundleOptions = {}): Promise<TranslationBundle> {
+	const lenient = options.lenient ?? false;
 	if (!is_object(input)) throw new Error("Translation bundle must be a JSON object.");
 	if (input.format !== TRANSLATION_BUNDLE_FORMAT) throw new Error(`Unsupported translation bundle format: ${String(input.format)}`);
 	if (input.source_locale !== "en-us") throw new Error("Translation bundle source_locale must be en-us.");
@@ -155,7 +171,15 @@ export async function parse_and_validate_translation_bundle(input: unknown, proj
 	const normalized_entries = new Map<string, unknown>();
 	for (const [raw_path, raw_file] of Object.entries(input.files)) {
 		const normalized_path = normalize_bundle_path(raw_path, target_locale);
-		if (!sources_by_path.has(normalized_path)) throw new Error(`Translation bundle path does not match a current English source file: ${raw_path}`);
+		if (!sources_by_path.has(normalized_path)) {
+			// Stale entry: no current English source to mirror into a live
+			// folder (its route was deleted or renamed). Strict mode rejects
+			// the bundle; lenient import just skips it and installs the rest.
+			if (!lenient) {
+				throw new Error(`Archived entry "${raw_path}" is stale because no current English source exists at "${normalized_path}". Refresh locales-archive/${target_locale}.json from the current en-us files, or remove this entry if its route was deleted.`);
+			}
+			continue;
+		}
 		if (normalized_entries.has(normalized_path)) throw new Error(`Translation bundle contains duplicate source paths: ${normalized_path}`);
 		normalized_entries.set(normalized_path, raw_file);
 	}
@@ -173,7 +197,10 @@ export async function parse_and_validate_translation_bundle(input: unknown, proj
 			throw new Error(`Bundle entry has an invalid source_hash: ${source.path}`);
 		}
 		assert_plain_translation_object(raw_file.translations, `files.${source.path}.translations`);
-		validate_translation_tree(source.translations, raw_file.translations, `files.${source.path}.translations`);
+		// Lenient import copies the archived leaves as-is: keys that no longer
+		// exist in en-us or placeholders that drifted are kept and rendered
+		// with en-us fallback, never blocking the import.
+		if (!lenient) validate_translation_tree(source.translations, raw_file.translations, `files.${source.path}.translations`);
 		files[source.path] = {
 			source_hash: source.source_hash,
 			translations: sort_object(raw_file.translations),
@@ -188,11 +215,11 @@ export async function parse_and_validate_translation_bundle(input: unknown, proj
 	};
 }
 
-export async function read_translation_bundle(bundle_file: string, project_dir: string = process.cwd()): Promise<TranslationBundle> {
+export async function read_translation_bundle(bundle_file: string, project_dir: string = process.cwd(), options: ParseTranslationBundleOptions = {}): Promise<TranslationBundle> {
 	const absolute_file = isAbsolute(bundle_file) ? bundle_file : resolve(project_dir, bundle_file);
 	if (!existsSync(absolute_file)) throw new Error(`Translation bundle not found: ${bundle_file}`);
 	const input = await Bun.file(absolute_file).json();
-	return await parse_and_validate_translation_bundle(input, project_dir);
+	return await parse_and_validate_translation_bundle(input, project_dir, options);
 }
 
 export function archive_bundle_file(locale: string, project_dir: string = process.cwd()): string {
@@ -209,7 +236,10 @@ async function archive_validated_translation_bundle(bundle: TranslationBundle, p
 	const target_file = archive_bundle_file(bundle.target_locale!, project_dir);
 	const merged = await create_translation_bundle(bundle.target_locale, project_dir);
 	if (existsSync(target_file)) {
-		const existing = await read_translation_bundle(target_file, project_dir);
+		// Read the existing archive leniently so a stale entry (a route deleted
+		// since the archive was written) does not block re-archiving: stale
+		// paths are dropped from the merge rather than failing the upload.
+		const existing = await read_translation_bundle(target_file, project_dir, { lenient: true });
 		for (const [path, file] of Object.entries(existing.files)) {
 			merged.files[path]!.translations = apply_translations(merged.files[path]!.translations, file.translations);
 		}
@@ -290,7 +320,9 @@ async function write_live_bundle(bundle: TranslationBundle, project_dir: string)
 
 export async function install_archived_translation_bundle(locale: string, project_dir: string = process.cwd()): Promise<TranslationBundle> {
 	const bundle_file = archive_bundle_file(locale, project_dir);
-	const bundle = await read_translation_bundle(bundle_file, project_dir);
+	// Lenient read: importing a locale must never fail on stale translations
+	// (issue #418) - stale paths are skipped and leaves are copied as-is.
+	const bundle = await read_translation_bundle(bundle_file, project_dir, { lenient: true });
 	await write_live_bundle(bundle, project_dir);
 	return bundle;
 }

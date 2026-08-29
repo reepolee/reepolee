@@ -48,17 +48,64 @@ async function run_gh(args: string[], stdin?: string): Promise<{ ok: boolean; st
 	return { ok: exit_code === 0, stdout: stdout.trim(), stderr: stderr.trim() };
 }
 
-async function get_current_repo(): Promise<string> {
-	const pkg_path = join(process.cwd(), "package.json");
-	const pkg = await Bun.file(pkg_path).json();
-	const issue_repo = pkg?.ree?.issue_repo as string | undefined;
+const AGENT_READY_LABEL = "agent ready";
 
-	if (!issue_repo) { throw new Error("package.json has no \"ree.issue_repo\" - run `bun reeman set-repo <owner/repo>` before filing issues"); }
+/** GitHub "owner/repo". */
+export const OWNER_REPO_RE = /^[\w.-]+\/[\w.-]+$/;
 
-	return issue_repo;
+/**
+ * Normalize package.json's raw "ree.issue_repo" value into an ordered,
+ * de-duplicated list of valid "owner/repo" strings. Accepts the current array
+ * form and the legacy single-string form, so older projects keep working.
+ */
+export function normalize_issue_repos(raw: string | string[] | undefined): string[] {
+	const repos = Array.isArray(raw) ? raw : (raw === undefined ? [] : [raw]);
+	const valid = repos.map((repo) => String(repo).trim()).filter((repo) => OWNER_REPO_RE.test(repo));
+	return [...new Set(valid)];
 }
 
-const AGENT_READY_LABEL = "agent ready";
+/**
+ * The configured target repos for dev-mode issue reports, in declaration
+ * order, read from package.json "ree.issue_repo". The UI's repo dropdown
+ * shows this list in order and defaults to the first entry.
+ */
+export async function list_issue_repos(): Promise<string[]> {
+	const pkg_path = join(process.cwd(), "package.json");
+	const pkg = await Bun.file(pkg_path).json();
+	const raw = pkg?.ree?.issue_repo as string | string[] | undefined;
+
+	if (raw === undefined) {
+		throw new Error("package.json has no \"ree.issue_repo\" - run `bun reeman set-repo <owner/repo>` before filing issues");
+	}
+
+	const valid = normalize_issue_repos(raw);
+	if (valid.length === 0) {
+		throw new Error("package.json \"ree.issue_repo\" has no valid owner/repo entries - run `bun reeman set-repo <owner/repo>`");
+	}
+	return valid;
+}
+
+/**
+ * Pick the repo an issue should be filed against. Prefers the caller-supplied
+ * selection when it is one of the configured repos (so the UI's dropdown is
+ * honored), otherwise falls back to the first configured repo - the reported
+ * default behavior.
+ */
+async function resolve_issue_repo(selected?: string | null): Promise<string> {
+	const repos = await list_issue_repos();
+	const trimmed = selected?.trim();
+	if (trimmed && OWNER_REPO_RE.test(trimmed) && repos.includes(trimmed)) return trimmed;
+	return repos[0]!;
+}
+
+/** GET /__issue_repos - the repo list for the dropdown, first = default. */
+export async function handle_issue_repos(_req: Request): Promise<Response> {
+	try {
+		return Response.json({ repos: await list_issue_repos() }, { status: 200 });
+	} catch (err) {
+		return Response.json({ repos: [], error: err instanceof Error ? err.message : String(err) }, { status: 200 });
+	}
+}
 
 async function ensure_agent_ready_label(repo: string): Promise<void> {
 	const list_result = await run_gh(["label", "list", "--repo", repo, "--search", AGENT_READY_LABEL, "--json", "name", "-q", ".[].name"]);
@@ -142,6 +189,7 @@ export async function handle_create_issue(req: Request): Promise<Response> {
 	const title = (form_data.get("title") as string)?.trim() || "";
 	const description = (form_data.get("description") as string)?.trim() || "";
 	const page_url = (form_data.get("page_url") as string)?.trim() || "";
+	const selected_repo = (form_data.get("repo") as string)?.trim() || "";
 	const labels = form_data.getAll("labels").map((label) => String(label)).filter(Boolean);
 	const screenshot_files = (form_data.getAll("screenshot") as File[]).filter((file) => file.size > 0);
 	const screenshot_labels = form_data.getAll("screenshot_label").map((label) => String(label).trim());
@@ -150,7 +198,7 @@ export async function handle_create_issue(req: Request): Promise<Response> {
 
 	let repo: string;
 	try {
-		repo = await get_current_repo();
+		repo = await resolve_issue_repo(selected_repo);
 	} catch (err) {
 		return Response.json({ ok: false, error: err instanceof Error ? err.message : String(err) }, { status: 500 });
 	}

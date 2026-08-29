@@ -5,6 +5,7 @@ import { dirname, join } from "node:path";
 
 import { MAIN_APP, REEMAN_APP, REEQA_APP } from "$config/paths";
 import {
+	list_locale_translation_files,
 	list_shadowed_translation_files,
 	list_translation_files,
 	read_namespace_file,
@@ -122,6 +123,43 @@ describe("translation file layouts", () => {
 
 		expect(() => translation_file("home", "en-us", project_dir)).toThrow("Duplicate translation files");
 		expect(list_translation_files(project_dir)).rejects.toThrow("Duplicate translation files");
+	});
+
+	// list_locale_translation_files deliberately matches by filename so a removal
+	// can still delete every on-disk file for a locale even when a namespace has a
+	// duplicate pair (adjacent + locales/ subdir file) that list_translation_files
+	// treats as fatal.
+	test("lists every on-disk file for a locale including duplicate pairs", async () => {
+		const project_dir = create_project_dir();
+
+		// Namespace with a duplicate pair - fatal for list_translation_files.
+		const namespace_dir = join(project_dir, MAIN_APP, "home");
+		mkdirSync(join(namespace_dir, "locales"));
+		const adjacent = join(namespace_dir, "sl-si.json");
+		const nested = join(namespace_dir, "locales", "sl-si.json");
+		await Bun.write(adjacent, "{}\n");
+		await Bun.write(nested, "{}\n");
+
+		// A normal per-route file plus the project root file.
+		const other_route = join(project_dir, MAIN_APP, "modules", "locales", "sl-si.json");
+		mkdirSync(dirname(other_route), { recursive: true });
+		await Bun.write(other_route, "{}\n");
+		const root_file = join(project_dir, "sl-si.json");
+		await Bun.write(root_file, "{}\n");
+
+		// The unfiltered scan aborts, but the tolerant locator still works.
+		expect(list_translation_files(project_dir)).rejects.toThrow("Duplicate translation files");
+
+		const files = await list_locale_translation_files("sl-si", project_dir);
+		expect(files.map((path) => path.replaceAll(`${project_dir}/`, "")).sort()).toEqual([
+			"apps/main/home/locales/sl-si.json",
+			"apps/main/home/sl-si.json",
+			"apps/main/modules/locales/sl-si.json",
+			"sl-si.json",
+		].sort());
+
+		// Other locales are not matched.
+		expect(await list_locale_translation_files("en-us", project_dir)).toEqual([]);
 	});
 
 	test("keeps app translation namespaces independent", async () => {
