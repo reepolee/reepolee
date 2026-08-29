@@ -1,0 +1,30 @@
+{
+	"actions": {
+		"cancel": "Prekliči",
+		"confirm_delete": "Izbriši",
+		"delete_selected": "Izbriši izbrane",
+		"hide_values": "Skrij vrednosti",
+		"save": "Shrani",
+		"search": "Išči",
+		"show_values": "Prikaži vrednosti"
+	},
+	"confirm": {
+		"delete_selected": "Izbrišem izbrane okoljske spremenljivke?"
+	},
+	"hints": {
+		"description": "Opisi izvirajo iz datoteke .env.example in jih tukaj ni mogoče urejati.",
+		"value": "Vnesite vrednost dotenv natančno tako, kot naj bo zapisana za enačajem. Vrednost mora biti v eni vrstici."
+	},
+	"labels": {
+		"description": "Opis",
+		"key": "Ključ",
+		"native_order": "Izvorni vrstni red .env",
+		"selected": "Izbrano",
+		"value": "Vrednost"
+	},
+	"nav": "Okolje",
+	"ui": {
+		"edit_title": "Uredi okoljsko spremenljivko",
+		"no_records": "Ni najdenih okoljskih spremenljivk."
+	}
+}
