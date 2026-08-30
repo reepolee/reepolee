@@ -54,7 +54,7 @@
 				<div class="source-panel hidden p-4 bg-white border border-slate-200 border-t-0 rounded-b-lg" data-panel="url">
 					<div class="flex gap-2">
 						<input type="url" id="url-input" placeholder="https://example.com/image.jpg" class="flex-1 px-3 py-2 border border-slate-200 rounded text-sm outline-none focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(37,99,235,0.1)]" />
-						<button id="fetch-url-btn" type="button" class="button primary">Fetch</button>
+						<button id="fetch-url-btn" type="button" class="as-button-primary">Fetch</button>
 					</div>
 				</div>
 
@@ -79,7 +79,7 @@
 				<div class="grid grid-cols-2 gap-4 w-full grid-rows-[auto_auto_auto]">
 					<div class="flex items-center justify-between px-2 py-1">
 						<span class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Original</span>
-						<button id="clear-btn" type="button" class="button tertiary text-xs">Clear</button>
+						<button id="clear-btn" type="button" class="as-button-tertiary text-xs">Clear</button>
 					</div>
 					<div class="text-xs font-semibold uppercase text-slate-500 tracking-wider px-2 py-1">Preview</div>
 
@@ -180,7 +180,7 @@
 
 					<!-- Action bar -->
 					<div class="flex gap-3 justify-between items-center mt-2">
-						<a href="{~ localized_path('/images') }" class="button secondary text-sm">
+						<a href="{~ localized_path('/images') }" class="as-button-secondary text-sm">
 							←
 							{_ actions.back}
 						</a>
@@ -189,7 +189,7 @@
 							<button
 								id="save-btn"
 								disabled
-								class="button primary disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100">
+								class="as-button-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100">
 								<span class="btn-label">💾 Save</span>
 								<span class="btn-spinner hidden">
 									<span class="inline-block w-4 h-4 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></span>
@@ -197,7 +197,7 @@
 							</button>
 
 							{#if editor_config.edit_mode}
-								<button id="save-as-copy-btn" type="button" class="button secondary">
+								<button id="save-as-copy-btn" type="button" class="as-button-secondary">
 									<span class="btn-label">📋 Save as copy</span>
 									<span class="btn-spinner hidden">
 										<span class="inline-block w-4 h-4 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></span>
@@ -210,7 +210,7 @@
 										type="button"
 										command="show-modal"
 										commandfor="action_restore_dialog"
-										class="button secondary text-xs">
+										class="as-button-secondary text-xs">
 										{_ actions.restore}
 									</button>
 								{/if}
@@ -220,7 +220,7 @@
 									type="button"
 									command="show-modal"
 									commandfor="action_archive_dialog"
-									class="button tertiary text-xs">
+									class="as-button-tertiary text-xs">
 									🗑️
 									{_ actions.archive}
 								</button>
@@ -243,8 +243,8 @@
 				<div class="p-6">
 					<h2 class="text-lg font-semibold">{_ actions.restore}</h2>
 					<div class="mt-6 flex justify-end gap-2">
-						<button class="button secondary" type="button" commandfor="action_restore_dialog" command="close">{_ actions.abort_restore}</button>
-						<button class="button primary" type="button" command="--confirm" commandfor="action_restore_dialog">{_ actions.confirm_restore}</button>
+						<button class="as-button-secondary" type="button" commandfor="action_restore_dialog" command="close">{_ actions.abort_restore}</button>
+						<button class="as-button-primary" type="button" command="--confirm" commandfor="action_restore_dialog">{_ actions.confirm_restore}</button>
 					</div>
 				</div>
 			</dialog>
@@ -258,8 +258,8 @@
 				<div class="p-6">
 					<h2 class="text-lg font-semibold">{_ actions.archive}</h2>
 					<div class="mt-6 flex justify-end gap-2">
-						<button class="button secondary" type="button" commandfor="action_archive_dialog" command="close">{_ actions.abort_archive}</button>
-						<button class="button danger" type="button" command="--confirm" commandfor="action_archive_dialog">{_ actions.confirm_archive}</button>
+						<button class="as-button-secondary" type="button" commandfor="action_archive_dialog" command="close">{_ actions.abort_archive}</button>
+						<button class="as-button-danger" type="button" command="--confirm" commandfor="action_archive_dialog">{_ actions.confirm_archive}</button>
 					</div>
 				</div>
 			</dialog>

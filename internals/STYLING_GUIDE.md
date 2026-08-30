@@ -188,6 +188,20 @@ a[role="button"],
 
 **Use for:** Any element that should look like a button. Combine with a semantic utility: `button primary`, `button secondary`, `button tertiary`. The fixed height and permanent transparent border box keep buttons aligned and prevent layout shift when hover borders appear.
 
+### `as-button` Utility
+
+`as-button` is the standalone utility for an uncolored button. The scoped intent
+modifiers include the shared button geometry, so each can be used by itself:
+`as-button-primary`, `as-button-danger`, `as-button-secondary`, or
+`as-button-tertiary`.
+
+```html
+<a href="/users/new" class="as-button-primary">+ New User</a>
+<button class="as-button-secondary">Cancel</button>
+```
+
+The existing `button` plus intent utilities remain supported for current templates.
+
 ---
 
 ## Button Color Decision Tree

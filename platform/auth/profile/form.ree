@@ -35,16 +35,16 @@
 
 		<div class="flex gap-2 mt-8 items-center justify-between">
 			<div class="flex items-center gap-2">
-				<button type="submit" class="button primary">{_ actions.submit}</button>
-				<a href="/" role="button" class="button secondary">{_ actions.cancel}</a>
+				<button type="submit" class="as-button-primary">{_ actions.submit}</button>
+				<a href="/" role="button" class="as-button-secondary">{_ actions.cancel}</a>
 			</div>
-			<a href="{~ localized_path('/password') }" role="button" class="button secondary">{_ ui.change_password}</a>
+			<a href="{~ localized_path('/password') }" role="button" class="as-button-secondary">{_ ui.change_password}</a>
 		</div>
 	</form>
 
 	<form method="POST" action="{~ localized_path('/logout') }" class="mt-8">
 		<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
-		<button type="submit" class="button secondary">{_ ui.logout}</button>
+		<button type="submit" class="as-button-secondary">{_ ui.logout}</button>
 	</form>
 </div>
 

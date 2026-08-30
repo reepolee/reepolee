@@ -63,7 +63,7 @@
 							<validation-error class="mt-1" id="error-path"></validation-error>
 						</div>
 					</field-wrapper>
-					<button type="button" command="show-modal" commandfor="run-sql-dialog" class="button primary mt-auto">{_ actions.run_sql}</button>
+					<button type="button" command="show-modal" commandfor="run-sql-dialog" class="as-button-primary mt-auto">{_ actions.run_sql}</button>
 				{/if}
 			</form>
 
@@ -72,7 +72,7 @@
 				<input type="hidden" name="return_to" value="/logs" />
 				<h2 class="font-semibold">{_ actions.check_compliance}</h2>
 				<p class="text-sm text-text-secondary">{_ ui.compliance_hint}</p>
-				<button type="submit" class="button primary mt-auto">{_ actions.check_compliance}</button>
+				<button type="submit" class="as-button-primary mt-auto">{_ actions.check_compliance}</button>
 			</form>
 
 			<form method="POST" action="{~ localized_path('/data-to-sql') }" enctype="multipart/form-data" class="flex flex-col gap-3 rounded-md border border-border bg-surface-raised p-4">
@@ -105,7 +105,7 @@
 						</div>
 					</field-wrapper>
 				</div>
-				<button type="submit" class="button primary mt-auto">{_ actions.data_to_sql}</button>
+				<button type="submit" class="as-button-primary mt-auto">{_ actions.data_to_sql}</button>
 			</form>
 		</section>
 
@@ -114,8 +114,8 @@
 				<h2 class="text-lg font-semibold">{_ actions.run_sql}</h2>
 				<p class="text-slate-600 mt-2">{_ confirm.run_sql}</p>
 				<div class="mt-6 flex justify-end gap-2">
-					<button class="button secondary" type="button" commandfor="run-sql-dialog" command="close">{_ actions.cancel}</button>
-					<button class="button danger" type="button" command="--confirm" commandfor="run-sql-dialog">{_ actions.do_it}</button>
+					<button class="as-button-secondary" type="button" commandfor="run-sql-dialog" command="close">{_ actions.cancel}</button>
+					<button class="as-button-danger" type="button" command="--confirm" commandfor="run-sql-dialog">{_ actions.do_it}</button>
 				</div>
 			</div>
 		</dialog>

@@ -120,7 +120,7 @@
 			</div>
 
 			<div class="shrink-0 px-4 py-3 bg-white border-t border-neutral-200 flex justify-end gap-2">
-				<button type="submit" class="button primary">{_ ui.apply_filters }</button>
+				<button type="submit" class="as-button-primary">{_ ui.apply_filters }</button>
 			</div>
 		</div>
 	{/if}

@@ -64,7 +64,7 @@
 					<div class="grid">
 						<label class="px-3">{_ labels.order_by}</label>
 						<div id="tp-order-rows" class="grid gap-2"></div>
-						<button type="button" id="tp-order-add" class="button secondary mt-2 justify-self-start text-xs" disabled>{_ actions.add_condition }</button>
+						<button type="button" id="tp-order-add" class="as-button-secondary mt-2 justify-self-start text-xs" disabled>{_ actions.add_condition }</button>
 					</div>
 				</field-wrapper>
 
@@ -72,13 +72,13 @@
 					<div class="grid">
 						<label class="px-3">{_ labels.where}</label>
 						<div id="tp-where-rows" class="grid gap-2"></div>
-						<button type="button" id="tp-where-add" class="button secondary mt-2 justify-self-start text-xs" disabled>{_ actions.add_condition }</button>
+						<button type="button" id="tp-where-add" class="as-button-secondary mt-2 justify-self-start text-xs" disabled>{_ actions.add_condition }</button>
 					</div>
 				</field-wrapper>
 
 				<div class="flex gap-2 items-center lg:col-span-2">
-					<button type="submit" id="tp-submit" class="button primary" {#if busy}disabled{/if}>{_ actions.create }</button>
-					<a href="{~ localized_path('/routes') }" role="button" class="button secondary">{_ actions.cancel}</a>
+					<button type="submit" id="tp-submit" class="as-button-primary" {#if busy}disabled{/if}>{_ actions.create }</button>
+					<a href="{~ localized_path('/routes') }" role="button" class="as-button-secondary">{_ actions.cancel}</a>
 				</div>
 			</form>
 
@@ -91,7 +91,7 @@
 						<option value="asc">ASC</option>
 						<option value="desc">DESC</option>
 					</select>
-					<button type="button" class="tp-remove button secondary text-xs">{_ actions.remove }</button>
+					<button type="button" class="tp-remove as-button-secondary text-xs">{_ actions.remove }</button>
 				</div>
 			</template>
 
@@ -104,7 +104,7 @@
 						{/each}
 					</select>
 					<input name="where_value" class="w-[24ch]" placeholder="value" />
-					<button type="button" class="tp-remove button secondary text-xs">{_ actions.remove }</button>
+					<button type="button" class="tp-remove as-button-secondary text-xs">{_ actions.remove }</button>
 				</div>
 			</template>
 

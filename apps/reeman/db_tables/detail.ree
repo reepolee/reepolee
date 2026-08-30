@@ -112,8 +112,8 @@
 					<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
 				{/if}
 				<div class="flex gap-2 items-center">
-					<button type="submit" id="detail-submit" class="button primary" {#if busy}disabled{/if}>{_ actions.generate_crud}</button>
-					<button type="button" onclick="history.back()" class="button secondary" {#if busy}disabled{/if}>{_ actions.cancel}</button>
+					<button type="submit" id="detail-submit" class="as-button-primary" {#if busy}disabled{/if}>{_ actions.generate_crud}</button>
+					<button type="button" onclick="history.back()" class="as-button-secondary" {#if busy}disabled{/if}>{_ actions.cancel}</button>
 				</div>
 			</div>
 		</form>

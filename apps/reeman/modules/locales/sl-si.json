@@ -34,9 +34,15 @@
 		"total": "Skupaj"
 	},
 	"errors": {
+		"code_max": "Koda lahko vsebuje največ 15 znakov.",
+		"code_required": "Koda je obvezna.",
 		"duplicate_key": "Zapis s to vrednostjo že obstaja.",
+		"description_max": "Opis lahko vsebuje največ 100 znakov.",
+		"description_required": "Opis je obvezen.",
 		"error_creating_record": "Med shranjevanjem zapisa je prišlo do napake.",
 		"must_be_selected": "To polje je obvezno.",
+		"name_max": "Ime lahko vsebuje največ 30 znakov.",
+		"name_required": "Ime je obvezno.",
 		"title_required": "Naslov je obvezen."
 	},
 	"labels": {

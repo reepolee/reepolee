@@ -453,21 +453,17 @@ Every reeman action - interactive or scripted - is appended as a plain command l
 
 ### Formatting on save
 
-For `.ts`, `.js`, and `.sql` files, use `reettier` / `reesql` via the Emerald Walk run-on-save extension:
+For `.ts`, `.js`, `.css`, and `.sql` files, the `ree-templates` extension provides
+formatting on save when `ree.formatOnSave` is enabled. SQL uses plain `reesql` on save.
+For the opt-in SQL transformations, use its Command Palette command:
+
+- `ree: Format SQL (unwrap joins, remove backticks)` - runs
+  `reesql --unwrap-joins --remove-backticks` on the active `.sql` file.
+
+Enable formatting on save in `.vscode/settings.json`:
 
 ```json
-"emeraldwalk.runonsave": {
-	"commands": [
-		{
-			"match": "\\.(js|ts)$",
-			"cmd": "reettier \"${file}\""
-		},
-		{
-			"match": "\\.(sql)$",
-			"cmd": "reesql \"${file}\""
-		}
-	]
-},
+"ree.formatOnSave": true
 ```
 
 ---

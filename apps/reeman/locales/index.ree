@@ -14,7 +14,7 @@
 
 			<div class="pagination-info">
 				{#if first_url }
-					<a href="{~ localized_path(first_url) }" role="button">
+					<a href="{~ localized_path(first_url) }" role="button" class="as-button">
 						<ree-icon name="chevrons_left"></ree-icon>
 					</a>
 				{:else }
@@ -22,7 +22,7 @@
 				{/if}
 
 				{#if prev_url }
-					<a href="{~ localized_path(prev_url) }" role="button"><ree-icon name="chevron_left"></ree-icon></a>
+					<a href="{~ localized_path(prev_url) }" role="button" class="as-button"><ree-icon name="chevron_left"></ree-icon></a>
 				{:else }
 					<ree-icon name="chevron_left"></ree-icon>
 				{/if}
@@ -34,7 +34,7 @@
 				{/if}
 
 				{#if next_url }
-					<a href="{~ localized_path(next_url) }" role="button">
+					<a href="{~ localized_path(next_url) }" role="button" class="as-button">
 						<ree-icon name="chevron_right"></ree-icon>
 					</a>
 				{:else }
@@ -42,7 +42,7 @@
 				{/if}
 
 				{#if last_url }
-					<a href="{~ localized_path(last_url) }" role="button">
+					<a href="{~ localized_path(last_url) }" role="button" class="as-button">
 						<ree-icon name="chevrons_right"></ree-icon>
 					</a>
 				{:else }
@@ -73,9 +73,9 @@
 			</div>
 
 			<div class="flex items-center gap-2">
-				<a href="{~ localized_path('/locales/export-bundle') }" class="button secondary" download>{_ actions.export_english}</a>
-				<button commandfor="upload_translation_dialog" command="show-modal" class="button secondary">{_ actions.upload_translation}</button>
-				<button id="action" commandfor="add_locale_dialog" command="show-modal" class="button primary">{_ actions.add_locale}</button>
+				<a href="{~ localized_path('/locales/export-bundle') }" class="as-button-secondary" download>{_ actions.export_english}</a>
+				<button commandfor="upload_translation_dialog" command="show-modal" class="as-button-secondary">{_ actions.upload_translation}</button>
+				<button id="action" commandfor="add_locale_dialog" command="show-modal" class="as-button-primary">{_ actions.add_locale}</button>
 			</div>
 
 			<ree-filters action-url="/locales"></ree-filters>
@@ -83,11 +83,11 @@
 			{#if enable_archive }
 				<!-- BULK ACTIONS -->
 				<div class="flex items-center gap-4 justify-start w-full flex-wrap px-4 my-4">
-					<button id="action_set_active" disabled class="button secondary">{_ actions.set_active}</button>
-					<button id="action_set_inactive" disabled class="button secondary">{_ actions.set_inactive}</button>
-					<button id="action_2" commandfor="remove_dialog" command="show-modal" disabled class="button tertiary">{_ actions.remove_selected}</button>
+					<button id="action_set_active" disabled class="as-button-secondary">{_ actions.set_active}</button>
+					<button id="action_set_inactive" disabled class="as-button-secondary">{_ actions.set_inactive}</button>
+					<button id="action_2" commandfor="remove_dialog" command="show-modal" disabled class="as-button-tertiary">{_ actions.remove_selected}</button>
 					{#if available_seed_locales.length > 0 }
-						<button id="action_add_seeded" disabled class="button secondary">{_ actions.add}</button>
+						<button id="action_add_seeded" disabled class="as-button-secondary">{_ actions.add}</button>
 					{/if}
 				</div>
 			{/if}
@@ -185,7 +185,7 @@
 						<form method="POST" action="{~ localized_path('/locales/install-archived') }">
 							<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 							<input type="hidden" name="locale_code" value="{= archived_locale.code }" />
-							<button type="submit" class="button secondary" {#if busy }disabled{/if}>{_ actions.import}</button>
+							<button type="submit" class="as-button-secondary" {#if busy }disabled{/if}>{_ actions.import}</button>
 						</form>
 					</div>
 				{/each}
@@ -214,7 +214,7 @@
 							{/each}
 						</div>
 						<div class="mt-4 flex justify-end">
-							<button type="submit" class="button primary">{_ actions.activate_selected}</button>
+							<button type="submit" class="as-button-primary">{_ actions.activate_selected}</button>
 						</div>
 					</form>
 
@@ -237,8 +237,8 @@
 						</label>
 					</div>
 					<div class="mt-6 flex justify-end gap-2">
-						<button type="button" class="button secondary" commandfor="add_locale_dialog" command="close">{_ actions.cancel}</button>
-						<button type="submit" class="button primary">{_ actions.do_it}</button>
+						<button type="button" class="as-button-secondary" commandfor="add_locale_dialog" command="close">{_ actions.cancel}</button>
+						<button type="submit" class="as-button-primary">{_ actions.do_it}</button>
 					</div>
 				</form>
 			</div>
@@ -251,8 +251,8 @@
 				<p class="text-sm text-text-secondary">{_ ui.upload_translation_hint}</p>
 				<input type="file" name="translation_bundle" accept=".json,application/json" required />
 				<div class="flex justify-end gap-2">
-					<button type="button" class="button secondary" commandfor="upload_translation_dialog" command="close">{_ actions.cancel}</button>
-					<button type="submit" class="button primary">{_ actions.upload}</button>
+					<button type="button" class="as-button-secondary" commandfor="upload_translation_dialog" command="close">{_ actions.cancel}</button>
+					<button type="submit" class="as-button-primary">{_ actions.upload}</button>
 				</div>
 			</form>
 		</dialog>
@@ -268,8 +268,8 @@
 					<p class="text-slate-600 mt-2">{_ ui.modifying} <span class="font-semibold text-brand" id="remove_count">0</span> {_ ui.records}.</p>
 					<p class="text-sm text-text-secondary mt-1">{_ ui.remove_selected_hint}</p>
 					<div class="mt-6 flex justify-end gap-2">
-						<button type="button" class="button secondary" commandfor="remove_dialog" command="close">{_ actions.cancel}</button>
-						<button type="submit" class="button danger">{_ actions.do_it}</button>
+						<button type="button" class="as-button-secondary" commandfor="remove_dialog" command="close">{_ actions.cancel}</button>
+						<button type="submit" class="as-button-danger">{_ actions.do_it}</button>
 					</div>
 				</form>
 			</dialog>

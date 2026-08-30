@@ -11,8 +11,8 @@
 						__child.cells__
 
 						<div class="flex items-center justify-end gap-2 px-2">
-							<button type="button" class="button tertiary p-1" data-edit-child data-child-id="{= child.id }" title="{= __child.ui__.edit }">📝</button>
-							<button type="button" class="button tertiary p-1 text-text-tertiary hover:text-brand" data-delete-child data-child-id="{= child.id }" command="show-modal" commandfor="child-delete-dialog-__child.table__" title="{= __child.ui__.archive }"><!-- bare `delete` would break - `delete` is a JS keyword -->🗑️</button>
+							<button type="button" class="as-button-tertiary p-1" data-edit-child data-child-id="{= child.id }" title="{= __child.ui__.edit }">📝</button>
+							<button type="button" class="as-button-tertiary p-1 text-text-tertiary hover:text-brand" data-delete-child data-child-id="{= child.id }" command="show-modal" commandfor="child-delete-dialog-__child.table__" title="{= __child.ui__.archive }"><!-- bare `delete` would break - `delete` is a JS keyword -->🗑️</button>
 						</div>
 					</div>
 				{/each}
@@ -20,7 +20,7 @@
 		{:else}
 			<p class="text-slate-400 italic">__ui.empty_text__</p>
 		{/if}
-		<button type="button" class="button primary mt-4 inline-flex items-center gap-1" data-new-child>{= props.__child.ui__.new_button }</button>
+		<button type="button" class="as-button-primary mt-4 inline-flex items-center gap-1" data-new-child>{= props.__child.ui__.new_button }</button>
 	</div>
 
 	<!-- Child CRUD dialog -->
@@ -28,7 +28,7 @@
 		<div class="p-6 overflow-y-auto max-h-[80vh]">
 			<div class="flex items-center justify-between mb-4">
 				<h2 id="child-dialog-title-__child.table__" class="text-lg font-semibold">{= props.__child.ui__.new_title }</h2>
-				<button type="button" class="button tertiary p-1 text-2xl leading-none" commandfor="child-dialog-__child.table__" command="close">&times;</button>
+				<button type="button" class="as-button-tertiary p-1 text-2xl leading-none" commandfor="child-dialog-__child.table__" command="close">&times;</button>
 			</div>
 
 			<div id="child-form-errors-__child.table__" class="hidden py-4">
@@ -45,8 +45,8 @@
 					<!-- GEN:CHILD:FIELDS:END -->
 
 					<div class="flex gap-2 mt-6 items-center">
-						<button id="child-btn-submit-__child.table__" type="submit" class="button primary">{_ actions.save}</button>
-						<button type="button" class="button secondary" commandfor="child-dialog-__child.table__" command="close">{_ actions.cancel}</button>
+						<button id="child-btn-submit-__child.table__" type="submit" class="as-button-primary">{_ actions.save}</button>
+						<button type="button" class="as-button-secondary" commandfor="child-dialog-__child.table__" command="close">{_ actions.cancel}</button>
 					</div>
 				{/with}
 			</form>
@@ -58,8 +58,8 @@
 		<div class="p-6">
 			<h2 class="text-lg font-semibold">{_ actions.archive}</h2>
 			<div class="mt-6 flex justify-end gap-2">
-				<button class="button secondary" type="button" commandfor="child-delete-dialog-__child.table__" command="close">{_ actions.cancel}</button>
-				<button id="child-btn-confirm-delete-__child.table__" class="button danger" type="button" command="--confirm" commandfor="child-delete-dialog-__child.table__">{_ actions.confirm_archive}</button>
+				<button class="as-button-secondary" type="button" commandfor="child-delete-dialog-__child.table__" command="close">{_ actions.cancel}</button>
+				<button id="child-btn-confirm-delete-__child.table__" class="as-button-danger" type="button" command="--confirm" commandfor="child-delete-dialog-__child.table__">{_ actions.confirm_archive}</button>
 			</div>
 		</div>
 	</dialog>

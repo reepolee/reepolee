@@ -37,8 +37,8 @@
 			</field-wrapper>
 
 			<div class="flex gap-2 items-center">
-				<button type="submit" id="add-page-submit" class="button primary" {#if busy}disabled{/if}>{_ actions.create }</button>
-				<a href="{~ localized_path('/routes') }" role="button" class="button secondary">{_ actions.cancel}</a>
+				<button type="submit" id="add-page-submit" class="as-button-primary" {#if busy}disabled{/if}>{_ actions.create }</button>
+				<a href="{~ localized_path('/routes') }" role="button" class="as-button-secondary">{_ actions.cancel}</a>
 			</div>
 		</form>
 	</div>

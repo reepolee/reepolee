@@ -7,8 +7,8 @@
 	const confirm_text = attrs["confirm-text"];
 	const cancel_text = attrs["cancel-text"];
 	const trigger_class = attrs["trigger-class"] || "";
-	const confirm_variant = attrs["confirm-class"] || "primary";
-	const confirm_class = confirm_variant.includes("button") ? confirm_variant : `button ${confirm_variant}`;
+	const confirm_variant = attrs["confirm-class"] || "as-button-primary";
+	const confirm_class = confirm_variant.includes("button") ? confirm_variant : `as-button-${confirm_variant}`;
 	const width = attrs.width || "w-100";
 	const form_path = attrs["form-path"] || null;
 	const confirm_form_action = form_path ? localized_path(form_path) : null;
@@ -27,7 +27,7 @@
 			<p class="text-slate-600 mt-2">{= message_text}</p>
 		{/if}
 		<div class="mt-6 flex justify-end items-center gap-2">
-			<button type="button" class="button secondary" commandfor="{= dialog_id }" command="close">{= cancel_text}</button>
+			<button type="button" class="as-button-secondary" commandfor="{= dialog_id }" command="close">{= cancel_text}</button>
 			{#if confirm_form_action}
 				<form method="POST" action="{= confirm_form_action }" class="inline">
 					{#if csrf}

@@ -8,7 +8,7 @@
 
 			<div class="pagination-info">
 				{#if first_url}
-					<a href="{~ localized_path(first_url) }" role="button">
+					<a href="{~ localized_path(first_url) }" role="button" class="as-button">
 						<ree-icon name="chevrons_left"></ree-icon>
 					</a>
 				{:else}
@@ -16,7 +16,7 @@
 				{/if}
 
 				{#if prev_url}
-					<a href="{~ localized_path(prev_url) }" role="button">
+					<a href="{~ localized_path(prev_url) }" role="button" class="as-button">
 						<ree-icon name="chevron_left"></ree-icon>
 					</a>
 				{:else}
@@ -29,14 +29,14 @@
 					<div style="width: 9ch; text-align: center">0 / 0</div>
 				{/if}
 				{#if next_url}
-					<a href="{~ localized_path(next_url) }" role="button">
+					<a href="{~ localized_path(next_url) }" role="button" class="as-button">
 						<ree-icon name="chevron_right"></ree-icon>
 					</a>
 				{:else}
 					<ree-icon name="chevron_right"></ree-icon>
 				{/if}
 				{#if last_url}
-					<a href="{~ localized_path(last_url) }" role="button">
+					<a href="{~ localized_path(last_url) }" role="button" class="as-button">
 						<ree-icon name="chevrons_right"></ree-icon>
 					</a>
 				{:else}
@@ -65,7 +65,7 @@
 					{/each}
 				</select>
 			</div>
-			<a href="{~ localized_path('/images/new') }" role="button" class="primary">
+			<a href="{~ localized_path('/images/new') }" role="button" class="as-button-primary">
 				+
 				{_ actions.new_image}
 			</a>
@@ -89,7 +89,7 @@
 			{#if enable_archive}
 				<!-- BULK ARCHIVE -->
 				<div class="flex items-center gap-4 justify-start w-full flex-wrap px-4 my-4">
-					<button id="action" commandfor="action_dialog" command="show-modal" disabled class="button tertiary">
+					<button id="action" commandfor="action_dialog" command="show-modal" disabled class="as-button-tertiary">
 						{_ actions.bulk_action}
 					</button>
 				</div>
@@ -172,8 +172,8 @@
 					.
 				</p>
 				<div class="mt-6 flex justify-end gap-2">
-					<button class="button secondary" commandfor="action_dialog" command="close">{_ actions.cancel}</button>
-					<button class="button danger" command="--confirm" commandfor="action_dialog">{_ actions.do_it}</button>
+					<button class="as-button-secondary" commandfor="action_dialog" command="close">{_ actions.cancel}</button>
+					<button class="as-button-danger" command="--confirm" commandfor="action_dialog">{_ actions.do_it}</button>
 				</div>
 			</div>
 		</dialog>

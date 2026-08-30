@@ -14,12 +14,12 @@
 		<div class="flex items-center gap-1 justify-between w-full flex-wrap px-4">
 			<div class="pagination-info">
 				{#if first_url}
-					<a href="{~ localized_path(first_url) }" role="button" aria-label="First page"><ree-icon name="chevrons_left"></ree-icon></a>
+					<a href="{~ localized_path(first_url) }" role="button" aria-label="First page" class="as-button"><ree-icon name="chevrons_left"></ree-icon></a>
 				{:else}
 					<ree-icon name="chevrons_left"></ree-icon>
 				{/if}
 				{#if prev_url}
-					<a href="{~ localized_path(prev_url) }" role="button" aria-label="Previous page"><ree-icon name="chevron_left"></ree-icon></a>
+					<a href="{~ localized_path(prev_url) }" role="button" aria-label="Previous page" class="as-button"><ree-icon name="chevron_left"></ree-icon></a>
 				{:else}
 					<ree-icon name="chevron_left"></ree-icon>
 				{/if}
@@ -29,12 +29,12 @@
 					<div style="width: 9ch; text-align: center">0 / 0</div>
 				{/if}
 				{#if next_url}
-					<a href="{~ localized_path(next_url) }" role="button" aria-label="Next page"><ree-icon name="chevron_right"></ree-icon></a>
+					<a href="{~ localized_path(next_url) }" role="button" aria-label="Next page" class="as-button"><ree-icon name="chevron_right"></ree-icon></a>
 				{:else}
 					<ree-icon name="chevron_right"></ree-icon>
 				{/if}
 				{#if last_url}
-					<a href="{~ localized_path(last_url) }" role="button" aria-label="Last page"><ree-icon name="chevrons_right"></ree-icon></a>
+					<a href="{~ localized_path(last_url) }" role="button" aria-label="Last page" class="as-button"><ree-icon name="chevrons_right"></ree-icon></a>
 				{:else}
 					<ree-icon name="chevrons_right"></ree-icon>
 				{/if}
@@ -62,12 +62,12 @@
 				<form method="POST" action="{~ localized_path('/check-compliance') }">
 					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 					<input type="hidden" name="return_to" value="/logs" />
-					<button type="submit" class="button primary" {#if busy}disabled{/if}>+ {_ actions.check_compliance }</button>
+					<button type="submit" class="as-button-primary" {#if busy}disabled{/if}>+ {_ actions.check_compliance }</button>
 				</form>
-				<button type="button" command="show-modal" commandfor="data-to-sql-dialog" class="button primary" {#if busy}disabled{/if}>+ {_ actions.data_to_sql }</button>
+				<button type="button" command="show-modal" commandfor="data-to-sql-dialog" class="as-button-primary" {#if busy}disabled{/if}>+ {_ actions.data_to_sql }</button>
 				<form method="POST" action="{~ localized_path('/backup-database') }">
 					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
-					<button type="submit" class="button secondary" {#if busy}disabled{/if}>{_ actions.backup_sql}</button>
+					<button type="submit" class="as-button-secondary" {#if busy}disabled{/if}>{_ actions.backup_sql}</button>
 				</form>
 			</div>
 
@@ -124,10 +124,10 @@
 						<div class="text-sm">{~ js_datetime_to_locale_string(file.last_updated) }</div>
 						<div>
 							{#if file.can_open_in_studio}
-								<a href="{~ localized_path(file.studio_url) }" class="button secondary py-1" title="{_ actions.open_in_studio }">{_ actions.open_in_studio }</a>
+								<a href="{~ localized_path(file.studio_url) }" class="as-button-secondary py-1" title="{_ actions.open_in_studio }">{_ actions.open_in_studio }</a>
 							{/if}
 						</div>
-						<div><button type="button" command="show-modal" commandfor="run-sql-dialog-{= index }" class="button secondary py-1" {#if busy}disabled{/if}>{_ actions.run_sql }</button></div>
+						<div><button type="button" command="show-modal" commandfor="run-sql-dialog-{= index }" class="as-button-secondary py-1" {#if busy}disabled{/if}>{_ actions.run_sql }</button></div>
 					</div>
 
 					{#if file.show_folder_summary}
@@ -144,8 +144,8 @@
 							<input type="hidden" name="return_to" value="/database" />
 							<input type="hidden" name="path" value="{= file.path }" />
 							<div class="mt-6 flex justify-end gap-2">
-								<button type="button" class="button secondary" commandfor="run-sql-dialog-{= index }" command="close">{_ actions.cancel}</button>
-								<button type="submit" class="button danger">{_ actions.do_it}</button>
+								<button type="button" class="as-button-secondary" commandfor="run-sql-dialog-{= index }" command="close">{_ actions.cancel}</button>
+								<button type="submit" class="as-button-danger">{_ actions.do_it}</button>
 							</div>
 						</form>
 					</dialog>
@@ -181,8 +181,8 @@
 				</fieldset>
 				<input type="hidden" name="sheet_selections" value="[]" />
 				<div class="flex justify-end gap-2 mt-2">
-					<button type="button" class="button secondary" commandfor="data-to-sql-dialog" command="close">{_ actions.cancel}</button>
-					<button type="submit" class="button primary" disabled>{_ actions.data_to_sql}</button>
+					<button type="button" class="as-button-secondary" commandfor="data-to-sql-dialog" command="close">{_ actions.cancel}</button>
+					<button type="submit" class="as-button-primary" disabled>{_ actions.data_to_sql}</button>
 				</div>
 			</form>
 		</dialog>

@@ -34,10 +34,10 @@
 			<input-checkbox name="is_default" label="{_ labels.default}" value="{= record.is_default }"></input-checkbox>
 
 			<div class="flex gap-2 mt-8 items-center">
-				<button id="btn-submit" type="submit" class="button primary" {#if busy}disabled{/if}>{_ actions.save}</button>
-				<button id="btn-cancel" type="button" onclick="location.href='{~ localized_path('/locales') }'" class="button secondary">{_ actions.cancel}</button>
+				<button id="btn-submit" type="submit" class="as-button-primary" {#if busy}disabled{/if}>{_ actions.save}</button>
+				<button id="btn-cancel" type="button" onclick="location.href='{~ localized_path('/locales') }'" class="as-button-secondary">{_ actions.cancel}</button>
 
-				<button id="action_delete" type="button" command="show-modal" commandfor="action_delete_dialog" class="ml-auto button tertiary" {#if busy}disabled{/if}>{_ actions.remove}</button>
+				<button id="action_delete" type="button" command="show-modal" commandfor="action_delete_dialog" class="ml-auto as-button-tertiary" {#if busy}disabled{/if}>{_ actions.remove}</button>
 			</div>
 		</form>
 
@@ -54,8 +54,8 @@
 			<h2 class="text-lg font-semibold">{_ actions.remove}</h2>
 			<p class="text-slate-600 mt-2">{_ confirm.remove_locale }</p>
 			<div class="mt-6 flex justify-end gap-2">
-				<button class="button secondary" type="button" commandfor="action_delete_dialog" command="close">{_ actions.abort_delete}</button>
-				<button class="button danger" type="button" command="--confirm" commandfor="action_delete_dialog">{_ actions.confirm_delete}</button>
+				<button class="as-button-secondary" type="button" commandfor="action_delete_dialog" command="close">{_ actions.abort_delete}</button>
+				<button class="as-button-danger" type="button" command="--confirm" commandfor="action_delete_dialog">{_ actions.confirm_delete}</button>
 			</div>
 		</div>
 	</dialog>

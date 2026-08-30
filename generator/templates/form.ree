@@ -41,12 +41,12 @@
 			<input type="hidden" name="_save_action" id="save_action" value="" />
 
 			<div class="flex gap-2 mt-8 items-center col-span-2">
-				<button id="btn-submit" type="submit" onclick="document.getElementById('save_action').value='stay'" class="button primary">{_ actions.save }</button>
-				<button id="btn-save-close" type="submit" onclick="document.getElementById('save_action').value='close'" class="button secondary">{_ actions.save_close }</button>
-				<button id="btn-cancel" type="button" onclick="history.back()" class="button secondary">{_ actions.cancel}</button>
+				<button id="btn-submit" type="submit" onclick="document.getElementById('save_action').value='stay'" class="as-button-primary">{_ actions.save }</button>
+				<button id="btn-save-close" type="submit" onclick="document.getElementById('save_action').value='close'" class="as-button-secondary">{_ actions.save_close }</button>
+				<button id="btn-cancel" type="button" onclick="history.back()" class="as-button-secondary">{_ actions.cancel}</button>
 
 				{#if (record.id) && enable_archive }
-					<button id="__archive.action_id__" type="button" command="show-modal" commandfor="__archive.action_dialog_id__" class="ml-auto button tertiary">__archive.action_label__</button>
+					<button id="__archive.action_id__" type="button" command="show-modal" commandfor="__archive.action_dialog_id__" class="ml-auto as-button-tertiary">__archive.action_label__</button>
 				{/if}
 				__archive.form_restore_button__
 			</div>
@@ -68,8 +68,8 @@
 			<div class="p-6">
 				<h2 class="text-lg font-semibold">__archive.action_label__</h2>
 				<div class="mt-6 flex justify-end gap-2">
-					<button class="button secondary" type="button" commandfor="__archive.action_dialog_id__" command="close">__archive.action_abort__</button>
-					<button class="button danger" type="button" command="--confirm" commandfor="__archive.action_dialog_id__">__archive.action_confirm__</button>
+					<button class="as-button-secondary" type="button" commandfor="__archive.action_dialog_id__" command="close">__archive.action_abort__</button>
+					<button class="as-button-danger" type="button" command="--confirm" commandfor="__archive.action_dialog_id__">__archive.action_confirm__</button>
 				</div>
 			</div>
 		</dialog>

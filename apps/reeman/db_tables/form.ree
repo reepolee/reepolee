@@ -72,12 +72,12 @@
 			<input type="hidden" name="_save_action" id="save_action" value="" />
 
 			<div class="flex gap-2 mt-8 items-center">
-				<button id="btn-submit" type="submit" onclick="document.getElementById('save_action').value='stay'" class="button primary">{_ actions.save }</button>
-				<button id="btn-save-close" type="submit" onclick="document.getElementById('save_action').value='close'" class="button secondary">{_ actions.save_close }</button>
-				<button id="btn-cancel" type="button" onclick="history.back()" class="button secondary">{_ actions.cancel}</button>
+				<button id="btn-submit" type="submit" onclick="document.getElementById('save_action').value='stay'" class="as-button-primary">{_ actions.save }</button>
+				<button id="btn-save-close" type="submit" onclick="document.getElementById('save_action').value='close'" class="as-button-secondary">{_ actions.save_close }</button>
+				<button id="btn-cancel" type="button" onclick="history.back()" class="as-button-secondary">{_ actions.cancel}</button>
 
 				{#if (record.id) && enable_archive }
-					<button id="action_delete" type="button" command="show-modal" commandfor="action_delete_dialog" class="ml-auto button tertiary">{_ actions.delete}</button>
+					<button id="action_delete" type="button" command="show-modal" commandfor="action_delete_dialog" class="ml-auto as-button-tertiary">{_ actions.delete}</button>
 				{/if}
 			</div>
 		</form>
@@ -96,8 +96,8 @@
 			<div class="p-6">
 				<h2 class="text-lg font-semibold">{_ actions.delete}</h2>
 				<div class="mt-6 flex justify-end gap-2">
-					<button class="button secondary" type="button" commandfor="action_delete_dialog" command="close">{_ actions.abort_delete}</button>
-					<button class="button danger" type="button" command="--confirm" commandfor="action_delete_dialog">{_ actions.confirm_delete}</button>
+					<button class="as-button-secondary" type="button" commandfor="action_delete_dialog" command="close">{_ actions.abort_delete}</button>
+					<button class="as-button-danger" type="button" command="--confirm" commandfor="action_delete_dialog">{_ actions.confirm_delete}</button>
 				</div>
 			</div>
 		</dialog>

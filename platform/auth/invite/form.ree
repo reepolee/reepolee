@@ -25,7 +25,7 @@
 		</field-wrapper>
 
 		<div class="flex gap-2 mt-8 items-center">
-			<button type="submit" class="button primary">{_ actions.submit}</button>
+			<button type="submit" class="as-button-primary">{_ actions.submit}</button>
 		</div>
 	</form>
 </div>

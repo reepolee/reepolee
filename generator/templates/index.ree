@@ -7,7 +7,7 @@
 		<div id="index-tools" class="flex flex-col gap-3 px-4 xl:flex-row xl:items-center xl:justify-between">
 
 			__stream.pagination_start__				{#if first_url }
-				<a href="{~ localized_path(first_url) }" role="button">
+				<a href="{~ localized_path(first_url) }" role="button" class="as-button">
 					<ree-icon name="chevrons_left"></ree-icon>
 				</a>
 			{:else }
@@ -15,7 +15,7 @@
 			{/if}
 
 			{#if prev_url }
-				<a href="{~ localized_path(prev_url) }" role="button"><ree-icon name="chevron_left"></ree-icon></a>
+				<a href="{~ localized_path(prev_url) }" role="button" class="as-button"><ree-icon name="chevron_left"></ree-icon></a>
 			{:else }
 				<ree-icon name="chevron_left"></ree-icon>
 			{/if}
@@ -23,7 +23,7 @@
 			__stream.pagination_count__
 
 			{#if next_url }
-				<a href="{~ localized_path(next_url) }" role="button">
+				<a href="{~ localized_path(next_url) }" role="button" class="as-button">
 					<ree-icon name="chevron_right"></ree-icon>
 				</a>
 			{:else }
@@ -31,7 +31,7 @@
 			{/if}
 
 			{#if last_url }
-				<a href="{~ localized_path(last_url) }" role="button">
+				<a href="{~ localized_path(last_url) }" role="button" class="as-button">
 					<ree-icon name="chevrons_right"></ree-icon>
 				</a>
 			{:else }
@@ -83,7 +83,7 @@
 					</div>
 				{/if}
 
-				<a href="{~ localized_path('__route_prefix__/__table.exact__/new') }" role="button" class="primary w-full xl:w-auto">+ {_ actions.new___table.singular.lowercase__}</a>
+				<a href="{~ localized_path('__route_prefix__/__table.exact__/new') }" role="button" class="as-button-primary w-full xl:w-auto">+ {_ actions.new___table.singular.lowercase__}</a>
 
 				<ree-filters action-url="__route_prefix__/__table.exact__"></ree-filters>
 
@@ -92,9 +92,9 @@
 				{#if enable_archive }
 					<!-- BULK ACTIONS -->
 					<div class="flex items-center gap-4 justify-start flex-wrap">
-						<button id="action" commandfor="action_dialog" command="show-modal" disabled class="button tertiary">{_ actions.bulk_action}</button>
+						<button id="action" commandfor="action_dialog" command="show-modal" disabled class="as-button-tertiary">{_ actions.bulk_action}</button>
 
-						<button id="action_2" commandfor="action_2_dialog" command="show-modal" disabled class="button primary">{_ actions.bulk_action_2}</button>
+						<button id="action_2" commandfor="action_2_dialog" command="show-modal" disabled class="as-button-primary">{_ actions.bulk_action_2}</button>
 					</div>
 				{/if}
 			</div>
@@ -187,8 +187,8 @@
 					{_ ui.modifying} <span class="font-semibold text-brand" id="action_count">0</span> {_ ui.records}.
 				</p>
 				<div class="mt-6 flex justify-end gap-2">
-					<button class="button secondary" commandfor="action_dialog" command="close">{_ actions.cancel}</button>
-					<button class="button danger" command="--confirm" commandfor="action_dialog">{_ actions.do_it}</button>
+					<button class="as-button-secondary" commandfor="action_dialog" command="close">{_ actions.cancel}</button>
+					<button class="as-button-danger" command="--confirm" commandfor="action_dialog">{_ actions.do_it}</button>
 				</div>
 			</div>
 		</dialog>
@@ -200,8 +200,8 @@
 					{_ ui.modifying} <span class="font-semibold text-brand" id="action_2_count">0</span> {_ ui.records}.
 				</p>
 				<div class="mt-6 flex justify-end gap-2">
-					<button class="button secondary" commandfor="action_2_dialog" command="close">{_ actions.cancel}</button>
-					<button class="button primary" command="--confirm" commandfor="action_2_dialog">{_ actions.do_it}</button>
+					<button class="as-button-secondary" commandfor="action_2_dialog" command="close">{_ actions.cancel}</button>
+					<button class="as-button-primary" command="--confirm" commandfor="action_2_dialog">{_ actions.do_it}</button>
 				</div>
 			</div>
 		</dialog>

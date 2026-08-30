@@ -32,7 +32,7 @@
 		{/if}
 		<div class="flex items-center gap-3">
 			{#if value}
-				<button type="button" class="image-upload-edit button secondary text-xs">
+				<button type="button" class="image-upload-edit as-button-secondary text-xs">
 					{_ ui.image_upload_edit }
 				</button>
 			{/if}
@@ -65,7 +65,7 @@
 		<div class="p-4">
 			<div class="flex items-center justify-between mb-3">
 				<h2 class="text-base font-semibold m-0">{_ ui.image_upload_edit_title }</h2>
-				<button type="button" class="image-upload-editor-cancel button secondary text-xs">
+				<button type="button" class="image-upload-editor-cancel as-button-secondary text-xs">
 					{_ actions.cancel }
 				</button>
 			</div>
@@ -106,7 +106,7 @@
 			<div class="source-panel hidden p-4 bg-white border border-slate-200 border-t-0 rounded-b-lg" data-panel="url">
 				<div class="flex gap-2">
 					<input type="url" id="{= editor_prefix }-url-input" placeholder="https://example.com/image.jpg" class="flex-1 px-3 py-2 border border-slate-200 rounded text-sm outline-none focus:border-blue-500" />
-					<button id="{= editor_prefix }-fetch-url-btn" type="button" class="button primary">{_ ui.image_upload_fetch }</button>
+					<button id="{= editor_prefix }-fetch-url-btn" type="button" class="as-button-primary">{_ ui.image_upload_fetch }</button>
 				</div>
 			</div>
 
@@ -125,7 +125,7 @@
 				<div class="grid grid-cols-2 gap-4 w-full grid-rows-[auto_auto_auto]">
 					<div class="flex items-center justify-between px-2 py-1">
 						<span class="text-xs font-semibold uppercase text-slate-500 tracking-wider">{_ ui.image_upload_original }</span>
-						<button id="{= editor_prefix }-clear-btn" type="button" class="button tertiary text-xs">{_ ui.image_upload_clear }</button>
+						<button id="{= editor_prefix }-clear-btn" type="button" class="as-button-tertiary text-xs">{_ ui.image_upload_clear }</button>
 					</div>
 					<div class="text-xs font-semibold uppercase text-slate-500 tracking-wider px-2 py-1">{_ ui.image_upload_preview }</div>
 
@@ -199,7 +199,7 @@
 						<span class="text-xs text-slate-400">{_ ui.image_upload_edit_hint }</span>
 
 						<div class="flex gap-3">
-							<button type="button" id="{= editor_prefix }-save-btn" disabled class="button primary disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100">
+							<button type="button" id="{= editor_prefix }-save-btn" disabled class="as-button-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100">
 								<span class="btn-label">{_ ui.image_upload_save }</span>
 								<span class="btn-spinner hidden">
 									<span class="inline-block w-4 h-4 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></span>

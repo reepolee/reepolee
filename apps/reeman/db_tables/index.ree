@@ -14,7 +14,7 @@
 
 			<div class="pagination-info">
 				{#if first_url }
-					<a href="{~ localized_path(first_url) }" role="button">
+					<a href="{~ localized_path(first_url) }" role="button" class="as-button">
 						<ree-icon name="chevrons_left"></ree-icon>
 					</a>
 				{:else }
@@ -22,7 +22,7 @@
 				{/if}
 
 				{#if prev_url }
-					<a href="{~ localized_path(prev_url) }" role="button"><ree-icon name="chevron_left"></ree-icon></a>
+					<a href="{~ localized_path(prev_url) }" role="button" class="as-button"><ree-icon name="chevron_left"></ree-icon></a>
 				{:else }
 					<ree-icon name="chevron_left"></ree-icon>
 				{/if}
@@ -34,7 +34,7 @@
 				{/if}
 
 				{#if next_url }
-					<a href="{~ localized_path(next_url) }" role="button">
+					<a href="{~ localized_path(next_url) }" role="button" class="as-button">
 						<ree-icon name="chevron_right"></ree-icon>
 					</a>
 				{:else }
@@ -42,7 +42,7 @@
 				{/if}
 
 				{#if last_url }
-					<a href="{~ localized_path(last_url) }" role="button">
+					<a href="{~ localized_path(last_url) }" role="button" class="as-button">
 						<ree-icon name="chevrons_right"></ree-icon>
 					</a>
 				{:else }
@@ -77,9 +77,9 @@
 			{#if enable_archive }
 				<!-- BULK ACTIONS -->
 				<div class="flex items-center gap-4 justify-start w-full flex-wrap px-4 my-4">
-					<button id="action" commandfor="generate_dialog" command="show-modal" disabled class="button primary">{_ actions.generate_crud}</button>
-					<button id="action_2" commandfor="refresh_dialog" command="show-modal" disabled class="button secondary">{_ actions.refresh_crud}</button>
-					<button id="action_3" commandfor="schema_dialog" command="show-modal" disabled class="button secondary">{_ actions.schema_only}</button>
+					<button id="action" commandfor="generate_dialog" command="show-modal" disabled class="as-button-primary">{_ actions.generate_crud}</button>
+					<button id="action_2" commandfor="refresh_dialog" command="show-modal" disabled class="as-button-secondary">{_ actions.refresh_crud}</button>
+					<button id="action_3" commandfor="schema_dialog" command="show-modal" disabled class="as-button-secondary">{_ actions.schema_only}</button>
 				</div>
 			{/if}
 
@@ -188,8 +188,8 @@
 						</div>
 					</div>
 					<div class="mt-6 flex justify-end gap-2">
-						<button type="button" class="button secondary" commandfor="generate_dialog" command="close">{_ actions.cancel}</button>
-						<button type="submit" class="button primary">{_ actions.do_it}</button>
+						<button type="button" class="as-button-secondary" commandfor="generate_dialog" command="close">{_ actions.cancel}</button>
+						<button type="submit" class="as-button-primary">{_ actions.do_it}</button>
 					</div>
 				</form>
 			</dialog>
@@ -224,8 +224,8 @@
 						</field-wrapper>
 					</div>
 					<div class="mt-6 flex justify-end gap-2">
-						<button type="button" class="button secondary" commandfor="refresh_dialog" command="close">{_ actions.cancel}</button>
-						<button type="submit" class="button primary">{_ actions.do_it}</button>
+						<button type="button" class="as-button-secondary" commandfor="refresh_dialog" command="close">{_ actions.cancel}</button>
+						<button type="submit" class="as-button-primary">{_ actions.do_it}</button>
 					</div>
 				</form>
 			</dialog>
@@ -246,8 +246,8 @@
 						</field-wrapper>
 					</div>
 					<div class="mt-6 flex justify-end gap-2">
-						<button type="button" class="button secondary" commandfor="schema_dialog" command="close">{_ actions.cancel}</button>
-						<button type="submit" class="button primary">{_ actions.do_it}</button>
+						<button type="button" class="as-button-secondary" commandfor="schema_dialog" command="close">{_ actions.cancel}</button>
+						<button type="submit" class="as-button-primary">{_ actions.do_it}</button>
 					</div>
 				</form>
 			</dialog>

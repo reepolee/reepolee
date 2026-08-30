@@ -46,8 +46,8 @@
 
 		<section>
 			<confirm-dialog
-				trigger-class="button primary"
-				confirm-class="danger"
+				trigger-class="as-button-primary"
+				confirm-class="as-button-danger"
 				form-path="/rate-limits/reset"
 				title="{_ actions.reset_all_counters}"
 				trigger-text="{_ actions.reset_all_counters}"

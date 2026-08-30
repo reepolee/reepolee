@@ -81,8 +81,8 @@ function archive_restore_ui(has_archive: boolean, route_prefix: string, route_na
 		<div class="p-6">
 			<h2 class="text-lg font-semibold">{_ actions.restore}</h2>
 			<div class="mt-6 flex justify-end gap-2">
-				<button class="button secondary" type="button" commandfor="action_restore_dialog" command="close">{_ actions.abort_restore}</button>
-				<button class="button primary" type="button" command="--confirm" commandfor="action_restore_dialog">{_ actions.confirm_restore}</button>
+				<button class="as-button-secondary" type="button" commandfor="action_restore_dialog" command="close">{_ actions.abort_restore}</button>
+				<button class="as-button-primary" type="button" command="--confirm" commandfor="action_restore_dialog">{_ actions.confirm_restore}</button>
 			</div>
 		</div>
 	</dialog>

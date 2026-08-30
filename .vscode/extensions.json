@@ -1,7 +1,6 @@
 {
 	"recommendations": [
 		"oven.bun-vscode",
-		"reepolee.ree-templates",
-		"emeraldwalk.runonsave"
+		"reepolee.ree-templates"
 	]
 }

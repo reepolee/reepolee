@@ -51,7 +51,7 @@
 				</div>
 
 				<div class="flex gap-3 justify-between items-center mt-2">
-					<a href="{~ localized_path('/files') }" class="button secondary text-sm">
+					<a href="{~ localized_path('/files') }" class="as-button-secondary text-sm">
 						←
 						{_ actions.back}
 					</a>
@@ -63,7 +63,7 @@
 								type="button"
 								command="show-modal"
 								commandfor="action_restore_dialog"
-								class="button secondary text-xs">
+								class="as-button-secondary text-xs">
 								{_ actions.restore}
 							</button>
 						{/if}
@@ -73,15 +73,15 @@
 							type="button"
 							command="show-modal"
 							commandfor="action_archive_dialog"
-							class="button tertiary text-xs">
+							class="as-button-tertiary text-xs">
 							{_ actions.archive}
 						</button>
 
-						<button type="submit" onclick="document.getElementById('save_action').value='stay'" class="button primary">
+						<button type="submit" onclick="document.getElementById('save_action').value='stay'" class="as-button-primary">
 							{_ actions.save}
 						</button>
 
-						<button type="submit" onclick="document.getElementById('save_action').value='close'" class="button secondary">
+						<button type="submit" onclick="document.getElementById('save_action').value='close'" class="as-button-secondary">
 							{_ actions.save_close}
 						</button>
 					</div>
@@ -99,8 +99,8 @@
 				<div class="p-6">
 					<h2 class="text-lg font-semibold">{_ actions.restore}</h2>
 					<div class="mt-6 flex justify-end gap-2">
-						<button class="button secondary" type="button" commandfor="action_restore_dialog" command="close">{_ actions.abort_restore}</button>
-						<button class="button primary" type="button" command="--confirm" commandfor="action_restore_dialog">{_ actions.confirm_restore}</button>
+						<button class="as-button-secondary" type="button" commandfor="action_restore_dialog" command="close">{_ actions.abort_restore}</button>
+						<button class="as-button-primary" type="button" command="--confirm" commandfor="action_restore_dialog">{_ actions.confirm_restore}</button>
 					</div>
 				</div>
 			</dialog>
@@ -114,8 +114,8 @@
 				<div class="p-6">
 					<h2 class="text-lg font-semibold">{_ actions.archive}</h2>
 					<div class="mt-6 flex justify-end gap-2">
-						<button class="button secondary" type="button" commandfor="action_archive_dialog" command="close">{_ actions.abort_archive}</button>
-						<button class="button danger" type="button" command="--confirm" commandfor="action_archive_dialog">{_ actions.confirm_archive}</button>
+						<button class="as-button-secondary" type="button" commandfor="action_archive_dialog" command="close">{_ actions.abort_archive}</button>
+						<button class="as-button-danger" type="button" command="--confirm" commandfor="action_archive_dialog">{_ actions.confirm_archive}</button>
 					</div>
 				</div>
 			</dialog>

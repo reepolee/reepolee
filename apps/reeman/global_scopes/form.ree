@@ -91,7 +91,7 @@
 							{#each session_variables as var_path}
 								<button
 									type="button"
-									class="button tertiary px-2! py-0.5! text-xs"
+									class="as-button-tertiary px-2! py-0.5! text-xs"
 									data-insert-var="{= var_path}"
 									onclick="insert_session_var('{= var_path}')">
 									{= var_path}
@@ -112,7 +112,7 @@
 								<option value="{= u.option_value }">{= u.option_text}</option>
 							{/each}
 						</select>
-						<button id="preview_btn" type="button" class="button secondary text-sm">Preview</button>
+						<button id="preview_btn" type="button" class="as-button-secondary text-sm">Preview</button>
 						<pre id="preview_result" class="hidden text-xs bg-neutral-100 border border-neutral-200 rounded p-2 overflow-x-auto whitespace-pre-wrap"></pre>
 					</div>
 				</details>
@@ -146,15 +146,15 @@
 			<input type="hidden" id="return_url" name="_return_url" value="" />
 
 			<div class="flex gap-2 mt-8 items-center">
-				<button id="btn-submit" type="submit" class="button primary">{_ actions.save}</button>
-				<button id="btn-cancel" type="button" onclick="history.back()" class="button secondary">{_ actions.cancel}</button>
+				<button id="btn-submit" type="submit" class="as-button-primary">{_ actions.save}</button>
+				<button id="btn-cancel" type="button" onclick="history.back()" class="as-button-secondary">{_ actions.cancel}</button>
 
 				{#if (record.id) && enable_archive}
-					<button id="action_archive" type="button" command="show-modal" commandfor="action_archive_dialog" class="ml-auto button tertiary">{_ actions.archive}</button>
+					<button id="action_archive" type="button" command="show-modal" commandfor="action_archive_dialog" class="ml-auto as-button-tertiary">{_ actions.archive}</button>
 				{/if}
 
 				{#if (record.id) && record.archived_at}
-					<button id="action_restore" type="button" command="show-modal" commandfor="action_restore_dialog" class="button secondary">{_ actions.restore}</button>
+					<button id="action_restore" type="button" command="show-modal" commandfor="action_restore_dialog" class="as-button-secondary">{_ actions.restore}</button>
 				{/if}
 			</div>
 		</form>
@@ -164,10 +164,10 @@
 				<form method="POST" action="{~ localized_path(action) }">
 					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 					<input type="hidden" name="_action" value="generate_scope_translations" />
-					<button type="submit" class="button secondary">{_ actions.scope_translations}</button>
+					<button type="submit" class="as-button-secondary">{_ actions.scope_translations}</button>
 				</form>
 
-				<a href="{~ localized_path(translations_url) }" role="button" class="button secondary">{_ actions.scope_translations_view}</a>
+				<a href="{~ localized_path(translations_url) }" role="button" class="as-button-secondary">{_ actions.scope_translations_view}</a>
 			</div>
 		{/if}
 
@@ -189,8 +189,8 @@
 			<div class="p-6">
 				<h2 class="text-lg font-semibold">{_ actions.archive}</h2>
 				<div class="mt-6 flex justify-end gap-2">
-					<button class="button secondary" type="button" commandfor="action_archive_dialog" command="close">{_ actions.abort_archive}</button>
-					<button class="button danger" type="button" command="--confirm" commandfor="action_archive_dialog">{_ actions.confirm_archive}</button>
+					<button class="as-button-secondary" type="button" commandfor="action_archive_dialog" command="close">{_ actions.abort_archive}</button>
+					<button class="as-button-danger" type="button" command="--confirm" commandfor="action_archive_dialog">{_ actions.confirm_archive}</button>
 				</div>
 			</div>
 		</dialog>
@@ -199,8 +199,8 @@
 			<div class="p-6">
 				<h2 class="text-lg font-semibold">{_ actions.restore}</h2>
 				<div class="mt-6 flex justify-end gap-2">
-					<button class="button secondary" type="button" commandfor="action_restore_dialog" command="close">{_ actions.abort_restore}</button>
-					<button class="button primary" type="button" command="--confirm" commandfor="action_restore_dialog">{_ actions.confirm_restore}</button>
+					<button class="as-button-secondary" type="button" commandfor="action_restore_dialog" command="close">{_ actions.abort_restore}</button>
+					<button class="as-button-primary" type="button" command="--confirm" commandfor="action_restore_dialog">{_ actions.confirm_restore}</button>
 				</div>
 			</div>
 		</dialog>

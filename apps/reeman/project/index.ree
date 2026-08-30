@@ -32,7 +32,7 @@
 					</div>
 				</field-wrapper>
 
-				<button type="submit" class="button primary mt-auto">{_ actions.set_repo}</button>
+				<button type="submit" class="as-button-primary mt-auto">{_ actions.set_repo}</button>
 			</form>
 		</section>
 	</div>

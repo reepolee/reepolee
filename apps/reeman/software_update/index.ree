@@ -28,7 +28,7 @@
 
 		<form id="software_update_scan_form" method="POST" action="{~ localized_path('/software-update/scan') }" class="flex flex-wrap items-end gap-3 rounded-md border border-border bg-surface-raised p-4">
 			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
-			<button id="software_update_scan_button" type="submit" class="button primary">{_ actions.scan}</button>
+			<button id="software_update_scan_button" type="submit" class="as-button-primary">{_ actions.scan}</button>
 			<field-wrapper class="grid w-auto max-w-full" data-field="source_dir">
 				<div class="grid">
 					<label class="px-3" for="source-dir-select">{_ labels.source_dir}</label>
@@ -110,11 +110,11 @@
 			</script>
 
 			<div class="flex flex-wrap items-center gap-2 text-sm">
-				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="new" aria-pressed="false">{_ labels.new}: {= props.summary?.new_count ?? 0 }</button>
-				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="modified" aria-pressed="false">{_ labels.modified}: {= props.summary?.modified_count ?? 0 }</button>
-				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="project-only" aria-pressed="false">{_ labels.project_only}: {= props.summary?.project_only_count ?? 0 }</button>
-				<button type="button" class="button tertiary text-xs font-semibold" data-software-update-filter="ignored" aria-pressed="false">{_ labels.ignored}: {= props.summary?.ignored_count ?? 0 }</button>
-				<button type="button" class="button tertiary text-xs font-semibold" id="selected_count" data-software-update-filter="selected" aria-pressed="false">{_ labels.selected}: 0</button>
+				<button type="button" class="as-button-tertiary text-xs font-semibold" data-software-update-filter="new" aria-pressed="false">{_ labels.new}: {= props.summary?.new_count ?? 0 }</button>
+				<button type="button" class="as-button-tertiary text-xs font-semibold" data-software-update-filter="modified" aria-pressed="false">{_ labels.modified}: {= props.summary?.modified_count ?? 0 }</button>
+				<button type="button" class="as-button-tertiary text-xs font-semibold" data-software-update-filter="project-only" aria-pressed="false">{_ labels.project_only}: {= props.summary?.project_only_count ?? 0 }</button>
+				<button type="button" class="as-button-tertiary text-xs font-semibold" data-software-update-filter="ignored" aria-pressed="false">{_ labels.ignored}: {= props.summary?.ignored_count ?? 0 }</button>
+				<button type="button" class="as-button-tertiary text-xs font-semibold" id="selected_count" data-software-update-filter="selected" aria-pressed="false">{_ labels.selected}: 0</button>
 			</div>
 
 			{#if snapshot.entries.length === 0 }
@@ -139,8 +139,8 @@
 						</label>
 					</div>
 					<div class="mb-3 flex gap-2">
-						<button type="button" id="open_apply_dialog" commandfor="apply_dialog" command="show-modal" class="button primary" disabled>{_ actions.apply}</button>
-						<button type="button" id="open_ignore_dialog" commandfor="ignore_dialog" command="show-modal" class="button tertiary" disabled>{_ actions.ignore_selected}</button>
+						<button type="button" id="open_apply_dialog" commandfor="apply_dialog" command="show-modal" class="as-button-primary" disabled>{_ actions.apply}</button>
+						<button type="button" id="open_ignore_dialog" commandfor="ignore_dialog" command="show-modal" class="as-button-tertiary" disabled>{_ actions.ignore_selected}</button>
 					</div>
 
 					<div class="space-y-1">
@@ -224,8 +224,8 @@
 						<p class="mt-2"><span class="font-semibold text-brand" id="apply_new_count">0</span> {_ labels.new}, <span class="font-semibold text-brand" id="apply_modified_count">0</span> {_ labels.modified}.</p>
 						<p class="text-sm text-amber-700 mt-1">{_ ui.software_update_never_deletes}</p>
 						<div class="mt-6 flex justify-end gap-2">
-							<button type="button" class="button secondary" commandfor="apply_dialog" command="close">{_ actions.cancel}</button>
-							<button type="submit" form="software_update_form" class="button danger">{_ actions.do_it}</button>
+							<button type="button" class="as-button-secondary" commandfor="apply_dialog" command="close">{_ actions.cancel}</button>
+							<button type="submit" form="software_update_form" class="as-button-danger">{_ actions.do_it}</button>
 						</div>
 					</div>
 				</dialog>
@@ -236,8 +236,8 @@
 						<p class="text-sm text-text-secondary mt-2">{_ ui.confirm_ignore_hint}</p>
 						<p class="mt-2"><span class="font-semibold text-brand" id="ignore_count">0</span> {_ labels.files}.</p>
 						<div class="mt-6 flex justify-end gap-2">
-							<button type="button" class="button secondary" commandfor="ignore_dialog" command="close">{_ actions.cancel}</button>
-							<button type="button" command="--confirm" commandfor="ignore_dialog" class="button danger">{_ actions.do_it}</button>
+							<button type="button" class="as-button-secondary" commandfor="ignore_dialog" command="close">{_ actions.cancel}</button>
+							<button type="button" command="--confirm" commandfor="ignore_dialog" class="as-button-danger">{_ actions.do_it}</button>
 						</div>
 					</div>
 				</dialog>

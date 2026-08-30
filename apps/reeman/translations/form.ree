@@ -59,8 +59,8 @@
 			</div>
 
 			<div class="flex gap-2 mt-6 items-center">
-				<button type="submit" class="button primary">{_ actions.save}</button>
-				<a href="{~ localized_path(return_url) }" class="button secondary">{_ actions.cancel}</a>
+				<button type="submit" class="as-button-primary">{_ actions.save}</button>
+				<a href="{~ localized_path(return_url) }" class="as-button-secondary">{_ actions.cancel}</a>
 			</div>
 		</form>
 	</div>
@@ -90,8 +90,8 @@
 					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 					<input type="hidden" name="namespace" value="{= namespace }" />
 					<input type="hidden" name="key_path" value="{= row.key_path }" />
-					<button type="button" command="close" commandfor="{= dialog_id }" class="button secondary">{_ actions.cancel}</button>
-					<button type="submit" class="button danger">{_ actions.confirm_delete}</button>
+					<button type="button" command="close" commandfor="{= dialog_id }" class="as-button-secondary">{_ actions.cancel}</button>
+					<button type="submit" class="as-button-danger">{_ actions.confirm_delete}</button>
 				</form>
 			</div>
 		</dialog>

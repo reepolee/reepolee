@@ -63,7 +63,7 @@
 			<div class="rounded-md border border-dashed border-border bg-surface-raised p-4 transition-colors hover:border-brand">
 				<div class="text-sm font-bold">{_ actions.reload_routes}</div>
 				<p class="mt-1 text-text-secondary">{_ ui.reload_routes_hint}</p>
-				<confirm-dialog trigger-class="button primary mt-3 text-xs" form-path="/reload-routes" title="{_ actions.reload_routes}" trigger-text="{_ actions.reload_routes}" message="{_ confirm.reload_routes}" confirm-text="{_ actions.do_it}" cancel-text="{_ actions.cancel}" extra-field-name="return_to" extra-field-value="/"></confirm-dialog>
+				<confirm-dialog trigger-class="as-button-primary mt-3 text-xs" form-path="/reload-routes" title="{_ actions.reload_routes}" trigger-text="{_ actions.reload_routes}" message="{_ confirm.reload_routes}" confirm-text="{_ actions.do_it}" cancel-text="{_ actions.cancel}" extra-field-name="return_to" extra-field-value="/"></confirm-dialog>
 			</div>
 		</section>
 

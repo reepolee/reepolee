@@ -170,17 +170,17 @@ export async function get___table.exact___index(req: BunRequest): Promise<Respon
 				const pagination_html = `
 					<div class="pagination-info">
 						${first_url
-							? `<a href="${first_url}" role="button">${ICONS.chevrons_left}</a>`
+							? `<a href="${first_url}" role="button" class="as-button">${ICONS.chevrons_left}</a>`
 							: ICONS.chevrons_left}
 						${prev_url
-							? `<a href="${prev_url}" role="button">${ICONS.chevron_left}</a>`
+							? `<a href="${prev_url}" role="button" class="as-button">${ICONS.chevron_left}</a>`
 							: ICONS.chevron_left}
 						<div style="width: ${pagination_width}; text-align: center">${cnt} / ${result.total}</div>
 						${next_url
-							? `<a href="${next_url}" role="button">${ICONS.chevron_right}</a>`
+							? `<a href="${next_url}" role="button" class="as-button">${ICONS.chevron_right}</a>`
 							: ICONS.chevron_right}
 						${last_url
-							? `<a href="${last_url}" role="button">${ICONS.chevrons_right}</a>`
+							? `<a href="${last_url}" role="button" class="as-button">${ICONS.chevrons_right}</a>`
 							: ICONS.chevrons_right}
 					</div>`;
 

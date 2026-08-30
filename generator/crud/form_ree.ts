@@ -203,7 +203,7 @@ export interface FormReeOptions {
 function archive_form_restore_button(has_archive: boolean): string {
 	if (!has_archive) return "";
 	return `{#if (record.id) && record.archived_at }
-					<button id="action_restore" type="button" command="show-modal" commandfor="action_restore_dialog" class="button secondary">{_ actions.restore}</button>
+					<button id="action_restore" type="button" command="show-modal" commandfor="action_restore_dialog" class="as-button-secondary">{_ actions.restore}</button>
 				{/if}`;
 }
 
@@ -219,8 +219,8 @@ function archive_form_restore_ui(has_archive: boolean, route_prefix: string, rou
 				<div class="p-6">
 					<h2 class="text-lg font-semibold">{_ actions.restore}</h2>
 					<div class="mt-6 flex justify-end gap-2">
-						<button class="button secondary" type="button" commandfor="action_restore_dialog" command="close">{_ actions.abort_restore}</button>
-						<button class="button primary" type="button" command="--confirm" commandfor="action_restore_dialog">{_ actions.confirm_restore}</button>
+						<button class="as-button-secondary" type="button" commandfor="action_restore_dialog" command="close">{_ actions.abort_restore}</button>
+						<button class="as-button-primary" type="button" command="--confirm" commandfor="action_restore_dialog">{_ actions.confirm_restore}</button>
 					</div>
 				</div>
 			</dialog>

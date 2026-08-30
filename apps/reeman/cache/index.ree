@@ -68,7 +68,7 @@
 											</span>
 											<span class="text-right font-mono text-sm text-neutral-500">{= table.cache_key_count}</span>
 											<div class="flex justify-end">
-												<confirm-dialog trigger-class="button tertiary" form-path="/cache/invalidate" confirm-class="danger" title="{_ ui.invalidate_btn }" trigger-text="{_ ui.invalidate_btn }" message="{_ ui.reset_confirm }" confirm-text="{_ actions.do_it }" cancel-text="{_ actions.cancel }" extra-field-name="table" extra-field-value="{= table.name }">
+												<confirm-dialog trigger-class="as-button-tertiary" form-path="/cache/invalidate" confirm-class="as-button-danger" title="{_ ui.invalidate_btn }" trigger-text="{_ ui.invalidate_btn }" message="{_ ui.reset_confirm }" confirm-text="{_ actions.do_it }" cancel-text="{_ actions.cancel }" extra-field-name="table" extra-field-value="{= table.name }">
 												</confirm-dialog>
 											</div>
 										</summary>
@@ -91,7 +91,7 @@
 					{/if}
 				</section>
 				<section>
-					<confirm-dialog trigger-class="button primary" form-path="/cache/reset" confirm-class="danger" title="{_ ui.reset_btn }" trigger-text="{_ ui.reset_btn }" message="{_ ui.reset_confirm }" confirm-text="{_ actions.do_it }" cancel-text="{_ actions.cancel }">
+					<confirm-dialog trigger-class="as-button-primary" form-path="/cache/reset" confirm-class="as-button-danger" title="{_ ui.reset_btn }" trigger-text="{_ ui.reset_btn }" message="{_ ui.reset_confirm }" confirm-text="{_ actions.do_it }" cancel-text="{_ actions.cancel }">
 					</confirm-dialog>
 				</section>
 			{/if}

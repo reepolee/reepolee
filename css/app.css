@@ -334,6 +334,35 @@ html.theme-transitioning * {
 	@apply bg-danger text-white;
 }
 
+@utility as-button {
+	@apply inline-flex h-10 cursor-pointer items-center justify-center whitespace-nowrap rounded-sm border border-transparent px-3 py-2 transition hover:scale-105;
+
+	&:disabled {
+		@apply cursor-not-allowed opacity-60;
+		transform: none;
+	}
+}
+
+@utility as-button-primary {
+	@apply as-button bg-primary shadow-neutral-500 hover:shadow;
+	color: contrast-color(var(--color-primary));
+}
+
+@utility as-button-danger {
+	@apply as-button bg-danger shadow-neutral-500 hover:shadow;
+	color: contrast-color(var(--color-danger));
+}
+
+@utility as-button-secondary {
+	@apply as-button border border-border bg-transparent shadow-none;
+	color: inherit;
+}
+
+@utility as-button-tertiary {
+	@apply as-button border border-border bg-neutral-100 shadow-none hover:bg-neutral-200;
+	color: inherit;
+}
+
 @utility primary {
 	@apply bg-primary shadow-neutral-500 hover:shadow;
 	color: contrast-color(var(--color-primary));

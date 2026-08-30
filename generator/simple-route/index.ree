@@ -12,7 +12,7 @@
 			</label>
 		{/each}
 		<div class="flex gap-2 items-center">
-			<button type="submit" class="button secondary">{_ search.submit }</button>
+			<button type="submit" class="as-button-secondary">{_ search.submit }</button>
 			<a href="{~ localized_path(props.current_path || '') }" class="px-4 py-1.5 rounded border text-sm text-neutral-600 hover:bg-neutral-100">{_ ui.clear_all }</a>
 		</div>
 	</form>

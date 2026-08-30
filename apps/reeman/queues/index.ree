@@ -41,7 +41,7 @@
 					<form method="POST" action="{~ localized_path('/queues/pause') }" class="inline">
 						<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 						<input type="hidden" name="action" value="{= worker_paused ? 'resume' : 'pause' }" />
-						<button type="submit" class="button {= worker_paused ? 'primary' : 'tertiary' } text-xs">
+						<button type="submit" class="{= worker_paused ? 'as-button-primary' : 'as-button-tertiary' } text-xs">
 							{#if worker_paused}
 								{_ actions.resume}
 							{:else}
@@ -79,9 +79,9 @@
 							<span class="pill-layout bg-neutral-200 text-xs">{= queue.pending}</span>
 						</div>
 						<div class="flex items-center gap-2">
-							<confirm-dialog trigger-class="button tertiary text-xs" form-path="/queues/clear?action=pending" confirm-class="danger" title="{_ actions.clear_pending }" trigger-text="{_ actions.clear_pending }" message="{_ ui.confirm_clear_pending }" confirm-text="{_ actions.confirm }" cancel-text="{_ actions.cancel }" extra-field-name="queue" extra-field-value="{= queue.name }">
+							<confirm-dialog trigger-class="as-button-tertiary text-xs" form-path="/queues/clear?action=pending" confirm-class="as-button-danger" title="{_ actions.clear_pending }" trigger-text="{_ actions.clear_pending }" message="{_ ui.confirm_clear_pending }" confirm-text="{_ actions.confirm }" cancel-text="{_ actions.cancel }" extra-field-name="queue" extra-field-value="{= queue.name }">
 							</confirm-dialog>
-							<confirm-dialog trigger-class="button tertiary text-xs" form-path="/queues/clear?action=all" confirm-class="danger" title="{_ actions.clear_all }" trigger-text="{_ actions.clear_all }" message="{_ ui.confirm_clear_all }" confirm-text="{_ actions.confirm }" cancel-text="{_ actions.cancel }" extra-field-name="queue" extra-field-value="{= queue.name }">
+							<confirm-dialog trigger-class="as-button-tertiary text-xs" form-path="/queues/clear?action=all" confirm-class="as-button-danger" title="{_ actions.clear_all }" trigger-text="{_ actions.clear_all }" message="{_ ui.confirm_clear_all }" confirm-text="{_ actions.confirm }" cancel-text="{_ actions.cancel }" extra-field-name="queue" extra-field-value="{= queue.name }">
 							</confirm-dialog>
 						</div>
 					</div>
@@ -124,7 +124,7 @@
 						<div class="{= failed_columns.created.class } text-xs whitespace-nowrap">{= job.created_formatted}</div>
 						<div class="{= failed_columns.actions.class }">
 							<div class="flex items-center justify-end gap-2">
-								<confirm-dialog trigger-class="button danger text-xs" form-path="/queues/delete" confirm-class="danger" title="{_ actions.delete }" trigger-text="{_ actions.delete }" message="{_ ui.confirm_delete_job }" confirm-text="{_ actions.confirm }" cancel-text="{_ actions.cancel }" extra-field-name="job_id" extra-field-value="{= job.id }">
+								<confirm-dialog trigger-class="as-button-danger text-xs" form-path="/queues/delete" confirm-class="as-button-danger" title="{_ actions.delete }" trigger-text="{_ actions.delete }" message="{_ ui.confirm_delete_job }" confirm-text="{_ actions.confirm }" cancel-text="{_ actions.cancel }" extra-field-name="job_id" extra-field-value="{= job.id }">
 								</confirm-dialog>
 							</div>
 						</div>
@@ -171,11 +171,11 @@
 									<form method="POST" action="{~ localized_path('/queues/retry') }" class="inline">
 										<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 										<input type="hidden" name="job_id" value="{= job.id }" />
-										<button type="submit" class="button primary text-xs">
+										<button type="submit" class="as-button-primary text-xs">
 											{_ actions.retry}
 										</button>
 									</form>
-									<confirm-dialog trigger-class="button danger text-xs" form-path="/queues/delete" confirm-class="danger" title="{_ actions.delete }" trigger-text="{_ actions.delete }" message="{_ ui.confirm_delete_job }" confirm-text="{_ actions.confirm }" cancel-text="{_ actions.cancel }" extra-field-name="job_id" extra-field-value="{= job.id }">
+									<confirm-dialog trigger-class="as-button-danger text-xs" form-path="/queues/delete" confirm-class="as-button-danger" title="{_ actions.delete }" trigger-text="{_ actions.delete }" message="{_ ui.confirm_delete_job }" confirm-text="{_ actions.confirm }" cancel-text="{_ actions.cancel }" extra-field-name="job_id" extra-field-value="{= job.id }">
 									</confirm-dialog>
 								</div>
 							</div>

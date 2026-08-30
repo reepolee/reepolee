@@ -26,7 +26,7 @@
 			"reepolee/ree-templates"
 		]
 	},
-	"version": "26.08.160",
+	"version": "26.08.161",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",
@@ -103,6 +103,7 @@
 		"db:clone-test": "bun scripts/clone_db.ts",
 		"db:clone-production": "bun scripts/copy_dev_to_production.ts",
 		"sql": "bun scripts/run_sql_dev.ts",
+		"dump": "bun scripts/dump_db.ts",
 		"vendor:check": "bun scripts/vendor_check.ts",
 		"postinstall": "bun run reepolee:install",
 		"reepolee:install": "bun scripts/install.ts",

@@ -28,14 +28,14 @@
 				<label class="flex cursor-pointer items-center gap-1.5 text-sm">
 					<input type="checkbox" name="translate" value="1" /> {_ actions.translate}
 				</label>
-				<button type="submit" class="button primary mt-auto">{_ actions.sync_translations}</button>
+				<button type="submit" class="as-button-primary mt-auto">{_ actions.sync_translations}</button>
 			</form>
 
 			<form method="POST" action="{~ localized_path('/sync-locale-tables') }" class="flex flex-col gap-3 rounded-md border border-border bg-surface-raised p-4">
 				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 				<input type="hidden" name="return_to" value="/refresh" />
 				<h2 class="font-semibold">{_ actions.sync_locale_tables}</h2>
-				<button type="submit" class="button primary mt-auto">{_ actions.sync_locale_tables}</button>
+				<button type="submit" class="as-button-primary mt-auto">{_ actions.sync_locale_tables}</button>
 			</form>
 
 			<form method="POST" action="{~ localized_path('/add-locale') }" class="flex flex-col gap-3 rounded-md border border-border bg-surface-raised p-4">
@@ -55,7 +55,7 @@
 				<label class="flex cursor-pointer items-center gap-1.5 text-sm">
 					<input type="checkbox" name="translate" value="1" /> {_ actions.translate}
 				</label>
-				<button type="submit" class="button primary mt-auto">{_ actions.add_locale}</button>
+				<button type="submit" class="as-button-primary mt-auto">{_ actions.add_locale}</button>
 			</form>
 		</section>
 	</div>
