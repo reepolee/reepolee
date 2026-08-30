@@ -1,0 +1,48 @@
+{
+	"actions": {
+		"cancel": "Prekliči",
+		"clear_all": "Počisti vse",
+		"clear_pending": "Čaka",
+		"confirm": "Potrdi",
+		"delete": "Izbriši",
+		"pause": "Začasno ustavi delavca",
+		"resume": "Nadaljuj delavca",
+		"retry": "Poskusi znova"
+	},
+	"labels": {
+		"actions": "Dejanja",
+		"attempts": "Poskusi",
+		"created": "Ustvarjeno",
+		"error": "Napaka",
+		"id": "Identifikator",
+		"last_run": "Zadnji zagon",
+		"payload": "Vsebina",
+		"pending": "Čaka",
+		"queue": "Čakalna vrsta",
+		"scheduled": "Načrtovano",
+		"type": "Vrsta"
+	},
+	"nav": "Čakalne vrste",
+	"route_name": "cakalne-vrste",
+	"ui": {
+		"backend": "Pozaditelj",
+		"confirm_clear_all": "Počisti vsa opravila iz te čakalne vrste? Tega ni mogoče razveljaviti.",
+		"confirm_clear_pending": "Počisti vsa čakajoča opravila iz te vrste?",
+		"confirm_delete_job": "Izbriši to neuspelo opravilo za vedno? Tega ni mogoče razveljaviti.",
+		"error_loading": "Napaka pri nalaganju podatkov čakalnih vrst",
+		"failed_heading": "Neuspela opravila",
+		"no_failed": "Ni neuspelih opravil",
+		"no_pending": "Ni čakajočih opravil",
+		"no_queues": "Ni aktivnih čakalnih vrst",
+		"queues_heading": "Čakalne vrste",
+		"redis_unavailable": "Redis ni na voljo - čakalne vrste so onemogočene. E-pošta se pošilja neposredno prek SMTP.",
+		"running_heading": "Opravila v teku",
+		"title": "Upravljalnik čakalnih vrst",
+		"worker_draining": "izpraznjevanje",
+		"worker_offline": "Ni zaznanega procesa za obdelavo čakalne vrste - opravila ne bodo obdelana",
+		"worker_online": "Čakalna vrsta deluje",
+		"worker_paused": "začasno ustavljeno",
+		"worker_running": "deluje",
+		"worker_stopped": "ustavljeno"
+	}
+}

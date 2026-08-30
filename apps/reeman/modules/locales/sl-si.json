@@ -1,0 +1,91 @@
+{
+	"actions": {
+		"abort_archive": "Prekliči",
+		"abort_restore": "Prekliči",
+		"archive": "Arhiviraj",
+		"bulk_action": "Arhiviraj izbrane module",
+		"bulk_action_2": "Skupna akcija 2",
+		"cancel": "Prekliči",
+		"confirm_archive": "Da, arhiviraj",
+		"confirm_restore": "Da, obnovi",
+		"do_it": "Da, naredi",
+		"new_module": "Nov modul",
+		"restore": "Obnovi",
+		"save": "Shrani",
+		"save_close": "Shrani in zapri"
+	},
+	"child_ui": {
+		"actions": "Akcije",
+		"archive": "Arhiviraj",
+		"archiving": "Arhiviranje…",
+		"edit": "Uredi",
+		"edit_title": "Uredi modul",
+		"empty_text": "Ni najdenih modulov.",
+		"error_archiving": "Napaka pri arhiviranju zapisa.",
+		"error_loading": "Napaka pri nalagani zapisa.",
+		"error_saving": "Napaka pri shranjevanju zapisa.",
+		"new_button": "+ Nov modul",
+		"new_title": "Nov modul",
+		"restore": "Obnovi"
+	},
+	"counts": {
+		"archived": "Arhivirani",
+		"live": "Aktivni",
+		"total": "Skupaj"
+	},
+	"errors": {
+		"code_max": "Koda lahko vsebuje največ 15 znakov.",
+		"code_required": "Koda je obvezna.",
+		"duplicate_key": "Zapis s to vrednostjo že obstaja.",
+		"description_max": "Opis lahko vsebuje največ 100 znakov.",
+		"description_required": "Opis je obvezen.",
+		"error_creating_record": "Med shranjevanjem zapisa je prišlo do napake.",
+		"must_be_selected": "To polje je obvezno.",
+		"name_max": "Ime lahko vsebuje največ 30 znakov.",
+		"name_required": "Ime je obvezno.",
+		"title_required": "Naslov je obvezen."
+	},
+	"labels": {
+		"code": "Koda",
+		"description": "Opis",
+		"name": "Ime",
+		"table": "Tabela / Pot"
+	},
+	"messages": {
+		"bulk_archive_failed": "Množično arhiviranje ni uspelo.",
+		"bulk_archive_no_ids": "Ni izbranih modulov.",
+		"bulk_archived": "Ni arhiviranih modulov|{count} modul arhiviran|{count} modula arhivirana|{count} moduli arhivirani|{count} modulov arhiviranih",
+		"bulk_errors": "|{count} modul ni uspel|{count} modula ni uspelo|{count} modulov ni uspelo|{count} modulov ni uspelo",
+		"record_archived": "Zapis arhiviran",
+		"record_created": "Zapis ustvarjen",
+		"record_restored": "Zapis obnovljen",
+		"record_updated": "Zapis posodobljen"
+	},
+	"nav": "Moduli",
+	"route_name": "moduli",
+	"scopes": {
+		"__all": "Vsi",
+		"__archived": "Arhivirani"
+	},
+	"search": {
+		"search_term": "Iskanje modulov...",
+		"submit": "Iskaj"
+	},
+	"selectors": {
+		"0": "Ne",
+		"1": "Da",
+		"all": "Vsi",
+		"per_page": "na stran",
+		"select_table": "-- Izberi tabelo ali pot --"
+	},
+	"ui": {
+		"apply_filters": "Uporabi",
+		"clear_all": "Briši vse",
+		"filter_not": "NI",
+		"loading_count": "Nalagam…",
+		"modifying": "Pred uporabami spremembo",
+		"no_records": "Ni najdenih modulov.",
+		"records": "zapis(ov)",
+		"title": "Moduli"
+	}
+}
