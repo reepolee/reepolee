@@ -1,0 +1,21 @@
+{
+	"actions": {
+		"cancel": "Prekini",
+		"submit": "Shrani moj profil"
+	},
+	"labels": {
+		"avatar": "Slika avatarja",
+		"name": "Polno ime",
+		"nickname": "Vzdevek"
+	},
+	"messages": {
+		"successful_save": "Profil je bil uspešno shranjen."
+	},
+	"route_name": "profil",
+	"ui": {
+		"avatar_label": "Slika profila",
+		"change_password": "Spremeni geslo",
+		"logout": "Odjava",
+		"title": "Moj profil"
+	}
+}

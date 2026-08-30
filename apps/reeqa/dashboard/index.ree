@@ -1,0 +1,82 @@
+{#layout("dashboard/layout")}
+{#with props}
+	<div class="w-full py-4 space-y-6">
+		<header class="px-4">
+			<h1 class="text-xl font-bold">{_ ui.title}</h1>
+			<p class="text-sm text-text-secondary mt-1">{_ ui.description}</p>
+			{#if active_project}<div class="mt-2 flex flex-wrap items-center gap-2 text-sm"><span class="text-text-secondary">{_ ui.active_project}:</span><span class="font-semibold">{= active_project.name }</span>{#if active_page_set}<span class="pill-layout bg-neutral-200">{= active_page_set.name } ({= active_page_set.page_count } {_ labels.pages})</span>{/if}</div>{/if}
+			<div class="mt-3 flex flex-wrap gap-2">
+				{#if projects.length === 0}
+					<a href="{~ localized_path('/projects') }" class="button primary">{_ actions.add_project}</a>
+				{:else}
+					{#if !active_page_set}
+						<a href="{~ localized_path('/projects') }" class="button primary">{_ actions.create_page_set}</a>
+					{:else}
+						<a href="{~ localized_path('/run-tests') }" class="button primary">{_ actions.run_tests}</a>
+					{/if}
+				{/if}
+			</div>
+		</header>
+
+		{#if active_run}
+			<div class="px-4">
+				<app-banner type="blue">
+					{_ ui.active_run}: <a class="font-bold underline" href="{~ localized_path(`/results/run/${props.active_run.id}`) }">{= props.active_run.suite_name }</a>
+				</app-banner>
+			</div>
+		{/if}
+
+		<section class="grid gap-3 px-4" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr))">
+			<a href="{~ localized_path('/projects') }" class="block rounded-md border border-border bg-surface-raised p-4 transition-colors hover:border-brand">
+				<div class="text-2xl font-bold">{= projects.length }</div>
+				<div class="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ ui.stats_projects}</div>
+			</a>
+			<a href="{~ localized_path('/command-checks') }" class="block rounded-md border border-border bg-surface-raised p-4 transition-colors hover:border-brand">
+				<div class="text-2xl font-bold">{= suites.length }</div>
+				<div class="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ ui.stats_suites}</div>
+			</a>
+			<a href="{~ localized_path('/run-tests') }" class="block rounded-md border border-border bg-surface-raised p-4 transition-colors hover:border-brand">
+				<div class="text-2xl font-bold">{= result_count }</div>
+				<div class="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ ui.stats_results}</div>
+			</a>
+			<div class="rounded-md border border-border bg-surface-raised p-4">
+				<div class="text-2xl font-bold text-success">{= passed_count }</div>
+				<div class="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ ui.stats_passed}</div>
+			</div>
+			<div class="rounded-md border border-border bg-surface-raised p-4">
+				<div class="text-2xl font-bold text-danger">{= failed_count }</div>
+				<div class="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ ui.stats_failed}</div>
+			</div>
+		</section>
+
+		<section class="space-y-3">
+			<div class="flex flex-wrap items-center gap-3 px-4">
+				<h2 class="font-semibold">{_ ui.recent_runs}</h2>
+				<a href="{~ localized_path('/command-checks') }" class="text-sm font-semibold text-brand hover:underline">{_ actions.view_all}</a>
+			</div>
+			{#if recent_runs.length === 0}
+				<p class="px-4 text-sm text-text-secondary">{_ ui.no_runs}</p>
+			{:else}
+				<div class="grid w-full gap-x-4 bg-surface-raised shadow-lg" style="grid-template-columns: 12ch 1fr 18ch 18ch">
+					<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+						<div>{_ labels.status}</div>
+						<div>{_ labels.suite}</div>
+						<div>{_ labels.duration}</div>
+						<div>{_ labels.started}</div>
+					</div>
+					{#each recent_runs as run}
+						<a href="{~ localized_path(`/results/run/${run.id}`) }" class="col-span-full grid grid-cols-subgrid border-b border-neutral-200 *:px-2 *:py-2 hover:bg-neutral-100">
+							<div><span class="pill-layout text-xs font-bold {= run.status_class }">{= run.status_label }</span></div>
+							<div>
+								<div class="font-semibold">{= run.suite_name }</div>
+								<div class="text-xs text-text-secondary">{= run.project_name }</div>
+							</div>
+							<div>{= run.duration_display }</div>
+							<div class="text-xs text-text-secondary">{= run.started_display }</div>
+						</a>
+					{/each}
+				</div>
+			{/if}
+		</section>
+	</div>
+{/with}

@@ -1,0 +1,283 @@
+{#layout("layout") }
+{#with props}
+
+	<div class="py-4">
+
+		<!-- TABLE DISPLAY CONTROLLER -->
+		<div id="index-tools" class="flex flex-col gap-3 px-4 xl:flex-row xl:items-center xl:justify-between">
+
+			__stream.pagination_start__				{#if first_url }
+				<a href="{~ localized_path(first_url) }" role="button" class="as-button">
+					<ree-icon name="chevrons_left"></ree-icon>
+				</a>
+			{:else }
+				<ree-icon name="chevrons_left"></ree-icon>
+			{/if}
+
+			{#if prev_url }
+				<a href="{~ localized_path(prev_url) }" role="button" class="as-button"><ree-icon name="chevron_left"></ree-icon></a>
+			{:else }
+				<ree-icon name="chevron_left"></ree-icon>
+			{/if}
+
+			__stream.pagination_count__
+
+			{#if next_url }
+				<a href="{~ localized_path(next_url) }" role="button" class="as-button">
+					<ree-icon name="chevron_right"></ree-icon>
+				</a>
+			{:else }
+				<ree-icon name="chevron_right"></ree-icon>
+			{/if}
+
+			{#if last_url }
+				<a href="{~ localized_path(last_url) }" role="button" class="as-button">
+					<ree-icon name="chevrons_right"></ree-icon>
+				</a>
+			{:else }
+				<ree-icon name="chevrons_right"></ree-icon>
+			{/if}
+		</div>
+		__stream.pagination_end__		<details id="crud_toolbar_details" open class="w-full">
+			<!-- Hide summary on desktop entirely so it doesn't take up layout space -->
+			<summary class="flex xl:hidden list-none cursor-pointer items-center gap-2 rounded-sm border border-border px-3 py-2 font-semibold">
+				{_ ui.show_actions}
+			</summary>
+
+			<!-- The inner div handles full width and flex alignment on desktop -->
+			<div class="mt-2 flex w-full flex-col gap-2 xl:mt-0 xl:flex-row xl:items-center xl:gap-3 xl:flex-wrap xl:justify-between">
+				<select id="limit" class="w-full sm:w-[20ch]" onchange="navigate_to('limit', this.value)">
+					{#each limit_options as option }
+						<option value="{= option }" {#if option === limit }selected{/if}>
+							{#if option==="all"}
+								{_ selectors.all}
+							{:else}
+								{= option } {_ selectors.per_page}
+							{/if}
+						</option>
+					{/each}
+				</select>
+
+				<select id="order_by" class="w-full sm:w-[32ch] xl:w-[40ch]" onchange="navigate_to('order_by', this.value)">
+					{#each sort_options as option }
+						<option value="{= option.value }" {#if option.value === order_by }selected{/if}>
+							{= option.field === 'id' ? 'ID' : (props.translations.v_labels?.[option.field] || option.field) }
+							({= option.direction === 'asc' ? props.translations.selectors.ascending : props.translations.selectors.descending })
+						</option>
+					{/each}
+				</select>
+
+				{#if global_scopes && global_scopes.length > 1 }
+					<select id="scope" class="w-full sm:w-[30ch]" onchange="navigate_to('scope', this.value); set_scope_cookie(this.value)">
+						{#each global_scopes as s }
+							<option value="{= s.scope_key }" {#if s.scope_key === scope }selected{/if}>
+								{= props.translations.scopes?.[s.scope_key] || s.display_name }
+							</option>
+						{/each}
+					</select>
+				{/if}
+
+				{#if global_scopes && global_scopes.length === 1 }
+					<div class="flex items-center gap-2">
+						{= props.translations.scopes?.[global_scopes[0].scope_key] || global_scopes[0].display_name }
+					</div>
+				{/if}
+
+				<a href="{~ localized_path('__route_prefix__/__table.exact__/new') }" role="button" class="as-button-primary w-full xl:w-auto">+ {_ actions.new___table.singular.lowercase__}</a>
+
+				<ree-filters action-url="__route_prefix__/__table.exact__"></ree-filters>
+
+				__archive.counts_block__
+
+				{#if enable_archive }
+					<!-- BULK ACTIONS -->
+					<div class="flex items-center gap-4 justify-start flex-wrap">
+						<button id="action" commandfor="action_dialog" command="show-modal" disabled class="as-button-tertiary">{_ actions.bulk_action}</button>
+
+						<button id="action_2" commandfor="action_2_dialog" command="show-modal" disabled class="as-button-primary">{_ actions.bulk_action_2}</button>
+					</div>
+				{/if}
+			</div>
+
+			<script>
+				function set_scope_cookie(value) {
+					document.cookie = `scope___table.exact__=${encodeURIComponent(value)}; path=/; max-age=2592000`;
+				}
+
+				const crud_toolbar_details = document.getElementById("crud_toolbar_details");
+				const crud_toolbar_desktop = window.matchMedia("(min-width: 1280px)");
+				function sync_crud_toolbar() {
+					if (crud_toolbar_details) {
+						crud_toolbar_details.open = crud_toolbar_desktop.matches;
+					}
+				}
+				sync_crud_toolbar();
+				crud_toolbar_desktop.addEventListener("change", sync_crud_toolbar);
+			</script>
+		</details>
+
+	</div>
+
+	<!-- TABLE GRID -->
+
+	__stream.if_norecords__
+	{#if (records.length === 0) }
+		<p class="p-4">{_ ui.no_records}</p>
+		__stream.close_norecords__
+	{:else }
+		__stream.end_if_norecords__
+		<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-4" style="grid-template-columns: {= grid_cols }" data-updates-route="__route_prefix__/__table.exact__">
+
+			<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+				{#if enable_archive }
+					<div class="grid grid-cols-2 place-items-center p-0!">
+						<button id="deselect_all" class="text-brand cursor-pointer"><ree-icon name="x" class="size-6"></ree-icon></button>
+						<label class="w-full h-full grid place-items-center hover:bg-brand rounded">
+							<input type="checkbox" name="select_all" id="select_all">
+						</label>
+					</div>
+				{/if}
+				<!-- marker cell for the ws "updated record" column (right after checkbox) -->
+				<div class="updates-marker-header" title="{_ ui.updated_records }"></div>
+				<!-- GEN:FIELDS:HEADERS:START -->
+				<div>ID</div>
+				__table.headers__
+				<!-- GEN:FIELDS:HEADERS:END -->
+				<!-- filler cell for the trailing grid_filler track in grid_cols -->
+				<div class="grid-filler"></div>
+			</div>		__stream.records__
+			{#each records as record }
+				<!-- GEN:CUSTOM:ROW_PREFIX:START -->
+				<!-- GEN:CUSTOM:ROW_PREFIX:END -->
+				<a href="{~ localized_path('__route_prefix__/__table.exact__/' + (record.__route_param__ || record.id) + '/edit') }" class="col-span-full *:py-2 grid cursor-pointer grid-cols-subgrid border-b border-b-neutral-200 *:px-2 hover:bg-primary hover:text-white">
+
+					{#if enable_archive }
+						<div class="grid grid-cols-2 place-items-center p-0! m-0!"> <button class="w-6 text-neutral-600 cursor-grab hover:text-white" onclick="event.stopPropagation();event.preventDefault()">
+								<ree-icon name="grip"></ree-icon>
+							</button>
+							<label class="w-full h-full grid place-items-center hover:bg-brand rounded">
+								<input type="checkbox" name="checkboxes[]" value="{= record.id}">
+							</label>
+						</div>
+					{/if}
+
+					<!-- marker cell for the ws "updated record" bullet - filled by updates-client.js -->
+					<div class="updates-marker-cell" data-record-id="{= record.id }"></div>
+					<div>{= record.id}</div>
+					<!-- GEN:FIELDS:CELLS:START -->
+					__table.cells__
+					<!-- GEN:FIELDS:CELLS:END -->
+					<!-- filler cell for the trailing grid_filler track in grid_cols -->
+					<div class="grid-filler">__archive.row_restore__</div>
+				</a>
+			{/each}
+			__stream.records_end__
+		</div>
+	{/if}
+
+	__archive.restore_ui__
+
+	{#if enable_archive }
+		<!-- BULK ACTION CONFIRMATION DIALOG -->
+
+		<dialog id="action_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.bulk_action}</h2>
+				<p class="text-slate-600 mt-2">
+					{_ ui.modifying} <span class="font-semibold text-brand" id="action_count">0</span> {_ ui.records}.
+				</p>
+				<div class="mt-6 flex justify-end gap-2">
+					<button class="as-button-secondary" commandfor="action_dialog" command="close">{_ actions.cancel}</button>
+					<button class="as-button-danger" command="--confirm" commandfor="action_dialog">{_ actions.do_it}</button>
+				</div>
+			</div>
+		</dialog>
+
+		<dialog id="action_2_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.bulk_action_2}</h2>
+				<p class="text-slate-600 mt-2">
+					{_ ui.modifying} <span class="font-semibold text-brand" id="action_2_count">0</span> {_ ui.records}.
+				</p>
+				<div class="mt-6 flex justify-end gap-2">
+					<button class="as-button-secondary" commandfor="action_2_dialog" command="close">{_ actions.cancel}</button>
+					<button class="as-button-primary" command="--confirm" commandfor="action_2_dialog">{_ actions.do_it}</button>
+				</div>
+			</div>
+		</dialog>
+
+		<script src="/checkbox-group.js?v={= version}"></script>
+		<script src="/dialog-confirm.js?v={= version}"></script>
+		<script>
+			// CheckboxGroup requires #select_all in the DOM - skip when no records
+			const bulkCheckboxes = document.getElementById("select_all")
+			? new CheckboxGroup({})
+			: null;
+
+			$("#action_dialog").addEventListener("command", async (e) => {
+				if (e.command !== "--confirm") return;
+				e.currentTarget.close();
+				const selected = $$('input[name="checkboxes[]"]:checked');
+				const ids = Array.from(selected).map((el) => el.value);
+
+				try {
+					const csrf_token = document.cookie.match(/csrf_token=([^;]+)/)?.[1] || "";
+					const response = await fetch(
+						"{~ localized_path('__route_prefix__/__table.exact__/bulk-__archive.action_value__') }",
+						{
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+								"X-CSRF-Token": csrf_token,
+							},
+							body: JSON.stringify({ ids }),
+						},
+					);
+
+					if (response.ok) {
+						document.getElementById("action_dialog").close();
+						window.location.reload();
+					} else {
+						const body = await response.json();
+						add_toast({
+							type: "red",
+							message: body.error || "__archive.bulk_failed__.",
+							duration: 4000,
+						});
+					}
+				} catch (err) {
+					add_toast({
+						type: "red",
+						message: `__archive.bulk_failed__: ${err.message}`,
+						duration: 4000,
+					});
+				}
+			});
+
+			$("#action_2_dialog").addEventListener("command", (e) => {
+				if (e.command !== "--confirm") return;
+				e.currentTarget.close();
+				const selected = $$('input[name="checkboxes[]"]:checked');
+				const ids = Array.from(selected).map((el) => el.value);
+				console.log("Bulk action 2 on IDs:", ids);
+				// TODO: Implement server endpoint and replace with fetch
+				add_toast({
+					type: "yellow",
+					message: "Bulk action 2 not yet implemented.",
+					duration: 3000,
+				});
+			});
+
+			// Update count displays when selection changes
+			document.addEventListener("change", (e) => {
+				if (e.target.name === "select_all" || e.target.name === "checkboxes[]") {
+					const selected = $$('input[name="checkboxes[]"]:checked').length;
+					$("#action_count").textContent = selected;
+					$("#action_2_count").textContent = selected;
+				}
+			});
+		</script>
+	{/if}
+	<script src="/updates-client.js?v={= version}"></script>
+</div>
+{/with}
