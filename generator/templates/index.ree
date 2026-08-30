@@ -87,8 +87,6 @@
 
 				<ree-filters action-url="__route_prefix__/__table.exact__"></ree-filters>
 
-				__archive.counts_block__
-
 				{#if enable_archive }
 					<!-- BULK ACTIONS -->
 					<div class="flex items-center gap-4 justify-start flex-wrap">
@@ -173,6 +171,7 @@
 			{/each}
 			__stream.records_end__
 		</div>
+		__archive.counts_block__
 	{/if}
 
 	__archive.restore_ui__

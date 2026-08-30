@@ -97,15 +97,6 @@
 
 		</div>
 
-		{#if archive_counts}
-			<!-- ARCHIVE COUNTS: whole-table totals, deliberately not narrowed by search or filters -->
-			<dl class="archive-counts grid grid-flow-col auto-cols-max gap-4 items-center px-4 my-2 text-sm">
-				<div><dt class="inline opacity-70">{_ counts.total}:</dt> <dd class="inline font-semibold">{= archive_counts.total }</dd></div>
-				<div><dt class="inline opacity-70">{_ counts.live}:</dt> <dd class="inline font-semibold">{= archive_counts.live }</dd></div>
-				<div><dt class="inline opacity-70">{_ counts.archived}:</dt> <dd class="inline font-semibold">{= archive_counts.archived }</dd></div>
-			</dl>
-		{/if}
-
 		{#if enable_archive}
 			<!-- BULK ACTIONS -->
 			<div class="flex items-center gap-4 justify-start w-full flex-wrap px-4 my-4">
@@ -179,6 +170,14 @@
 					</a>
 				{/each}
 			</div>
+			{#if archive_counts}
+				<!-- ARCHIVE COUNTS: whole-table totals, deliberately not narrowed by search or filters -->
+				<dl class="archive-counts grid grid-flow-col auto-cols-max gap-4 items-center px-4 my-2 text-sm">
+					<div><dt class="inline opacity-70">{_ counts.total}:</dt> <dd class="inline font-semibold">{= archive_counts.total }</dd></div>
+					<div><dt class="inline opacity-70">{_ counts.live}:</dt> <dd class="inline font-semibold">{= archive_counts.live }</dd></div>
+					<div><dt class="inline opacity-70">{_ counts.archived}:</dt> <dd class="inline font-semibold">{= archive_counts.archived }</dd></div>
+				</dl>
+			{/if}
 		{/if}
 
 		{#if enable_archive}

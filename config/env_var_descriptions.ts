@@ -22,7 +22,7 @@ export const ENV_VAR_DESCRIPTIONS: Record<string, string> = {
 	// -- Core app --
 	TIME_ZONE: "IANA time zone (e.g. \"Europe/Ljubljana\") used for date, time and timestamp columns. Required.",
 	PORT: "Port the main app binds to. Defaults to 2338.",
-	TEST_PORT: "Overrides PORT under the --test flag (binds to 127.0.0.1 only). Falls back to PORT then 2338. \"N/A\" means no override.",
+	TEST_PORT: "Port used by the main app under the --test flag (binds to 127.0.0.1 only). Defaults to 2600; \"N/A\" or unset uses the test default.",
 	REEMAN_PORT: "Port for the reeman app (apps/reeman/server.ts), a second process serving the generator UI and sysadmin pages from this checkout. Defaults to 2339.",
 	REEQA_PORT: "Port for the ReeQA app (apps/reeqa/server.ts). Required; set an explicit valid TCP port.",
 	MAIN_APP_URL: "Base URL of the main app, used by the reeman process to reload the main app's translations across the two-app split.",

@@ -26,7 +26,7 @@
 			"reepolee/ree-templates"
 		]
 	},
-	"version": "26.08.161",
+	"version": "26.08.162",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",

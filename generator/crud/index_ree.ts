@@ -48,7 +48,7 @@ export function archive_row_restore(has_archive: boolean, route_param_value: str
 	return `{#if record.archived_at }<button type="button" title="{_ actions.restore}" aria-label="{_ actions.restore}" class="cursor-pointer text-text-tertiary hover:text-brand text-xs" onclick="event.preventDefault(); event.stopPropagation(); open_restore_dialog('{= ${record_param_expr(route_param_value)} }')">{_ actions.restore}</button>{/if}`;
 }
 
-/** Total / active / archived breakdown above the grid. */
+/** Total / active / archived breakdown after the grid. */
 function archive_counts_block(has_archive: boolean): string {
 	if (!has_archive) return "";
 	return `{#if archive_counts }
