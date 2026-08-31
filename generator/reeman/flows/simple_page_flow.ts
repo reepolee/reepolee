@@ -5,7 +5,7 @@
  */
 
 import { get_available_modules } from "../db";
-import { generate_simple_page } from "../simple_page";
+import { generate_simple_page, type SimpleNavigationConfig } from "../simple_page";
 import { ask, BOLD, color, confirm, CYAN, dim, GREEN, header, MAGENTA, RED, select_from_list, YELLOW } from "../ui";
 import { run_reettier } from "../utils/reeformat";
 
@@ -40,6 +40,8 @@ export async function run_simple_page_flow(): Promise<boolean> {
 
 	console.log(`  ${color("✓", GREEN)} Folder: ${color(BOLD + raw_name, CYAN)}`);
 
+	const navigation = await collect_navigation();
+
 	header("Ready to go");
 
 	console.log(`\n${color("-".repeat(50), CYAN)}`);
@@ -48,6 +50,7 @@ export async function run_simple_page_flow(): Promise<boolean> {
 	console.log(`  ${color("Command:", BOLD)}     Simple Page`);
 	console.log(`  ${color("Folder:", BOLD)}      ${raw_name}`);
 	if (prefix) console.log(`  ${color("Prefix:", BOLD)}      ${prefix}`);
+	if (navigation.section_key) console.log(`  ${color("Section:", BOLD)}     ${navigation.section_key}`);
 	console.log(`${color("-".repeat(50), CYAN)}`);
 
 	const proceed = await confirm("Create the Simple Page now?", "y");
@@ -57,10 +60,24 @@ export async function run_simple_page_flow(): Promise<boolean> {
 		return false;
 	}
 
-	await generate_simple_page(prefix, raw_name);
+	await generate_simple_page(prefix, raw_name, navigation);
 
 	const simple_page_rel = `routes${prefix ? `/${prefix}` : ""}/${raw_name}`;
 	run_reettier(simple_page_rel);
 
 	return true;
+}
+
+async function collect_navigation(): Promise<SimpleNavigationConfig> {
+	header("Navigation");
+	const raw_section_key = await ask("Section translation key (blank for none)", "");
+	const section_key = raw_section_key.trim() || null;
+	const read_order = async (label: string): Promise<number | null> => {
+		const value = (await ask(`${label} (blank for current order)`, "")).trim();
+		if (!value) return null;
+		const order = Number(value);
+		if (!Number.isFinite(order)) throw new Error(`${label} must be a finite number`);
+		return order;
+	};
+	return { section_key, item_order: await read_order("Item order"), section_order: await read_order("Section order"), group_order: await read_order("Group order"), final_order: await read_order("Final link order") };
 }

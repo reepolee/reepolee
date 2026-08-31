@@ -13,7 +13,15 @@ import { finalize_routes_update, sync_nav_translation, sync_prefix_title } from 
 import { add_static_route_definitions } from "./utils/routes_writer";
 import { MAIN_APP } from "$config/paths";
 
-export async function generate_simple_page(prefix: string, folder_name: string): Promise<void> {
+export type SimpleNavigationConfig = {
+	section_key: string | null;
+	item_order: number | null;
+	section_order: number | null;
+	group_order: number | null;
+	final_order: number | null;
+};
+
+export async function generate_simple_page(prefix: string, folder_name: string, navigation: SimpleNavigationConfig = { section_key: null, item_order: null, section_order: null, group_order: null, final_order: null }): Promise<void> {
 	const { clean: clean_prefix, route: route_prefix } = normalize_prefix(prefix);
 	const route_dir = clean_prefix ? join(process.cwd(), MAIN_APP, clean_prefix, folder_name) : join(process.cwd(), MAIN_APP, folder_name);
 
@@ -52,7 +60,7 @@ export async function generate_simple_page(prefix: string, folder_name: string):
 				lines.splice(last_import + 1, 0, routedef_import);
 				content = lines.join("\n");
 			}
-			content += `\nexport const route_definitions: RouteDefinition[] = [\n\t{ url: "${route_url}", handler: ${handler_name}, nav_title_key: "${nav_key}"${module_prop} },\n];\n`;
+			content += `\nexport const route_definitions: RouteDefinition[] = [\n\t{ url: "${route_url}", handler: ${handler_name}, nav_title_key: "${nav_key}"${module_prop}, nav_section_key: ${JSON.stringify(navigation.section_key)}, nav_item_order: ${navigation.item_order}, nav_section_order: ${navigation.section_order}, nav_group_order: ${navigation.group_order}, nav_final_order: ${navigation.final_order} },\n];\n`;
 		}
 
 		const target_path = join(route_dir, file);

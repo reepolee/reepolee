@@ -138,6 +138,8 @@
 			"reeqa": "ReeQA"
 		},
 		"auto_complete_no_results": "No results found",
+		"nav_group_auto": "Auto",
+		"nav_group_manual": "Manual",
 		"busy_poller_translating": "{count} translation job(s) running - translations appear when they finish.",
 		"clear_all": "Clear all",
 		"file_upload_click": "Click",

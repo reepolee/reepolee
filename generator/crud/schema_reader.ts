@@ -50,6 +50,7 @@ export interface TableMeta {
 	render_strategy: "stream" | "load";
 	template_tags: "flat" | "tags";
 	grid_filler: string;
+	navigation: NavigationConfig;
 	route_param: string | undefined;
 	id_type: string;
 	id_type_interface: string;
@@ -64,6 +65,22 @@ export interface TableMeta {
 	route_prefix: string;
 	changed_dirs: Set<string>;
 }
+
+export type NavigationConfig = {
+	section_key: string | null;
+	item_order: number | null;
+	section_order: number | null;
+	group_order: number | null;
+	final_order: number | null;
+};
+
+const default_navigation: NavigationConfig = {
+	section_key: null,
+	item_order: null,
+	section_order: null,
+	group_order: null,
+	final_order: null,
+};
 
 /**
  * Compute route directory and relative path for a table.
@@ -220,6 +237,7 @@ export async function load_table_schema(table_name: string, options: {
 	const template_tags: "flat" | "tags" = cli_template_tags || table_module.template_tags || "flat";
 	// Trailing grid filler track. Absent in table.ts files scaffolded before it existed.
 	const grid_filler: string = table_module.grid_filler || "1fr";
+	const navigation: NavigationConfig = { ...default_navigation, ...(table_module.navigation ?? {}) };
 
 	// Backfill grid_filler into table.ts files scaffolded before the const existed.
 	// The generated index.ts imports it by name, so a missing export would resolve to
@@ -230,6 +248,12 @@ export async function load_table_schema(table_name: string, options: {
 			await Bun.write(table_module_path, backfilled);
 			console.log(`  ${Bun.color("green", "ansi")}Added grid_filler = "${grid_filler}" to schema`);
 		}
+	}
+	if (table_module.navigation === undefined) {
+		const navigation_backfill = backfill_navigation(await Bun.file(table_module_path).text());
+		if (!navigation_backfill) throw new Error(`Could not add navigation configuration to ${table_module_path}`);
+		await Bun.write(table_module_path, navigation_backfill);
+		console.log(`  ${Bun.color("green", "ansi")}Added navigation configuration to schema`);
 	}
 
 	// Persist pagination strategy to schema file if CLI explicitly overrode it
@@ -311,6 +335,7 @@ export async function load_table_schema(table_name: string, options: {
 		render_strategy,
 		template_tags,
 		grid_filler,
+		navigation,
 		route_param,
 		id_type,
 		id_type_interface,
@@ -325,6 +350,24 @@ export async function load_table_schema(table_name: string, options: {
 		route_prefix,
 		changed_dirs,
 	};
+}
+
+function backfill_navigation(schema_content: string): string | null {
+	if (schema_content.includes("const navigation")) return null;
+	const export_anchor = "export { columns, route_param, enable_archive,";
+	if (!schema_content.includes(export_anchor)) return null;
+	const navigation_block = `
+
+// Navigation presentation for this route. Null values preserve declaration order.
+const navigation = {
+	section_key: null as string | null,
+	item_order: null as number | null,
+	section_order: null as number | null,
+	group_order: null as number | null,
+	final_order: null as number | null,
+};`;
+	const with_navigation = schema_content.replace(export_anchor, `${navigation_block}\n\n${export_anchor}`);
+	return with_navigation.replace(export_anchor, "export { columns, route_param, enable_archive, navigation,");
 }
 
 /**

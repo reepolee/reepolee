@@ -7,6 +7,7 @@ import { apply_template } from "./template_substitutor";
 import { select_templates } from "./template_selector";
 import type { LocalizedFieldMeta } from "./types";
 import type { FieldDef, ForeignKeyMap, ParentInfo } from "./types";
+import type { NavigationConfig } from "./schema_reader";
 
 // ---------------------------------------------------------------------------
 // Tags fields helpers
@@ -165,6 +166,7 @@ export interface GenerateIndexConfig {
 	localized_fields?: LocalizedFieldMeta[];
 	/** Fields displayed on edit forms but never accepted from the request. */
 	readonly_fields?: ReadonlySet<string>;
+	navigation?: NavigationConfig;
 }
 
 // ---------------------------------------------------------------------------
@@ -502,7 +504,14 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 			lines.splice(last_import + 1, 0, routedef_import);
 			content = lines.join("\n");
 		}
-		content += `\nexport const route_definitions: RouteDefinition[] = [\n\t{ url: "${route_url}", crud: ${table_crud_name}, nav_title_key: "${nav_key}"${nav_module} },\n];\n`;
+		const navigation_import = `import { navigation } from "./schema/table";`;
+		if (!content.includes(navigation_import)) {
+			const lines = content.split("\n");
+			const last_import = lines.findLastIndex((line) => line.trim().startsWith("import "));
+			lines.splice(last_import + 1, 0, navigation_import);
+			content = lines.join("\n");
+		}
+		content += `\nexport const route_definitions: RouteDefinition[] = [\n\t{ url: "${route_url}", crud: ${table_crud_name}, nav_title_key: "${nav_key}"${nav_module}, nav_section_key: navigation.section_key, nav_item_order: navigation.item_order, nav_section_order: navigation.section_order, nav_group_order: navigation.group_order, nav_final_order: navigation.final_order },\n];\n`;
 	}
 
 	// Sanitize JS identifiers when route_name has chars invalid in JS identifiers

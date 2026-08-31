@@ -156,6 +156,9 @@ export async function post_software_update_scan(req: BunRequest, runtime: Softwa
 	}
 
 	await prune_expired_snapshots(runtime.snapshot_dir);
+	// Persist the validated selection before the potentially long comparison so
+	// an automatic live reload can rebuild the source selector while scanning.
+	await write_last_source(validation.canonical, runtime.last_source_file);
 
 	const entries = await diff_directories(validation.canonical, PROJECT_ROOT);
 	const snapshot: ScanSnapshot = {
@@ -167,7 +170,6 @@ export async function post_software_update_scan(req: BunRequest, runtime: Softwa
 		entries,
 	};
 	await save_snapshot(snapshot, runtime.snapshot_dir);
-	await write_last_source(validation.canonical, runtime.last_source_file);
 
 	const locale = resolve_locale(req);
 	return Response.redirect(`${localized_url(BASE_PATH, locale)}?scan=${snapshot.scan_id}`, 303);
@@ -446,5 +448,8 @@ export const route_definitions: RouteDefinition[] = [
 		nav_title_key: "reeman.software_update",
 		module: "system",
 		nav_module: null,
+		nav_section_key: "reeman.nav.generator",
+		nav_section_order: 10,
+		nav_item_order: 60,
 	},
 ];

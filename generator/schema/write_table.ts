@@ -478,7 +478,16 @@ const render_strategy: "stream" | "load" = "${render_strategy}";
 // "tags" (single self-contained ReeTag component per field, e.g. <input-text>).
 // Use "tags" once a form's layout is stable and won't need per-field HTML customization.
 const template_tags: "flat" | "tags" = "${template_tags}";
-${global_scopes_block ? `\n${global_scopes_block}\n` : ""}${parent_export_block}export { columns, route_param, enable_archive, grid_filler, pagination_strategy, render_strategy, template_tags${global_scopes_block ? ", global_scopes" : ""} };
+
+// Navigation presentation for this route. Null values preserve declaration order.
+const navigation = {
+	section_key: null as string | null,
+	item_order: null as number | null,
+	section_order: null as number | null,
+	group_order: null as number | null,
+	final_order: null as number | null,
+};
+${global_scopes_block ? `\n${global_scopes_block}\n` : ""}${parent_export_block}export { columns, route_param, enable_archive, grid_filler, pagination_strategy, render_strategy, template_tags, navigation${global_scopes_block ? ", global_scopes" : ""} };
 `;
 
 	await Bun.write(`${dir}/schema/table.ts`, content);

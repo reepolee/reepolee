@@ -29,6 +29,10 @@ const render_data = {
 	user: null,
 	nav_groups: [],
 	collapsed_nav_modules: [],
+	collapsed_nav_sections: [],
+	manual_nav_modules: [],
+	manual_nav_sections: [],
+	nav_final_links: [],
 	path_locale: null,
 	locale_preferred: null,
 	dark_mode: false,
@@ -45,6 +49,7 @@ const rule_nav_groups = [
 			{ url: "/tables", nav_title_key: "tables", module: null, required_module: null, is_menu_entry: true, nav_rule_after: true },
 			{ url: "/files", nav_title_key: "files", module: null, required_module: null, is_menu_entry: true },
 		],
+		sections: [],
 	},
 ];
 
@@ -104,6 +109,46 @@ describe("layout presentation-boundary metadata", () => {
 	test("does not render a rule when no entry is flagged", async () => {
 		const html = await render_layout();
 		expect(html).not.toContain("<hr");
+	});
+
+	test("renders a localized, independently collapsible section", async () => {
+		const nav_groups = [{ label: "", items: [], sections: [{ key: "reeman.nav.data", title_key: "reeman.nav.data", order: 10, items: [{ url: "/tables", nav_title_key: "reeman.tables", required_module: null, is_menu_entry: true }] }] }];
+		const section_data = { ...render_data, translations: { ui: { title: "Test" }, nav: { reeman: { nav: { data: "Data" }, tables: "Tables" } } } };
+		const html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...section_data, nav_groups, helpers: create_template_helpers(section_data) });
+		expect(html).toContain('data-nav-section="root:reeman.nav.data"');
+		expect(html).toContain("Data");
+		expect(html).toContain('href="/tables"');
+	});
+
+	test("opens the current section despite its collapsed cookie", async () => {
+		const nav_groups = [{ label: "", items: [], sections: [{ key: "reeman.nav.data", title_key: "reeman.nav.data", order: 10, items: [{ url: "/tables", nav_title_key: "reeman.tables", required_module: null, is_menu_entry: true }] }] }];
+		const section_data = { ...render_data, request_url: "/tables", collapsed_nav_sections: ["root:reeman.nav.data"], translations: { ui: { title: "Test", nav_group_auto: "Auto", nav_group_manual: "Manual" }, nav: { reeman: { nav: { data: "Data" }, tables: "Tables" } } } };
+		const html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...section_data, nav_groups, helpers: create_template_helpers(section_data) });
+		expect(html).toContain('data-nav-section="root:reeman.nav.data" data-nav-manual="false" open');
+	});
+
+	test("keeps manual sections closed and auto sections open for the current route", async () => {
+		const nav_groups = [{ label: "", items: [], sections: [{ key: "reeman.nav.data", title_key: "reeman.nav.data", order: 10, items: [{ url: "/tables", nav_title_key: "reeman.tables", required_module: null, is_menu_entry: true }] }] }];
+		const base_section_data = { ...render_data, request_url: "/tables", collapsed_nav_sections: ["root:reeman.nav.data"], translations: { ui: { title: "Test", nav_group_auto: "Auto", nav_group_manual: "Manual" }, nav: { reeman: { nav: { data: "Data" }, tables: "Tables" } } } };
+		const auto_html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...base_section_data, nav_groups, helpers: create_template_helpers(base_section_data) });
+		expect(auto_html).toContain('data-nav-section="root:reeman.nav.data" data-nav-manual="false" open');
+		const manual_data = { ...base_section_data, manual_nav_sections: ["root:reeman.nav.data"] };
+		const manual_html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...manual_data, nav_groups, helpers: create_template_helpers(manual_data) });
+		expect(manual_html).toContain('data-nav-section="root:reeman.nav.data" data-nav-manual="true"');
+		expect(manual_html).not.toContain('data-nav-section="root:reeman.nav.data" data-nav-manual="true" open');
+		expect(manual_html).toContain('data-nav-section-mode-toggle');
+	});
+
+	test("keeps manual groups closed and auto groups open for the current route", async () => {
+		const nav_groups = [{ label: "admin", items: [{ url: "/tables", nav_title_key: "tables", required_module: "admin", is_menu_entry: true }], sections: [] }];
+		const base_group_data = { ...render_data, request_url: "/tables", user: { modules_tags: "admin" }, collapsed_nav_modules: ["admin"], translations: { ui: { title: "Test", nav_group_auto: "Auto", nav_group_manual: "Manual" }, nav: { tables: "Tables" }, nav_prefix_title: { admin: "Admin" } } };
+		const auto_html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...base_group_data, nav_groups, helpers: create_template_helpers(base_group_data) });
+		expect(auto_html).toContain('data-nav-module="admin" data-nav-manual="false" open');
+		const manual_data = { ...base_group_data, manual_nav_modules: ["admin"] };
+		const manual_html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...manual_data, nav_groups, helpers: create_template_helpers(manual_data) });
+		expect(manual_html).toContain('data-nav-module="admin" data-nav-manual="true"');
+		expect(manual_html).not.toContain('data-nav-module="admin" data-nav-manual="true" open');
+		expect(manual_html).toContain('data-nav-mode-toggle');
 	});
 
 	test("keeps bootstrap development app links in the render pipeline", async () => {

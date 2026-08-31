@@ -24,47 +24,7 @@ const filtered_definitions = mounted_definitions.filter((d) => {
 	return true;
 });
 
-// All reeman app pages are served at root URLs (e.g. /tables, /users) and
-// gated by the "system" module. Explicit nav order: the reeman dashboard owns
-// "/" on this origin and stays first, then the generator core pages, then
-// the data/admin pages. Array#sort is stable, so entries without an explicit
-// index keep their mount order (and feature-gated pages drop out cleanly).
-// Files intentionally sits after Images (issue #13). The /generate page was
-// removed (issue #21) - single-table CRUD generation now lives on /tables;
-// Studio now carries the nav_rule_after flag so the layout still draws a
-// horizontal rule under the generator core pages (issue #24).
-const NAV_ORDER = [
-	"/",
-	"/tables",
-	"/routes",
-	"/database",
-	"/project",
-	"/environment",
-	"/software-update",
-	"/studio",
-	"/cache",
-	"/global_scopes",
-	"/images",
-	"/files",
-	"/logs",
-	"/modules",
-	"/queues",
-	"/rate-limits",
-	"/refresh",
-	"/locales",
-	"/translations",
-	"/users",
-];
-const NAV_ORDER_INDEX = new Map(NAV_ORDER.map((url, index) => [url, index]));
-
-const route_definitions: RouteDefinition[] = [...filtered_definitions].sort((a, b) => {
-	const ia = NAV_ORDER_INDEX.get(a.url ?? "");
-	const ib = NAV_ORDER_INDEX.get(b.url ?? "");
-	if (ia !== undefined && ib !== undefined) return ia - ib;
-	if (ia !== undefined) return -1;
-	if (ib !== undefined) return 1;
-	return 0;
-});
+const route_definitions: RouteDefinition[] = filtered_definitions;
 
 export const nav_routes = build_nav_routes(route_definitions);
 

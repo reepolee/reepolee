@@ -25,7 +25,7 @@ afterAll(() => {
 	else process.env.GROUP_JS = _restore_group_js;
 });
 
-const { get_collapsed_nav_modules, initialize_render, move_styles_and_scripts_to_head, render_to_string } = await import("./render");
+const { get_collapsed_nav_modules, get_collapsed_nav_sections, get_manual_nav_modules, get_manual_nav_sections, initialize_render, move_styles_and_scripts_to_head, render_to_string } = await import("./render");
 
 describe("get_collapsed_nav_modules", () => {
 	test("returns validated module names from a cookie", () => {
@@ -37,6 +37,18 @@ describe("get_collapsed_nav_modules", () => {
 		expect(get_collapsed_nav_modules("not-json")).toEqual([]);
 		expect(get_collapsed_nav_modules(JSON.stringify({ system: true }))).toEqual([]);
 		expect(get_collapsed_nav_modules(JSON.stringify(["system", 1, ""]))).toEqual(["system"]);
+	});
+
+	test("validates independently collapsed section identifiers", () => {
+		expect(get_collapsed_nav_sections(JSON.stringify(["root:reeman.nav.data"]))).toEqual(["root:reeman.nav.data"]);
+	});
+
+	test("validates manual navigation module identifiers", () => {
+		expect(get_manual_nav_modules(JSON.stringify(["system"]))).toEqual(["system"]);
+	});
+
+	test("validates manual navigation section identifiers", () => {
+		expect(get_manual_nav_sections(JSON.stringify(["root:reeman.nav.data"]))).toEqual(["root:reeman.nav.data"]);
 	});
 });
 

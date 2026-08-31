@@ -31,14 +31,30 @@ function is_group_js_enabled(): boolean {
 }
 
 export function get_collapsed_nav_modules(cookie_value: string | null): string[] {
+	return get_collapsed_nav_values(cookie_value);
+}
+
+export function get_collapsed_nav_sections(cookie_value: string | null): string[] {
+	return get_collapsed_nav_values(cookie_value);
+}
+
+export function get_manual_nav_modules(cookie_value: string | null): string[] {
+	return get_collapsed_nav_values(cookie_value);
+}
+
+export function get_manual_nav_sections(cookie_value: string | null): string[] {
+	return get_collapsed_nav_values(cookie_value);
+}
+
+function get_collapsed_nav_values(cookie_value: string | null): string[] {
 	if (!cookie_value) return [];
 
 	try {
 		const parsed_value: unknown = JSON.parse(cookie_value);
 		if (!Array.isArray(parsed_value)) return [];
 
-		const module_names = parsed_value.filter((value): value is string => typeof value === "string" && value.length > 0 && value.length <= 100);
-		return module_names.slice(0, 100);
+		const values = parsed_value.filter((value): value is string => typeof value === "string" && value.length > 0 && value.length <= 100);
+		return values.slice(0, 100);
 	} catch {
 		return [];
 	}
@@ -210,6 +226,12 @@ export async function render_to_string(template: string, options: RenderOptions)
 	const csrf_token: string = ctx.req?.headers?.get("X-CSRF-Token") || "";
 	const nav_modules_cookie = ctx.req ? get_cookie(ctx.req, "nav_collapsed_modules") : null;
 	const collapsed_nav_modules = get_collapsed_nav_modules(nav_modules_cookie);
+	const nav_sections_cookie = ctx.req ? get_cookie(ctx.req, "nav_collapsed_sections") : null;
+	const collapsed_nav_sections = get_collapsed_nav_sections(nav_sections_cookie);
+	const nav_manual_modules_cookie = ctx.req ? get_cookie(ctx.req, "nav_manual_modules") : null;
+	const manual_nav_modules = get_manual_nav_modules(nav_manual_modules_cookie);
+	const nav_manual_sections_cookie = ctx.req ? get_cookie(ctx.req, "nav_manual_sections") : null;
+	const manual_nav_sections = get_manual_nav_sections(nav_manual_sections_cookie);
 
 	// Detect language of the requested URL path
 	const path_locale: string | null = detect_locale(relative_url ?? "");
@@ -238,6 +260,9 @@ export async function render_to_string(template: string, options: RenderOptions)
 		user: ctx.user,
 		toasts: ctx.toasts,
 		collapsed_nav_modules,
+		collapsed_nav_sections,
+		manual_nav_modules,
+		manual_nav_sections,
 		rendered_at: now_iso_str(),
 		translations: ctx.translations,
 		...data,

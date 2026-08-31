@@ -18,7 +18,8 @@ import type { NavRoute } from "$lib/route_builder";
 // Types
 // ---------------------------------------------------------------------------
 
-export type NavGroup = { label: string; items: NavRoute[]; };
+export type NavSection = { key: string; title_key: string; items: NavRoute[]; order: number | null; };
+export type NavGroup = { label: string; items: NavRoute[]; sections: NavSection[]; order: number | null; };
 
 interface RouteState {
 	routes: RouteTable;
@@ -117,20 +118,55 @@ export function match_route(pathname: string, table: RouteTable): { handler: Rou
  */
 export function build_nav_groups(nav_routes: NavRoute[]): NavGroup[] {
 	const menu_entries = nav_routes.filter((e) => e.is_menu_entry);
+	const groups = new Map<string, NavGroup>();
+	const section_orders = new Map<string, number | null>();
 
-	const grouped: Record<string, NavGroup> = {};
 	for (const entry of menu_entries) {
 		const module_key = entry.module ?? "";
-		if (!grouped[module_key]) {
+		let group = groups.get(module_key);
+		if (!group) {
 			const label = entry.module ? entry.module.toLowerCase() : "";
-			grouped[module_key] = { label, items: [] };
+			group = { label, items: [], sections: [], order: entry.nav_group_order ?? null };
+			groups.set(module_key, group);
+		} else if (group.order !== (entry.nav_group_order ?? null) && group.order !== null && entry.nav_group_order !== null && entry.nav_group_order !== undefined) {
+			throw new Error(`build_nav_groups: conflicting nav_group_order values for "${module_key}"`);
+		} else if (group.order === null && entry.nav_group_order !== null && entry.nav_group_order !== undefined) {
+			group.order = entry.nav_group_order;
 		}
-		grouped[module_key].items.push(entry);
+
+		if (!entry.nav_section_key) {
+			group.items.push(entry);
+			continue;
+		}
+
+		const section_id = `${module_key}:${entry.nav_section_key}`;
+		const existing_order = section_orders.get(section_id);
+		if (existing_order !== undefined && existing_order !== entry.nav_section_order && existing_order !== null && entry.nav_section_order !== null) {
+			throw new Error(`build_nav_groups: conflicting nav_section_order values for "${section_id}"`);
+		}
+		if (!section_orders.has(section_id) || existing_order === null) section_orders.set(section_id, entry.nav_section_order ?? null);
+
+		let section = group.sections.find((candidate) => candidate.key === entry.nav_section_key);
+		if (!section) {
+			section = { key: entry.nav_section_key, title_key: entry.nav_section_key, items: [], order: entry.nav_section_order ?? null };
+			group.sections.push(section);
+		} else if (section.order === null && entry.nav_section_order !== null && entry.nav_section_order !== undefined) {
+			section.order = entry.nav_section_order;
+		}
+		section.items.push(entry);
 	}
 
-	return Object.entries(grouped).sort(([a], [b]) => {
-		if (a === "") return -1;
-		if (b === "") return 1;
-		return a.localeCompare(b);
+	const by_item_order = (a: NavRoute, b: NavRoute) => (a.nav_item_order ?? Infinity) - (b.nav_item_order ?? Infinity);
+	for (const group of groups.values()) {
+		group.items.sort(by_item_order);
+		for (const section of group.sections) section.items.sort(by_item_order);
+		group.sections.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+	}
+
+	return [...groups.entries()].sort(([a_key, a], [b_key, b]) => {
+		if (a.order !== null || b.order !== null) return (a.order ?? Infinity) - (b.order ?? Infinity);
+		if (a_key === "") return -1;
+		if (b_key === "") return 1;
+		return a_key.localeCompare(b_key);
 	}).map(([, group]) => group);
 }

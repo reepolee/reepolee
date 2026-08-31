@@ -123,6 +123,7 @@ describe("post_software_update_scan", () => {
 			const snapshot = await load_snapshot(scan_id, runtime.snapshot_dir);
 			expect(snapshot).not.toBeNull();
 			expect(snapshot!.entries.some((e) => e.rel_path === "upstream-only.txt" && e.state === "new")).toBe(true);
+			expect(JSON.parse(await readFile(runtime.last_source_file, "utf8"))).toEqual({ path: base });
 			await delete_snapshot(scan_id, runtime.snapshot_dir);
 		} finally {
 			await rm(base, { recursive: true, force: true });

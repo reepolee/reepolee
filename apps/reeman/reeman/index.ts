@@ -104,5 +104,6 @@ export const route_definitions: RouteDefinition[] = [
 		nav_title_key: "reeman.reeman",
 		module: "system",
 		nav_module: null,
+		nav_item_order: 10,
 	},
 ];

@@ -24,6 +24,7 @@ import type { WebSocketData } from "$lib/livereload";
 import type { RouteTable } from "$lib/middleware/types";
 import { load_modules } from "$lib/modules";
 import { initialize_render } from "$lib/render";
+import { nav_final_links } from "$lib/route_builder";
 import type { NavRoute } from "$lib/route_builder";
 import { rebuild_routes_and_state } from "$lib/route_state";
 import { mark_initialized, set_base_data } from "$lib/route_table";
@@ -180,6 +181,7 @@ export async function bootstrap(opts: BootstrapOptions): Promise<void> {
 		app_name: opts.app_name,
 		dev_apps: is_dev ? dev_app_links(opts.app_name) : [],
 		nav_groups,
+		nav_final_links: [...nav_final_links].sort((a, b) => a.nav_final_order - b.nav_final_order),
 		version,
 		busy_poller: opts.busy_poller === true,
 	};

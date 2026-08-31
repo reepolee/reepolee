@@ -14,6 +14,7 @@ const table_module_exports = [
 	"global_scopes",
 	"grid_filler",
 	"indexed_columns",
+	"navigation",
 	"pagination_strategy",
 	"parent",
 	"render_strategy",

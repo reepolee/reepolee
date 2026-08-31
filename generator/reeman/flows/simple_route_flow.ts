@@ -5,6 +5,7 @@
 
 import { get_available_modules, get_available_tables, get_table_columns } from "../db";
 import { generate_simple_route } from "../simple_route";
+import type { SimpleNavigationConfig } from "../simple_page";
 import type { OrderByItem, WhereItem } from "../types";
 import {
 	ask,
@@ -32,6 +33,7 @@ export interface SimpleRouteParams {
 	selected_fields: string[];
 	order_by: OrderByItem[];
 	where: WhereItem[];
+	navigation: SimpleNavigationConfig;
 }
 
 /**
@@ -147,6 +149,8 @@ export async function collect_simple_route_params(): Promise<SimpleRouteParams |
 	const folder_name = raw_name;
 	console.log(`  ${color("✓", GREEN)} Folder: ${color(BOLD + folder_name, CYAN)}`);
 
+	const navigation = await collect_navigation();
+
 	return {
 		prefix,
 		folder_name,
@@ -154,6 +158,7 @@ export async function collect_simple_route_params(): Promise<SimpleRouteParams |
 		selected_fields: simple_selected_fields,
 		order_by: simple_order_by,
 		where: simple_where,
+		navigation,
 	};
 }
 
@@ -187,6 +192,7 @@ export async function run_simple_route_flow(): Promise<boolean> {
 		console.log(`  ${color("Where:", BOLD)}      ${dim("none")}`);
 	}
 	if (params.prefix) console.log(`  ${color("Prefix:", BOLD)}      ${params.prefix}`);
+	if (params.navigation.section_key) console.log(`  ${color("Section:", BOLD)}     ${params.navigation.section_key}`);
 	console.log(`${color("-".repeat(50), CYAN)}`);
 
 	const proceed = await confirm("Create the Simple Table Page now?", "y");
@@ -202,13 +208,28 @@ export async function run_simple_route_flow(): Promise<boolean> {
 		params.table_name,
 		params.selected_fields,
 		params.order_by,
-		params.where
+		params.where,
+		params.navigation
 	);
 
 	const simple_route_rel = `routes${params.prefix ? `/${params.prefix}` : ""}/${params.folder_name}`;
 	run_reettier(simple_route_rel);
 
 	return true;
+}
+
+async function collect_navigation(): Promise<SimpleNavigationConfig> {
+	header("Navigation");
+	const raw_section_key = await ask("Section translation key (blank for none)", "");
+	const section_key = raw_section_key.trim() || null;
+	const read_order = async (label: string): Promise<number | null> => {
+		const value = (await ask(`${label} (blank for current order)`, "")).trim();
+		if (!value) return null;
+		const order = Number(value);
+		if (!Number.isFinite(order)) throw new Error(`${label} must be a finite number`);
+		return order;
+	};
+	return { section_key, item_order: await read_order("Item order"), section_order: await read_order("Section order"), group_order: await read_order("Group order"), final_order: await read_order("Final link order") };
 }
 
 // ---------------------------------------------------------------------------

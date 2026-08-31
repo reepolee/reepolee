@@ -18,6 +18,16 @@ export type RouteDefinition = {
 	 * which require the "system" module but are served at root URLs.
 	 */
 	nav_module?: string | null;
+	/** Optional translated second-level navigation section. */
+	nav_section_key?: string | null;
+	/** Optional presentation order within a section or outer group. */
+	nav_item_order?: number | null;
+	/** Optional presentation order for the named section. */
+	nav_section_order?: number | null;
+	/** Optional presentation order for the outer navigation group. */
+	nav_group_order?: number | null;
+	/** Optional presentation order for a final sidebar link. */
+	nav_final_order?: number | null;
 	is_menu_entry?: boolean;
 	/** Draw a horizontal rule under this nav entry in the sidebar (e.g. to group sections). */
 	nav_rule_after?: boolean;
@@ -35,21 +45,61 @@ export type NavRoute = {
 	 */
 	required_module: string | null;
 	is_menu_entry: boolean;
+	nav_section_key?: string | null;
+	nav_item_order?: number | null;
+	nav_section_order?: number | null;
+	nav_group_order?: number | null;
+	nav_final_order?: number | null;
 	/** Draw a horizontal rule under this nav entry in the sidebar (e.g. to group sections). */
 	nav_rule_after?: boolean;
 };
 
+export type NavLink = {
+	key: string;
+	url: string;
+	nav_title_key: string;
+	nav_final_order: number;
+	requires_user: boolean;
+};
+
+export const nav_final_links: NavLink[] = [
+	{ key: "profile", url: "/profile", nav_title_key: "nav_auth.profile", nav_final_order: 10, requires_user: true },
+	{ key: "login", url: "/login", nav_title_key: "nav_auth.login", nav_final_order: 20, requires_user: false },
+];
+
+function valid_order(value: unknown, field_name: string, url: string): number | null {
+	if (value === undefined || value === null) return null;
+	if (typeof value !== "number" || !Number.isFinite(value)) {
+		throw new Error(`build_nav_routes: ${field_name} for "${url}" must be a finite number`);
+	}
+	return value;
+}
+
+function valid_section_key(value: unknown): string | null {
+	if (typeof value !== "string") return null;
+	const section_key = value.trim();
+	return section_key.length > 0 && section_key.length <= 100 ? section_key : null;
+}
+
 export function build_nav_routes(defs: RouteDefinition[]): NavRoute[] {
-	return defs.filter((d) => d.nav_title_key && d.is_menu_entry !== false).map((d) => ({
-		url: d.url,
-		nav_title_key: d.nav_title_key!,
-		module: d.nav_module !== undefined ? d.nav_module : (d.module ?? null),
-		// Auth module always gates visibility, even when nav_module moves the
-		// entry to a flat root position.
-		required_module: d.module ?? null,
-		is_menu_entry: true,
-		...(d.nav_rule_after === true ? { nav_rule_after: true } : {}),
-	}));
+	return defs.filter((d) => d.nav_title_key && d.is_menu_entry !== false).map((d) => {
+		const nav_section_key = valid_section_key(d.nav_section_key);
+		return {
+			url: d.url,
+			nav_title_key: d.nav_title_key!,
+			module: d.nav_module !== undefined ? d.nav_module : (d.module ?? null),
+			// Auth module always gates visibility, even when nav_module moves the
+			// entry to a flat root position.
+			required_module: d.module ?? null,
+			is_menu_entry: true,
+			...(nav_section_key ? { nav_section_key } : {}),
+			...(d.nav_item_order !== undefined ? { nav_item_order: valid_order(d.nav_item_order, "nav_item_order", d.url) } : {}),
+			...(d.nav_section_order !== undefined ? { nav_section_order: valid_order(d.nav_section_order, "nav_section_order", d.url) } : {}),
+			...(d.nav_group_order !== undefined ? { nav_group_order: valid_order(d.nav_group_order, "nav_group_order", d.url) } : {}),
+			...(d.nav_final_order !== undefined ? { nav_final_order: valid_order(d.nav_final_order, "nav_final_order", d.url) } : {}),
+			...(d.nav_rule_after === true ? { nav_rule_after: true } : {}),
+		};
+	});
 }
 
 export function build_routes(defs: RouteDefinition[]) {

@@ -158,5 +158,5 @@ export async function get_db_table_detail(req: BunRequest): Promise<Response> {
 }
 
 export const route_definitions: RouteDefinition[] = [
-	{ url: "/tables", crud: reeman_db_tables_crud, nav_title_key: "reeman.db_tables", module: "system", nav_module: null },
+	{ url: "/tables", crud: reeman_db_tables_crud, nav_title_key: "reeman.db_tables", module: "system", nav_module: null, nav_section_key: "reeman.nav.generator", nav_section_order: 10, nav_item_order: 10 },
 ];

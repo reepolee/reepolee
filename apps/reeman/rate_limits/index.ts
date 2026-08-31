@@ -18,6 +18,9 @@ export const route_definitions: RouteDefinition[] = [
 		nav_title_key: "reeman.rate_limits",
 		module: "system",
 		nav_module: null,
+		nav_section_key: "reeman.nav.data",
+		nav_section_order: 20,
+		nav_item_order: 70,
 	},
 ];
 

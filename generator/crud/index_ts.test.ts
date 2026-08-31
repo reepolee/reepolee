@@ -91,3 +91,21 @@ test("uses a configured route parameter for the save-and-stay redirect", async (
 	expect(source).toContain("redirect_url = localized_url(entity_path(code), _lang);");
 	expect(source).not.toContain("redirect_url = localized_url(entity_path(id), _lang);");
 });
+
+test("reads durable navigation settings from schema/table.ts", async () => {
+	const source = await generate_index_ts({
+		table_name: "sensors",
+		fields,
+		column_names: ["id", "code", "name"],
+		view_column_names: [],
+		sort_options: "[]",
+		view_name: "v_sensors",
+		has_view: false,
+		first_field: "name",
+		foreign_keys: new Map(),
+	});
+
+	expect(source).toContain('import { navigation } from "./schema/table";');
+	expect(source).toContain("nav_section_key: navigation.section_key");
+	expect(source).toContain("nav_group_order: navigation.group_order");
+});

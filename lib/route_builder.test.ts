@@ -56,4 +56,35 @@ describe("build_nav_routes", () => {
 		const routes = build_routes(defs);
 		expect(Object.keys(routes)).toEqual(["/users"]);
 	});
+
+	test("carries section and ordering metadata", () => {
+		const defs: RouteDefinition[] = [{ url: "/tables", nav_title_key: "reeman.tables", module: "system", nav_module: null, nav_section_key: "reeman.nav.generator", nav_item_order: 10, nav_section_order: 20, nav_group_order: 30 }];
+		expect(build_nav_routes(defs)[0]).toMatchObject({ nav_section_key: "reeman.nav.generator", nav_item_order: 10, nav_section_order: 20, nav_group_order: 30 });
+	});
+
+	test("rejects non-finite navigation order", () => {
+		const defs: RouteDefinition[] = [{ url: "/tables", nav_title_key: "tables", nav_item_order: Number.NaN }];
+		expect(() => build_nav_routes(defs)).toThrow("nav_item_order");
+	});
+
+	test("groups sectioned and unsectioned entries with stable explicit ordering", () => {
+		const nav = build_nav_routes([
+			{ url: "/flat", nav_title_key: "flat", nav_item_order: 20 },
+			{ url: "/second", nav_title_key: "second", nav_section_key: "reeman.nav.data", nav_section_order: 20, nav_item_order: 20 },
+			{ url: "/first", nav_title_key: "first", nav_section_key: "reeman.nav.generator", nav_section_order: 10, nav_item_order: 10 },
+			{ url: "/flat-first", nav_title_key: "flat-first", nav_item_order: 10 },
+		]);
+		const group = build_nav_groups(nav)[0]!;
+		expect(group.items.map((entry) => entry.url)).toEqual(["/flat-first", "/flat"]);
+		expect(group.sections.map((section) => section.key)).toEqual(["reeman.nav.generator", "reeman.nav.data"]);
+		expect(group.sections[0]?.items.map((entry) => entry.url)).toEqual(["/first"]);
+	});
+
+	test("rejects conflicting section order declarations", () => {
+		const nav = build_nav_routes([
+			{ url: "/one", nav_title_key: "one", nav_section_key: "reeman.nav.data", nav_section_order: 10 },
+			{ url: "/two", nav_title_key: "two", nav_section_key: "reeman.nav.data", nav_section_order: 20 },
+		]);
+		expect(() => build_nav_groups(nav)).toThrow("conflicting nav_section_order");
+	});
 });

@@ -138,6 +138,8 @@
 			"reeqa": "ReeQA"
 		},
 		"auto_complete_no_results": "Ni najdenih zadetkov.",
+		"nav_group_auto": "Samodejno",
+		"nav_group_manual": "Ročno",
 		"busy_poller_translating": "{count} prevajalskih opravil se izvaja - prevodi se prikažejo, ko se zaključijo.",
 		"clear_all": "Počisti vse",
 		"file_upload_click": "Kliknite",

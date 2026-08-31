@@ -207,5 +207,5 @@ export async function post_users_index(req: BunRequest): Promise<Response> {
 }
 
 export const route_definitions: RouteDefinition[] = [
-	{ url: "/users", crud: system_users_crud, nav_title_key: "reeman.users", module: "system", nav_module: null },
+	{ url: "/users", crud: system_users_crud, nav_title_key: "reeman.users", module: "system", nav_module: null, nav_section_key: "reeman.nav.system", nav_section_order: 30, nav_item_order: 40 },
 ];

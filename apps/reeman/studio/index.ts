@@ -23,6 +23,9 @@ export const route_definitions: RouteDefinition[] = [
 		nav_title_key: "reeman.studio",
 		module: "system",
 		nav_module: null,
+		nav_section_key: "reeman.nav.generator",
+		nav_section_order: 10,
+		nav_item_order: 70,
 		// Draw a horizontal rule under Studio in the nav sidebar (issue #24) -
 		// restores the separator between the generator core pages and the
 		// data/admin pages that the removed /generate route used to carry.

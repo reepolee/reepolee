@@ -204,5 +204,5 @@ export async function get_add_table_page_form(req: BunRequest): Promise<Response
 }
 
 export const route_definitions: RouteDefinition[] = [
-	{ url: "/routes", crud: reeman_db_routes_crud, nav_title_key: "reeman.db_routes", module: "system", nav_module: null },
+	{ url: "/routes", crud: reeman_db_routes_crud, nav_title_key: "reeman.db_routes", module: "system", nav_module: null, nav_section_key: "reeman.nav.generator", nav_section_order: 10, nav_item_order: 20 },
 ];

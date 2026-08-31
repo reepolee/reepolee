@@ -164,6 +164,7 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 		render_strategy: meta.render_strategy,
 		route_name: meta.route_name,
 		is_auto_increment_pk: meta.is_auto_increment_pk,
+		navigation: meta.navigation,
 	}));
 
 	const tags_fields = entry_fields(meta.fields, false).filter((f) => f.type === "tags" && f.attributes?.tags?.table);
