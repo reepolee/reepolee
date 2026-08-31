@@ -1,0 +1,77 @@
+{{
+	const panel_locale = props.attributes.locale;
+	const loc = props.attributes.localization ?? {};
+	const locale_names = loc.locale_names ?? {};
+	const tab_group = props.attributes["tab-group"];
+
+	// The tabs wrapper only knows the field name (it wraps arbitrary child
+	// markup for the default-locale input); this panel looks its own field
+	// metadata up from the shared localization.fields list.
+	const field_name = props.attributes["field-name"] ?? props.attributes.field?.name;
+	const field = props.attributes.field ?? (loc.fields ?? []).find((candidate) => candidate.name === field_name) ?? { name: field_name, type: "text" };
+
+	const key = field.name + "|" + panel_locale;
+	const input_name = "_lv[" + field.name + "][" + panel_locale + "]";
+
+	// Every locale holds a real row, so every panel has a real value - a value
+	// cloned from the default locale is stored and edited like any other. There
+	// is no "no override" state to disable an input for, and no placeholder
+	// standing in for the original.
+	const value = String(loc.values?.[key] ?? "");
+	const error = loc.errors?.[key] ?? "";
+	const stale_from = loc.stale?.[key] ?? "";
+
+	// Markdown must keep the same editor contract as its source field. Plain
+	// long text and booleans also need their own controls; everything else is
+	// an <input> that differs by type attribute alone.
+	const is_markdown = field.type === "markdown";
+	const is_long = field.type === "textarea" || field.type === "markdown";
+	const is_boolean = field.type === "boolean";
+	const is_image = field.type === "image";
+	let input_type = "text";
+	if (field.type === "date") input_type = "date";
+	if (field.type === "datetime") input_type = "datetime-local";
+	const input_class = is_long ? "min-h-[5lh] w-full" : "w-full";
+
+	// Boolean labels reuse the app-wide selectors.1 / selectors.0 keys.
+	const selectors = props.translations?.selectors ?? {};
+	const yes_label = selectors["1"] ?? "Yes";
+	const no_label = selectors["0"] ?? "No";
+}}
+<div
+	data-localized-panel
+	data-locale="{= panel_locale }"
+	data-locale-label="{= locale_names[panel_locale] || panel_locale }"
+	data-field="{= field.name }"
+	data-tab-group="{= tab_group }"
+	class="localized-field-panel localized-tab-panel grid lg:col-span-2 lg:grid-cols-subgrid"
+>
+	<div class="grid">
+		{#if is_markdown}
+			<markdown-editor id="{= key }" name="{= input_name }" value="{= value }" data-localized-value></markdown-editor>
+		{:else}
+			{#if is_image}
+				<image-upload name="{= input_name }" value="{= value }" folder="{= field.upload_folder || '' }" label="" localized-value="true"></image-upload>
+			{:else}
+				{#if is_long}
+					<textarea id="{= key }" name="{= input_name }" class="{= input_class }" data-localized-value>{= value }</textarea>
+				{:else}
+					{#if is_boolean}
+						<select id="{= key }" name="{= input_name }" class="{= input_class }" data-localized-value>
+							<option value="0" {#if String(value) === "0"}selected{/if}>{= no_label }</option>
+							<option value="1" {#if String(value) === "1"}selected{/if}>{= yes_label }</option>
+						</select>
+					{:else}
+						<input type="{= input_type }" id="{= key }" name="{= input_name }" value="{= value }" class="{= input_class }" data-localized-value />
+					{/if}
+				{/if}
+			{/if}
+		{/if}
+		<validation-error class="localized-error mt-1" id="error-{= key }">{= error }</validation-error>
+	</div>
+	<p class="localized-stale-notice text-xs px-3 mt-1 lg:mt-0 lg:self-center" data-localized-stale {#if !stale_from}hidden{/if}>
+		{#if stale_from}
+			{_ localization.source_changed_since_copy } ({= locale_names[stale_from] || stale_from })
+		{/if}
+	</p>
+</div>

@@ -1,0 +1,21 @@
+{
+	"actions": {
+		"cancel": "Cancel",
+		"submit": "Save my profile"
+	},
+	"labels": {
+		"avatar": "Avatar image",
+		"name": "Full name",
+		"nickname": "Nickname"
+	},
+	"messages": {
+		"successful_save": "Profile was successfully saved."
+	},
+	"route_name": "profile",
+	"ui": {
+		"avatar_label": "Profile picture",
+		"change_password": "Change password",
+		"logout": "Logout",
+		"title": "My profile"
+	}
+}
