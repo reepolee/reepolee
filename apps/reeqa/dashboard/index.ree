@@ -7,7 +7,7 @@
 			{#if active_project}<div class="mt-2 flex flex-wrap items-center gap-2 text-sm"><span class="text-text-secondary">{_ ui.active_project}:</span><span class="font-semibold">{= active_project.name }</span>{#if active_page_set}<span class="pill-layout bg-neutral-200">{= active_page_set.name } ({= active_page_set.page_count } {_ labels.pages})</span>{/if}</div>{/if}
 			<div class="mt-3 flex flex-wrap gap-2">
 				{#if projects.length === 0}
-					<a href="{~ localized_path('/projects') }" class="button primary">{_ actions.add_project}</a>
+					<a href="{~ localized_path('/projects?create=1') }" class="button primary">{_ actions.add_project}</a>
 				{:else}
 					{#if !active_page_set}
 						<a href="{~ localized_path('/projects') }" class="button primary">{_ actions.create_page_set}</a>

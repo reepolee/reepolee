@@ -134,7 +134,7 @@ async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Pr
 			baseline_page_count: baseline?.page_count,
 		};
 	}));
-	const show_create_dialog = open_create_dialog && Boolean(active_project) && sitemap.error === "";
+	const show_create_dialog = open_create_dialog && sitemap.error === "";
 	const ctx = await create_ctx(req, import.meta.dir);
 	return render("index", {
 		data: {
@@ -163,7 +163,9 @@ async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Pr
 }
 
 export async function get_projects_page(req: BunRequest): Promise<Response> {
-	return render_projects_page(req);
+	const request_url = new URL(req.url);
+	const open_create_dialog = request_url.searchParams.get("create") === "1";
+	return render_projects_page(req, { open_create_dialog });
 }
 
 export async function post_create_project(req: BunRequest): Promise<Response> {

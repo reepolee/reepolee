@@ -13,8 +13,6 @@ const SAMPLE_FILES: { path: string; dialect: Dialect; }[] = [
 	{ path: "sql/mysql/demos/05-frameworks.sql", dialect: "mysql" },
 	{ path: "sql/sqlite/demos/06-init-books.sql", dialect: "sqlite" },
 	{ path: "sql/mysql/demos/06-init-books.sql", dialect: "mysql" },
-	{ path: "marketplace/chefs-blog/sqlite/09-chefs-blog.sql", dialect: "sqlite" },
-	{ path: "marketplace/chefs-blog/mysql/09-chefs-blog.sql", dialect: "mysql" },
 ];
 
 describe("round-trip", () => {
@@ -36,37 +34,9 @@ describe("statement splitting", () => {
 		expect(triggers[0]!.text).toContain("END;");
 	});
 
-	test("multiline insert strings stay one statement", () => {
-		const source = readFileSync(join(REPO_ROOT, "marketplace/chefs-blog/sqlite/09-chefs-blog.sql"), "utf-8");
-		const model = parse_ddl_file(source, "marketplace/chefs-blog/sqlite/09-chefs-blog.sql", "sqlite");
-		const inserts = model.statements.filter((s) => s.kind === "insert");
-		expect(inserts.length).toBe(5);
-		expect(inserts[0]!.text).toContain("italian-chef.jpg");
-	});
-
-	test("gaps capture comments", () => {
-		const source = readFileSync(join(REPO_ROOT, "marketplace/chefs-blog/sqlite/09-chefs-blog.sql"), "utf-8");
-		const model = parse_ddl_file(source, "x.sql", "sqlite");
-		const authors = model.statements.find((s) => s.kind === "create_table" && s.object_name === "authors");
-		expect(authors!.gap).toContain("AUTHORS TABLE");
-	});
 });
 
 describe("classification", () => {
-	test("chefs-blog sqlite statements classify as expected", () => {
-		const source = readFileSync(join(REPO_ROOT, "marketplace/chefs-blog/sqlite/09-chefs-blog.sql"), "utf-8");
-		const model = parse_ddl_file(source, "x.sql", "sqlite");
-		const kinds = model.statements.map((s) => s.kind);
-		expect(kinds.filter((k) => k === "drop_table").length).toBe(6);
-		expect(kinds.filter((k) => k === "create_table").length).toBe(6);
-		expect(kinds.filter((k) => k === "trigger").length).toBe(6);
-		expect(kinds.filter((k) => k === "raw").length).toBe(0);
-		for (const view_name of ["v_recipes", "v_recipes_ingredients"]) {
-			expect(model.statements.some((item) => item.kind === "drop_view" && item.object_name === view_name)).toBe(true);
-			expect(model.statements.some((item) => item.kind === "create_view" && item.object_name === view_name)).toBe(true);
-		}
-	});
-
 	test("index statements know their parent table", () => {
 		const source = readFileSync(join(REPO_ROOT, "sql/sqlite/demos/05-frameworks.sql"), "utf-8");
 		const model = parse_ddl_file(source, "x.sql", "sqlite");

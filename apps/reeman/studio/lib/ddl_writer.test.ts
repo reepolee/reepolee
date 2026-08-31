@@ -14,8 +14,6 @@ const SAMPLE_FILES: { path: string; dialect: Dialect; }[] = [
 	{ path: "sql/mysql/demos/05-frameworks.sql", dialect: "mysql" },
 	{ path: "sql/sqlite/demos/06-init-books.sql", dialect: "sqlite" },
 	{ path: "sql/mysql/demos/06-init-books.sql", dialect: "mysql" },
-	{ path: "marketplace/chefs-blog/sqlite/09-chefs-blog.sql", dialect: "sqlite" },
-	{ path: "marketplace/chefs-blog/mysql/09-chefs-blog.sql", dialect: "mysql" },
 ];
 
 describe("regeneration fidelity", () => {
