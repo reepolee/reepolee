@@ -1,0 +1,481 @@
+{#layout("studio/layout")}
+
+<!-- TODO: hidden fields are flickering on load -->
+
+{#with props}
+	<div class="grid h-screen w-full grid-rows-[2rem_1fr_2rem] gap-4 p-4">
+		<header>
+			<div class="flex items-center gap-4">
+				<h1>{_ ui.title}</h1>
+				<p class="text-sm text-text-secondary mt-1">{_ ui.description}</p>
+			</div>
+
+			{#if form_error}
+				<app-banner type="red">{= props.form_error}</app-banner>
+			{/if}
+		</header>
+
+		<main class="grid min-h-0">
+			{#if !model}
+				<section class="rounded-md border border-border bg-surface-raised p-8 text-center">
+					<h2>{_ ui.empty_title}</h2>
+					<p class="mt-2 text-text-secondary">{_ ui.empty_text}</p>
+				</section>
+			{:else}
+				{#if selected_table}
+					<form
+						id="studio-table-form"
+						method="POST"
+						action="{~ localized_path('/studio/table/save') }"
+						data-preview-url="{~ localized_path('/studio/preview') }"
+						class="grid min-h-0 grid-rows-[auto_1fr] gap-4">
+						<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+						<input type="hidden" name="path" value="{= path }" />
+						<input type="hidden" name="table_name" value="{= selected_table.name }" />
+						<input type="hidden" id="studio-form-version" name="v" value="{= version }" />
+
+						<div class="flex flex-wrap items-center justify-between gap-2">
+							<div class="flex items-center gap-2">
+								<h2 class="font-semibold">{= selected_table.name}</h2>
+								<span class="pill-layout bg-neutral-200">{_ labels.table}</span>
+							</div>
+							<div class="flex flex-wrap gap-2">
+								<label class="flex items-center gap-1 text-xs">
+									<input id="hide-system-columns" type="checkbox" {#if hide_system_columns} checked{/if} />
+									{_ actions.hide_system}
+								</label>
+								<button
+									type="button"
+									class="as-button-secondary py-1!"
+									command="show-modal"
+									commandfor="add-fk-dialog">
+									{_ actions.add_foreign_key}
+								</button>
+								<button
+									type="button"
+									class="as-button-secondary py-1!"
+									command="show-modal"
+									commandfor="generate-view-dialog">
+									{_ actions.generate_view}
+								</button>
+								<button
+									type="button"
+									class="as-button-secondary py-1!"
+									command="show-modal"
+									commandfor="copy-table-dialog">
+									{_ actions.copy}
+								</button>
+								<button
+									type="submit"
+									id="studio-undo"
+									form="studio-undo-form"
+									class="as-button-secondary py-1!"
+									{#if !undo_available}
+									disabled{/if}>
+									{_ actions.undo}
+								</button>
+								<button
+									type="button"
+									class="as-button-tertiary py-1!"
+									command="show-modal"
+									commandfor="delete-table-dialog">
+									{_ actions.delete}
+								</button>
+							</div>
+						</div>
+
+						<div id="studio-upper-grid" class="grid min-h-0 grid-cols-1 gap-4 xl:grid-cols-2">
+							<div id="studio-column-rows" class="min-h-0 overflow-auto rounded-md border border-border">
+								{#each selected_columns as column, index}
+									<studio-column-row column="{~ column }" index="{= index }"></studio-column-row>
+								{/each}
+							</div>
+							<section
+								class="grid min-h-0 grid-rows-[auto_1fr] rounded-md border border-border bg-surface-raised p-3">
+								<h3 class="mb-2 text-sm font-semibold uppercase tracking-wider">{_ labels.ddl_preview}</h3>
+								{#if ddl_diff}
+									<div id="studio-ddl-preview" class="min-h-0 overflow-y-auto rounded border border-border bg-surface-sunken p-3 font-mono text-xs">{#each ddl_diff as diff_line}<div class="studio-diff-line whitespace-pre-wrap break-words {#if diff_line.kind == 'add'}bg-success/20{:else}{#if diff_line.kind == 'remove'}bg-danger/20{/if}{/if}">{#if diff_line.kind == 'add'}+{:else}{#if diff_line.kind == 'remove'}-{:else}&nbsp;&nbsp;{/if}{/if}{= diff_line.text}</div>{/each}</div>
+								{:else}
+									<pre id="studio-ddl-preview" class="min-h-0 overflow-y-auto whitespace-pre-wrap break-words rounded border border-border bg-surface-sunken p-3 text-xs"><code>{= ddl_preview}</code></pre>
+								{/if}
+							</section>
+						</div>
+					</form>
+					<form id="studio-undo-form" method="POST" action="{~ localized_path('/studio/undo') }">
+						<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+						<input type="hidden" name="path" value="{= path }" />
+						<input type="hidden" name="table_name" value="{= selected_table.name }" />
+						<input type="hidden" name="v" value="{= version }" />
+					</form>
+				{:else}
+					<section class="h-full min-h-0 overflow-y-auto">
+						{#if selected_view}
+							<div class="mb-4 flex items-center justify-between gap-2">
+								<div class="flex items-center gap-2">
+									<h2 class="font-semibold">{= selected_view.object_name}</h2>
+									<span class="pill-layout bg-neutral-200">{_ labels.view}</span>
+								</div>
+								<button
+									type="button"
+									class="as-button-tertiary py-1!"
+									command="show-modal"
+									commandfor="delete-view-dialog">
+									{_ actions.delete}
+								</button>
+							</div>
+							<pre class="bg-surface-sunken border border-border rounded p-3 text-xs overflow-x-auto whitespace-pre-wrap"> <code>{= selected_view.text}</code> </pre>
+						{:else}
+							<p>{_ ui.no_objects}</p>
+						{/if}
+					</section>
+				{/if}
+			{/if}
+		</main>
+
+		<footer class="flex items-center justify-end px-4">
+			<button
+				type="submit"
+				form="studio-table-form"
+				class="as-button-primary"
+				{#if !selected_table}
+				disabled{/if}>
+				{_ actions.save}
+			</button>
+		</footer>
+	</div>
+
+	{#if selected_table}
+		<section
+			id="studio-domain-toolbox"
+			class="rounded-md border border-border text-[10px] shadow-2xl"
+			style="--studio-toolbox-bg: color-mix(in srgb, #b40000 5%, var(--color-surface-raised)); --studio-toolbox-handle-bg: color-mix(in srgb, #b40000 12%, var(--color-surface-raised)); background-color: var(--studio-toolbox-bg); scrollbar-gutter: stable">
+			<div
+				id="studio-domain-toolbox-handle"
+				class="sticky top-0 z-10 flex cursor-move items-center justify-between gap-3 border-b border-border px-3 py-1.5"
+				style="background-color: var(--studio-toolbox-handle-bg)"
+				tabindex="0"
+				aria-label="Drag domain types toolbox">
+				<div class="flex items-center gap-1.5 text-text-secondary">
+					<ree-icon name="grip" class="size-3"></ree-icon>
+					<h2 class="text-[9px] font-semibold uppercase tracking-wider text-neutral-800">{_ labels.domain_types}</h2>
+				</div>
+			</div>
+			<div class="p-3">
+				<div id="studio-favorite-types" class="mb-4 grid gap-2" style="grid-template-columns: repeat(auto-fit, 30ch)">
+				</div>
+				<div id="studio-recent-types" class="mb-4 grid gap-2" style="grid-template-columns: repeat(auto-fit, 30ch)">
+				</div>
+				<div id="studio-domain-types" class="grid gap-2">
+					{#each domain_types as domain}
+						<div class="studio-domain-item relative flex" data-domain="{= domain.name }">
+							<button
+								type="button"
+								class="studio-add-domain flex-1 rounded border border-border bg-surface-raised px-2 py-1.5 pr-8 text-left text-[11px]"
+								data-domain="{= domain.name }"
+								data-sql-type="{= domain.type_string }"
+								data-basic="{= domain.is_basic ? '1' : '0' }">
+								<span class="block font-medium">{= domain.name}</span>
+								<code class="text-[9px] text-text-tertiary">{= domain.sql_type}</code>
+							</button>
+							<button
+								type="button"
+								class="studio-domain-help-button absolute right-2 top-2 flex size-4 items-center justify-center rounded-full border border-border bg-surface-raised p-0 text-[10px] font-semibold leading-none"
+								data-domain="{= domain.name }"
+								data-description="{= domain.description }"
+								aria-label="About {= domain.name }">
+								?
+							</button>
+							<button
+								type="button"
+								class="studio-favorite-toggle absolute bottom-2 right-2 flex size-4 items-center justify-center rounded-full border border-border bg-surface-raised p-0 text-[10px] leading-none"
+								aria-label="{_ actions.favorite}">
+								☆
+							</button>
+						</div>
+					{/each}
+				</div>
+			</div>
+		</section>
+	{/if}
+
+	{#if model}
+		<dialog id="new-table-dialog">
+			<form
+				method="POST"
+				action="{~ localized_path('/studio/table/new') }"
+				class="p-6 grid gap-4 min-w-[36ch]">
+				<h2>{_ actions.new_table}</h2>
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="path" value="{= path }" />
+				<label class="grid gap-1">
+					{_ labels.name}
+					<input name="new_name" required pattern="[a-z][a-z0-9_]*" />
+				</label>
+				<div class="flex justify-end gap-2">
+					<button type="button" class="as-button-secondary" command="close" commandfor="new-table-dialog">
+						{_ actions.cancel}
+					</button>
+					<button class="as-button-primary">{_ actions.create}</button>
+				</div>
+			</form>
+		</dialog>
+		<dialog id="adapt-schema-dialog">
+			<form
+				method="POST"
+				action="{~ localized_path('/studio/schema/adapt') }"
+				class="p-6 grid gap-4 min-w-[36ch]">
+				<h2>{_ actions.adapt_schema}</h2>
+				<p>{_ messages.adapt_schema}</p>
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="path" value="{= path }" />
+				<div class="flex justify-end gap-2">
+					<button type="button" class="as-button-secondary" command="close" commandfor="adapt-schema-dialog">
+						{_ actions.cancel}
+					</button>
+					<button class="as-button-primary">{_ actions.adapt_schema}</button>
+				</div>
+			</form>
+		</dialog>
+	{/if}
+	{#if selected_view}
+		<dialog id="delete-view-dialog">
+			<form
+				method="POST"
+				action="{~ localized_path('/studio/view/delete') }"
+				class="p-6 grid gap-4 min-w-[36ch]">
+				<h2>{_ actions.delete}</h2>
+				<p>{_ messages.delete_view}</p>
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="path" value="{= path }" />
+				<input type="hidden" name="view_name" value="{= selected_view.object_name }" />
+				<div class="flex justify-end gap-2">
+					<button type="button" class="as-button-secondary" command="close" commandfor="delete-view-dialog">
+						{_ actions.cancel}
+					</button>
+					<button class="as-button-danger">{_ actions.delete}</button>
+				</div>
+			</form>
+		</dialog>
+	{/if}
+	{#if selected_table}
+		<dialog id="add-column-dialog" class="p-0 rounded-xl shadow-2xl w-100">
+			<form id="studio-add-column-form" method="dialog" class="grid gap-4 p-6">
+				<h2>{_ actions.add_column}</h2>
+				<p class="text-sm text-text-secondary">
+					<code id="studio-add-column-domain"></code>
+				</p>
+				<label class="grid gap-1">
+					{_ labels.name}
+					<input id="studio-add-column-name" required pattern="[a-z][a-z0-9_]*" />
+				</label>
+				<div class="flex justify-end gap-2">
+					<button type="button" class="as-button-secondary" command="close" commandfor="add-column-dialog">
+						{_ actions.cancel}
+					</button>
+					<button class="as-button-primary">{_ actions.add_column}</button>
+				</div>
+			</form>
+		</dialog>
+		<dialog id="add-fk-dialog">
+			<form method="dialog" class="grid min-w-[36ch] gap-4 p-6">
+				<h2>{_ actions.add_foreign_key}</h2>
+				<label class="grid gap-1">
+					{_ labels.table}
+					<select id="studio-fk-target" required>
+						<option value="">-</option>
+						{#each fk_targets as target}
+							<option value="{= target.reference }" data-column-name="{= target.column_name }">
+								{= target.table_name}
+							</option>
+						{/each}
+					</select>
+				</label>
+				<div class="flex justify-end gap-2">
+					<button type="button" class="as-button-secondary" command="close" commandfor="add-fk-dialog">
+						{_ actions.cancel}
+					</button>
+					<button type="button" id="confirm-add-fk" class="as-button-primary">
+						{_ actions.add_foreign_key}
+					</button>
+				</div>
+			</form>
+		</dialog>
+		<dialog id="copy-table-dialog">
+			<form
+				method="POST"
+				action="{~ localized_path('/studio/table/copy') }"
+				class="p-6 grid gap-4 min-w-[36ch]">
+				<h2>{_ actions.copy}</h2>
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="path" value="{= path }" />
+				<input type="hidden" name="table_name" value="{= selected_table.name }" />
+				<label class="grid gap-1">
+					{_ labels.name}
+					<input name="new_name" value="{= selected_table.name }_copy" required pattern="[a-z][a-z0-9_]*" />
+				</label>
+				<div class="flex justify-end gap-2">
+					<button type="button" class="as-button-secondary" command="close" commandfor="copy-table-dialog">
+						{_ actions.cancel}
+					</button>
+					<button class="as-button-primary">{_ actions.copy}</button>
+				</div>
+			</form>
+		</dialog>
+		<dialog id="delete-table-dialog">
+			<form
+				method="POST"
+				action="{~ localized_path('/studio/table/delete') }"
+				class="p-6 grid gap-4 min-w-[36ch]">
+				<h2>{_ actions.delete}</h2>
+				<p>{_ messages.delete_table}</p>
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="path" value="{= path }" />
+				<input type="hidden" name="table_name" value="{= selected_table.name }" />
+				<div class="flex justify-end gap-2">
+					<button type="button" class="as-button-secondary" command="close" commandfor="delete-table-dialog">
+						{_ actions.cancel}
+					</button>
+					<button class="as-button-danger">{_ actions.delete}</button>
+				</div>
+			</form>
+		</dialog>
+		<dialog id="generate-view-dialog">
+			<form
+				method="POST"
+				action="{~ localized_path('/studio/view/generate') }"
+				class="p-6 grid gap-4 min-w-[36ch]">
+				<h2>{_ actions.generate_view}</h2>
+				<p>{_ messages.generate_view}</p>
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="path" value="{= path }" />
+				<input type="hidden" name="table_name" value="{= selected_table.name }" />
+				<div class="flex justify-end gap-2">
+					<button type="button" class="as-button-secondary" command="close" commandfor="generate-view-dialog">
+						{_ actions.cancel}
+					</button>
+					<button class="as-button-primary">{_ actions.generate}</button>
+				</div>
+			</form>
+		</dialog>
+		<dialog id="delete-column-dialog">
+			<div class="p-6 grid gap-4 min-w-[32ch]">
+				<h2>{_ actions.delete_column}</h2>
+				<p>{_ messages.delete_column}</p>
+				<div class="flex justify-end gap-2">
+					<button type="button" class="as-button-secondary" command="close" commandfor="delete-column-dialog">
+						{_ actions.cancel}
+					</button>
+					<button type="button" id="confirm-delete-column" class="as-button-danger">
+						{_ actions.delete}
+					</button>
+				</div>
+			</div>
+		</dialog>
+		<template id="studio-column-template">
+			<div
+				class="studio-column-row grid gap-2 border-t border-border p-3 first:border-t-0"
+				draggable="true"
+				data-system="0">
+				<div
+					class="grid grid-cols-[2rem_minmax(0,1fr)_2rem] gap-2 md:grid-cols-[2rem_repeat(2,minmax(0,1fr))_2rem]">
+					<div class="studio-drag-handle flex cursor-grab items-center justify-center">
+						<ree-icon name="grip"></ree-icon>
+						<input type="hidden" name="column_source" value="new" />
+						<input type="hidden" name="column_preserve_type" value="0" />
+					</div>
+					<label class="studio-field">
+						<span class="studio-field-label">{_ labels.name}</span>
+						<input class="studio-column-name w-full font-semibold" name="column_name" value="new_column" required pattern="[a-z][a-z0-9_]*" />
+					</label>
+					<label class="col-start-2 grid min-w-0 gap-1 md:col-start-auto">
+						<span class="studio-field-label">{_ labels.domain_type}</span>
+						<domain-select required="true"></domain-select>
+					</label>
+					<button type="button" class="studio-delete-column row-start-1 text-text-tertiary hover:text-brand md:col-start-4">
+						<ree-icon name="x"></ree-icon>
+					</button>
+				</div>
+				<div class="grid grid-cols-1 gap-2 pl-10 sm:grid-cols-2 lg:grid-cols-3">
+					<label class="studio-field">
+						<span class="studio-field-label">FK</span>
+						<select class="w-full min-w-0 font-mono" name="column_reference">
+							<option value="">-</option>
+							<optgroup label="{_ labels.table_ids}">
+								{#each fk_id_options as option}
+									<option value="{= option.value }">{= option.label}</option>
+								{/each}
+							</optgroup>
+							<optgroup label="{_ labels.other_fields}">
+								{#each fk_other_options as option}
+									<option value="{= option.value }">{= option.label}</option>
+								{/each}
+							</optgroup>
+						</select>
+					</label>
+					<label class="grid gap-1">
+						<span class="studio-field-label">{_ labels.nullability}</span>
+						<select class="w-full" name="column_nullability">
+							<option value="unspecified">-</option>
+							<option value="not_null">NOT NULL</option>
+							<option value="null">NULL</option>
+						</select>
+					</label>
+					<label class="grid gap-1">
+						<span class="studio-field-label">{_ labels.default}</span>
+						<input class="w-full font-mono" name="column_default" placeholder="NULL" />
+					</label>
+					<details class="col-span-full rounded border border-border px-3 py-2">
+						<summary class="cursor-pointer text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ ui.show_more}</summary>
+						<div class="mt-2 grid grid-cols-2 gap-2 md:grid-cols-[minmax(0,3fr)_repeat(2,minmax(0,1fr))]">
+							<label class="col-span-2 grid min-w-0 gap-1 md:col-span-1">
+								<span class="studio-field-label">{_ labels.sql_type}</span>
+								<input class="studio-column-type w-full min-w-0 cursor-not-allowed bg-surface-sunken font-mono text-text-secondary" name="column_type" value="" readonly tabindex="-1" />
+							</label>
+							<label class="studio-field">
+								<span class="studio-field-label">{_ labels.auto_increment}</span>
+								<select class="w-full min-w-0" name="column_auto_increment">
+									<option value="0">-</option>
+									<option value="1">AI</option>
+								</select>
+							</label>
+							<label class="studio-field">
+								<span class="studio-field-label">{_ labels.unique}</span>
+								<select class="w-full min-w-0" name="column_unique">
+									<option value="0">-</option>
+									<option value="1">UNIQUE</option>
+								</select>
+							</label>
+							<label class="col-span-2 grid min-w-0 gap-1 md:col-span-3">
+								<span class="studio-field-label">{_ labels.generated}</span>
+								<span class="flex min-w-0 gap-1">
+									<select name="column_generated">
+										<option value="0">-</option>
+										<option value="1">GEN</option>
+									</select>
+									<input class="min-w-0 flex-1 font-mono" name="column_generated_expr" placeholder="expression" />
+								</span>
+							</label>
+						</div>
+					</details>
+				</div>
+			</div>
+		</template>
+		<div
+			id="studio-domain-help"
+			popover
+			class="fixed m-0 max-w-[38ch] rounded-md border border-border bg-surface-raised p-4 shadow-lg">
+			<div class="flex items-start justify-between gap-4">
+				<strong id="studio-domain-help-title"></strong>
+				<button
+					type="button"
+					popovertarget="studio-domain-help"
+					popovertargetaction="hide"
+					aria-label="Close">
+					×
+				</button>
+			</div>
+			<p id="studio-domain-help-description" class="mt-2 text-sm text-text-secondary"></p>
+		</div>
+	{/if}
+	<script src="/studio.js?v={= version }" defer></script>
+{/with}

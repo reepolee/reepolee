@@ -1,0 +1,260 @@
+{#layout("dashboard/layout")}
+{#with props}
+	<div class="w-full p-4 space-y-6">
+		<header>
+			<h1 class="text-xl font-bold">{_ ui.title}</h1>
+			<p class="mt-1 text-sm text-text-secondary">{_ ui.description}</p>
+			<div class="mt-3 flex flex-wrap gap-2">
+				<button type="button" class="button secondary add-project-trigger">{_ actions.add}</button>
+				{#if active_project && !sitemap_error}<button type="button" class="button primary page-set-create-trigger">{_ page_sets.actions.add}</button>{/if}
+			</div>
+		</header>
+
+		{#if page_error}<app-banner type="red">{= props.page_error }</app-banner>{/if}
+		{#if page_set_form_error && !open_project_dialog && !open_page_set_dialog && !page_set_error_id}<app-banner type="red">{= props.page_set_form_error }</app-banner>{/if}
+
+		{#if projects.length === 0}
+			<div class="rounded-md border border-border bg-surface-raised p-6 text-center">
+				<p class="text-sm text-text-secondary">{_ ui.no_projects}</p>
+				<button type="button" class="button primary add-project-trigger mt-4">{_ actions.add}</button>
+			</div>
+		{:else}
+			<article class="rounded-md border border-brand bg-surface-raised p-4">
+				<div class="flex flex-wrap items-center gap-2"><h2 class="font-semibold">{= active_project.name }</h2><span class="pill-layout bg-brand text-white text-xs font-bold">{_ ui.active}</span></div>
+				<code class="mt-1 block break-all text-xs text-text-secondary">{= active_project.path }</code>
+				<a class="mt-1 block break-all text-xs font-semibold text-brand hover:underline" href="{= active_project.base_url }" target="_blank">{= active_project.base_url }</a>
+				<div class="mt-3 flex flex-wrap gap-2">
+					<button type="button" class="button secondary text-xs edit-project-trigger">{_ actions.edit}</button>
+					<form method="POST" action="{~ localized_path('/projects/duplicate') }" class="inline">
+						<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+						<input type="hidden" name="project_id" value="{= active_project.id }" />
+						<button type="submit" class="button secondary text-xs">{_ actions.duplicate}</button>
+					</form>
+					<confirm-dialog trigger-class="button secondary text-xs" confirm-class="button danger" form-path="/projects/delete" title="{_ actions.delete}" trigger-text="{_ actions.delete}" message="{_ confirm.delete}" confirm-text="{_ actions.do_it}" cancel-text="{_ actions.cancel}" extra-field-name="project_id" extra-field-value="{= active_project.id }"></confirm-dialog>
+				</div>
+			</article>
+
+			{#if sitemap_error}<app-banner type="yellow">{_ page_sets.ui.sitemap_error} {= props.sitemap_error }</app-banner>{/if}
+
+			<section class="space-y-3">
+				<h2 class="font-semibold">{_ page_sets.ui.saved_sets}</h2>
+				{#if page_sets.length === 0}<p class="text-sm text-text-secondary">{_ page_sets.ui.no_sets}</p>{/if}
+				{#each page_sets as page_set}
+					<details class="group rounded-md border border-border bg-surface-raised p-4">
+						<summary class="flex cursor-pointer items-center gap-2 font-semibold marker:content-none"><span class="transition-transform group-open:rotate-90" aria-hidden="true">❯</span><span>{= page_set.name }</span><span class="pill-layout bg-neutral-200">{= page_set.page_count } {#if page_set.kind === 'workflow'}{_ page_sets.labels.checkpoints}{:else}{_ page_sets.labels.pages}{/if}</span>{#if page_set.kind === 'workflow'}<span class="pill-layout bg-neutral-200">{_ page_sets.labels.kind_workflow}</span>{/if}<span class="pill-layout bg-neutral-200">{= page_set.capture_size_label }</span>{#if page_set.id === active_page_set_id}<span class="pill-layout bg-brand text-white text-xs font-bold">{_ page_sets.ui.active}</span>{/if}{#if page_set.baseline_page_count !== undefined}<span class="pill-layout pill-yes">{= page_set.baseline_page_count } {_ page_sets.labels.baseline_pages}</span>{:else}<span class="pill-layout bg-neutral-200">{_ page_sets.status.no_baseline}</span>{/if}</summary>
+						<form method="POST" action="{~ localized_path('/projects/page-sets/update') }" class="mt-4 grid gap-4 page-set-form">
+							<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+							<input type="hidden" name="page_set_id" value="{= page_set.id }" />
+							{#if page_set_form_error && page_set_error_id === page_set.id}<app-banner type="red">{= props.page_set_form_error }</app-banner>{/if}
+							<div class="grid gap-4 sm:grid-cols-3">
+								<field-wrapper class="grid"><label class="px-3 text-xs font-semibold" for="page-set-name-{= page_set.id }">{_ page_sets.labels.name}</label><input id="page-set-name-{= page_set.id }" name="name" value="{= page_set.name }" required maxlength="80" /></field-wrapper>
+								<field-wrapper class="grid"><label class="px-3 text-xs font-semibold" for="page-set-capture-{= page_set.id }">{_ page_sets.labels.capture_size}</label><select id="page-set-capture-{= page_set.id }" name="capture_preset" class="w-full">{#each capture_presets as capture_preset}<option value="{= capture_preset.id }" {#if capture_preset.id === page_set.capture_preset}selected{/if}>{= capture_preset.label } — {= capture_preset.width }×{= capture_preset.height }</option>{/each}</select></field-wrapper>
+								<field-wrapper class="grid"><label class="px-3 text-xs font-semibold" for="page-set-kind-{= page_set.id }">{_ page_sets.labels.kind}</label><select id="page-set-kind-{= page_set.id }" name="kind" class="w-full page-set-kind"><option value="urls" {#if page_set.kind !== 'workflow'}selected{/if}>{_ page_sets.labels.kind_urls}</option><option value="workflow" {#if page_set.kind === 'workflow'}selected{/if}>{_ page_sets.labels.kind_workflow}</option></select></field-wrapper>
+							</div>
+							<label class="flex cursor-pointer items-start gap-2 text-xs font-semibold"><input type="checkbox" class="h-5 w-5" name="auto_evidence" {#if page_set.auto_evidence}checked{/if} /><span>{_ page_sets.labels.auto_evidence}<span class="block font-normal text-text-secondary">{_ page_sets.ui.auto_evidence_hint}</span></span></label>
+							<label class="flex cursor-pointer items-start gap-2 text-xs font-semibold"><input type="checkbox" class="h-5 w-5" name="auto_recording" {#if page_set.auto_recording}checked{/if} /><span>{_ page_sets.labels.auto_recording}<span class="block font-normal text-text-secondary">{_ page_sets.ui.auto_recording_hint}</span></span></label>
+							<div class="page-set-url-block grid gap-4">
+								{#if page_set.unavailable_urls.length > 0}{{ props.stale_url_count = page_set.unavailable_urls.length; }}<app-banner type="yellow">{= props.stale_url_count } {_ page_sets.ui.stale_pages}</app-banner>{/if}
+								<div class="flex flex-wrap items-end gap-2"><field-wrapper class="grid w-72"><label class="px-3 text-xs font-semibold" for="page-set-filter-{= page_set.id }">{_ page_sets.labels.filter}</label><input id="page-set-filter-{= page_set.id }" type="search" class="page-set-filter" /></field-wrapper><button type="button" class="button tertiary page-set-sort" data-mode="newest" data-label-newest="{_ page_sets.actions.sort_newest}" data-label-alpha="{_ page_sets.actions.sort_alpha}">{_ page_sets.actions.sort_newest}</button><button type="button" class="button tertiary page-set-select-visible">{_ page_sets.actions.select_visible}</button><button type="button" class="button tertiary page-set-clear">{_ page_sets.actions.clear}</button><label class="flex h-10 cursor-pointer items-center gap-2 px-3"><input type="checkbox" class="h-5 w-5 page-set-only-selected" /> {_ page_sets.actions.only_selected} <span class="page-set-selected-count text-text-secondary">(0)</span></label></div>
+								<div class="page-set-options max-h-96 overflow-y-auto rounded-md border border-border p-2">
+									{#each sitemap_pages as page}<div class="page-set-option flex items-center gap-2 rounded px-2 py-2 hover:bg-neutral-100" data-url="{= page.url }" data-lastmod="{= page.lastmod }"><input type="checkbox" name="urls" value="{= page.url }" aria-label="{= page.url }" class="h-5 w-5 shrink-0" {#if page_set.urls.includes(page.url)}checked{/if} /><span class="break-all text-sm">{= page.url }</span>{#if page.is_new}<span class="shrink-0 pill-layout pill-yes text-xs font-bold">{_ page_sets.ui.edited_today}</span>{/if}{#if page.lastmod_display}<span class="ml-auto shrink-0 pl-2 text-xs text-text-secondary">{= page.lastmod_display }</span>{/if}</div>{/each}
+								</div>
+							</div>
+							<div class="page-set-steps-block grid gap-1"><label class="px-3 text-xs font-semibold" for="page-set-steps-{= page_set.id }">{_ page_sets.labels.steps}</label><textarea id="page-set-steps-{= page_set.id }" name="steps" rows="14" spellcheck="false" class="w-full rounded-md border border-border p-2 font-mono text-xs">{= page_set.steps_text }</textarea><span class="text-xs text-text-secondary">{- page_sets.ui.steps_hint}</span></div>
+							<div class="flex flex-wrap gap-2"><button type="submit" class="button primary">{_ page_sets.actions.save}</button><confirm-dialog trigger-class="button secondary" confirm-class="button danger" form-path="/projects/page-sets/delete" title="{_ page_sets.actions.delete}" trigger-text="{_ page_sets.actions.delete}" message="{_ page_sets.confirm.delete}" confirm-text="{_ page_sets.actions.confirm_delete}" cancel-text="{_ page_sets.actions.cancel}" extra-field-name="page_set_id" extra-field-value="{= page_set.id }"></confirm-dialog></div>
+						</form>
+					</details>
+				{/each}
+			</section>
+
+			{#if active_project && !sitemap_error}
+				<dialog id="page-set-create-dialog" class="w-[min(95vw,54rem)] max-h-[90vh] overflow-y-auto bg-surface-raised p-0 shadow-xl">
+					<header class="flex items-center justify-between gap-4 border-b border-border p-4"><h2 class="font-semibold">{_ page_sets.actions.add}</h2><button type="button" class="button tertiary page-set-create-close" aria-label="{_ page_sets.actions.cancel}">×</button></header>
+					<form method="POST" action="{~ localized_path('/projects/page-sets/create') }" class="grid gap-4 p-4 page-set-form">
+						<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+						{#if page_set_form_error && !page_set_error_id}<app-banner type="red">{= props.page_set_form_error }</app-banner>{/if}
+						<div class="grid gap-4 sm:grid-cols-3">
+							<field-wrapper class="grid"><label class="px-3 text-xs font-semibold" for="new-page-set-name">{_ page_sets.labels.name}</label><input id="new-page-set-name" name="name" value="{= page_set_create_form.name }" required maxlength="80" autofocus /></field-wrapper>
+							<field-wrapper class="grid"><label class="px-3 text-xs font-semibold" for="new-page-set-capture">{_ page_sets.labels.capture_size}</label><select id="new-page-set-capture" name="capture_preset" class="w-full">{#each capture_presets as capture_preset}<option value="{= capture_preset.id }" {#if capture_preset.id === page_set_create_form.capture_preset}selected{/if}>{= capture_preset.label } — {= capture_preset.width }×{= capture_preset.height }</option>{/each}</select></field-wrapper>
+							<field-wrapper class="grid"><label class="px-3 text-xs font-semibold" for="new-page-set-kind">{_ page_sets.labels.kind}</label><select id="new-page-set-kind" name="kind" class="w-full page-set-kind"><option value="urls" {#if page_set_create_form.kind !== 'workflow'}selected{/if}>{_ page_sets.labels.kind_urls}</option><option value="workflow" {#if page_set_create_form.kind === 'workflow'}selected{/if}>{_ page_sets.labels.kind_workflow}</option></select></field-wrapper>
+						</div>
+						<label class="flex cursor-pointer items-start gap-2 text-xs font-semibold"><input type="checkbox" class="h-5 w-5" name="auto_evidence" {#if page_set_create_form.auto_evidence}checked{/if} /><span>{_ page_sets.labels.auto_evidence}<span class="block font-normal text-text-secondary">{_ page_sets.ui.auto_evidence_hint}</span></span></label>
+						<label class="flex cursor-pointer items-start gap-2 text-xs font-semibold"><input type="checkbox" class="h-5 w-5" name="auto_recording" {#if page_set_create_form.auto_recording}checked{/if} /><span>{_ page_sets.labels.auto_recording}<span class="block font-normal text-text-secondary">{_ page_sets.ui.auto_recording_hint}</span></span></label>
+						<div class="page-set-url-block grid gap-4">
+							<div class="flex flex-wrap items-end gap-2"><field-wrapper class="grid w-72"><label class="px-3 text-xs font-semibold" for="new-page-set-filter">{_ page_sets.labels.filter}</label><input id="new-page-set-filter" type="search" class="page-set-filter" /></field-wrapper><button type="button" class="button tertiary page-set-sort" data-mode="newest" data-label-newest="{_ page_sets.actions.sort_newest}" data-label-alpha="{_ page_sets.actions.sort_alpha}">{_ page_sets.actions.sort_newest}</button><button type="button" class="button tertiary page-set-select-visible">{_ page_sets.actions.select_visible}</button><button type="button" class="button tertiary page-set-clear">{_ page_sets.actions.clear}</button><label class="flex h-10 cursor-pointer items-center gap-2 px-3"><input type="checkbox" class="h-5 w-5 page-set-only-selected" /> {_ page_sets.actions.only_selected} <span class="page-set-selected-count text-text-secondary">(0)</span></label></div>
+							<div class="page-set-options max-h-[50vh] overflow-y-auto rounded-md border border-border p-2">
+								{#each sitemap_pages as page}<div class="page-set-option flex items-center gap-2 rounded px-2 py-2 hover:bg-neutral-100" data-url="{= page.url }" data-lastmod="{= page.lastmod }"><input type="checkbox" name="urls" value="{= page.url }" aria-label="{= page.url }" class="h-5 w-5 shrink-0" {#if page_set_create_form.urls.includes(page.url)}checked{/if} /><span class="break-all text-sm">{= page.url }</span>{#if page.is_new}<span class="shrink-0 pill-layout pill-yes text-xs font-bold">{_ page_sets.ui.edited_today}</span>{/if}{#if page.lastmod_display}<span class="ml-auto shrink-0 pl-2 text-xs text-text-secondary">{= page.lastmod_display }</span>{/if}</div>{/each}
+							</div>
+						</div>
+						<div class="page-set-steps-block grid gap-1"><label class="px-3 text-xs font-semibold" for="new-page-set-steps">{_ page_sets.labels.steps}</label><textarea id="new-page-set-steps" name="steps" rows="14" spellcheck="false" placeholder="{_ page_sets.ui.steps_placeholder}" class="w-full rounded-md border border-border p-2 font-mono text-xs">{= page_set_create_form.steps_text }</textarea><span class="text-xs text-text-secondary">{- page_sets.ui.steps_hint}</span></div>
+						<div class="flex justify-end gap-2 border-t border-border pt-4"><button type="button" class="button secondary page-set-create-close">{_ page_sets.actions.cancel}</button><button type="submit" class="button primary">{_ page_sets.actions.create}</button></div>
+					</form>
+				</dialog>
+			{/if}
+		{/if}
+
+		<dialog id="add-project-dialog" class="w-[min(95vw,48rem)] max-h-[90vh] overflow-y-auto bg-surface-raised p-0 shadow-xl">
+			<header class="flex items-center justify-between gap-4 border-b border-border p-4">
+				<h2 class="font-semibold">{_ actions.add}</h2>
+				<button type="button" class="button tertiary add-project-close" aria-label="{_ actions.cancel}">×</button>
+			</header>
+			<form method="POST" action="{~ localized_path('/projects/create') }" class="grid gap-4 p-4">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				{#if project_form_error}
+					<app-banner type="red">{= props.project_form_error }</app-banner>
+				{/if}
+				<label class="grid gap-1 text-sm font-semibold">
+					{_ labels.name}
+					<input type="text" name="name" value="{= project_form.name }" required maxlength="80" autofocus />
+				</label>
+				<label class="grid gap-1 text-sm font-semibold">
+					{_ labels.path}
+					<input type="text" name="path" value="{= project_form.path }" required placeholder="/absolute/path/to/bun-project" />
+					<span class="text-xs font-normal text-text-secondary">{_ ui.path_hint}</span>
+				</label>
+				<label class="grid gap-1 text-sm font-semibold">
+					{_ labels.base_url}
+					<input type="url" name="base_url" value="{= project_form.base_url }" required placeholder="http://127.0.0.1:3110" />
+					<span class="text-xs font-normal text-text-secondary">{_ ui.base_url_hint}</span>
+				</label>
+				<div class="flex justify-end gap-2 border-t border-border pt-4">
+					<button type="button" class="button secondary add-project-close">{_ actions.cancel}</button>
+					<button type="submit" class="button primary">{_ actions.save}</button>
+				</div>
+			</form>
+		</dialog>
+
+		{#if active_project}
+			<dialog id="edit-project-dialog" class="w-[min(95vw,48rem)] max-h-[90vh] overflow-y-auto bg-surface-raised p-0 shadow-xl">
+				<header class="flex items-center justify-between gap-4 border-b border-border p-4">
+					<h2 class="font-semibold">{_ actions.edit}</h2>
+					<button type="button" class="button tertiary edit-project-close" aria-label="{_ actions.cancel}">×</button>
+				</header>
+				<form method="POST" action="{~ localized_path('/projects/update') }" class="grid gap-4 p-4">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<input type="hidden" name="project_id" value="{= active_project.id }" />
+					{#if project_edit_form_error}
+						<app-banner type="red">{= props.project_edit_form_error }</app-banner>
+					{/if}
+					<label class="grid gap-1 text-sm font-semibold">
+						{_ labels.name}
+						<input type="text" name="name" value="{= project_edit_form.name }" required maxlength="80" autofocus />
+					</label>
+					<label class="grid gap-1 text-sm font-semibold">
+						{_ labels.path}
+						<input type="text" name="path" value="{= project_edit_form.path }" required placeholder="/absolute/path/to/bun-project" />
+						<span class="text-xs font-normal text-text-secondary">{_ ui.path_hint}</span>
+					</label>
+					<label class="grid gap-1 text-sm font-semibold">
+						{_ labels.base_url}
+						<input type="url" name="base_url" value="{= project_edit_form.base_url }" required placeholder="http://127.0.0.1:3110" />
+						<span class="text-xs font-normal text-text-secondary">{_ ui.base_url_hint}</span>
+					</label>
+					<div class="flex justify-end gap-2 border-t border-border pt-4">
+						<button type="button" class="button secondary edit-project-close">{_ actions.cancel}</button>
+						<button type="submit" class="button primary">{_ actions.save}</button>
+					</div>
+				</form>
+			</dialog>
+		{/if}
+	</div>
+
+	<script>
+		const add_project_dialog = document.getElementById('add-project-dialog');
+		document.querySelectorAll('.add-project-trigger').forEach(function (button) {
+			button.addEventListener('click', function () { add_project_dialog.showModal(); });
+		});
+		document.querySelectorAll('.add-project-close').forEach(function (button) {
+			button.addEventListener('click', function () { add_project_dialog.close(); });
+		});
+		{#if project_form_error}add_project_dialog.showModal();{/if}
+
+		const edit_project_dialog = document.getElementById('edit-project-dialog');
+		document.querySelectorAll('.edit-project-trigger').forEach(function (button) {
+			button.addEventListener('click', function () { edit_project_dialog.showModal(); });
+		});
+		document.querySelectorAll('.edit-project-close').forEach(function (button) {
+			button.addEventListener('click', function () { edit_project_dialog.close(); });
+		});
+		{#if project_edit_form_error}edit_project_dialog.showModal();{/if}
+
+		function sort_page_set_options(container, mode) {
+			const options = Array.from(container.querySelectorAll('.page-set-option'));
+			options.sort(function (a, b) {
+				if (mode === 'alpha') return a.dataset.url.localeCompare(b.dataset.url);
+				const rank_a = Date.parse(a.dataset.lastmod || '');
+				const rank_b = Date.parse(b.dataset.lastmod || '');
+				const lastmod_a = Number.isNaN(rank_a) ? -Infinity : rank_a;
+				const lastmod_b = Number.isNaN(rank_b) ? -Infinity : rank_b;
+				return lastmod_b - lastmod_a || a.dataset.url.localeCompare(b.dataset.url);
+			});
+			options.forEach(function (option) { container.appendChild(option); });
+		}
+		const create_dialog = document.getElementById('page-set-create-dialog');
+		const SORT_STORAGE_KEY = 'reeqa.page-sets.sort';
+		const ONLY_SELECTED_STORAGE_KEY = 'reeqa.page-sets.only-selected';
+		function storage_get(key) {
+			try { return window.localStorage.getItem(key); } catch (error) { return null; }
+		}
+		function storage_set(key, value) {
+			try { window.localStorage.setItem(key, value); } catch (error) {}
+		}
+		document.querySelectorAll('.page-set-create-trigger').forEach(function (button) { button.addEventListener('click', function () { create_dialog.showModal(); }); });
+		document.querySelectorAll('.page-set-create-close').forEach(function (button) { button.addEventListener('click', function () { create_dialog.close(); }); });
+		document.querySelectorAll('.page-set-form').forEach(function (form) {
+			const filter = form.querySelector('.page-set-filter');
+			const only_selected = form.querySelector('.page-set-only-selected');
+			const selected_count = form.querySelector('.page-set-selected-count');
+			const sort_button = form.querySelector('.page-set-sort');
+			const container = form.querySelector('.page-set-options');
+			const options = Array.from(form.querySelectorAll('.page-set-option'));
+			function apply_sort(mode) {
+				sort_button.dataset.mode = mode;
+				sort_button.textContent = mode === 'alpha' ? sort_button.dataset.labelAlpha : sort_button.dataset.labelNewest;
+				sort_page_set_options(container, mode);
+			}
+			function update_count() {
+				const count = options.filter(function (option) { return option.querySelector('input').checked; }).length;
+				selected_count.textContent = '(' + count + ')';
+			}
+			function apply_filter() {
+				const query = filter.value.trim().toLowerCase();
+				options.forEach(function (option) {
+					const matches_query = query.length === 0 || option.textContent.toLowerCase().includes(query);
+					const matches_selected = !only_selected.checked || option.querySelector('input').checked;
+					option.hidden = !(matches_query && matches_selected);
+				});
+			}
+			apply_sort(storage_get(SORT_STORAGE_KEY) === 'alpha' ? 'alpha' : 'newest');
+			only_selected.checked = storage_get(ONLY_SELECTED_STORAGE_KEY) === '1';
+			filter.addEventListener('input', apply_filter);
+			only_selected.addEventListener('change', function () { storage_set(ONLY_SELECTED_STORAGE_KEY, only_selected.checked ? '1' : '0'); apply_filter(); });
+			options.forEach(function (option) {
+				option.querySelector('input').addEventListener('change', function () { update_count(); apply_filter(); });
+			});
+			form.querySelector('.page-set-select-visible').addEventListener('click', function () { options.forEach(function (option) { if (!option.hidden) option.querySelector('input').checked = true; }); update_count(); apply_filter(); });
+			form.querySelector('.page-set-clear').addEventListener('click', function () { options.forEach(function (option) { option.querySelector('input').checked = false; }); update_count(); apply_filter(); });
+			sort_button.addEventListener('click', function () {
+				const mode = sort_button.dataset.mode === 'alpha' ? 'newest' : 'alpha';
+				storage_set(SORT_STORAGE_KEY, mode);
+				apply_sort(mode);
+			});
+			update_count();
+			apply_filter();
+
+			const kind_select = form.querySelector('.page-set-kind');
+			const url_block = form.querySelector('.page-set-url-block');
+			const steps_block = form.querySelector('.page-set-steps-block');
+			function apply_kind() {
+				const workflow = kind_select.value === 'workflow';
+				url_block.hidden = workflow;
+				steps_block.hidden = !workflow;
+			}
+			kind_select.addEventListener('change', apply_kind);
+			apply_kind();
+		});
+		{#if open_project_dialog}add_project_dialog.showModal();{/if}
+		{#if open_page_set_dialog}create_dialog.showModal();{/if}
+	</script>
+	<script src="/dialog-confirm.js?v={= version}"></script>
+{/with}
