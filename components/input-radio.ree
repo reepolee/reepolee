@@ -1,0 +1,12 @@
+<field-wrapper class="grid">
+	<fieldset class="px-3">
+		<legend>{= props.attributes.label}</legend>
+		{#each props.attributes.options ?? props.options?.[props.attributes.name] as option}
+			<label class="flex items-center gap-2">
+				<input type="radio" name="{= props.attributes.name }" value="{= option.value }" {#if props.attributes.value===option.value} checked{/if} />
+				{= option.label}
+			</label>
+		{/each}
+	</fieldset>
+	<validation-error class="mt-1" id="error-{= props.attributes.name }"></validation-error>
+</field-wrapper>

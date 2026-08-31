@@ -1,0 +1,218 @@
+{{
+	const attrs = props.attributes || {};
+	const name = attrs.name || "";
+	const value = attrs.value || "";
+	const folder = attrs.folder || "";
+	const label = attrs.label || "";
+	const module = attrs.module || "";
+	const localized_value = attrs["localized-value"] === "true" || attrs["localized-value"] === true;
+	const disabled = attrs.disabled === "true" || attrs.disabled === true;
+	const input_id = `${name}_upload`;
+	// Per-instance editor ids so multiple fields on one page don't collide.
+	const editor_prefix = `ie_${Math.random().toString(36).slice(2, 10)}`;
+	const dialog_id = `${editor_prefix}_dialog`;
+	const process_url = attrs["process-url"] || "/upload/image/process";
+	const save_url = attrs["save-url"] || "/upload/image/save";
+}}
+<div
+	class="image-upload-wrapper"
+	data-name="{= name }"
+	data-folder="{= folder }"
+	data-module="{= module }"
+	data-process-url="{= process_url }"
+	data-save-url="{= save_url }"
+	data-editor-prefix="{= editor_prefix }"
+	data-dialog-id="{= dialog_id }"
+	data-msg-invalid-type="{_ errors.image_upload_invalid_type }"
+	data-msg-uploaded="{_ messages.image_upload_uploaded }"
+	data-msg-failed="{_ errors.image_upload_failed }">
+	<div class="px-3 flex items-center justify-between gap-2">
+		{#if label}
+			<label class="block" for="{= input_id }_dropzone">{= label }</label>
+		{/if}
+		<div class="flex items-center gap-3">
+			{#if value}
+				<button type="button" class="image-upload-edit as-button-secondary text-xs">
+					{_ ui.image_upload_edit }
+				</button>
+			{/if}
+			<div class="image-upload-status hidden text-xs" style="color: var(--color-success)"></div>
+		</div>
+	</div>
+
+	<input type="hidden" name="{= name }" class="image-upload-value" value="{= value }" {#if localized_value}data-localized-value{/if} {#if disabled}disabled{/if} />
+	<input type="hidden" name="_csrf_token" value="{= csrf_token }" class="image-upload-csrf" />
+
+	<div
+		id="{= input_id }_dropzone"
+		class="image-upload-dropzone relative border-2 border-dashed border-slate-300 rounded-lg p-4 text-center cursor-pointer transition-all duration-200 bg-slate-50 hover:border-blue-500 hover:bg-blue-50 mt-1"
+		tabindex="0">
+		<img class="image-upload-preview max-h-40 mx-auto rounded {#if !value}hidden{/if}" src="{= value }" alt="{= label || name }" />
+		<p class="image-upload-placeholder text-slate-500 m-0 text-sm {#if value}hidden{/if}">
+			<strong class="text-blue-600">{_ ui.image_upload_click }</strong>
+			{_ ui.image_upload_or }
+			<strong class="text-blue-600">{_ ui.image_upload_drag_drop }</strong>
+			{_ ui.image_upload_here }
+		</p>
+		<div class="image-upload-spinner absolute inset-0 flex items-center justify-center bg-white/70 hidden">
+			<span class="inline-block w-8 h-8 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></span>
+		</div>
+		<input type="file" class="image-upload-file hidden" accept="image/*" />
+	</div>
+
+	<!-- Edit dialog: crop/resize/format editor, table-agnostic (no images row written) -->
+	<dialog id="{= dialog_id }" class="p-0 rounded-xl shadow-2xl w-[min(95vw,140ch)] max-h-[90vh] overflow-y-auto">
+		<div class="p-4">
+			<div class="flex items-center justify-between mb-3">
+				<h2 class="text-base font-semibold m-0">{_ ui.image_upload_edit_title }</h2>
+				<button type="button" class="image-upload-editor-cancel as-button-secondary text-xs">
+					{_ actions.cancel }
+				</button>
+			</div>
+
+			<!-- Source selector tabs -->
+			<div id="{= editor_prefix }-source-tabs" class="flex border-b border-slate-200">
+				<button type="button" class="tab-btn active" data-tab="upload">
+					{_ ui.image_upload_tab_upload }
+				</button>
+				<button
+					type="button"
+					class="tab-btn"
+					data-tab="url">
+					{_ ui.image_upload_tab_url }
+				</button>
+				<button
+					type="button"
+					class="tab-btn"
+					data-tab="paste">
+					{_ ui.image_upload_tab_paste }
+				</button>
+			</div>
+
+			<div class="source-panel active p-4 bg-white border border-slate-200 border-t-0 rounded-b-lg" data-panel="upload">
+				<div
+					id="{= editor_prefix }-drop-zone"
+					class="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center cursor-pointer transition-all duration-200 bg-slate-50 hover:border-blue-500 hover:bg-blue-50">
+					<p class="text-slate-500 m-0 text-sm">
+						<strong class="text-blue-600">{_ ui.image_upload_click }</strong>
+						{_ ui.image_upload_or }
+						<strong class="text-blue-600">{_ ui.image_upload_drag_drop }</strong>
+						{_ ui.image_upload_here }
+					</p>
+					<input type="file" id="{= editor_prefix }-file-input" accept="image/*" class="hidden" />
+				</div>
+			</div>
+
+			<div class="source-panel hidden p-4 bg-white border border-slate-200 border-t-0 rounded-b-lg" data-panel="url">
+				<div class="flex gap-2">
+					<input type="url" id="{= editor_prefix }-url-input" placeholder="https://example.com/image.jpg" class="flex-1 px-3 py-2 border border-slate-200 rounded text-sm outline-none focus:border-blue-500" />
+					<button id="{= editor_prefix }-fetch-url-btn" type="button" class="as-button-primary">{_ ui.image_upload_fetch }</button>
+				</div>
+			</div>
+
+			<div class="source-panel hidden p-4 bg-white border border-slate-200 border-t-0 rounded-b-lg" data-panel="paste">
+				<p class="text-slate-500 m-0 text-sm">
+					{_ ui.image_upload_paste_hint }
+				</p>
+			</div>
+
+			<!-- Status bar -->
+			<div id="{= editor_prefix }-status-bar" class="hidden"></div>
+
+			<!-- Image area -->
+			<div id="{= editor_prefix }-image-area" class="hidden">
+
+				<div class="grid grid-cols-2 gap-4 w-full grid-rows-[auto_auto_auto]">
+					<div class="flex items-center justify-between px-2 py-1">
+						<span class="text-xs font-semibold uppercase text-slate-500 tracking-wider">{_ ui.image_upload_original }</span>
+						<button id="{= editor_prefix }-clear-btn" type="button" class="as-button-tertiary text-xs">{_ ui.image_upload_clear }</button>
+					</div>
+					<div class="text-xs font-semibold uppercase text-slate-500 tracking-wider px-2 py-1">{_ ui.image_upload_preview }</div>
+
+					<div class="aspect-square flex items-center justify-center overflow-hidden bg-white border border-slate-200 rounded-lg p-2">
+						<div id="{= editor_prefix }-canvas-wrapper" class="relative w-full h-full max-w-full rounded flex items-center justify-center">
+							<canvas id="{= editor_prefix }-crop-canvas" class="block cursor-crosshair rounded absolute top-0 left-0"></canvas>
+							<div id="{= editor_prefix }-crop-overlay" class="absolute border-2 border-blue-500 bg-blue-500/10 pointer-events-none shadow-[0_0_0_9999px_rgba(0,0,0,0.35)] hidden z-[1]">
+								<div class="crop-handle absolute w-2.5 h-2.5 bg-white border-2 border-blue-500 rounded-sm" style="top:-5px;left:-5px"></div>
+								<div class="crop-handle absolute w-2.5 h-2.5 bg-white border-2 border-blue-500 rounded-sm" style="top:-5px;right:-5px"></div>
+								<div class="crop-handle absolute w-2.5 h-2.5 bg-white border-2 border-blue-500 rounded-sm" style="bottom:-5px;left:-5px"></div>
+								<div class="crop-handle absolute w-2.5 h-2.5 bg-white border-2 border-blue-500 rounded-sm" style="bottom:-5px;right:-5px"></div>
+								<div id="{= editor_prefix }-crop-info" class="absolute -bottom-7 left-0 bg-slate-900 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap">0 × 0</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="relative aspect-square flex items-center justify-center overflow-hidden bg-white border border-slate-200 rounded-lg p-2">
+						<div id="{= editor_prefix }-preview-loading" class="absolute inset-0 flex items-center justify-center bg-white/70 hidden">
+							<span class="inline-block w-8 h-8 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></span>
+						</div>
+						<img id="{= editor_prefix }-preview-img" alt="" class="max-w-full max-h-full object-contain block rounded hidden" />
+						<div id="{= editor_prefix }-preview-empty" class="flex items-center justify-center min-h-[150px] text-slate-400 text-xs">{_ ui.image_upload_preview_empty }</div>
+					</div>
+
+					<div id="{= editor_prefix }-original-size" class="flex justify-center text-slate-500 px-1 text-xs"></div>
+					<div id="{= editor_prefix }-preview-size" class="flex justify-center text-slate-500 px-1 text-xs"></div>
+					<div id="{= editor_prefix }-original-filename" class="flex justify-center text-slate-500 px-1 text-xs col-span-2 truncate max-w-full"></div>
+				</div>
+
+				<div id="{= editor_prefix }-editor-form-panel" class="hidden">
+
+					<div class="grid grid-cols-2 gap-4 p-4 bg-slate-50 border border-slate-200 rounded-lg mt-4">
+
+						<div class="col-span-2 flex justify-start items-center gap-8">
+							<span id="{= editor_prefix }-output-dim-display" class="text-xs text-slate-500"></span>
+							<span id="{= editor_prefix }-crop-display" class="text-xs text-slate-500"></span>
+						</div>
+
+						<div class="flex flex-col gap-1">
+							<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider" for="{= editor_prefix }-format-select">{_ ui.image_upload_format }</label>
+							<select id="{= editor_prefix }-format-select" class="bg-white px-2 py-1.5 border border-slate-200 rounded text-sm outline-none focus:border-blue-500">
+								<option value="webp" selected>WebP</option>
+								<option value="jpeg">JPEG</option>
+								<option value="png">PNG</option>
+								<option value="avif">AVIF</option>
+							</select>
+						</div>
+
+						<div class="flex flex-col gap-1">
+							<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider" for="{= editor_prefix }-quality-input">{_ ui.image_upload_quality }</label>
+							<input type="number" id="{= editor_prefix }-quality-input" value="85" min="1" max="100" class="bg-white px-2 py-1.5 border border-slate-200 rounded text-sm outline-none focus:border-blue-500" />
+						</div>
+
+						<div class="flex flex-col gap-1">
+							<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider">{_ ui.image_upload_resize }</label>
+							<div class="flex gap-2 items-center">
+								<input type="number" id="{= editor_prefix }-resize-width" placeholder="W" min="1" max="5000" class="w-20 bg-white px-2 py-1.5 border border-slate-200 rounded text-sm outline-none focus:border-blue-500" />
+								<span class="text-slate-500">×</span>
+								<input type="number" id="{= editor_prefix }-resize-height" placeholder="H" min="1" max="5000" class="w-20 bg-white px-2 py-1.5 border border-slate-200 rounded text-sm outline-none focus:border-blue-500" />
+							</div>
+						</div>
+
+						<div class="flex flex-col gap-1">
+							<label class="text-xs font-semibold uppercase text-slate-500 tracking-wider" for="{= editor_prefix }-image-folder">{_ ui.image_upload_folder }</label>
+							<input type="text" id="{= editor_prefix }-image-folder" placeholder="e.g. logo" class="bg-white px-2 py-1.5 border border-slate-200 rounded text-sm outline-none focus:border-blue-500" />
+						</div>
+					</div>
+
+					<!-- Action bar -->
+					<div class="flex gap-3 justify-between items-center mt-2">
+						<span class="text-xs text-slate-400">{_ ui.image_upload_edit_hint }</span>
+
+						<div class="flex gap-3">
+							<button type="button" id="{= editor_prefix }-save-btn" disabled class="as-button-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100">
+								<span class="btn-label">{_ ui.image_upload_save }</span>
+								<span class="btn-spinner hidden">
+									<span class="inline-block w-4 h-4 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></span>
+								</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</dialog>
+
+	<script src="/image-editor.js?v={= props.version }" defer></script>
+</div>
+
+<script src="/image-upload.js?v={= props.version }" defer></script>
