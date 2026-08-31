@@ -76,7 +76,8 @@ type Render_opts = {
 	status?: number;
 	page_set_create_form?: Page_set_form;
 	page_set_edit_form?: Page_set_form & { page_set_id: string };
-	open_create_dialog?: boolean;
+	open_project_dialog?: boolean;
+	open_page_set_dialog?: boolean;
 };
 
 async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Promise<Response> {
@@ -91,7 +92,8 @@ async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Pr
 		status = 200,
 		page_set_create_form = { name: "", kind: "urls", urls: [], steps_text: "", capture_preset: "desktop", auto_evidence: false, auto_recording: false },
 		page_set_edit_form,
-		open_create_dialog = false,
+		open_project_dialog = false,
+		open_page_set_dialog = false,
 	} = opts;
 	const projects = await list_projects();
 	const active_project = await get_active_project();
@@ -134,7 +136,7 @@ async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Pr
 			baseline_page_count: baseline?.page_count,
 		};
 	}));
-	const show_create_dialog = open_create_dialog && sitemap.error === "";
+	const show_page_set_dialog = open_page_set_dialog && Boolean(active_project) && sitemap.error === "";
 	const ctx = await create_ctx(req, import.meta.dir);
 	return render("index", {
 		data: {
@@ -146,7 +148,8 @@ async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Pr
 			capture_presets: visual_capture_presets,
 			page_sets: page_set_views,
 			page_set_create_form,
-			open_create_dialog: show_create_dialog,
+			open_project_dialog,
+			open_page_set_dialog: show_page_set_dialog,
 			project_form,
 			project_form_error,
 			project_edit_form,
@@ -164,8 +167,8 @@ async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Pr
 
 export async function get_projects_page(req: BunRequest): Promise<Response> {
 	const request_url = new URL(req.url);
-	const open_create_dialog = request_url.searchParams.get("create") === "1";
-	return render_projects_page(req, { open_create_dialog });
+	const open_project_dialog = request_url.searchParams.get("create") === "1";
+	return render_projects_page(req, { open_project_dialog });
 }
 
 export async function post_create_project(req: BunRequest): Promise<Response> {
@@ -302,7 +305,7 @@ export async function post_create_page_set(req: BunRequest): Promise<Response> {
 		return Response.redirect(target, 303);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
-		return render_projects_page(req, { page_set_form_error: message, status: 400, page_set_create_form: { name, kind, urls, steps_text, capture_preset, auto_evidence, auto_recording }, open_create_dialog: true });
+		return render_projects_page(req, { page_set_form_error: message, status: 400, page_set_create_form: { name, kind, urls, steps_text, capture_preset, auto_evidence, auto_recording }, open_page_set_dialog: true });
 	}
 }
 

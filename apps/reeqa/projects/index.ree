@@ -11,7 +11,7 @@
 		</header>
 
 		{#if page_error}<app-banner type="red">{= props.page_error }</app-banner>{/if}
-		{#if page_set_form_error && !open_create_dialog && !page_set_error_id}<app-banner type="red">{= props.page_set_form_error }</app-banner>{/if}
+		{#if page_set_form_error && !open_project_dialog && !open_page_set_dialog && !page_set_error_id}<app-banner type="red">{= props.page_set_form_error }</app-banner>{/if}
 
 		{#if projects.length === 0}
 			<div class="rounded-md border border-border bg-surface-raised p-6 text-center">
@@ -253,7 +253,8 @@
 			kind_select.addEventListener('change', apply_kind);
 			apply_kind();
 		});
-		{#if open_create_dialog}create_dialog.showModal();{/if}
+		{#if open_project_dialog}add_project_dialog.showModal();{/if}
+		{#if open_page_set_dialog}create_dialog.showModal();{/if}
 	</script>
 	<script src="/dialog-confirm.js?v={= version}"></script>
 {/with}
