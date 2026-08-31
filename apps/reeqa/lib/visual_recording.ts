@@ -447,7 +447,7 @@ export async function record_page_evidence_video(run: Visual_run, page: Visual_p
 		return output_path;
 	} finally {
 		browser?.close();
-		if (existsSync(profile_directory)) rmSync(profile_directory, { recursive: true, force: true });
+		if (existsSync(profile_directory)) rmSync(profile_directory, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
 		cleanup_narration_clips(clips_directory);
 		if (existsSync(silent_video_path)) rmSync(silent_video_path);
 	}
@@ -522,7 +522,7 @@ export async function record_page_clip(run: Visual_run, page: Visual_page, proje
 		return output_path;
 	} finally {
 		browser?.close();
-		if (existsSync(profile_directory)) rmSync(profile_directory, { recursive: true, force: true });
+		if (existsSync(profile_directory)) rmSync(profile_directory, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
 		if (existsSync(silent_video_path)) rmSync(silent_video_path);
 		if (existsSync(click_sound_path)) rmSync(click_sound_path);
 	}

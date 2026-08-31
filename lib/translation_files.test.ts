@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { existsSync, mkdtempSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, relative, sep } from "node:path";
 
 import { MAIN_APP, REEMAN_APP, REEQA_APP } from "$config/paths";
 import {
@@ -151,7 +151,8 @@ describe("translation file layouts", () => {
 		expect(list_translation_files(project_dir)).rejects.toThrow("Duplicate translation files");
 
 		const files = await list_locale_translation_files("sl-si", project_dir);
-		expect(files.map((path) => path.replaceAll(`${project_dir}/`, "")).sort()).toEqual([
+		const relative_files = files.map((path) => relative(project_dir, path).split(sep).join("/")).sort();
+		expect(relative_files).toEqual([
 			"apps/main/home/locales/sl-si.json",
 			"apps/main/home/sl-si.json",
 			"apps/main/modules/locales/sl-si.json",

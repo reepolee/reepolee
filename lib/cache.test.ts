@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, describe, expect, test } from "bun:test";
 
 import { sanitize_env_value } from "$lib/env";
-import { env_available } from "$config/env_vars";
+import { env_available, env_switch_on } from "$config/env_vars";
 import { RedisClient } from "bun";
 
 // ---------------------------------------------------------------------------
@@ -24,10 +24,10 @@ const { create_cache } = await import("./cache");
 // of the suite instead of process.exit-ing the whole run.
 // ---------------------------------------------------------------------------
 
-const raw_test_redis_url = env_available("TEST_REDIS_URL") ? Bun.env.TEST_REDIS_URL : undefined;
+const raw_test_redis_url = env_switch_on("REDIS_ENABLED") && env_available("TEST_REDIS_URL") ? Bun.env.TEST_REDIS_URL : undefined;
 const TEST_REDIS_URL = raw_test_redis_url ? sanitize_env_value(raw_test_redis_url) : null;
 
-if (!TEST_REDIS_URL) { console.error("[cache.test.ts] TEST_REDIS_URL not set - skipping Redis-dependent tests"); }
+if (!TEST_REDIS_URL) { console.log("\x1b[33m[cache.test.ts] TEST_REDIS_URL unavailable or Redis disabled - skipping Redis-dependent tests\x1b[0m"); }
 
 const run = TEST_REDIS_URL ? describe : describe.skip;
 

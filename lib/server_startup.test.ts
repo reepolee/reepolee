@@ -38,6 +38,7 @@ describe("log_server_addresses", () => {
 			else Bun.env.SERVER_NAME = original_server_name;
 		}
 
-		expect(lines.filter((line) => line.includes("http://localhost:2338/")).length).toBe(1);
+		const visible_lines = lines.map((line) => line.replace(/\x1b\[[0-9;]*m/g, "").trim());
+		expect(visible_lines.filter((line) => line === "http://localhost:2338/").length).toBe(1);
 	});
 });

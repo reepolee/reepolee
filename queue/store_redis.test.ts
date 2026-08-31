@@ -15,20 +15,32 @@
  */
 import { afterAll, describe, expect, test } from "bun:test";
 
+import { env_available, env_switch_on } from "$config/env_vars";
+
 import type { Job } from "./job";
 import type { QueueStore } from "./store";
 import { create_redis_store } from "./store_redis";
 
-const REDIS_URL = process.env.REDIS_URL_TEST ?? process.env.REDIS_URL ?? "redis://localhost:6379";
+// Redis is opt-in for the application and for integration tests. A reachable
+// server must not make Redis tests run when REDIS_ENABLED=false; that setting
+// deliberately selects the SQL queue store instead.
+const redis_test_enabled = env_switch_on("REDIS_ENABLED") && (env_available("TEST_REDIS_URL") || env_available("REDIS_URL"));
+const REDIS_URL = redis_test_enabled
+	? (process.env.TEST_REDIS_URL ?? process.env.REDIS_URL ?? "").trim()
+	: "";
+
+if (!redis_test_enabled) { console.log("\x1b[33m[queue/store_redis.test.ts] Redis disabled - skipping Redis-dependent tests\x1b[0m"); }
 
 // Probe at module load so `describe.skipIf` sees the real value (describe
 // bodies run synchronously, before any beforeAll hook would have run).
 let available = false;
 let store: QueueStore;
-const probe = await create_redis_store(REDIS_URL);
-if (probe.available) {
-	available = true;
-	store = probe;
+if (REDIS_URL) {
+	const probe = await create_redis_store(REDIS_URL);
+	if (probe.available) {
+		available = true;
+		store = probe;
+	}
 }
 
 afterAll(async () => {

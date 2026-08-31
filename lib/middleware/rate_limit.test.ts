@@ -22,6 +22,11 @@ mock.module("$lib/session", () => ({
 const rate_limit = await import("./rate_limit");
 import type { RateLimitStore } from "./rate_limit";
 
+function show_expected_error(...args: unknown[]): void {
+	const message = args.map(String).join(" ").replace(/\x1b\[[0-9;]*m/g, "");
+	console.log(`\x1b[33m${message}\x1b[0m`);
+}
+
 // ---------------------------------------------------------------------------
 // Mock Redis client factory
 // ---------------------------------------------------------------------------
@@ -581,7 +586,9 @@ describe("rate_limit_mw", () => {
 		const original_redis_url = process.env.REDIS_URL;
 		const original_trust_proxy = process.env.TRUST_PROXY;
 		const original_exit = process.exit;
+		const original_error = console.error;
 		(process as any).exit = ((code?: number) => { throw new Error(`process.exit(${code})`); }) as any;
+		console.error = show_expected_error as typeof console.error;
 
 		try {
 			process.argv.splice(0, process.argv.length, ...original_argv.filter((arg) => arg !== "--test"), "--prod");
@@ -596,6 +603,7 @@ describe("rate_limit_mw", () => {
 			process.env.REDIS_URL = original_redis_url;
 			process.env.TRUST_PROXY = original_trust_proxy;
 			(process as any).exit = original_exit;
+			console.error = original_error;
 		}
 	});
 
@@ -676,7 +684,9 @@ describe("rate_limit_mw", () => {
 		const original_rate_limiting = process.env.RATE_LIMITING;
 		const original_trust_proxy = process.env.TRUST_PROXY;
 		const original_exit = process.exit;
+		const original_error = console.error;
 		(process as any).exit = ((code?: number) => { throw new Error(`process.exit(${code})`); }) as any;
+		console.error = show_expected_error as typeof console.error;
 
 		try {
 			process.argv.splice(0, process.argv.length, ...original_argv.filter((arg) => arg !== "--test"), "--prod");
@@ -689,6 +699,7 @@ describe("rate_limit_mw", () => {
 			process.env.RATE_LIMITING = original_rate_limiting;
 			process.env.TRUST_PROXY = original_trust_proxy;
 			(process as any).exit = original_exit;
+			console.error = original_error;
 		}
 	});
 });

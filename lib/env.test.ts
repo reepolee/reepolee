@@ -5,6 +5,11 @@ import { join } from "node:path";
 
 const env = await import("./env");
 
+function show_expected_error(...args: unknown[]): void {
+	const message = args.map(String).join(" ").replace(/\x1b\[[0-9;]*m/g, "");
+	console.log(`\x1b[33m${message}\x1b[0m`);
+}
+
 describe("sanitize_env_value", () => {
 	test("strips double quotes from ends", () => expect(env.sanitize_env_value("\"sqlite:app.db\"")).toBe("sqlite:app.db"));
 
@@ -70,12 +75,15 @@ describe("get_storage_mode", () => {
 	test("fails loud for invalid value (process.exit)", () => {
 		Bun.env.STORAGE = "invalid";
 		const original_exit = process.exit;
+		const original_error = console.error;
 		(process as any).exit = ((code?: number) => { throw new Error(`process.exit(${code})`); }) as any;
+		console.error = show_expected_error as typeof console.error;
 
 		try {
 			expect(() => env.get_storage_mode()).toThrow("process.exit(1)");
 		} finally {
 			(process as any).exit = original_exit;
+			console.error = original_error;
 		}
 	});
 });
@@ -94,12 +102,15 @@ describe("require_env", () => {
 	test("fails loud when env var not set (process.exit)", () => {
 		delete Bun.env.TEST_VAR;
 		const original_exit = process.exit;
+		const original_error = console.error;
 		(process as any).exit = ((code?: number) => { throw new Error(`process.exit(${code})`); }) as any;
+		console.error = show_expected_error as typeof console.error;
 
 		try {
 			expect(() => env.require_env("TEST_VAR")).toThrow("process.exit(1)");
 		} finally {
 			(process as any).exit = original_exit;
+			console.error = original_error;
 		}
 	});
 });

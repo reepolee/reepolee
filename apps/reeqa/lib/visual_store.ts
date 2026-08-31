@@ -558,7 +558,7 @@ async function generate_baseline(run: Visual_run, project: Qa_project): Promise<
 `);
 	} finally {
 		if (browser) await stop_visual_browser(run, browser);
-		if (existsSync(profile_directory)) rmSync(profile_directory, { recursive: true, force: true });
+		if (existsSync(profile_directory)) rmSync(profile_directory, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
 		if (existsSync(staging_directory)) rmSync(staging_directory, { recursive: true, force: true });
 	}
 }
@@ -701,7 +701,7 @@ async function compare_current(run: Visual_run, project: Qa_project): Promise<vo
 		append_output(run, `Compared ${run.pages.length} page(s).\n`);
 	} finally {
 		if (browser) await stop_visual_browser(run, browser);
-		if (existsSync(profile_directory)) rmSync(profile_directory, { recursive: true, force: true });
+		if (existsSync(profile_directory)) rmSync(profile_directory, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
 	}
 
 	// Evidence recording is a separate, explicit action per page (mode 2 -

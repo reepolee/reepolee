@@ -1,17 +1,22 @@
 import { afterAll, describe, expect, test } from "bun:test";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 import { clear_runs, load_runs, record_run, update_run } from "./state";
 
-const TMP_FILE = `/tmp/reeman-state-test-${process.pid}-${Date.now()}.json`;
 const MISSING_FILE = "/tmp/reeman-state-file-that-does-not-exist.json";
+const temp_dirs: string[] = [];
+
+async function create_temp_file(): Promise<string> {
+	const dir = await mkdtemp(join(tmpdir(), "reeman-state-test-"));
+	temp_dirs.push(dir);
+	return join(dir, "state.json");
+}
 
 describe("reeman run log state", () => {
 	afterAll(async () => {
-		try {
-			await Bun.spawn(["rm", "-f", TMP_FILE]).exited;
-		} catch {
-			// best-effort cleanup
-		}
+		await Promise.all(temp_dirs.map((dir) => rm(dir, { recursive: true, force: true })));
 	});
 
 	test("load_runs returns [] when no log file exists", async () => {
@@ -19,16 +24,18 @@ describe("reeman run log state", () => {
 	});
 
 	test("load_runs tolerates corrupt JSON", async () => {
-		await Bun.write(TMP_FILE, "not json {");
-		expect(await load_runs(TMP_FILE)).toEqual([]);
+		const file = await create_temp_file();
+		await Bun.write(file, "not json {");
+		expect(await load_runs(file)).toEqual([]);
 	});
 
 	test("record_run writes and load_runs reads newest-first", async () => {
-		await clear_runs(TMP_FILE);
-		await record_run({ action: "crud", target: "frameworks", ok: true, output: "done" }, TMP_FILE);
-		await record_run({ action: "schema", target: "users", ok: false, output: "failed", error: "boom" }, TMP_FILE);
+		const file = await create_temp_file();
+		await clear_runs(file);
+		await record_run({ action: "crud", target: "frameworks", ok: true, output: "done" }, file);
+		await record_run({ action: "schema", target: "users", ok: false, output: "failed", error: "boom" }, file);
 
-		const runs = await load_runs(TMP_FILE);
+		const runs = await load_runs(file);
 		expect(runs).toHaveLength(2);
 		expect(runs[0]?.action).toBe("schema");
 		expect(runs[0]?.ok).toBe(false);
@@ -39,11 +46,12 @@ describe("reeman run log state", () => {
 	});
 
 	test("update_run replaces a pending run with the completed output", async () => {
-		await clear_runs(TMP_FILE);
-		const id = await record_run({ action: "crud", target: "frameworks", ok: true, output: "Generation started in background." }, TMP_FILE);
-		await update_run(id, { ok: false, output: "step one\nstep two", error: "exit code 1" }, TMP_FILE);
+		const file = await create_temp_file();
+		await clear_runs(file);
+		const id = await record_run({ action: "crud", target: "frameworks", ok: true, output: "Generation started in background." }, file);
+		await update_run(id, { ok: false, output: "step one\nstep two", error: "exit code 1" }, file);
 
-		const runs = await load_runs(TMP_FILE);
+		const runs = await load_runs(file);
 		expect(runs).toHaveLength(1);
 		expect(runs[0]?.id).toBe(id);
 		expect(runs[0]?.ok).toBe(false);
@@ -52,8 +60,9 @@ describe("reeman run log state", () => {
 	});
 
 	test("clear_runs empties the log", async () => {
-		await record_run({ action: "crud", target: "t", ok: true, output: "x" }, TMP_FILE);
-		await clear_runs(TMP_FILE);
-		expect(await load_runs(TMP_FILE)).toEqual([]);
+		const file = await create_temp_file();
+		await record_run({ action: "crud", target: "t", ok: true, output: "x" }, file);
+		await clear_runs(file);
+		expect(await load_runs(file)).toEqual([]);
 	});
 });

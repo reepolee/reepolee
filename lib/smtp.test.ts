@@ -191,24 +191,31 @@ function test_tls_credentials(): { key: string; cert: string; } | null {
 	const key_path = join(dir, "key.pem");
 	const cert_path = join(dir, "cert.pem");
 
-	const result = Bun.spawnSync([
-		"openssl",
-		"req",
-		"-x509",
-		"-newkey",
-		"rsa:2048",
-		"-keyout",
-		key_path,
-		"-out",
-		cert_path,
-		"-days",
-		"1",
-		"-nodes",
-		"-subj",
-		"/CN=127.0.0.1",
-		"-addext",
-		"subjectAltName=IP:127.0.0.1",
-	], { stdout: "ignore", stderr: "ignore" });
+	let result: ReturnType<typeof Bun.spawnSync>;
+	try {
+		result = Bun.spawnSync([
+			"openssl",
+			"req",
+			"-x509",
+			"-newkey",
+			"rsa:2048",
+			"-keyout",
+			key_path,
+			"-out",
+			cert_path,
+			"-days",
+			"1",
+			"-nodes",
+			"-subj",
+			"/CN=127.0.0.1",
+			"-addext",
+			"subjectAltName=IP:127.0.0.1",
+		], { stdout: "ignore", stderr: "ignore" });
+	} catch {
+		tls_credentials = null;
+		rmSync(dir, { recursive: true, force: true });
+		return tls_credentials;
+	}
 
 	tls_credentials = result.success
 		? { key: readFileSync(key_path, "utf8"), cert: readFileSync(cert_path, "utf8") }

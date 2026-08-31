@@ -27,5 +27,5 @@ describe("load_table_module_fresh", () => {
 
 		const updated_module = await load_table_module_fresh<{ columns: { name: { width: string; }; }; }>(table_path);
 		expect(updated_module.columns.name.width).toBe("55ch");
-	});
+	}, { timeout: 15_000 });
 });

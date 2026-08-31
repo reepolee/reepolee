@@ -24,7 +24,7 @@ try {
 
 	mock.module("$config/db", () => make_test_db_mock(test_db!));
 } catch (e: any) {
-	console.error(`[auth/sql.test.ts] ${e.message} - skipping MySQL-dependent tests`);
+	console.log(`\x1b[33m[auth/sql.test.ts] ${e.message} - skipping database-dependent tests\x1b[0m`);
 }
 
 if (test_db) {

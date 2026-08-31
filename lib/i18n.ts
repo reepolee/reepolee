@@ -102,7 +102,7 @@ class TranslationRepository {
 	/**
 	 * Load translations from the canonical JSON tree.
 	 */
-	private async load_all_translations(target_locales: readonly string[], project_dir?: string) {
+	private async load_all_translations(target_locales: readonly string[], project_dir?: string, fallback_locale: string = default_locale) {
 		const merged: Record<string, any> = {};
 		for (const locale of target_locales) {
 			merged[locale] = {};
@@ -124,10 +124,10 @@ class TranslationRepository {
 		}
 
 		// Cross-locale fallback from the default locale
-		if (target_locales.length > 1 && target_locales.includes(default_locale)) {
+		if (target_locales.length > 1 && target_locales.includes(fallback_locale)) {
 			for (const locale of target_locales) {
-				if (locale === default_locale) continue;
-				this.mark_missing_from(merged[default_locale], merged[locale], []);
+				if (locale === fallback_locale) continue;
+				this.mark_missing_from(merged[fallback_locale], merged[locale], []);
 			}
 		}
 

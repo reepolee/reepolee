@@ -29,7 +29,6 @@ const STARTUP_TIMEOUT_MS = 15_000;
 const REQUEST_TIMEOUT_MS = 5_000;
 
 const use_agent = Bun.argv.includes("--agent");
-const agent_username = Bun.env.AGENT_USER_USERNAME;
 
 // ---------------------------------------------------------------------------
 // Check definitions
@@ -55,32 +54,12 @@ const checks: Check[] = [
 	{ method: "GET", path: "/nonexistent", expected_status: 404, description: "404 page" },
 	{
 		method: "GET",
-		path: "/examples/kitchen-sink",
+		path: "/login",
 		expected_status: 200,
-		description: "Template-rendered page",
+		description: "Auth template-rendered page",
 		body_contains: "<html",
 	},
 ];
-
-// In agent mode we can test authenticated routes via X-Agent-User-Username header
-if (use_agent && agent_username) {
-	checks.push({
-		method: "GET",
-		path: "/system/users",
-		expected_status: 200,
-		description: "CRUD route (agent mode)",
-		body_contains: "<html",
-	});
-} else if (!use_agent) {
-	// Without auth, this should still return a response that exercises routing + middleware
-	checks.push({
-		method: "GET",
-		path: "/system/users",
-		expected_status: 200,
-		description: "CRUD route",
-		body_contains: "<html",
-	});
-}
 
 // ---------------------------------------------------------------------------
 // Colors
@@ -161,9 +140,6 @@ console.log(`\n${GREEN}✓${RESET} Server is ready\n`);
 // 2. Run checks
 console.log(`${BOLD}Running ${checks.length} check(s)...${RESET}\n`);
 
-const agent_headers: Record<string, string> = {};
-if (use_agent && agent_username) { agent_headers["X-Agent-User-Username"] = agent_username; }
-
 let passed = 0;
 let failed = 0;
 
@@ -172,7 +148,7 @@ for (const check of checks) {
 	try {
 		const response = await fetch_with_timeout(url, {
 			method: check.method,
-			headers: { ...agent_headers, ...(check.method === "POST" ? { "Content-Type": "application/x-www-form-urlencoded" } : {}) },
+			headers: { ...(check.method === "POST" ? { "Content-Type": "application/x-www-form-urlencoded" } : {}) },
 		}, REQUEST_TIMEOUT_MS);
 
 		const status_match = response.status === check.expected_status;

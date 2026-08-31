@@ -63,7 +63,7 @@ describe("i18n - cross-locale fallback", () => {
 		write_locale_file(project_dir, "en-us", { unit: "mm" });
 		write_locale_file(project_dir, "sl-si", { unit: "" });
 
-		const loaded = await (i18n.translations as any).load_all_translations(["en-us", "sl-si"], project_dir);
+		const loaded = await (i18n.translations as any).load_all_translations(["en-us", "sl-si"], project_dir, "en-us");
 
 		expect(loaded["en-us"].home.unit).toBe("mm");
 		expect(loaded["sl-si"].home.unit).toBe("");
@@ -74,7 +74,7 @@ describe("i18n - cross-locale fallback", () => {
 		write_locale_file(project_dir, "en-us", { unit: "mm" });
 		write_locale_file(project_dir, "sl-si", {});
 
-		const loaded = await (i18n.translations as any).load_all_translations(["en-us", "sl-si"], project_dir);
+		const loaded = await (i18n.translations as any).load_all_translations(["en-us", "sl-si"], project_dir, "en-us");
 
 		expect(loaded["en-us"].home.unit).toBe("mm");
 		expect(loaded["sl-si"].home.unit).toBe("{unit}");

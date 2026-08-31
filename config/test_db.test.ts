@@ -2,6 +2,11 @@ import { describe, expect, test } from "bun:test";
 
 import { enforce_test_db, extract_db_name } from "$config/test_db";
 
+function show_expected_error(...args: unknown[]): void {
+	const message = args.map(String).join(" ").replace(/\x1b\[[0-9;]*m/g, "");
+	console.log(`\x1b[33m${message}\x1b[0m`);
+}
+
 describe("extract_db_name", () => {
 	test("extracts database name from MySQL URL", () => {
 		const result = extract_db_name("mysql://user:pass@localhost/my_test_db");
@@ -55,23 +60,29 @@ describe("enforce_test_db", () => {
 
 	test("exits with error when DB name does not contain 'test'", () => {
 		const original_exit = process.exit;
+		const original_error = console.error;
 		(process as any).exit = ((code?: number) => { throw new Error(`process.exit(${code})`); }) as any;
+		console.error = show_expected_error as typeof console.error;
 
 		try {
 			expect(() => enforce_test_db("mysql://user:pass@localhost/production")).toThrow("process.exit(1)");
 		} finally {
 			(process as any).exit = original_exit;
+			console.error = original_error;
 		}
 	});
 
 	test("exits with error when sqlite DB name does not contain 'test'", () => {
 		const original_exit = process.exit;
+		const original_error = console.error;
 		(process as any).exit = ((code?: number) => { throw new Error(`process.exit(${code})`); }) as any;
+		console.error = show_expected_error as typeof console.error;
 
 		try {
 			expect(() => enforce_test_db("sqlite:production.db")).toThrow("process.exit(1)");
 		} finally {
 			(process as any).exit = original_exit;
+			console.error = original_error;
 		}
 	});
 });

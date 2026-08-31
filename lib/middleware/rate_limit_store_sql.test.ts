@@ -4,15 +4,9 @@ import { SQL } from "bun";
 import { get_connection_string } from "$lib/env";
 import { now_epoch_ms } from "$lib/temporal";
 
-// rate_limit_store_sql.ts binds `db` and reads DB_CONNECTION_STRING at import
-// time, and `mock.module` writes to Bun's process-global registry - so an
-// earlier test file's $config/db stub is what the store would talk to. That
-// stub answers every query with [], which makes incr() read 0 and every
-// assertion here fail, but only when this file runs after one of them.
-//
-// Binding a real connection and installing it before the store is imported
-// makes this file independent of run order while still exercising whichever
-// dialect the connection string points at.
+// `mock.module` writes to Bun's process-global registry. The store factory
+// below binds this test's real connection explicitly, so an earlier test
+// file's $config/db stub cannot change what these tests exercise.
 const DB_CONNECTION_STRING = get_connection_string();
 const db = new SQL(DB_CONNECTION_STRING);
 
@@ -27,12 +21,13 @@ mock.module("$config/db", () => ({
 	TIMESTAMP_TZ: "UTC",
 }));
 
-const { cleanup_expired, expire, get, incr, list_all, reset_all } = await import("./rate_limit_store_sql");
+const { create_sql_rate_limit_store } = await import("./rate_limit_store_sql");
+const { cleanup_expired, expire, get, incr, list_all, reset_all } = create_sql_rate_limit_store(db, DB_CONNECTION_STRING);
 
 // ---------------------------------------------------------------------------
-// Schema - the store's table, mirroring the 01-init .sql files. The store
-// binds to $config/db at import time, so these tests exercise whichever
-// dialect DEV_CONNECTION_STRING points at and the DDL has to match it.
+// Schema - the store's table, mirroring the 01-init .sql files. These tests
+// exercise whichever dialect DEV_CONNECTION_STRING points at and the DDL has
+// to match it.
 // ---------------------------------------------------------------------------
 
 const is_mysql = DB_CONNECTION_STRING.toLowerCase().startsWith("mysql://");

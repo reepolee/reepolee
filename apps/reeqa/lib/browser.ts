@@ -129,7 +129,7 @@ async function* record_frames(cdp: Cdp_fn, view: Bun.WebView, options: Record_op
 }
 
 export async function open_browser(options: Open_browser_options): Promise<Qa_browser> {
-	if (existsSync(options.profile_dir)) rmSync(options.profile_dir, { recursive: true, force: true });
+	if (existsSync(options.profile_dir)) rmSync(options.profile_dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
 	mkdirSync(options.profile_dir, { recursive: true });
 
 	const view = new Bun.WebView({

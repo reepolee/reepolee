@@ -9,14 +9,14 @@ describe("capture_output", () => {
 
 		const cap = capture_output(async () => {
 			console.log("hello");
-			console.error("bad");
+			console.error("\x1b[33mbad\x1b[0m");
 			return 42;
 		});
 		const result = await cap.fn();
 
 		expect(result).toBe(42);
 		expect(cap.stdout).toContain("hello");
-		expect(cap.stderr).toContain("bad");
+		expect(clean_output(cap.stderr)).toContain("bad");
 		expect(console.log).toBe(orig_log);
 		expect(console.error).toBe(orig_error);
 	});
