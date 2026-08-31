@@ -16,7 +16,7 @@
 			locale="{= date_input_attrs.locale || props.locale }"
 			...date_input_extra
 			...props.translations.errors
-			>
+		>
 		</date-input>
 		<validation-error class="mt-1" id="error-{= props.attributes.name }"></validation-error>
 	</div>

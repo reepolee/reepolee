@@ -16,10 +16,17 @@
 				<code class="mt-2 block text-xs text-text-secondary">{= run.command_display }</code>
 				<div class="mt-1 text-sm font-semibold">{= run.project_name }</div>
 				<code class="mt-1 block break-all text-xs text-text-secondary">{= run.project_path }</code>
-				{#if run.status === 'running'}<div class="mt-3 flex flex-wrap gap-2"><confirm-dialog trigger-class="button primary text-xs" confirm-class="button danger" form-path="/runs/cancel" title="{_ actions.cancel_run}" trigger-text="{_ actions.cancel_run}" message="{_ confirm.cancel_run}" confirm-text="{_ actions.do_it}" cancel-text="{_ actions.cancel}" extra-field-name="run_id" extra-field-value="{= run.id }"></confirm-dialog></div>{/if}
+				{#if run.status === 'running'}
+					<div class="mt-3 flex flex-wrap gap-2">
+						<confirm-dialog trigger-class="button primary text-xs" confirm-class="button danger" form-path="/runs/cancel" title="{_ actions.cancel_run}" trigger-text="{_ actions.cancel_run}" message="{_ confirm.cancel_run}" confirm-text="{_ actions.do_it}" cancel-text="{_ actions.cancel}" extra-field-name="run_id" extra-field-value="{= run.id }"></confirm-dialog>
+					</div>
+				{/if}
 			</header>
 
-			<section class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr))">
+			<section
+				class="grid gap-3"
+				style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr))"
+			>
 				<div class="rounded-md border border-border bg-surface-raised p-4">
 					<div class="text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ labels.project}</div>
 					<div class="mt-1 font-semibold">{= run.project_name }</div>

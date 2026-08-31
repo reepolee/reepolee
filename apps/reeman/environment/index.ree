@@ -29,7 +29,8 @@
 				class="as-button-secondary w-[20ch]"
 				aria-pressed="false"
 				data-show-label="{_ actions.show_values}"
-				data-hide-label="{_ actions.hide_values}">
+				data-hide-label="{_ actions.hide_values}"
+			>
 				{_ actions.show_values}
 			</button>
 		</div>

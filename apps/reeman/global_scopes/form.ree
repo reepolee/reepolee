@@ -93,7 +93,8 @@
 									type="button"
 									class="as-button-tertiary px-2! py-0.5! text-xs"
 									data-insert-var="{= var_path}"
-									onclick="insert_session_var('{= var_path}')">
+									onclick="insert_session_var('{= var_path}')"
+								>
 									{= var_path}
 								</button>
 							{/each}

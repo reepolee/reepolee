@@ -15,10 +15,7 @@
 
 				<field-wrapper class="grid">
 					<label for="date_input" class="ml-input">{_ labels.date_input}</label>
-					<date-input id="date_input" name="date_input" data-bind="date_input"
-						value="2026-08-01" locale="{= props.locale }" min="1900-01-01" max="2030-12-31"
-						...props.translations.errors
-						>
+					<date-input id="date_input" name="date_input" data-bind="date_input" value="2026-08-01" locale="{= props.locale }" min="1900-01-01" max="2030-12-31" ...props.translations.errors>
 					</date-input>
 					<validation-error id="error-date_input"></validation-error>
 					<div class="text-sm text-neutral-500 ml-input">{_ labels.selected_date} <span data-key="date_input"></span></div>
@@ -86,10 +83,10 @@
 				</field-wrapper>
 
 				<input-color
-						name="accent_color"
-						label="Accent Color"
-						value="#ffc0cb"
-					>
+					name="accent_color"
+					label="Accent Color"
+					value="#ffc0cb"
+				>
 				</input-color>
 
 				<star-rating name="rating" label="Rating" value="0"> </star-rating>

@@ -34,26 +34,30 @@
 							data-sql-type="{= selectedTypeString }"
 							data-current="1"
 							selected
-							>{= domain.name} - {= selectedTypeString} ({= currentLabel})</option>
-						{/if}
-						<option
-							value="{= domain.name }"
-							data-sql-type="{= domain.type_string }"
-							{#if domain.name === selectedDomain && !selectedNonCompliant}selected{/if}
-							>{= domain.name} - {= domain.sql_type}{#if domain.name === selectedDomain && selectedNonCompliant} ({= suggestedLabel}){/if}</option>
-						{/each}
-					</optgroup>
+						>
+							{= domain.name} - {= selectedTypeString} ({= currentLabel})
+						</option>
+					{/if}
+					<option
+						value="{= domain.name }"
+						data-sql-type="{= domain.type_string }"
+						{#if domain.name === selectedDomain && !selectedNonCompliant}selected{/if}
+					>
+						{= domain.name} - {= domain.sql_type}{#if domain.name === selectedDomain && selectedNonCompliant} ({= suggestedLabel}){/if}
+					</option>
 				{/each}
-			</select>
-			<button type="button" class="domain-select-trigger w-full truncate rounded-sm border border-border bg-surface-raised px-3 py-1 text-left" aria-haspopup="listbox">{= selectedTriggerText }</button>
-			<div class="domain-select-menu" popover role="listbox">
-				{#each domainGroups as group}
-					<div class="domain-select-group" role="group" aria-label="{= group.name }">
-						<div class="domain-select-group-header">{= group.name}</div>
-						{#each group.domains as domain}
-							<div class="domain-select-option" role="option" tabindex="-1" data-value="{= domain.name }" data-sql-type="{= domain.type_string }" data-label="{= domain.name } - {= domain.sql_type}">{= domain.name} - {= domain.sql_type}</div>
-						{/each}
-					</div>
+			</optgroup>
+		{/each}
+	</select>
+	<button type="button" class="domain-select-trigger w-full truncate rounded-sm border border-border bg-surface-raised px-3 py-1 text-left" aria-haspopup="listbox">{= selectedTriggerText }</button>
+	<div class="domain-select-menu" popover role="listbox">
+		{#each domainGroups as group}
+			<div class="domain-select-group" role="group" aria-label="{= group.name }">
+				<div class="domain-select-group-header">{= group.name}</div>
+				{#each group.domains as domain}
+					<div class="domain-select-option" role="option" tabindex="-1" data-value="{= domain.name }" data-sql-type="{= domain.type_string }" data-label="{= domain.name } - {= domain.sql_type}">{= domain.name} - {= domain.sql_type}</div>
 				{/each}
 			</div>
-		</div>
+		{/each}
+	</div>
+</div>

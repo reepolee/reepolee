@@ -160,9 +160,9 @@
 														type="checkbox"
 														name="selected"
 														value="{= entry.rel_path }"
-															data-role="item"
-															{#if entry.ignored }disabled{/if}
-														/>
+														data-role="item"
+														{#if entry.ignored }disabled{/if}
+													/>
 												{:else }
 													<input type="checkbox" disabled title="{_ ui.project_only_hint}" />
 												{/if}

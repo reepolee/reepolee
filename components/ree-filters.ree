@@ -16,7 +16,8 @@
 			<button
 				type="button"
 				data-filter-toggle
-				class="w-9 py-1.5 border-l hover:bg-neutral-100 cursor-pointer text-neutral-500 active:bg-neutral-200 transition-colors relative flex items-center justify-center">
+				class="w-9 py-1.5 border-l hover:bg-neutral-100 cursor-pointer text-neutral-500 active:bg-neutral-200 transition-colors relative flex items-center justify-center"
+			>
 				{#if props.filter_definitions && props.filter_definitions.length > 0}
 					<span data-filter-icon="chevron" class="block w-4 h-4 leading-none text-center transition-transform duration-300 ease-out" style="rotate: 90deg">❯</span>
 					<span data-filter-icon="loupe" class="hidden w-4 h-4">
@@ -100,7 +101,8 @@
 										data-show-more="{_ ui.show_more }"
 										data-show-less="{_ ui.show_less }"
 										class="cursor-pointer text-brand hover:underline py-0.5"
-										onclick="toggle_options('{= def.key }')">
+										onclick="toggle_options('{= def.key }')"
+									>
 										{_ ui.show_more }
 									</button>
 								{/if}

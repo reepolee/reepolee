@@ -169,17 +169,20 @@
 
 						<a
 							href="{~ localized_path('/translations/' + urlencode(key_row.namespace || '_') + '/' + urlencode(key_row.parent_path || '_') + '/edit' + (current_query_string ? '?from=' + urlencode(current_query_string) : '')) }"
-							class="font-mono text-sm hover:text-blue-600 underline decoration-dotted underline-offset-2">
+							class="font-mono text-sm hover:text-blue-600 underline decoration-dotted underline-offset-2"
+						>
 							{= key_row.namespace || "(global)"}
 						</a>
 						<a
 							href="{~ localized_path('/translations/' + urlencode(key_row.namespace || '_') + '/' + urlencode(key_row.parent_path || '_') + '/edit' + (current_query_string ? '?from=' + urlencode(current_query_string) : '')) }"
-							class="font-mono text-sm hover:text-blue-600 underline decoration-dotted underline-offset-2">
+							class="font-mono text-sm hover:text-blue-600 underline decoration-dotted underline-offset-2"
+						>
 							{= key_row.parent_path || "(root)"}
 						</a>
 						<a
 							href="{~ localized_path('/translations/' + urlencode(key_row.namespace || '_') + '/' + urlencode(key_row.parent_path || '_') + '/edit' + (current_query_string ? '?from=' + urlencode(current_query_string) : '')) }"
-							class="font-mono text-sm hover:text-blue-600 underline decoration-dotted underline-offset-2">
+							class="font-mono text-sm hover:text-blue-600 underline decoration-dotted underline-offset-2"
+						>
 							{= key_row.child_key}
 						</a>
 						{#each locales as locale}

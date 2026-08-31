@@ -1,3 +1,4 @@
+import { isAbsolute } from "node:path";
 import { localized_url, resolve_locale } from "$lib/route";
 import { render } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
@@ -7,7 +8,7 @@ import type { BunRequest } from "bun";
 import { visual_capture_presets, resolve_capture_preset } from "../lib/config";
 import { iso_datetime } from "../lib/format";
 import { clear_active_page_set_selection, create_page_set, delete_page_set, find_page_set, get_active_page_set, is_workflow_page_set, list_page_sets, page_set_capture_size, page_set_page_count, require_page_set, set_active_page_set_id, update_page_set, type Page_set_input } from "../lib/page_set_store";
-import { create_project, delete_project, duplicate_project, get_active_project, list_projects, require_active_project, set_active_project_id, update_project, type Qa_project } from "../lib/project_store";
+import { create_project, delete_project, duplicate_project, find_project, get_active_project, list_projects, require_active_project, set_active_project_id, update_project, type Qa_project } from "../lib/project_store";
 import { sidebar_props } from "../lib/sidebar";
 import { get_baseline_summary, sitemap_pages_for_project, type Sitemap_page } from "../lib/visual_store";
 import { parse_workflow_steps } from "../lib/workflow";
@@ -65,41 +66,55 @@ async function validate_sitemap_urls(project: Qa_project, selected_urls: string[
 	if (invalid_url) throw new Error(`Page is not in the current sitemap: ${invalid_url}`);
 }
 
+function validate_project_fields(form: Project_form, touched: readonly string[], messages: Record<string, string>): Record<string, string> {
+	const errors: Record<string, string> = {};
+	for (const field of touched) {
+		if (field === "name") {
+			if (!form.name.trim()) errors.name = messages.name_required ?? "Project name is required.";
+			else if (form.name.trim().length > 80) errors.name = messages.name_max ?? "Project name must be at most 80 characters.";
+		}
+		if (field === "path") {
+			if (!form.path.trim()) errors.path = messages.path_required ?? "Project path is required.";
+			else if (!isAbsolute(form.path.trim())) errors.path = messages.path_absolute ?? "Project path must be absolute.";
+		}
+		if (field === "base_url") {
+			if (!form.base_url.trim()) {
+				errors.base_url = messages.base_url_required ?? "Project URL is required.";
+				continue;
+			}
+			try {
+				const parsed_url = new URL(form.base_url.trim());
+				if (parsed_url.protocol !== "http:" && parsed_url.protocol !== "https:") errors.base_url = messages.base_url_protocol ?? "Project URL must use HTTP or HTTPS.";
+			} catch {
+				errors.base_url = messages.base_url_protocol ?? "Project URL must use HTTP or HTTPS.";
+			}
+		}
+	}
+	return errors;
+}
+
 type Render_opts = {
-	project_form?: Project_form;
-	project_form_error?: string;
-	project_edit_form?: Project_form;
-	project_edit_form_error?: string;
 	page_error?: string;
 	page_set_form_error?: string;
 	page_set_error_id?: string;
 	status?: number;
 	page_set_create_form?: Page_set_form;
 	page_set_edit_form?: Page_set_form & { page_set_id: string };
-	open_project_dialog?: boolean;
 	open_page_set_dialog?: boolean;
 };
 
 async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Promise<Response> {
 	const {
-		project_form = { name: "", path: "", base_url: "" },
-		project_form_error = "",
-		project_edit_form: requested_edit_form,
-		project_edit_form_error = "",
 		page_error = "",
 		page_set_form_error = "",
 		page_set_error_id = "",
 		status = 200,
 		page_set_create_form = { name: "", kind: "urls", urls: [], steps_text: "", capture_preset: "desktop", auto_evidence: false, auto_recording: false },
 		page_set_edit_form,
-		open_project_dialog = false,
 		open_page_set_dialog = false,
 	} = opts;
 	const projects = await list_projects();
 	const active_project = await get_active_project();
-	const project_edit_form = requested_edit_form ?? (active_project
-		? { name: active_project.name, path: active_project.path, base_url: active_project.base_url }
-		: { name: "", path: "", base_url: "" });
 	const sitemap = active_project ? await sitemap_pages_or_error(active_project) : { pages: [] as Sitemap_page[], error: "" };
 	const page_sets = active_project ? await list_page_sets(active_project.id) : [];
 	const active_page_set = active_project ? await get_active_page_set(active_project.id) : undefined;
@@ -148,12 +163,7 @@ async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Pr
 			capture_presets: visual_capture_presets,
 			page_sets: page_set_views,
 			page_set_create_form,
-			open_project_dialog,
 			open_page_set_dialog: show_page_set_dialog,
-			project_form,
-			project_form_error,
-			project_edit_form,
-			project_edit_form_error,
 			page_set_form_error,
 			page_set_error_id,
 			page_error,
@@ -166,9 +176,71 @@ async function render_projects_page(req: BunRequest, opts: Render_opts = {}): Pr
 }
 
 export async function get_projects_page(req: BunRequest): Promise<Response> {
-	const request_url = new URL(req.url);
-	const open_project_dialog = request_url.searchParams.get("create") === "1";
-	return render_projects_page(req, { open_project_dialog });
+	return render_projects_page(req);
+}
+
+export async function post_validate_project(req: BunRequest): Promise<Response> {
+	const body = await req.json() as Record<string, unknown>;
+	const ctx = await create_ctx(req, import.meta.dir);
+	const touched = Array.isArray(body.touched) ? body.touched.filter((field): field is string => typeof field === "string") : [];
+	const form = {
+		name: typeof body.name === "string" ? body.name : "",
+		path: typeof body.path === "string" ? body.path : "",
+		base_url: typeof body.base_url === "string" ? body.base_url : "",
+	};
+	const errors = validate_project_fields(form, touched, ctx.translations.errors);
+	return Response.json({ success: Object.keys(errors).length === 0, errors });
+}
+
+type Project_form_render_opts = {
+	form_mode: "new" | "edit";
+	form_action: string;
+	project_form?: Project_form;
+	project_form_error?: string;
+	status?: number;
+};
+
+async function render_project_form_page(req: BunRequest, opts: Project_form_render_opts): Promise<Response> {
+	const {
+		form_mode,
+		form_action,
+		project_form = { name: "", path: "", base_url: "" },
+		project_form_error = "",
+		status = 200,
+	} = opts;
+	const ctx = await create_ctx(req, import.meta.dir);
+	return render("form", {
+		data: {
+			form_mode,
+			form_action,
+			project_form,
+			project_form_error,
+			...(await sidebar_props(ctx.request_url)),
+		},
+		ctx,
+		status,
+	});
+}
+
+export async function get_projects_new(req: BunRequest): Promise<Response> {
+	return render_project_form_page(req, { form_mode: "new", form_action: "/projects" });
+}
+
+async function render_project_not_found(req: BunRequest): Promise<Response> {
+	const ctx = await create_ctx(req, import.meta.dir);
+	return render("notfound", { data: { title: "404 Not Found" }, status: 404, ctx });
+}
+
+export async function get_projects_edit(req: BunRequest): Promise<Response> {
+	const project_id = req.params.id;
+	if (!project_id) return render_project_not_found(req);
+	const project = await find_project(project_id);
+	if (!project) return render_project_not_found(req);
+	return render_project_form_page(req, {
+		form_mode: "edit",
+		form_action: `/projects/${project.id}/edit`,
+		project_form: { name: project.name, path: project.path, base_url: project.base_url },
+	});
 }
 
 export async function post_create_project(req: BunRequest): Promise<Response> {
@@ -190,14 +262,14 @@ export async function post_create_project(req: BunRequest): Promise<Response> {
 		return Response.redirect(target, 303);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
-		return render_projects_page(req, { project_form: form, project_form_error: message, status: 400 });
+		return render_project_form_page(req, { form_mode: "new", form_action: "/projects", project_form: form, project_form_error: message, status: 400 });
 	}
 }
 
 export async function post_update_project(req: BunRequest): Promise<Response> {
 	const body = await req.text();
 	const params = new URLSearchParams(body);
-	const project_id = params.get("project_id");
+	const project_id = req.params.id;
 	const name_value = params.get("name");
 	const path_value = params.get("path");
 	const base_url_value = params.get("base_url");
@@ -206,7 +278,9 @@ export async function post_update_project(req: BunRequest): Promise<Response> {
 		path: path_value ? path_value.trim() : "",
 		base_url: base_url_value ? base_url_value.trim() : "",
 	};
-	if (!project_id) return new Response("QA project id is required.", { status: 400 });
+	if (!project_id) return render_project_not_found(req);
+	const project = await find_project(project_id);
+	if (!project) return render_project_not_found(req);
 	try {
 		await update_project(project_id, form.name, form.path, form.base_url);
 		const locale = resolve_locale(req);
@@ -214,7 +288,7 @@ export async function post_update_project(req: BunRequest): Promise<Response> {
 		return Response.redirect(target, 303);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
-		return render_projects_page(req, { project_edit_form: form, project_edit_form_error: message, status: 400 });
+		return render_project_form_page(req, { form_mode: "edit", form_action: `/projects/${project.id}/edit`, project_form: form, project_form_error: message, status: 400 });
 	}
 }
 
@@ -377,7 +451,7 @@ export async function post_set_active_page_set(req: BunRequest): Promise<Respons
 	}
 }
 
-export const projects_crud = { "/projects": { GET: get_projects_page }, "/projects/create": { POST: post_create_project }, "/projects/update": { POST: post_update_project }, "/projects/delete": { POST: post_delete_project }, "/projects/duplicate": { POST: post_duplicate_project }, "/projects/active": { POST: post_set_active_project }, "/projects/page-sets/create": { POST: post_create_page_set }, "/projects/page-sets/update": { POST: post_update_page_set }, "/projects/page-sets/delete": { POST: post_delete_page_set } };
+export const projects_crud = { "/projects": { GET: get_projects_page, POST: post_create_project }, "/projects/new": get_projects_new, "/projects/validate": { POST: post_validate_project }, "/projects/:id/edit": { GET: get_projects_edit, POST: post_update_project }, "/projects/delete": { POST: post_delete_project }, "/projects/duplicate": { POST: post_duplicate_project }, "/projects/active": { POST: post_set_active_project }, "/projects/page-sets/create": { POST: post_create_page_set }, "/projects/page-sets/update": { POST: post_update_page_set }, "/projects/page-sets/delete": { POST: post_delete_page_set } };
 
 export const route_definitions: RouteDefinition[] = [
 	{

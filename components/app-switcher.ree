@@ -7,7 +7,9 @@
 					class="cursor-pointer px-2 py-1 text-xs rounded border border-transparent no-underline hover:border-neutral-300 hover:bg-neutral-100 {= app.current ? 'bg-neutral-100 ring-1 ring-brand' : '' }"
 					aria-label="{= props.translations?.ui?.apps?.[app.name] ?? `{${app.name}}` }"
 					title="{= props.translations?.ui?.apps?.[app.name] ?? `{${app.name}}` }"
-					{#if app.current}aria-current="page"{/if}>					<ree-icon name="{= app.icon }" class="size-4 text-brand"></ree-icon>
+					{#if app.current}aria-current="page"{/if}
+				>
+					<ree-icon name="{= app.icon }" class="size-4 text-brand"></ree-icon>
 				</a>
 			{/if}
 		{/each}

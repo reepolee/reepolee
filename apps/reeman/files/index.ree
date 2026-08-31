@@ -111,7 +111,8 @@
 				{#each records as record}
 					<a
 						href="{~ localized_path('/files/' + record.id + '/edit') }"
-						class="group col-span-full grid grid-cols-subgrid grid-rows-[auto_auto] cursor-pointer border-b border-b-neutral-200 hover:bg-primary hover:text-white">
+						class="group col-span-full grid grid-cols-subgrid grid-rows-[auto_auto] cursor-pointer border-b border-b-neutral-200 hover:bg-primary hover:text-white"
+					>
 
 						<div class="col-span-full grid grid-cols-subgrid items-center *:px-2 *:py-2">
 							{#if enable_archive}

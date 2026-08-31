@@ -54,20 +54,22 @@
 								formnovalidate
 								title="{_ localization.reset_to_default }"
 								class="localized-tab-remove"
-								>×</button>
-							{/if}
-						</span>
-					{/each}
-				</div>
+							>
+								×
+							</button>
+						{/if}
+					</span>
+				{/each}
 			</div>
-		{/if}
-
-		<div class="localized-field-body">
-			{~ props.children}
-
-			{#each other_locales as locale}
-				<input type="hidden" name="_original__lv[{= field_name}][{= locale}]" value="{= loc.values[field_name + '|' + locale] ?? ''}" />
-				<localized-panel field-name="{= field_name }" locale="{= locale }" localization="{= loc }" tab-group="{= group }"></localized-panel>
-			{/each}
 		</div>
+	{/if}
+
+	<div class="localized-field-body">
+		{~ props.children}
+
+		{#each other_locales as locale}
+			<input type="hidden" name="_original__lv[{= field_name}][{= locale}]" value="{= loc.values[field_name + '|' + locale] ?? ''}" />
+			<localized-panel field-name="{= field_name }" locale="{= locale }" localization="{= loc }" tab-group="{= group }"></localized-panel>
+		{/each}
 	</div>
+</div>

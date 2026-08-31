@@ -34,9 +34,16 @@
 					</p>
 					<div class="mt-6 flex justify-end gap-2">
 						<form method="dialog">
-							<button class="px-3 py-1 rounded bg-slate-200" value="dismiss">{_ actions.lang_mismatch_dismiss}</button>
+							<button
+								class="px-3 py-1 rounded bg-slate-200"
+								value="dismiss"
+							>
+								{_ actions.lang_mismatch_dismiss}
+							</button>
 						</form>
-						<a href="?locale={= props.locale_preferred }" class="px-3 py-1 rounded bg-brand text-white no-underline">{_ actions.lang_mismatch_switch}</a>
+						<a href="?locale={= props.locale_preferred }" class="px-3 py-1 rounded bg-brand text-white no-underline" >
+							{_ actions.lang_mismatch_switch}
+						</a>
 					</div>
 				</div>
 			</dialog>
@@ -49,14 +56,23 @@
 		<aside class="flex flex-col bg-neutral-200  border-r border-r-neutral-300 h-screen sticky top-0 max-xl:hidden">
 			<sidebar-header>
 				{#if props.reeqa_project_selector}
-					<form method="POST" action="{~ localized_path(props.reeqa_project_selector.action) }" class="px-4 mb-6">
+					<form
+						method="POST"
+						action="{~ localized_path(props.reeqa_project_selector.action) }"
+						class="px-4 mb-6"
+					>
 						<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 						<input type="hidden" name="next" value="{= props.reeqa_project_selector.next }" />
 						<label class="grid gap-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
 							<span class="ml-3">{= props.reeqa_project_selector.label }</span>
 							<select name="project_id" class="text-base w-full" onchange="this.form.submit()">
 								{#each props.reeqa_project_selector.projects as project}
-									<option value="{= project.id }" {#if project.id === props.reeqa_project_selector.active_project_id}selected{/if}>{= project.name }</option>
+									<option
+										value="{= project.id }"
+										{#if project.id === props.reeqa_project_selector.active_project_id}selected{/if}
+									>
+										{= project.name }
+									</option>
 								{/each}
 							</select>
 						</label>
@@ -64,14 +80,23 @@
 				{/if}
 
 				{#if props.reeqa_page_set_selector}
-					<form method="POST" action="{~ localized_path(props.reeqa_page_set_selector.action) }" class="px-4 mb-6">
+					<form
+						method="POST"
+						action="{~ localized_path(props.reeqa_page_set_selector.action) }"
+						class="px-4 mb-6"
+					>
 						<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 						<input type="hidden" name="next" value="{= props.reeqa_page_set_selector.next }" />
 						<label class="grid gap-1 text-xs font-semibold uppercase tracking-wider text-text-secondary">
 							<span class="ml-3">{= props.reeqa_page_set_selector.label }</span>
 							<select name="page_set_id" class="text-base w-full" onchange="this.form.submit()">
 								{#each props.reeqa_page_set_selector.page_sets as page_set}
-									<option value="{= page_set.id }" {#if page_set.id === props.reeqa_page_set_selector.active_page_set_id}selected{/if}>{= page_set.name } ({= page_set.page_count }) · {= page_set.capture_width }px</option>
+									<option
+										value="{= page_set.id }"
+										{#if page_set.id === props.reeqa_page_set_selector.active_page_set_id}selected{/if}
+									>
+										{= page_set.name } ({= page_set.page_count }) · {= page_set.capture_width }px
+									</option>
 								{/each}
 							</select>
 						</label>
@@ -95,9 +120,11 @@
 					]);
 					const toast_class = toast_classes.get(toast.type) ?? 'bg-white text-black border border-neutral-300';
 				}}
-				<div id="toast-{= toast.key }"
+				<div
+					id="toast-{= toast.key }"
 					class="animate-in-top"
-					style="--toast-duration:{= toast.duration ?? 3000 }ms">
+					style="--toast-duration:{= toast.duration ?? 3000 }ms"
+				>
 
 					<div class="relative px-3 py-2 mb-3 {= toast_class }	font-semibold rounded-sm min-w-96 pointer-events-auto">
 
@@ -105,10 +132,13 @@
 							{= toast.message } {~ toast.user ? `(${toast.user})` : "" }
 						</div>
 
-						<a href="#toast-{= toast.key }" class="absolute top-1 right-1 h-8 w-8 flex items-center justify-center text-lg leading-none opacity-70 hover:opacity-100 hover:bg-black/10 rounded-full no-underline" aria-label="Close toast">
+						<a
+							href="#toast-{= toast.key }"
+							class="absolute top-1 right-1 h-8 w-8 flex items-center justify-center text-lg leading-none opacity-70 hover:opacity-100 hover:bg-black/10 rounded-full no-underline"
+							aria-label="Close toast"
+						>
 							🗙
 						</a>
-
 					</div>
 				</div>
 			{/each}

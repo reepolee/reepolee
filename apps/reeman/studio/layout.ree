@@ -104,9 +104,11 @@
 					]);
 					const toast_class = toast_classes.get(toast.type) ?? 'bg-white text-black border border-neutral-300';
 				}}
-				<div id="toast-{= toast.key }"
+				<div
+					id="toast-{= toast.key }"
 					class="animate-in-top"
-					style="--toast-duration:{= toast.duration ?? 3000 }ms">
+					style="--toast-duration:{= toast.duration ?? 3000 }ms"
+				>
 
 					<div class="relative px-3 py-2 mb-3 {= toast_class }	font-semibold rounded-sm min-w-96 pointer-events-auto">
 

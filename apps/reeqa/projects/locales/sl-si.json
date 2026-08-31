@@ -6,10 +6,19 @@
 		"do_it": "Odstrani",
 		"duplicate": "Podvoji projekt",
 		"edit": "Uredi projekt",
-		"save": "Shrani projekt"
+		"save": "Shrani projekt",
+		"submitted": "Shranjevanje ..."
 	},
 	"confirm": {
 		"delete": "Odstranim ta projekt iz ReeQA? Obstoječi zapisi zagonov ostanejo."
+	},
+	"errors": {
+		"base_url_protocol": "URL projekta mora uporabljati HTTP ali HTTPS.",
+		"base_url_required": "URL projekta je obvezen.",
+		"name_max": "Ime projekta lahko vsebuje največ 80 znakov.",
+		"name_required": "Ime projekta je obvezno.",
+		"path_absolute": "Pot projekta mora biti absolutna.",
+		"path_required": "Pot projekta je obvezna."
 	},
 	"labels": {
 		"base_url": "URL delujočega spletišča",

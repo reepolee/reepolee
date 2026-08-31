@@ -6,10 +6,19 @@
 		"do_it": "Remove",
 		"duplicate": "Duplicate project",
 		"edit": "Edit project",
-		"save": "Save project"
+		"save": "Save project",
+		"submitted": "Saving..."
 	},
 	"confirm": {
 		"delete": "Remove this project from ReeQA? Existing run records are kept."
+	},
+	"errors": {
+		"base_url_protocol": "Project URL must use HTTP or HTTPS.",
+		"base_url_required": "Project URL is required.",
+		"name_max": "Project name must be at most 80 characters.",
+		"name_required": "Project name is required.",
+		"path_absolute": "Project path must be absolute.",
+		"path_required": "Project path is required."
 	},
 	"labels": {
 		"base_url": "Running site URL",

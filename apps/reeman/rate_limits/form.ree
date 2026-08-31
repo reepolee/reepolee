@@ -54,7 +54,8 @@
 				message="{_ ui.reset_confirm}"
 				confirm-text="{_ actions.do_it}"
 				cancel-text="{_ actions.cancel}"
-				></confirm-dialog>
-			</section>
-		</div>
-	{/with}
+			>
+			</confirm-dialog>
+		</section>
+	</div>
+{/with}

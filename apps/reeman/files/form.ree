@@ -63,7 +63,8 @@
 								type="button"
 								command="show-modal"
 								commandfor="action_restore_dialog"
-								class="as-button-secondary text-xs">
+								class="as-button-secondary text-xs"
+							>
 								{_ actions.restore}
 							</button>
 						{/if}
@@ -73,7 +74,8 @@
 							type="button"
 							command="show-modal"
 							commandfor="action_archive_dialog"
-							class="as-button-tertiary text-xs">
+							class="as-button-tertiary text-xs"
+						>
 							{_ actions.archive}
 						</button>
 
