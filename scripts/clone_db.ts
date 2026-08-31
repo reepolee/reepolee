@@ -248,135 +248,196 @@ async function restore_sqlite(raw_target: string, file_path: string) {
 }
 
 async function clone_mysql(raw_source: string, raw_target: string) {
+	const { SQL } = await import("bun");
 	const src_db = extract_db_name(raw_source);
 	const tgt_db = extract_db_name(raw_target);
-	const { user, pass } = parse_mysql_auth(raw_source);
-
-	console.log(`\nCreating target database \`${tgt_db}\`...`);
-	const create_res = Bun.spawnSync([
-		container_engine,
-		"exec",
-		"mariadb",
-		"mariadb",
-		"-u",
-		user,
-		`-p${pass}`,
-		"-e",
-		`DROP DATABASE IF EXISTS \`${tgt_db}\`; CREATE DATABASE \`${tgt_db}\``,
-	]);
-	if (create_res.exitCode !== 0) {
-		console.error(new TextDecoder().decode(create_res.stderr));
-		process.exit(1);
-	}
-
-	// Get list of views so we can exclude them from the main dump
-	const views_res = Bun.spawnSync([
-		container_engine,
-		"exec",
-		"mariadb",
-		"mariadb",
-		"-u",
-		user,
-		`-p${pass}`,
-		"-N",
-		"-e",
-		`SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = '${src_db}' AND TABLE_TYPE = 'VIEW'`,
-	]);
-	const views_raw = new TextDecoder().decode(views_res.stdout).trim();
-	const view_names = views_raw ? views_raw.split("\n").map((s) => s.trim()).filter(Boolean) : [];
-
-	// Exclude views from main dump (dump tables + data only)
-	const ignore_args = view_names.flatMap((v) => ["--ignore-table", `${src_db}.${v}`]);
-
-	console.log("Dumping source → target...");
+	const source_db = new SQL(raw_source);
+	const target_admin_db = new SQL(mysql_admin_url(raw_target));
+	let target_db: InstanceType<typeof SQL> | null = null;
+	const keepalive = setInterval(() => {}, 2_147_483_647);
 	const start = performance.now();
 
-	const dump_args = [
-		container_engine,
-		"exec",
-		"mariadb",
-		"mariadb-dump",
-		"-u",
-		user,
-		`-p${pass}`,
-		"--no-create-db",
-		"--single-transaction",
-		"--quick",
-	];
-	if (no_data) { dump_args.push("--no-data"); }
-	dump_args.push(...ignore_args, src_db);
+	try {
+		await source_db.connect();
+		await target_admin_db.connect();
 
-	const dump_proc = Bun.spawn({ cmd: dump_args, stdout: "pipe", stderr: "pipe" });
+		console.log(`\nCreating target database \`${tgt_db}\` on the configured MySQL server...`);
+		await target_admin_db.unsafe(`DROP DATABASE IF EXISTS ${quote_mysql_identifier(tgt_db)}`);
+		await target_admin_db.unsafe(`CREATE DATABASE ${quote_mysql_identifier(tgt_db)}`);
 
-	const load_proc = Bun.spawn({
-		cmd: [container_engine, "exec", "-i", "mariadb", "mariadb", "-u", user, `-p${pass}`, tgt_db],
-		stdin: dump_proc.stdout,
-		stdout: "pipe",
-		stderr: "pipe",
-	});
+		target_db = new SQL(raw_target);
+		await target_db.connect();
+		await target_db.unsafe("SET FOREIGN_KEY_CHECKS = 0");
 
-	const [dump_exit, load_exit] = await Promise.all([dump_proc.exited, load_proc.exited]);
-	const elapsed = ((performance.now() - start) / 1000).toFixed(1);
+		const table_rows = await source_db.unsafe(
+			`SELECT TABLE_NAME AS table_name
+			 FROM information_schema.TABLES
+			 WHERE TABLE_SCHEMA = ? AND TABLE_TYPE = 'BASE TABLE'
+			 ORDER BY TABLE_NAME`,
+			[src_db],
+		) as unknown as Array<Record<string, unknown>>;
+		const table_names = table_rows.map((row) => String(row.table_name ?? row.TABLE_NAME));
 
-	if (dump_exit !== 0 || load_exit !== 0) {
-		let err_msg = "";
-		const dump_err = await read_stream(dump_proc.stderr);
-		const load_err = await read_stream(load_proc.stderr);
-		if (dump_exit !== 0) err_msg += dump_err;
-		if (load_exit !== 0) err_msg += load_err;
-		console.error(`\nClone failed after ${elapsed}s:\n${err_msg}`);
-		process.exit(1);
-	}
+		if (!is_quiet) console.log(`Copying ${table_names.length} tables...`);
+		let total_rows = 0;
+		for (const table_name of table_names) {
+			const source_table = qualify_mysql_name(src_db, table_name);
+			const target_table = qualify_mysql_name(tgt_db, table_name);
+			const create_sql = await get_mysql_create_statement(source_db, "TABLE", source_table);
+			await target_db.unsafe(create_sql);
 
-	console.log(`\nClone complete in ${elapsed}s.`);
-
-	// Copy views separately (one at a time, skip broken ones)
-	console.log(`\nCopying ${view_names.length} views...`);
-	for (const view of view_names) {
-		const create_res = Bun.spawnSync([
-			container_engine,
-			"exec",
-			"mariadb",
-			"mariadb",
-			"-u",
-			user,
-			`-p${pass}`,
-			src_db,
-			"-N",
-			"-e",
-			`SHOW CREATE VIEW \`${view}\``,
-		]);
-		if (create_res.exitCode === 0) {
-			const output = new TextDecoder().decode(create_res.stdout);
-			const ddl_match = output.match(/CREATE .*/);
-			if (ddl_match) {
-				const ddl = ddl_match[0];
-				const load_view_res = Bun.spawnSync([
-					container_engine,
-					"exec",
-					"mariadb",
-					"mariadb",
-					"-u",
-					user,
-					`-p${pass}`,
-					tgt_db,
-					"-e",
-					`DROP VIEW IF EXISTS \`${view}\`; ${ddl}`,
-				]);
-				if (load_view_res.exitCode === 0) {
-					console.log(`  view   ${view}`);
-				} else {
-					console.log(`  skip   ${view} (broken - load failed)`);
+			const skip_data = no_data || SKIP_DATA_TABLES.includes(table_name);
+			if (!skip_data) {
+				const columns = await get_mysql_copy_columns(source_db, src_db, table_name);
+				if (columns.length > 0) {
+					if (mysql_same_server(raw_source, raw_target)) {
+						await target_db.unsafe(
+							`INSERT INTO ${target_table} (${quote_mysql_columns(columns)}) SELECT ${quote_mysql_columns(columns)} FROM ${source_table}`,
+						);
+					} else {
+						await copy_mysql_rows(source_db, target_db, source_table, target_table, columns);
+					}
 				}
-			} else {
-				console.log(`  skip   ${view} (no CREATE in output)`);
 			}
-		} else {
-			console.log(`  skip   ${view} (broken)`);
-		}
-	}
 
-	process.exit(0);
+			const count_rows = await target_db.unsafe(`SELECT COUNT(*) AS row_count FROM ${target_table}`) as unknown as Array<Record<string, unknown>>;
+			const row_count = Number(count_rows[0]?.row_count ?? count_rows[0]?.ROW_COUNT ?? 0);
+			total_rows += row_count;
+			if (!is_quiet) console.log(`  ${skip_data ? "schema" : "copied"}  ${table_name.padEnd(30)} ${row_count} rows`);
+		}
+
+		const view_rows = await source_db.unsafe(
+			`SELECT TABLE_NAME AS table_name
+			 FROM information_schema.TABLES
+			 WHERE TABLE_SCHEMA = ? AND TABLE_TYPE = 'VIEW'
+			 ORDER BY TABLE_NAME`,
+			[src_db],
+		) as unknown as Array<Record<string, unknown>>;
+		const view_names = view_rows.map((row) => String(row.table_name ?? row.TABLE_NAME));
+
+		if (!is_quiet) console.log(`\nCopying ${view_names.length} views...`);
+		for (const view_name of view_names) {
+			try {
+				const source_view = qualify_mysql_name(src_db, view_name);
+				const target_view = qualify_mysql_name(tgt_db, view_name);
+				const create_sql = await get_mysql_create_statement(source_db, "VIEW", source_view);
+				const target_sql = rewrite_mysql_schema(create_sql, src_db, tgt_db);
+				await target_db.unsafe(`DROP VIEW IF EXISTS ${target_view}`);
+				await target_db.unsafe(target_sql);
+				if (!is_quiet) console.log(`  view   ${view_name}`);
+			} catch {
+				if (!is_quiet) console.log(`  skip   ${view_name} (broken)`);
+			}
+		}
+
+		const trigger_rows = await source_db.unsafe(
+			`SELECT TRIGGER_NAME AS trigger_name
+			 FROM information_schema.TRIGGERS
+			 WHERE TRIGGER_SCHEMA = ?
+			 ORDER BY ACTION_ORDER, TRIGGER_NAME`,
+			[src_db],
+		) as unknown as Array<Record<string, unknown>>;
+		const trigger_names = trigger_rows.map((row) => String(row.trigger_name ?? row.TRIGGER_NAME));
+
+		for (const trigger_name of trigger_names) {
+			try {
+				const source_trigger = qualify_mysql_name(src_db, trigger_name);
+				const create_sql = await get_mysql_create_statement(source_db, "TRIGGER", source_trigger);
+				await target_db.unsafe(rewrite_mysql_schema(create_sql, src_db, tgt_db));
+			} catch {
+				if (!is_quiet) console.log(`  skip   trigger ${trigger_name} (broken)`);
+			}
+		}
+
+		await target_db.unsafe("SET FOREIGN_KEY_CHECKS = 1");
+		const elapsed = ((performance.now() - start) / 1000).toFixed(1);
+		if (is_quiet) console.log(`${table_names.length} tables, ${total_rows} rows`);
+		else console.log(`\nClone complete in ${elapsed}s.`);
+	} catch (error) {
+		const elapsed = ((performance.now() - start) / 1000).toFixed(1);
+		const message = error instanceof Error ? error.message : String(error);
+		console.error(`\nClone failed after ${elapsed}s:\n${message}`);
+		process.exitCode = 1;
+	} finally {
+		clearInterval(keepalive);
+		if (target_db) await target_db.close();
+		await target_admin_db.close();
+		await source_db.close();
+	}
+}
+
+function mysql_admin_url(raw: string): URL {
+	const url = new URL(raw.replace(/^['"]|['"]$/g, "").trim());
+	url.pathname = "/";
+	return url;
+}
+
+function mysql_same_server(raw_source: string, raw_target: string): boolean {
+	const source_url = new URL(raw_source);
+	const target_url = new URL(raw_target);
+	const source_port = source_url.port || "3306";
+	const target_port = target_url.port || "3306";
+	return source_url.hostname.toLowerCase() === target_url.hostname.toLowerCase() && source_port === target_port;
+}
+
+function quote_mysql_identifier(identifier: string): string {
+	return `\`${identifier.replaceAll("`", "``")}\``;
+}
+
+function qualify_mysql_name(database: string, name: string): string {
+	return `${quote_mysql_identifier(database)}.${quote_mysql_identifier(name)}`;
+}
+
+function quote_mysql_columns(columns: string[]): string {
+	return columns.map((column) => quote_mysql_identifier(column)).join(", ");
+}
+
+async function get_mysql_create_statement(db: InstanceType<typeof import("bun").SQL>, object_type: string, qualified_name: string): Promise<string> {
+	const rows = await db.unsafe(`SHOW CREATE ${object_type} ${qualified_name}`) as unknown as Array<Record<string, unknown>>;
+	const row = rows[0];
+	if (!row) throw new Error(`No ${object_type} definition returned for ${qualified_name}`);
+	for (const value of Object.values(row)) {
+		if (typeof value === "string" && /^\s*CREATE\b/i.test(value)) return value.trim();
+	}
+	throw new Error(`No CREATE statement returned for ${qualified_name}`);
+}
+
+async function get_mysql_copy_columns(db: InstanceType<typeof import("bun").SQL>, database: string, table: string): Promise<string[]> {
+	const rows = await db.unsafe(
+		`SELECT COLUMN_NAME AS column_name
+		 FROM information_schema.COLUMNS
+		 WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COALESCE(GENERATION_EXPRESSION, '') = ''
+		 ORDER BY ORDINAL_POSITION`,
+		[database, table],
+	) as unknown as Array<Record<string, unknown>>;
+	return rows.map((row) => String(row.column_name ?? row.COLUMN_NAME));
+}
+
+async function copy_mysql_rows(
+	source_db: InstanceType<typeof import("bun").SQL>,
+	target_db: InstanceType<typeof import("bun").SQL>,
+	source_table: string,
+	target_table: string,
+	columns: string[],
+): Promise<void> {
+	const rows = await source_db.unsafe(`SELECT ${quote_mysql_columns(columns)} FROM ${source_table}`) as unknown as Array<Record<string, unknown>>;
+	const row_placeholders = `(${columns.map(() => "?").join(", ")})`;
+	const insert_columns = quote_mysql_columns(columns);
+	const batch_size = 100;
+
+	for (let offset = 0; offset < rows.length; offset += batch_size) {
+		const batch = rows.slice(offset, offset + batch_size);
+		const values: unknown[] = [];
+		for (const row of batch) {
+			for (const column of columns) values.push(row[column]);
+		}
+		const placeholders = batch.map(() => row_placeholders).join(", ");
+		await target_db.unsafe(`INSERT INTO ${target_table} (${insert_columns}) VALUES ${placeholders}`, values);
+	}
+}
+
+function rewrite_mysql_schema(sql: string, source_database: string, target_database: string): string {
+	return sql.replaceAll(`${quote_mysql_identifier(source_database)}.`, `${quote_mysql_identifier(target_database)}.`);
 }
 
 function parse_mysql_auth(raw: string): { user: string; pass: string; } {
