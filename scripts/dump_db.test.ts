@@ -29,6 +29,8 @@ describe("database dump helpers", () => {
 			"--hex-blob",
 			"iot_db",
 		]);
+		expect(mysql_dump_command("mysql://dump_user:p%40ss@db.example:3307/iot_db", true).cmd).toContain("--no-data");
+		expect(mysql_dump_command("mysql://dump_user:p%40ss@db.example:3307/iot_db", true).cmd).not.toContain("--extended-insert");
 	});
 
 	test("parses SQLite file connection strings and dialects", () => {
@@ -44,7 +46,8 @@ describe("database dump helpers", () => {
 		const source_bytes = new Uint8Array([0, 1, 2, 255]);
 		try {
 			await Bun.write(source_path, source_bytes);
-			await run_dump({ connection: `sqlite://${source_path}`, dialect: "sqlite", output_dir });
+			const output_path = await run_dump({ connection: `sqlite://${source_path}`, dialect: "sqlite", output_dir });
+			expect(output_path).toBe(join(output_dir, "dev.db"));
 			expect(await Bun.file(join(output_dir, "dev.db")).bytes()).toEqual(source_bytes);
 		} finally {
 			await rm(temporary_dir, { recursive: true, force: true });

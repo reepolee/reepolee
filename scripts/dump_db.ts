@@ -48,8 +48,9 @@ export function parse_mysql_connection(connection_string: string): MysqlConnecti
 	};
 }
 
-export function mysql_dump_command(connection_string: string): { cmd: string[]; password: string } {
+export function mysql_dump_command(connection_string: string, no_data = false): { cmd: string[]; password: string } {
 	const connection = parse_mysql_connection(connection_string);
+	const data_args = no_data ? ["--no-data"] : ["--extended-insert"];
 	return {
 		cmd: [
 			"mysqldump",
@@ -59,7 +60,7 @@ export function mysql_dump_command(connection_string: string): { cmd: string[]; 
 			"--no-create-db",
 			"--single-transaction",
 			"--quick",
-			"--extended-insert",
+			...data_args,
 			"--triggers",
 			"--routines",
 			"--events",
@@ -86,8 +87,8 @@ export function dump_dialect(connection_string: string): DumpDialect {
 	throw new Error(`Unsupported database connection: ${connection.split(":")[0]}`);
 }
 
-async function dump_mysql(connection_string: string, output_dir: string): Promise<void> {
-	const { cmd, password } = mysql_dump_command(connection_string);
+async function dump_mysql(connection_string: string, output_dir: string, no_data: boolean): Promise<string> {
+	const { cmd, password } = mysql_dump_command(connection_string, no_data);
 	const output_path = join(output_dir, "dump.sql");
 	let dump_process: ReturnType<typeof Bun.spawn>;
 	try {
@@ -115,21 +116,25 @@ async function dump_mysql(connection_string: string, output_dir: string): Promis
 		await Bun.file(output_path).delete();
 		throw error;
 	}
+	return output_path;
 }
 
-async function copy_sqlite(connection_string: string, output_dir: string): Promise<void> {
+async function copy_sqlite(connection_string: string, output_dir: string): Promise<string> {
 	const source_path = sqlite_database_path(connection_string);
 	const source_file = Bun.file(source_path);
 	if (!(await source_file.exists())) throw new Error(`SQLite database not found: ${source_path}`);
 
 	const output_path = join(output_dir, basename(source_path));
 	await Bun.write(output_path, source_file);
+	return output_path;
 }
 
 export interface DumpOptions {
 	connection: string;
 	dialect: DumpDialect;
 	output_dir: string;
+	no_data?: boolean;
+	quiet?: boolean;
 }
 
 function parse_options(args: readonly string[]): { use_test: boolean; output_dir: string } {
@@ -144,11 +149,13 @@ function print_help(): void {
 	console.log(`Usage: bun dump [--test] [--output=DIR]\n\nDumps the development database into DIR (default: ./.reepolee/${timestamped_backup_folder()}):\n  DIR/dump.sql        (MySQL)\n  DIR/<database file> (SQLite)\n\nMySQL uses mysqldump. SQLite copies the database file without opening it.`);
 }
 
-export async function run_dump(options: DumpOptions): Promise<void> {
+export async function run_dump(options: DumpOptions): Promise<string> {
 	await mkdir(options.output_dir, { recursive: true });
-	if (options.dialect === "mysql") await dump_mysql(options.connection, options.output_dir);
-	else await copy_sqlite(options.connection, options.output_dir);
-	console.log(`Dump complete: ${options.output_dir}`);
+	const output_path = options.dialect === "mysql"
+		? await dump_mysql(options.connection, options.output_dir, options.no_data ?? false)
+		: await copy_sqlite(options.connection, options.output_dir);
+	if (!options.quiet) console.log(`Dump complete: ${options.output_dir}`);
+	return output_path;
 }
 
 async function main(): Promise<void> {

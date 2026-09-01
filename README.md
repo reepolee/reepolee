@@ -499,7 +499,6 @@ chmod +x ../containers/containers.sh
 # Apple container runtime
 container system start
 CONTAINER_ENGINE=container ../containers/containers.sh
-CONTAINER_ENGINE=container bun run db:clone-test
 ```
 
 ## SeaweedFS S3 Server
