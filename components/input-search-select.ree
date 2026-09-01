@@ -1,0 +1,50 @@
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= props.attributes.name }">
+	<div class="grid relative">
+		<label class="px-3" for="{= props.attributes.name }">{= props.attributes.label}</label>
+		<select class="hidden" id="{= props.attributes.name }" name="{= props.attributes.name }">
+			<option value="">{_ selectors.select}</option>
+			{#each props.attributes.options ?? [] as option}
+				<option value="{= option }" {#if String(option) === String(props.attributes.value)} selected{/if}>{= option}</option>
+			{/each}
+		</select>
+		<button type="button" class="w-full rounded-sm border border-border bg-surface-raised px-3 py-1 text-left" data-search-select-trigger="{= props.attributes.name }" aria-haspopup="listbox">
+			{#if props.attributes.value}{= props.attributes.value }{:else}{_ selectors.select}{/if}
+		</button>
+		<div class="mt-1 w-full rounded-sm border border-border bg-surface-raised p-2 shadow" data-search-select-menu="{= props.attributes.name }" popover>
+			<input type="search" class="w-full rounded-sm border border-border bg-surface px-3 py-1" placeholder="{_ selectors.select}" data-search-select-filter="{= props.attributes.name }" autocomplete="off">
+			<div class="mt-2 max-h-60 overflow-y-auto" role="listbox">
+				{#each props.attributes.options ?? [] as option}
+					<button type="button" class="block w-full rounded-sm px-3 py-1 text-left hover:bg-sky-100" role="option" data-search-select-option="{= props.attributes.name }" data-value="{= option }">{= option}</button>
+				{/each}
+			</div>
+		</div>
+		<validation-error class="mt-1" id="error-{= props.attributes.name }"></validation-error>
+		<script>
+			(() => {
+				const select = document.getElementById('{~ props.attributes.name }');
+				const trigger = document.querySelector('[data-search-select-trigger="{~ props.attributes.name }"]');
+				const menu = document.querySelector('[data-search-select-menu="{~ props.attributes.name }"]');
+				const filter = document.querySelector('[data-search-select-filter="{~ props.attributes.name }"]');
+				const options = document.querySelectorAll('[data-search-select-option="{~ props.attributes.name }"]');
+				if (!select || !trigger || !menu || !filter) return;
+				trigger.addEventListener('click', () => {
+					menu.showPopover();
+					filter.focus();
+				});
+				filter.addEventListener('input', () => {
+					const query = filter.value.trim().toLowerCase();
+					for (const option of options) option.hidden = query.length > 0 && !option.textContent.toLowerCase().includes(query);
+				});
+				for (const option of options) {
+					option.addEventListener('click', () => {
+						select.value = option.dataset.value;
+						trigger.textContent = option.textContent;
+						select.dispatchEvent(new Event('change', { bubbles: true }));
+						menu.hidePopover();
+					});
+				}
+			})();
+		</script>
+	</div>
+	<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"><!-- hints.{~ props.attributes.name } --></p>
+</field-wrapper>
