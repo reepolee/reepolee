@@ -1,0 +1,19 @@
+{
+	"actions": {
+		"reset_all_counters": "Ponastavi vse števce"
+	},
+	"nav": "Omejitve hitrosti",
+	"route_name": "omejitve-hitrosti",
+	"ui": {
+		"blocked": "BLOKIRANO",
+		"no_active_counters": "Ni aktivnih števcev omejitev hitrosti",
+		"ok": "V REDU",
+		"requests": "zahtev",
+		"reset_confirm": "Ponastavim vse aktivne števce omejitev hitrosti? Tega ni mogoče razveljaviti.",
+		"seconds": "s",
+		"status": "Stanje",
+		"title": "Omejitve hitrosti",
+		"total_redis_keys": "skupaj ključev Redis",
+		"ttl": "TTL"
+	}
+}
