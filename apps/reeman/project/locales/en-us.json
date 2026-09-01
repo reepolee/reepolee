@@ -1,15 +1,15 @@
 {
 	"actions": {
-		"set_repo": "Set repository"
+		"save_repos": "Save repositories",
+		"set_repos": "Issue repositories"
 	},
 	"labels": {
-		"current_repo": "Current repository:",
-		"owner_repo": "GitHub repo (owner/repo)"
+		"owner_repos": "GitHub repositories (one owner/repo per line)"
 	},
 	"nav": "Project",
 	"ui": {
 		"project_description": "Project-level settings.",
 		"project_title": "Project",
-		"set_repo_hint": "Link this project to a GitHub repo so issue reports and package.json metadata point at the right place."
+		"set_repos_hint": "The first repository is the default for issue reports. Every repository is offered as a choice in the issue reporter."
 	}
 }

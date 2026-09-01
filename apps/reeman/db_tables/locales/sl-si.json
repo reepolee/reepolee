@@ -46,7 +46,7 @@
 		"column_count": "Število stolpcev",
 		"default": "(privzeto)",
 		"display": "Prikaz",
-		"filter": "Pojem",
+		"filter": "Filter",
 		"fk_count": "Število FK",
 		"has_crud": "Ima CRUD",
 		"helper": "Predloga pomoči",

@@ -4,49 +4,52 @@ import { create_ctx } from "$lib/request_context";
 import type { RouteDefinition } from "$lib/route_builder";
 import type { BunRequest } from "bun";
 
-import { set_repo } from "$generator/reeman/set_repo";
+import { set_repos } from "$generator/reeman/set_repo";
 import { list_issue_repos } from "$lib/issue_reporter";
 
 const BASE_PATH = "/project";
 const OWNER_REPO_RE = /^[\w.-]+\/[\w.-]+$/;
 
-/** The default issue-report repo (the first configured entry), if any. */
-async function read_current_repo(): Promise<string> {
+/** The configured issue-report repositories, in issue-reporter order. */
+async function read_current_repos(): Promise<string[]> {
 	try {
-		const repos = await list_issue_repos();
-		return repos[0] ?? "";
+		return await list_issue_repos();
 	} catch {
-		return "";
+		return [];
 	}
 }
 
 export async function get_project_page(req: BunRequest, form_error = ""): Promise<Response> {
 	const ctx = await create_ctx(req, import.meta.dir);
-	const current_repo = await read_current_repo();
+	const current_repos = await read_current_repos();
 
 	return render("index", {
-		data: { current_repo, form_error },
+		data: { current_repos, form_error },
 		ctx,
 	});
 }
 
-export async function post_set_repo(req: BunRequest): Promise<Response> {
+export async function post_set_repos(req: BunRequest): Promise<Response> {
 	const body = await req.text();
 	const params = new URLSearchParams(body);
-	const owner_repo = (params.get("owner_repo") ?? "").trim();
+	const owner_repos = (params.get("owner_repos") ?? "").split("\n").map((repo) => repo.trim()).filter(Boolean);
 
-	if (!owner_repo || !OWNER_REPO_RE.test(owner_repo)) {
-		return get_project_page(req, "Invalid format - expected owner/repo");
+	if (owner_repos.length === 0 || owner_repos.some((repo) => !OWNER_REPO_RE.test(repo))) {
+		return get_project_page(req, "Each repository must use the owner/repo format");
 	}
 
-	await set_repo(owner_repo);
+	if (new Set(owner_repos).size !== owner_repos.length) {
+		return get_project_page(req, "Each repository can appear only once");
+	}
+
+	await set_repos(owner_repos);
 
 	return Response.redirect(localized_url(BASE_PATH, resolve_locale(req)), 303);
 }
 
 export const project_crud = {
 	"/project": { GET: get_project_page },
-	"/project/set-repo": { POST: post_set_repo },
+	"/project/set-repos": { POST: post_set_repos },
 };
 
 export const route_definitions: RouteDefinition[] = [

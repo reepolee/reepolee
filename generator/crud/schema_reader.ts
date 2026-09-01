@@ -358,13 +358,16 @@ function backfill_navigation(schema_content: string): string | null {
 	if (!schema_content.includes(export_anchor)) return null;
 	const navigation_block = `
 
-// Navigation presentation for this route. Null values preserve declaration order.
+// Navigation presentation for this route.
+// A group is the outer sidebar block for this route's module (for example, "admin").
+// A section is an optional translated heading within that group; without a section_key,
+// this route appears directly in its module group. Null order values preserve declaration order.
 const navigation = {
-	section_key: null as string | null,
-	item_order: null as number | null,
-	section_order: null as number | null,
-	group_order: null as number | null,
-	final_order: null as number | null,
+	section_key: null as string | null, // Section heading translation key; null keeps this route directly in its module group.
+	item_order: null as number | null, // Link order within its section or group; lower values appear first.
+	section_order: null as number | null, // Section order; only used when section_key is set.
+	group_order: null as number | null, // Module group order; lower values appear first.
+	final_order: null as number | null, // Reserved final-sidebar-link order; currently unused by generated routes.
 };`;
 	const with_navigation = schema_content.replace(export_anchor, `${navigation_block}\n\n${export_anchor}`);
 	return with_navigation.replace(export_anchor, "export { columns, route_param, enable_archive, navigation,");

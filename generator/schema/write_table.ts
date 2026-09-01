@@ -479,13 +479,16 @@ const render_strategy: "stream" | "load" = "${render_strategy}";
 // Use "tags" once a form's layout is stable and won't need per-field HTML customization.
 const template_tags: "flat" | "tags" = "${template_tags}";
 
-// Navigation presentation for this route. Null values preserve declaration order.
+// Navigation presentation for this route.
+// A group is the outer sidebar block for this route's module (for example, "admin").
+// A section is an optional translated heading within that group; without a section_key,
+// this route appears directly in its module group. Null order values preserve declaration order.
 const navigation = {
-	section_key: null as string | null,
-	item_order: null as number | null,
-	section_order: null as number | null,
-	group_order: null as number | null,
-	final_order: null as number | null,
+	section_key: null as string | null, // Section heading translation key; null keeps this route directly in its module group.
+	item_order: null as number | null, // Link order within its section or group; lower values appear first.
+	section_order: null as number | null, // Section order; only used when section_key is set.
+	group_order: null as number | null, // Module group order; lower values appear first.
+	final_order: null as number | null, // Reserved final-sidebar-link order; currently unused by generated routes.
 };
 ${global_scopes_block ? `\n${global_scopes_block}\n` : ""}${parent_export_block}export { columns, route_param, enable_archive, grid_filler, pagination_strategy, render_strategy, template_tags, navigation${global_scopes_block ? ", global_scopes" : ""} };
 `;

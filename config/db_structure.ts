@@ -6,7 +6,22 @@ export const INTERNAL_TABLE_PREFIX = "_" as const;
 /**
  * Do not generate CRUD routes for the following tables
  */
-export const IGNORE_TABLES = ["modules", "sessions", "email", "images", "files", "users", "translations", "db_tables", "db_routes"] as const satisfies readonly string[];
+export const IGNORE_TABLES = [
+	"modules",
+	"sessions",
+	"email",
+	"images",
+	"files",
+	"users",
+	"translations",
+	"db_tables",
+	"db_routes",
+	"jobs",
+	"queue_meta",
+	"rate_limit_counters",
+	"feature_flags",
+	"global_scopes",
+] as const satisfies readonly string[];
 
 /**
  * Archive (soft delete) columns.

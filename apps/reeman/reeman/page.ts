@@ -1,6 +1,7 @@
 /** Shared data loading for the independently routed Reeman pages. */
 
 import { default_locale, locale_names, locales } from "$config/supported_locales";
+import { IGNORE_TABLES } from "$config/db_structure";
 import { db_type } from "$lib/resolve_db_type";
 
 import { locale_clone_table_names } from "$generator/naming";
@@ -8,7 +9,6 @@ import { locale_clone_table_names } from "$generator/naming";
 import { any_busy } from "./lib/busy_state";
 import { load_runs, type RunRecord } from "./lib/state";
 import { list_sql_files, type SqlFileEntry } from "./lib/sql_files";
-import { get_table_creation_times, get_users_table_created_at } from "../db_tables/sql.custom";
 
 export type PageOverrides = {
 	form_error?: string;
@@ -62,20 +62,13 @@ export async function load_reeman_data(load: ReemanLoad = {}): Promise<ReemanDat
 					import("$generator/reeman/utils/route_scan"),
 				]);
 				const cache = await load_ddl_cache();
-				const users_created_at = await get_users_table_created_at();
-				const table_creation_times = await get_table_creation_times();
-				const bootstrap_cutoff = users_created_at ? new Date(users_created_at).getTime() : 0;
 				const crud_by_table = new Set(discover_existing_crud_tables().map((t) => t.name));
 				const all_names = cache.tables.map((t) => t.name);
 				const locale_clones = locale_clone_table_names(all_names, locales, default_locale);
+				const ignored_tables = new Set<string>(IGNORE_TABLES);
 				const tables = cache.tables
 					.filter((t) => !locale_clones.has(t.name))
-					.filter((t) => t.name !== "users")
-					.filter((t) => !users_created_at || t.name !== "users")
-					.filter((t) => {
-						const created_at = table_creation_times.get(t.name.toLowerCase());
-						return !bootstrap_cutoff || (created_at !== undefined && new Date(created_at).getTime() > bootstrap_cutoff);
-					})
+					.filter((t) => !ignored_tables.has(t.name))
 					.map((t) => ({
 						name: t.name,
 						column_count: t.columns.length,

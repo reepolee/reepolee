@@ -66,4 +66,4 @@ export interface LocalizedFieldMeta {
 }
 
 // Foreign keys of a table, keyed by column name.
-export type ForeignKeyMap = Map<string, { table: string; column: string; label?: string; }>;
+export type ForeignKeyMap = Map<string, { table: string; column: string; label?: string; localized?: boolean; }>;

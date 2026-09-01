@@ -15,24 +15,20 @@
 
 		<section class="grid reeman-card-grid gap-4">
 
-			<form method="POST" action="{~ localized_path('/project/set-repo') }" class="flex flex-col gap-3 rounded-md border border-border bg-surface-raised p-4">
+			<form method="POST" action="{~ localized_path('/project/set-repos') }" class="flex flex-col gap-3 rounded-md border border-border bg-surface-raised p-4">
 				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
-				<h2 class="font-semibold">{_ actions.set_repo}</h2>
-				<p class="text-sm text-text-secondary">{_ ui.set_repo_hint}</p>
+				<h2 class="font-semibold">{_ actions.set_repos}</h2>
+				<p class="text-sm text-text-secondary">{_ ui.set_repos_hint}</p>
 
-				{#if current_repo}
-					<p class="text-sm text-text-secondary">{_ labels.current_repo} <code>{= current_repo }</code></p>
-				{/if}
-
-				<field-wrapper class="grid" data-field="owner_repo">
+				<field-wrapper class="grid" data-field="owner_repos">
 					<div class="grid">
-						<label class="px-3" for="owner-repo">{_ labels.owner_repo}</label>
-						<input id="owner-repo" name="owner_repo" placeholder="owner/repo" pattern="[\w.\-]+/[\w.\-]+" value="{= current_repo }" required />
-						<validation-error class="mt-1" id="error-owner_repo"></validation-error>
+						<label class="px-3" for="owner-repos">{_ labels.owner_repos}</label>
+						<textarea id="owner-repos" name="owner_repos" rows="5" class="font-mono" spellcheck="false" autocomplete="off" required>{= current_repos.join('\n')}</textarea>
+						<validation-error class="mt-1" id="error-owner_repos"></validation-error>
 					</div>
 				</field-wrapper>
 
-				<button type="submit" class="as-button-primary mt-auto">{_ actions.set_repo}</button>
+				<button type="submit" class="as-button-primary mt-auto">{_ actions.save_repos}</button>
 			</form>
 		</section>
 	</div>
