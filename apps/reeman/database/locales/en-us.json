@@ -1,0 +1,54 @@
+{
+	"actions": {
+		"backup_sql": "Backup to SQL",
+		"check_compliance": "Check domain compliance",
+		"data_to_sql": "DATA to SQL",
+		"open_in_studio": "Open in Studio",
+		"run_sql": "Run SQL file"
+	},
+	"confirm": {
+		"run_sql": "Execute this SQL file against the database? This cannot be undone."
+	},
+	"hints": {
+		"json_path": "Path to the JSON file to convert, relative to the project root (e.g. data/recipes.json)",
+		"slug": "Optional lowercase slug for the generated SQL filename. Defaults to the table name.",
+		"slug_safe_table": "Lowercase letters and numbers only (used for the SQL filename slug)"
+	},
+	"labels": {
+		"action": "Action",
+		"columns": "Columns",
+		"file_count": "files",
+		"file_type": "Type",
+		"folder": "Folder",
+		"folder_summary": "Folder total",
+		"import_file": "JSON, XLS, or XLSX file",
+		"json_file": "JSON file",
+		"json_path": "JSON file path",
+		"last_updated": "Last updated",
+		"rows": "rows",
+		"sheets": "Sheets to import",
+		"slug": "Slug (optional)",
+		"sql_file": "SQL file",
+		"table_name": "Table name"
+	},
+	"nav": "Database",
+	"selectors": {
+		"select_sql": "-- select a .sql file --"
+	},
+	"ui": {
+		"broken_views_hint": "These views reference tables that no longer exist and were skipped during introspection. Recreate the missing tables (e.g. via Run SQL file), then reload.",
+		"broken_views_title": "Broken views detected",
+		"busy": "Processing — the page will refresh when complete.",
+		"compliance_hint": "Introspects the live DB and reports columns that do not match the canonical domain types. Read-only.",
+		"data_to_sql_hint": "Upload JSON, XLS, or XLSX data and generate paired MySQL and SQLite SQL files.",
+		"database_description": "Run SQL files, seed data from JSON and check domain compliance.",
+		"database_title": "Database",
+		"empty_sheet": "empty sheet",
+		"inspecting_file": "Inspecting file...",
+		"inspection_error": "Could not inspect this file.",
+		"json_upload_hint": "Select a file to inspect its contents before choosing what to import.",
+		"no_sql_files": "No .sql files found in sql/{dialect}/.",
+		"sheet_selection_hint": "Select one or more sheets and review the suggested table names.",
+		"sql_files_hint": "Choose a SQL file to run against the current database."
+	}
+}
