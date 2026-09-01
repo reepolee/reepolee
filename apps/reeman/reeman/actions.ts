@@ -14,10 +14,11 @@ import { join } from "node:path";
 import { clean_output, capture_output } from "./lib/capture";
 import { clear_busy, get_busy, GLOBAL_BUSY_KEY, set_busy, type BusyEntry } from "./lib/busy_state";
 import { record_run, update_run } from "./lib/state";
-import { backup_database } from "./lib/database_backup";
 
+import { DB_CONNECTION_STRING } from "$config/db";
 import type { OrderByItem, WhereItem } from "$generator/reeman/types";
 import type { GridColumnDefinition } from "$generator/schema/types";
+import { db_type } from "$lib/resolve_db_type";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -263,8 +264,12 @@ export async function action_sync_locale_tables(): Promise<ActionResult> {
 
 export async function action_backup_database(): Promise<ActionResult> {
 	return run_captured_action("backup-database", "", async () => {
-		const backup_path = await backup_database();
-		console.log(`Wrote ${backup_path}`);
+		const { run_dump, timestamped_backup_directory } = await import("$root/scripts/dump_db");
+		await run_dump({
+			connection: DB_CONNECTION_STRING,
+			dialect: db_type,
+			output_dir: timestamped_backup_directory(),
+		});
 		return true;
 	});
 }

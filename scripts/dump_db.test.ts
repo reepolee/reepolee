@@ -1,32 +1,53 @@
 import { describe, expect, test } from "bun:test";
-import { build_insert_sql, locale_segment, sql_literal, table_locale } from "./dump_db";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+import { dump_dialect, mysql_dump_command, run_dump, sqlite_database_path, timestamped_backup_directory, timestamped_backup_folder } from "./dump_db";
 
 describe("database dump helpers", () => {
-	test("quotes identifiers and values for each dialect", () => {
-		expect(build_insert_sql("order", ["id", "label"], [{ id: 1, label: "O'Reilly" }], "mysql")).toContain("INSERT INTO `order` (`id`, `label`) VALUES\n(1, 'O''Reilly');");
-		expect(build_insert_sql("order", ["id", "label"], [{ id: 1, label: "O'Reilly" }], "sqlite")).toContain('INSERT INTO "order" ("id", "label") VALUES\n(1, \'O\'\'Reilly\');');
-		expect(sql_literal("line\\break", "mysql")).toBe("CONVERT(X'6c696e655c627265616b' USING utf8mb4)");
-		expect(sql_literal(null, "sqlite")).toBe("NULL");
+	test("uses a filesystem-safe timestamped backup folder", () => {
+		expect(timestamped_backup_folder(new Date("2026-08-24T12:34:56.789Z"))).toBe("backup-2026-08-24T12-34-56-789Z");
+		expect(timestamped_backup_directory("C:/project", new Date("2026-08-24T12:34:56.789Z"))).toBe(join("C:/project", ".reepolee", "backup-2026-08-24T12-34-56-789Z"));
 	});
 
-	test("maps only real locale clones to their locale output", () => {
-		const tables = new Set(["products", "products_sl_si", "audit_sl_si"]);
-		expect(locale_segment("sl-si")).toBe("sl_si");
-		expect(table_locale("products", tables, ["en-us", "sl-si"], "en-us")).toBe("en-us");
-		expect(table_locale("products_sl_si", tables, ["en-us", "sl-si"], "en-us")).toBe("sl-si");
-		expect(table_locale("audit_sl_si", tables, ["en-us", "sl-si"], "en-us")).toBe("en-us");
+	test("builds mysqldump arguments from a MySQL connection string", () => {
+		const result = mysql_dump_command("mysql://dump_user:p%40ss@db.example:3307/iot_db");
+		expect(result.password).toBe("p@ss");
+		expect(result.cmd).toEqual([
+			"mysqldump",
+			"--host=db.example",
+			"--port=3307",
+			"--user=dump_user",
+			"--no-create-db",
+			"--single-transaction",
+			"--quick",
+			"--extended-insert",
+			"--triggers",
+			"--routines",
+			"--events",
+			"--hex-blob",
+			"iot_db",
+		]);
 	});
 
-	test("serializes null, booleans, dates, and binary values", () => {
-		expect(sql_literal(false, "mysql")).toBe("0");
-		expect(sql_literal(new Date("2026-01-02T03:04:05.000Z"), "sqlite")).toBe("'2026-01-02 03:04:05.000'");
-		expect(sql_literal(new Uint8Array([0, 255]), "mysql")).toBe("X'00ff'");
+	test("parses SQLite file connection strings and dialects", () => {
+		expect(sqlite_database_path("sqlite://data/dev.db")).toBe("data/dev.db");
+		expect(dump_dialect("mysql://localhost/iot_db")).toBe("mysql");
+		expect(dump_dialect("sqlite://data/dev.db")).toBe("sqlite");
 	});
 
-	test("splits large tables into multi-row insert batches", () => {
-		const rows = Array.from({ length: 501 }, (_, id) => ({ id }));
-		const sql = build_insert_sql("items", ["id"], rows, "sqlite");
-		expect((sql.match(/INSERT INTO/g) ?? []).length).toBe(2);
-		expect((sql.match(/\),/g) ?? []).length).toBe(499);
+	test("copies SQLite database files into the requested backup folder", async () => {
+		const temporary_dir = await mkdtemp(join(tmpdir(), "reepolee-dump-test-"));
+		const source_path = join(temporary_dir, "dev.db");
+		const output_dir = join(temporary_dir, "backup-2026-09-01T00-00-00-000Z");
+		const source_bytes = new Uint8Array([0, 1, 2, 255]);
+		try {
+			await Bun.write(source_path, source_bytes);
+			await run_dump({ connection: `sqlite://${source_path}`, dialect: "sqlite", output_dir });
+			expect(await Bun.file(join(output_dir, "dev.db")).bytes()).toEqual(source_bytes);
+		} finally {
+			await rm(temporary_dir, { recursive: true, force: true });
+		}
 	});
 });

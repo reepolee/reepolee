@@ -3,233 +3,130 @@
  * Development database dump CLI.
  *
  * Usage:
- *   bun dump
+ *   bun dump                              # writes to ./.reepolee/backup-<timestamp>
  *   bun dump --test --output=tmp/database-dump
  *
- * The dump contains one dialect-native ddl.sql and one insert file per
- * configured locale. The default locale file contains base tables. A
- * non-default locale file contains only the physical locale clone tables.
+ * MySQL writes one native mysqldump SQL file. SQLite copies the source
+ * database file without opening it.
  */
 
 import { mkdir } from "node:fs/promises";
-import { join, resolve } from "node:path";
-import { default_locale, locales } from "$config/supported_locales";
-import { SQL } from "bun";
+import { basename, join, resolve } from "node:path";
+
+import { sanitize_env_value } from "$lib/env";
 
 export type DumpDialect = "mysql" | "sqlite";
 
-export interface DumpTable {
-	name: string;
-	type: "table" | "view";
+export interface MysqlConnection {
+	host: string;
+	port: string;
+	user: string;
+	password: string;
+	database: string;
 }
 
-export interface SQLiteSchemaEntry {
-	type: "table" | "index" | "trigger" | "view";
-	name: string;
-	sql: string | null;
+export function timestamped_backup_folder(date = new Date()): string {
+	const timestamp = date.toISOString().replaceAll(":", "-").replaceAll(".", "-");
+	return `backup-${timestamp}`;
 }
 
-const INSERT_CHUNK_SIZE = 500;
-const REESQL_ARGS = ["--unwrap-joins", "--remove-backticks", "--clean"] as const;
-
-function bytes_to_hex(bytes: Uint8Array): string {
-	return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+export function timestamped_backup_directory(project_root = process.cwd(), date = new Date()): string {
+	return join(project_root, ".reepolee", timestamped_backup_folder(date));
 }
 
-function sql_identifier(name: string, dialect: DumpDialect): string {
-	return dialect === "mysql"
-		? `\`${name.replaceAll("`", "``")}\``
-		: `"${name.replaceAll('"', '""')}"`;
+export function parse_mysql_connection(connection_string: string): MysqlConnection {
+	const connection = new URL(sanitize_env_value(connection_string));
+	const database = decodeURIComponent(connection.pathname.replace(/^\/+/, ""));
+	if (!database) throw new Error("MySQL connection string does not contain a database name.");
+
+	return {
+		host: connection.hostname || "localhost",
+		port: connection.port || "3306",
+		user: decodeURIComponent(connection.username || "root"),
+		password: decodeURIComponent(connection.password || ""),
+		database,
+	};
 }
 
-export function sql_literal(value: unknown, dialect: DumpDialect): string {
-	if (value === null || value === undefined) return "NULL";
-	if (typeof value === "boolean") return value ? "1" : "0";
-	if (typeof value === "bigint") return value.toString();
-	if (typeof value === "number") {
-		if (!Number.isFinite(value)) throw new Error(`Cannot dump non-finite number: ${value}`);
-		return String(value);
-	}
-	if (value instanceof Date) {
-		if (Number.isNaN(value.getTime())) throw new Error("Cannot dump an invalid Date value");
-		const formatted = value.toISOString().replace("T", " ").replace("Z", "");
-		return `'${formatted}'`;
-	}
-	if (value instanceof Uint8Array) return `X'${bytes_to_hex(value)}'`;
-
-	const raw = typeof value === "string" ? value : JSON.stringify(value);
-	if (raw === undefined) return "NULL";
-
-	// MySQL's default SQL mode treats backslashes as escapes. Use a hex literal
-	// for strings containing those characters so the dump remains lossless.
-	if (dialect === "mysql" && /[\\\0\n\r\t]/.test(raw)) {
-		const hex = bytes_to_hex(new TextEncoder().encode(raw));
-		return `CONVERT(X'${hex}' USING utf8mb4)`;
-	}
-	return `'${raw.replaceAll("'", "''")}'`;
+export function mysql_dump_command(connection_string: string): { cmd: string[]; password: string } {
+	const connection = parse_mysql_connection(connection_string);
+	return {
+		cmd: [
+			"mysqldump",
+			`--host=${connection.host}`,
+			`--port=${connection.port}`,
+			`--user=${connection.user}`,
+			"--no-create-db",
+			"--single-transaction",
+			"--quick",
+			"--extended-insert",
+			"--triggers",
+			"--routines",
+			"--events",
+			"--hex-blob",
+			connection.database,
+		],
+		password: connection.password,
+	};
 }
 
-export function locale_segment(locale_code: string): string {
-	return locale_code.toLowerCase().replaceAll("-", "_");
+export function sqlite_database_path(connection_string: string): string {
+	const connection = sanitize_env_value(connection_string);
+	if (!connection.toLowerCase().startsWith("sqlite:")) throw new Error("SQLite connection string must start with sqlite:");
+
+	const database_path = connection.slice("sqlite:".length).replace(/^\/\//, "");
+	if (!database_path || database_path === ":memory:") throw new Error("SQLite connection string does not point to a database file.");
+	return database_path;
 }
 
-/** Return the locale whose physical clone owns this table's data. */
-export function table_locale(table_name: string, table_names: ReadonlySet<string>, locale_codes: readonly string[], default_code: string): string {
-	const candidates = locale_codes
-		.filter((locale_code) => locale_code !== default_code)
-		.sort((left, right) => locale_segment(right).length - locale_segment(left).length);
-	for (const locale_code of candidates) {
-		const suffix = `_${locale_segment(locale_code)}`;
-		if (table_name.endsWith(suffix)) {
-			const base_name = table_name.slice(0, -suffix.length);
-			if (table_names.has(base_name)) return locale_code;
-		}
-	}
-	return default_code;
+export function dump_dialect(connection_string: string): DumpDialect {
+	const connection = sanitize_env_value(connection_string).toLowerCase();
+	if (connection.startsWith("mysql:")) return "mysql";
+	if (connection.startsWith("sqlite:")) return "sqlite";
+	throw new Error(`Unsupported database connection: ${connection.split(":")[0]}`);
 }
 
-function with_semicolon(sql: string): string {
-	const trimmed = sql.trim();
-	return trimmed.endsWith(";") ? trimmed : `${trimmed};`;
-}
-
-function create_statement_from_row(row: Record<string, unknown>): string {
-	const entry = Object.entries(row).find(([key]) => /^Create /i.test(key));
-	if (!entry || typeof entry[1] !== "string") throw new Error("Database did not return a CREATE statement");
-	return with_semicolon(entry[1]);
-}
-
-function dump_header(dialect: DumpDialect, locale?: string): string {
-	const title = locale ? `INSERT data dump (${locale})` : "DDL dump";
-	if (dialect === "mysql") {
-		return `-- Reepolee ${title}\n-- Generated by bun dump\nSET FOREIGN_KEY_CHECKS = 0;\n\n`;
-	}
-	return `-- Reepolee ${title}\n-- Generated by bun dump\nPRAGMA foreign_keys = OFF;\n\n`;
-}
-
-function dump_footer(dialect: DumpDialect): string {
-	return dialect === "mysql" ? "SET FOREIGN_KEY_CHECKS = 1;\n" : "PRAGMA foreign_keys = ON;\n";
-}
-
-export function build_insert_sql(table: string, columns: readonly string[], rows: readonly Record<string, unknown>[], dialect: DumpDialect): string {
-	if (rows.length === 0 || columns.length === 0) return "";
-	const quoted_table = sql_identifier(table, dialect);
-	const quoted_columns = columns.map((column) => sql_identifier(column, dialect)).join(", ");
-	const statements: string[] = [];
-	for (let start = 0; start < rows.length; start += INSERT_CHUNK_SIZE) {
-		const chunk = rows.slice(start, start + INSERT_CHUNK_SIZE);
-		const values = chunk.map((row) => `(${columns.map((column) => sql_literal(row[column], dialect)).join(", ")})`);
-		statements.push(`INSERT INTO ${quoted_table} (${quoted_columns}) VALUES\n${values.join(",\n")};`);
-	}
-	return `${statements.join("\n\n")}\n`;
-}
-
-async function read_mysql_tables(db: SQL): Promise<DumpTable[]> {
-	const rows = await db.unsafe(`
-		SELECT TABLE_NAME AS name, TABLE_TYPE AS type
-		FROM INFORMATION_SCHEMA.TABLES
-		WHERE TABLE_SCHEMA = DATABASE()
-		ORDER BY CASE WHEN TABLE_TYPE = 'BASE TABLE' THEN 0 ELSE 1 END, TABLE_NAME
-	`) as Array<{ name: string; type: string }>;
-	return rows.map((row) => ({ name: row.name, type: row.type === "VIEW" ? "view" : "table" }));
-}
-
-async function read_sqlite_schema(db: SQL): Promise<SQLiteSchemaEntry[]> {
-	return await db.unsafe(`
-		SELECT type, name, sql
-		FROM sqlite_master
-		WHERE type IN ('table', 'index', 'trigger', 'view')
-			AND name NOT LIKE 'sqlite_%'
-		ORDER BY CASE type
-			WHEN 'table' THEN 0
-			WHEN 'index' THEN 1
-			WHEN 'trigger' THEN 2
-			WHEN 'view' THEN 3
-		END, name
-	`) as SQLiteSchemaEntry[];
-}
-
-async function build_mysql_ddl(db: SQL, tables: readonly DumpTable[]): Promise<string> {
-	const lines = [dump_header("mysql")];
-	const views = tables.filter((table) => table.type === "view");
-	const base_tables = tables.filter((table) => table.type === "table");
-	for (const table of [...views, ...base_tables]) lines.push(`DROP ${table.type === "view" ? "VIEW" : "TABLE"} IF EXISTS ${sql_identifier(table.name, "mysql")};`);
-	lines.push("");
-	for (const table of [...base_tables, ...views]) {
-		const statement_kind = table.type === "view" ? "VIEW" : "TABLE";
-		const result = await db.unsafe(`SHOW CREATE ${statement_kind} ${sql_identifier(table.name, "mysql")}`) as Array<Record<string, unknown>>;
-		const row = result[0];
-		if (!row) throw new Error(`No CREATE statement returned for ${table.name}`);
-		lines.push(create_statement_from_row(row), "");
-	}
-	lines.push(dump_footer("mysql"));
-	return lines.join("\n");
-}
-
-function sqlite_drop_statement(entry: SQLiteSchemaEntry): string {
-	const kind = entry.type === "table" ? "TABLE" : entry.type.toUpperCase();
-	return `DROP ${kind} IF EXISTS ${sql_identifier(entry.name, "sqlite")};`;
-}
-
-async function build_sqlite_ddl(db: SQL): Promise<{ ddl: string; schema: SQLiteSchemaEntry[] }> {
-	const schema = await read_sqlite_schema(db);
-	const lines = [dump_header("sqlite")];
-	const drops = [...schema].sort((left, right) => {
-		const rank = (entry: SQLiteSchemaEntry): number => entry.type === "table" ? 3 : entry.type === "view" ? 0 : entry.type === "trigger" ? 1 : 2;
-		return rank(left) - rank(right) || left.name.localeCompare(right.name);
-	});
-	for (const entry of drops) lines.push(sqlite_drop_statement(entry));
-	lines.push("");
-	for (const entry of schema) if (entry.sql) lines.push(with_semicolon(entry.sql), "");
-	lines.push(dump_footer("sqlite"));
-	return { ddl: lines.join("\n"), schema };
-}
-
-async function read_insertable_columns(db: SQL, table: string, dialect: DumpDialect): Promise<string[]> {
-	if (dialect === "mysql") {
-		const rows = await db.unsafe(`
-			SELECT COLUMN_NAME AS name, EXTRA AS extra
-			FROM INFORMATION_SCHEMA.COLUMNS
-			WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ${sql_literal(table, dialect)}
-			ORDER BY ORDINAL_POSITION
-		`) as Array<{ name: string; extra: string }>;
-		return rows.filter((row) => !/GENERATED/i.test(row.extra)).map((row) => row.name);
-	}
-
-	const rows = await db.unsafe(`PRAGMA table_xinfo(${sql_identifier(table, dialect)})`) as Array<{ name: string; hidden: number }>;
-	return rows.filter((row) => row.hidden === 0).map((row) => row.name);
-}
-
-async function append_table_data(db: SQL, table: string, dialect: DumpDialect, lines: string[]): Promise<number> {
-	const columns = await read_insertable_columns(db, table, dialect);
-	if (columns.length === 0) return 0;
-	const select_columns = columns.map((column) => sql_identifier(column, dialect)).join(", ");
-	const rows = await db.unsafe(`SELECT ${select_columns} FROM ${sql_identifier(table, dialect)}`) as Array<Record<string, unknown>>;
-	if (rows.length === 0) return 0;
-	lines.push(`-- Data for ${table} (${rows.length} row${rows.length === 1 ? "" : "s"})`, build_insert_sql(table, columns, rows, dialect));
-	return rows.length;
-}
-
-async function format_mysql_ddl(file_path: string): Promise<void> {
-	let process_handle: ReturnType<typeof Bun.spawn>;
+async function dump_mysql(connection_string: string, output_dir: string): Promise<void> {
+	const { cmd, password } = mysql_dump_command(connection_string);
+	const output_path = join(output_dir, "dump.sql");
+	let dump_process: ReturnType<typeof Bun.spawn>;
 	try {
-		process_handle = Bun.spawn(["reesql", ...REESQL_ARGS, file_path], { stdout: "pipe", stderr: "pipe" });
+		dump_process = Bun.spawn({
+			cmd,
+			env: { ...Bun.env, MYSQL_PWD: password },
+			stdout: "pipe",
+			stderr: "pipe",
+		});
 	} catch (error) {
-		throw new Error(`Could not start reesql: ${error instanceof Error ? error.message : String(error)}. Run bun get:reesql.`);
+		throw new Error(`Could not start mysqldump: ${error instanceof Error ? error.message : String(error)}.`);
 	}
 
-	const stdout_promise = new Response(process_handle.stdout as ReadableStream<Uint8Array>).text();
-	const stderr_promise = new Response(process_handle.stderr as ReadableStream<Uint8Array>).text();
-	const exit_code = await process_handle.exited;
-	const stdout = await stdout_promise;
-	const stderr = await stderr_promise;
-	if (exit_code !== 0) {
-		const detail = (stderr || stdout).trim();
-		throw new Error(`reesql failed with exit code ${exit_code}${detail ? `: ${detail}` : ""}`);
+	const stdout = dump_process.stdout as ReadableStream<Uint8Array>;
+	const stderr = dump_process.stderr as ReadableStream<Uint8Array>;
+	const stderr_promise = new Response(stderr).text();
+	const writer = Bun.file(output_path).writer();
+	try {
+		for await (const chunk of stdout) writer.write(chunk);
+		const [exit_code, stderr] = await Promise.all([dump_process.exited, stderr_promise]);
+		if (exit_code !== 0) throw new Error(stderr.trim() || `mysqldump failed with exit code ${exit_code}.`);
+		await writer.end();
+	} catch (error) {
+		await writer.end();
+		await Bun.file(output_path).delete();
+		throw error;
 	}
 }
 
-interface DumpOptions {
+async function copy_sqlite(connection_string: string, output_dir: string): Promise<void> {
+	const source_path = sqlite_database_path(connection_string);
+	const source_file = Bun.file(source_path);
+	if (!(await source_file.exists())) throw new Error(`SQLite database not found: ${source_path}`);
+
+	const output_path = join(output_dir, basename(source_path));
+	await Bun.write(output_path, source_file);
+}
+
+export interface DumpOptions {
 	connection: string;
 	dialect: DumpDialect;
 	output_dir: string;
@@ -239,61 +136,19 @@ function parse_options(args: readonly string[]): { use_test: boolean; output_dir
 	const use_test = args.includes("--test");
 	const output_arg = args.find((arg) => arg.startsWith("--output="));
 	if (args.some((arg) => arg === "--output")) throw new Error("Use --output=DIR for the dump directory");
-	return { use_test, output_dir: resolve(process.cwd(), output_arg?.slice("--output=".length) || "dump") };
+	const output_dir = output_arg?.slice("--output=".length) || join(".reepolee", timestamped_backup_folder());
+	return { use_test, output_dir: resolve(process.cwd(), output_dir) };
 }
 
 function print_help(): void {
-	console.log(`Usage: bun dump [--test] [--output=DIR]\n\nDumps the development database into DIR (default: ./dump):\n  DIR/ddl.sql\n  DIR/insert/{locale}.sql\n\nThe default locale file contains base tables. Other locale files contain\nonly their configured physical locale clone tables.`);
-	console.log("\nMySQL DDL is formatted with reesql using --unwrap-joins --remove-backticks --clean.");
+	console.log(`Usage: bun dump [--test] [--output=DIR]\n\nDumps the development database into DIR (default: ./.reepolee/${timestamped_backup_folder()}):\n  DIR/dump.sql        (MySQL)\n  DIR/<database file> (SQLite)\n\nMySQL uses mysqldump. SQLite copies the database file without opening it.`);
 }
 
 export async function run_dump(options: DumpOptions): Promise<void> {
-	const db = new SQL(options.connection);
-	const stay_alive = setInterval(() => {}, 2_147_483_647);
-	try {
-		const configured_locales = [...new Set([default_locale, ...locales])];
-		let tables: DumpTable[];
-		let ddl: string;
-		if (options.dialect === "mysql") {
-			tables = await read_mysql_tables(db);
-			ddl = await build_mysql_ddl(db, tables);
-		} else {
-			const sqlite_result = await build_sqlite_ddl(db);
-			tables = sqlite_result.schema.flatMap((entry) => entry.type === "table" || entry.type === "view" ? [{ name: entry.name, type: entry.type }] : []);
-			ddl = sqlite_result.ddl;
-		}
-
-		const table_names = new Set(tables.filter((table) => table.type === "table").map((table) => table.name));
-		const inserts = new Map<string, string>();
-		for (const locale of configured_locales) inserts.set(locale, dump_header(options.dialect, locale));
-		for (const table of tables) {
-			if (table.type !== "table") continue;
-			const locale = table_locale(table.name, table_names, configured_locales, default_locale);
-			const lines = inserts.get(locale);
-			if (!lines) throw new Error(`No insert output configured for locale ${locale}`);
-			const table_lines: string[] = [];
-			const row_count = await append_table_data(db, table.name, options.dialect, table_lines);
-			if (row_count > 0) inserts.set(locale, `${lines}${table_lines.join("\n")}\n`);
-			console.log(`Processed ${table.name}: ${row_count} row${row_count === 1 ? "" : "s"} -> ${locale}`);
-		}
-		for (const locale of configured_locales) {
-			const content = inserts.get(locale)!;
-			inserts.set(locale, `${content}${dump_footer(options.dialect)}`);
-		}
-
-		await mkdir(join(options.output_dir, "insert"), { recursive: true });
-		const ddl_path = join(options.output_dir, "ddl.sql");
-		await Bun.write(ddl_path, ddl);
-		if (options.dialect === "mysql") {
-			console.log("Formatting DDL with reesql (--unwrap-joins --remove-backticks --clean)");
-			await format_mysql_ddl(ddl_path);
-		}
-		for (const [locale, content] of inserts) await Bun.write(join(options.output_dir, "insert", `${locale}.sql`), content);
-		console.log(`Dump complete: ${options.output_dir}`);
-	} finally {
-		clearInterval(stay_alive);
-		await db.close();
-	}
+	await mkdir(options.output_dir, { recursive: true });
+	if (options.dialect === "mysql") await dump_mysql(options.connection, options.output_dir);
+	else await copy_sqlite(options.connection, options.output_dir);
+	console.log(`Dump complete: ${options.output_dir}`);
 }
 
 async function main(): Promise<void> {
@@ -304,11 +159,9 @@ async function main(): Promise<void> {
 	const args = process.argv.slice(2);
 	const parsed = parse_options(args);
 	const env_name = parsed.use_test ? "TEST_CONNECTION_STRING" : "DEV_CONNECTION_STRING";
-	const connection = Bun.env[env_name]?.trim();
+	const connection = sanitize_env_value(Bun.env[env_name] ?? "");
 	if (!connection) throw new Error(`Missing ${env_name}`);
-	const dialect: DumpDialect = connection.toLowerCase().startsWith("mysql:") ? "mysql" : "sqlite";
-	if (!connection.toLowerCase().startsWith("mysql:") && !connection.toLowerCase().startsWith("sqlite:")) throw new Error(`Unsupported database connection: ${connection.split(":")[0]}`);
-	await run_dump({ connection, dialect, output_dir: parsed.output_dir });
+	await run_dump({ connection, dialect: dump_dialect(connection), output_dir: parsed.output_dir });
 }
 
 if (import.meta.path === Bun.main) await main().catch((error) => {
