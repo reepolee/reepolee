@@ -27,6 +27,7 @@
 		"**/*.test.ts": true,
 		"**/*.spec.ts": true
 	},
+	"tailwindCSS.experimental.configFile": "css/app.css",
 	"files.associations": {
 		"*.ree": "ree",
 		"*.css": "tailwindcss"

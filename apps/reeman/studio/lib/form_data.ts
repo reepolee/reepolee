@@ -1,7 +1,7 @@
 import { get_domain_types } from "./domain_types";
 import { detect_soft_reference, StudioError } from "./model";
 import { parse_column } from "./column_parser";
-import type { ColumnReference, Dialect, ModifierKey, StudioColumn, StudioFile, StudioTable, TableForeignKey } from "./types";
+import type { ColumnReference, Dialect, ModifierKey, StudioColumn, StudioFile, StudioTable, TableForeignKey, TableUniqueKey } from "./types";
 
 const MAX_COLUMNS = 200;
 const COLUMN_NAME = /^[a-z][a-z0-9_]*$/;
@@ -62,7 +62,8 @@ export function parse_table_form(params: URLSearchParams, source: StudioTable, d
 	}
 
 	const table_foreign_keys = retained_table_foreign_keys(source, columns, values);
-	return { ...structuredClone(source), columns, table_foreign_keys };
+	const table_unique_keys = retained_table_unique_keys(source, columns, values);
+	return { ...structuredClone(source), columns, table_foreign_keys, table_unique_keys };
 }
 
 function read_column_values(params: URLSearchParams) {
@@ -202,6 +203,23 @@ function retained_table_foreign_keys(
 		const expected = `${foreign_key.ref_table}.${foreign_key.ref_column}`;
 		if (values.references[output_index]!.trim() !== expected) return [];
 		return [{ ...foreign_key, column: columns[output_index]!.name }];
+	});
+}
+
+function retained_table_unique_keys(
+	source: StudioTable,
+	columns: StudioColumn[],
+	values: ReturnType<typeof read_column_values>,
+): TableUniqueKey[] {
+	return source.table_unique_keys.flatMap((unique_key) => {
+		const renamed_columns: string[] = [];
+		for (const column_name of unique_key.columns) {
+			const source_index = source.columns.findIndex((column) => column.name === column_name);
+			const output_index = values.sources.findIndex((value) => value === String(source_index));
+			if (output_index === -1) return [];
+			renamed_columns.push(columns[output_index]!.name);
+		}
+		return [{ ...unique_key, columns: renamed_columns }];
 	});
 }
 

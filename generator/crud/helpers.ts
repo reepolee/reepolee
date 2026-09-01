@@ -43,7 +43,7 @@ export function route_dir_to_namespace(route_dir: string): string {
 // Pure utilities
 // ---------------------------------------------------------------------------
 
-export function unique_fk_tables(foreign_keys: ForeignKeyMap): Array<{ table: string; column: string; label?: string; }> {
+export function unique_fk_tables(foreign_keys: ForeignKeyMap): Array<{ table: string; column: string; label?: string; localized?: boolean; }> {
 	const seen = new Set();
 	const result: Array<{ table: string; column: string; label?: string; }> = [];
 

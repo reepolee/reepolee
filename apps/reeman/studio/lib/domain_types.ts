@@ -246,5 +246,5 @@ export function default_table_columns(dialect: Dialect): StudioColumn[] {
 }
 
 export function make_default_table(name: string, dialect: Dialect): StudioTable {
-	return { name, columns: default_table_columns(dialect), table_foreign_keys: [], table_suffix_raw: "" };
+	return { name, columns: default_table_columns(dialect), table_foreign_keys: [], table_unique_keys: [], table_suffix_raw: "" };
 }

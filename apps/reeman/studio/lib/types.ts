@@ -70,6 +70,15 @@ export interface TableForeignKey {
 	on_delete?: string;
 }
 
+/** A table-level UNIQUE constraint, including MySQL's named UNIQUE KEY form. */
+export interface TableUniqueKey {
+	/** SQL-standard CONSTRAINT <name> UNIQUE(...) prefix. */
+	constraint_name?: string;
+	/** MySQL UNIQUE KEY <name>(...) name. */
+	key_name?: string;
+	columns: string[];
+}
+
 export interface StudioIndex {
 	name: string;
 	columns: string[];
@@ -80,6 +89,7 @@ export interface StudioTable {
 	name: string;
 	columns: StudioColumn[];
 	table_foreign_keys: TableForeignKey[];
+	table_unique_keys: TableUniqueKey[];
 	/** Verbatim text after the closing paren, e.g. MySQL "COMMENT ''". */
 	table_suffix_raw: string;
 }

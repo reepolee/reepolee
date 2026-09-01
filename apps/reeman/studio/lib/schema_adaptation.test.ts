@@ -46,6 +46,7 @@ describe("adapt_schema_to_standard", () => {
 					table: {
 						name: "books",
 						table_foreign_keys: [],
+						table_unique_keys: [],
 						table_suffix_raw: "",
 						columns: [
 							column_of("id", "INTEGER", { is_primary_key: true }),
@@ -114,6 +115,7 @@ describe("adapt_schema_to_standard", () => {
 					table: {
 						name: "schedule",
 						table_foreign_keys: [],
+						table_unique_keys: [],
 						table_suffix_raw: "",
 						columns: [
 							column_of("id", "INTEGER", { is_primary_key: true }),
@@ -277,7 +279,7 @@ function tables_model(specs: { name: string; columns: StudioColumn[]; }[]): Stud
 			kind: "create_table" as const,
 			object_name: spec.name,
 			text: "",
-			table: { name: spec.name, columns: spec.columns, table_foreign_keys: [], table_suffix_raw: "" },
+			table: { name: spec.name, columns: spec.columns, table_foreign_keys: [], table_unique_keys: [], table_suffix_raw: "" },
 		})),
 	};
 }
@@ -302,6 +304,7 @@ function varchar_pk_table(name: string, pk_name: string, extra_columns: string[]
 	return {
 		name,
 		table_foreign_keys: [],
+		table_unique_keys: [],
 		table_suffix_raw: "",
 		columns: [
 			column_of(pk_name, "VARCHAR(10)", { is_primary_key: true }),
@@ -314,6 +317,7 @@ function table(name: string, names: string[]): StudioTable {
 	return {
 		name,
 		table_foreign_keys: [],
+		table_unique_keys: [],
 		table_suffix_raw: "",
 		columns: names.map((column_name) => ({
 			name: column_name,

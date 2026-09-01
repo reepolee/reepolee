@@ -118,5 +118,5 @@ function table_of(name: string, column_names: string[]): StudioTable {
 		on_update_current_timestamp: false,
 		modifier_order: [],
 	}));
-	return { name, columns, table_foreign_keys: [], table_suffix_raw: "" };
+	return { name, columns, table_foreign_keys: [], table_unique_keys: [], table_suffix_raw: "" };
 }

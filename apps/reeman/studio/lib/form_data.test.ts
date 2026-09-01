@@ -7,6 +7,7 @@ import type { StudioTable } from "./types";
 const source: StudioTable = {
 	name: "authors",
 	table_foreign_keys: [],
+	table_unique_keys: [],
 	table_suffix_raw: "",
 	columns: [{
 		name: "author_id",
@@ -147,6 +148,7 @@ describe("table-level foreign keys", () => {
 		name: "recipes_ingredients",
 		columns: [{ ...structuredClone(source.columns[0]!), name: "ingredient_id", references: undefined }],
 		table_foreign_keys: [{ column: "ingredient_id", ref_table: "ingredients", ref_column: "id", on_update: "CASCADE" }],
+		table_unique_keys: [{ key_name: "recipes_ingredients_ingredient_id_unique", columns: ["ingredient_id"] }],
 	};
 
 	test("shows and preserves an unchanged table-level reference", () => {
@@ -157,6 +159,15 @@ describe("table-level foreign keys", () => {
 		const table = parse_table_form(params, table_source, "sqlite");
 		expect(table.columns[0]!.references).toBeUndefined();
 		expect(table.table_foreign_keys[0]).toEqual({ column: "ingredient_id", ref_table: "ingredients", ref_column: "id", on_update: "CASCADE" });
+		expect(table.table_unique_keys).toEqual([{ key_name: "recipes_ingredients_ingredient_id_unique", columns: ["ingredient_id"] }]);
+	});
+
+	test("renames columns in retained table-level unique keys", () => {
+		const params = column_params();
+		params.set("column_name", "recipe_ingredient_id");
+		params.set("column_reference", "ingredients.id");
+		const table = parse_table_form(params, table_source, "sqlite");
+		expect(table.table_unique_keys).toEqual([{ key_name: "recipes_ingredients_ingredient_id_unique", columns: ["recipe_ingredient_id"] }]);
 	});
 
 	test("moves an edited table-level reference inline without duplication", () => {

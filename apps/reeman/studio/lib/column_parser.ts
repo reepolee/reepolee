@@ -1,5 +1,5 @@
 import { read_paren_group, read_quoted_token } from "./sql_tokens";
-import type { ColumnReference, StudioColumn, TableForeignKey } from "./types";
+import type { ColumnReference, StudioColumn, TableForeignKey, TableUniqueKey } from "./types";
 
 function parse_references(rest: string): { reference: ColumnReference; consumed: number; } | null {
 	const match = /^REFERENCES\s+(\w+)\s*\(\s*(\w+)\s*\)/i.exec(rest);
@@ -126,4 +126,22 @@ export function parse_table_foreign_key(line: string): TableForeignKey | null {
 	if (on_update) foreign_key.on_update = on_update[1]!.toUpperCase();
 	if (on_delete) foreign_key.on_delete = on_delete[1]!.toUpperCase();
 	return foreign_key;
+}
+
+/** Parse table-level UNIQUE constraints, including MySQL UNIQUE KEY names. */
+export function parse_table_unique_key(line: string): TableUniqueKey | null {
+	const trimmed = line.trim();
+	const named_key = /^UNIQUE\s+KEY\s+(\w+)\s*\(([^)]+)\)$/i.exec(trimmed);
+	if (named_key) return { key_name: named_key[1]!, columns: parse_key_columns(named_key[2]!) };
+
+	const constraint = /^CONSTRAINT\s+(\w+)\s+UNIQUE\s*\(([^)]+)\)$/i.exec(trimmed);
+	if (constraint) return { constraint_name: constraint[1]!, columns: parse_key_columns(constraint[2]!) };
+
+	const unique = /^UNIQUE\s*\(([^)]+)\)$/i.exec(trimmed);
+	if (unique) return { columns: parse_key_columns(unique[1]!) };
+	return null;
+}
+
+function parse_key_columns(value: string): string[] {
+	return value.split(",").map((column) => column.trim());
 }

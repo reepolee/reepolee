@@ -118,6 +118,17 @@ export function render_create_table(table: StudioTable, dialect: Dialect): strin
 		lines.push(line);
 	}
 
+	for (const unique_key of table.table_unique_keys) {
+		const columns = unique_key.columns.join(",");
+		if (unique_key.key_name) {
+			lines.push(`    UNIQUE KEY ${unique_key.key_name}(${columns})`);
+		} else if (unique_key.constraint_name) {
+			lines.push(`    CONSTRAINT ${unique_key.constraint_name} UNIQUE(${columns})`);
+		} else {
+			lines.push(`    UNIQUE(${columns})`);
+		}
+	}
+
 	const body = lines.join(",\n");
 	const suffix = table.table_suffix_raw ? ` ${table.table_suffix_raw}` : "";
 	return `CREATE TABLE ${table.name} (\n${body}\n)${suffix};`;

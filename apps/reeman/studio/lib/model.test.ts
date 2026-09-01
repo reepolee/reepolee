@@ -55,6 +55,7 @@ function table(name: string, names: string[]): StudioTable {
 	return {
 		name,
 		table_foreign_keys: [],
+		table_unique_keys: [],
 		table_suffix_raw: "",
 		columns: names.map((column_name) => ({
 			name: column_name,

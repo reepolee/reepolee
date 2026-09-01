@@ -47,6 +47,7 @@ function example_statements(): StudioStatement[] {
 		table: {
 			name: "people",
 			table_foreign_keys: [],
+			table_unique_keys: [],
 			table_suffix_raw: "",
 			columns: [{
 				name: "id",

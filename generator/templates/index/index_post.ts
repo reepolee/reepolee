@@ -21,6 +21,7 @@ export async function post___table.exact___index(req: BunRequest): Promise<Respo
 				errors,
 				form_errors: null,
 				action: base_path(),
+				__new.post_localization_data__
 				__new.foreign_key_options__
 				__new.tags_options__
 				enable_archive,
@@ -61,6 +62,7 @@ export async function post___table.exact___index(req: BunRequest): Promise<Respo
 				errors,
 				form_errors: error_message,
 				action: base_path(),
+				__new.post_localization_data__
 				__new.foreign_key_options__
 				__new.tags_options__
 				enable_archive,

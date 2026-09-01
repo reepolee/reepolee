@@ -43,6 +43,20 @@ describe("classification", () => {
 		const index = model.statements.find((s) => s.kind === "index" && s.object_name === "frameworks_name_unique");
 		expect(index!.parent_table).toBe("frameworks");
 	});
+
+	test("table-level MySQL UNIQUE KEY is retained when a table is regenerated", () => {
+		const source = `CREATE TABLE reading_ranges (
+    id INT NOT NULL,
+    metric_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    UNIQUE KEY reading_ranges_metric_id_name(metric_id,name)
+);`;
+		const model = parse_ddl_file(source, "x.sql", "mysql");
+		const table = model.statements[0]!.table!;
+		expect(table.table_unique_keys).toEqual([{ key_name: "reading_ranges_metric_id_name", columns: ["metric_id", "name"] }]);
+		model.statements[0]!.dirty = true;
+		expect(serialize_studio_file(model)).toContain("UNIQUE KEY reading_ranges_metric_id_name(metric_id,name)");
+	});
 });
 
 describe("parse_column", () => {

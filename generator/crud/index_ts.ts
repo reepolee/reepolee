@@ -61,7 +61,8 @@ function generate_select_fields_loader(foreign_keys: ForeignKeyMap): string {
 	const loaders: string[] = [];
 
 	for (const fk_info of unique_fk_tables(foreign_keys)) {
-		loaders.push(`\tconst ${fk_info.table}_options_by_${fk_info.column} = await get_${fk_info.table}_options_by_${fk_info.column}();`);
+		const locale_arg = fk_info.localized ? "ctx.locale" : "";
+		loaders.push(`\tconst ${fk_info.table}_options_by_${fk_info.column} = await get_${fk_info.table}_options_by_${fk_info.column}(${locale_arg});`);
 	}
 
 	return loaders.join("\n");
@@ -115,14 +116,15 @@ function is_filterable_fk_field(f: FieldDef, columns?: Record<string, any> | nul
 	return f.attributes?.filter === true || columns?.[f.name]?.filter === true;
 }
 
-function generate_filter_fk_loader(fields: FieldDef[], columns?: Record<string, any> | null): string {
+function generate_filter_fk_loader(fields: FieldDef[], columns?: Record<string, any> | null, foreign_keys: ForeignKeyMap = new Map()): string {
 	const filter_fks = fields.filter((f) => is_filterable_fk_field(f, columns));
 
 	if (filter_fks.length === 0) return "";
 
 	return filter_fks.map((f) => {
 		const fk = f.attributes!.foreign_key!;
-		return `\tconst filter_${f.name}_options = await get_${fk.table}_options_by_${fk.column}();`;
+		const locale_arg = foreign_keys.get(f.name)?.localized ? "ctx.locale" : "";
+		return `\tconst filter_${f.name}_options = await get_${fk.table}_options_by_${fk.column}(${locale_arg});`;
 	}).join("\n");
 }
 
@@ -301,7 +303,7 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 	const autocomplete_display_options = has_autocomplete ? "\tautocomplete_display_values," : "";
 
 	const localization_import = localized
-		? `import { enqueue } from "$queue/index";\nimport { copy_localized_values, generate_localized_values, get_locale_rows } from "$lib/localized_copy";\nimport { build_localization_props, localized_input_form_state, parse_changed_localized_form, parse_copy_request, parse_generate_request, validate_localized_inputs, validate_touched_localized_inputs } from "$lib/localized_form";\nimport { locales } from "$config/supported_locales";\nimport { invalidate_all_locales, save_locale_values } from "$lib/locale_write";\n`
+		? `import { enqueue } from "$queue/index";\nimport { copy_localized_values, generate_localized_values, get_locale_rows } from "$lib/localized_copy";\nimport { build_localization_props, localized_input_form_state, parse_changed_localized_form, parse_copy_request, parse_generate_request, parse_localized_form, validate_localized_inputs, validate_touched_localized_inputs } from "$lib/localized_form";\nimport { locales } from "$config/supported_locales";\nimport { invalidate_all_locales, save_locale_values } from "$lib/locale_write";\n`
 		: "";
 	// The CSS-only tab switcher pre-selects whichever locale tab the visitor
 	// last used, read from a plain cookie - no JS is needed to restore it.
@@ -329,6 +331,14 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 		? `const locale_rows = await get_locale_rows(TABLE_NAME, Number(record.id), locales);\n\tconst localization = build_localization_props({ fields: LOCALIZED_FIELDS, record, locale_rows, copy_action: ${copy_action_expr}${preferred_locale_arg} });`
 		: "";
 	const localization_data = localized ? "localization," : "";
+	// New forms have no database row to load, but still need the localization
+	// metadata that makes localized-field-tabs render its labels and locale tabs.
+	const new_localization_data = localized
+		? `localization: build_localization_props({ fields: LOCALIZED_FIELDS, record: ${generate_empty_record(fields)}, copy_action: ""${preferred_locale_arg} }),`
+		: "";
+	const new_post_localization_data = localized
+		? `localization: build_localization_props({ fields: LOCALIZED_FIELDS, record: data, copy_action: ""${preferred_locale_arg} }),`
+		: "";
 	const parse_localization = localized
 		? `const localized_inputs = parse_changed_localized_form(params, LOCALIZED_FIELDS);\n\tconst localized_values = localized_input_form_state(localized_inputs);`
 		: "";
@@ -437,10 +447,15 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 			// would tell fan_out_update the visitor's UI locale is "the edited
 			// locale", writing the base form's fields into that locale's table as
 			// full localized columns and overwriting its real translation.
-			"sql.edit_locale_arg": localized ? ", ctx.locale" : "",
+			// The ordinary form fields are always the default-locale row. Localized
+			// values from the other tabs are saved separately below, so passing the
+			// visitor's UI locale here would write the Original fields to a clone.
+			"sql.edit_locale_arg": "",
 			"localization.config": localization_config,
 			"edit.load_localization": load_localization,
 			"edit.localization_data": localization_data,
+			"new.localization_data": new_localization_data,
+			"new.post_localization_data": new_post_localization_data,
 			"edit.parse_localization": parse_localization,
 			"edit.validate_localization": validate_localization,
 			"edit.localization_errors_check": localization_errors_check,
@@ -454,7 +469,7 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 			"edit.get_autocomplete_display": has_autocomplete ? `\n\n\tconst autocomplete_display_values: Record<string, string> = {};\n${autocomplete_display_fetch}` : "",
 			"new.autocomplete_display_options": autocomplete_display_options,
 			"edit.autocomplete_display_options": autocomplete_display_options,
-			"filter.fk_loader": generate_filter_fk_loader(fields, columns),
+			"filter.fk_loader": generate_filter_fk_loader(fields, columns, foreign_keys),
 			"filter.fk_options": generate_filter_fk_options(fields, columns),
 			"import.conditional_helpers": conditional_helpers,
 			"import.crud_routes": crud_routes_import,

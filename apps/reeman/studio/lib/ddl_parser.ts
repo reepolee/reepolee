@@ -9,9 +9,9 @@
  * and trigger-aware (CREATE TRIGGER bodies contain top-level ";" until END).
  */
 
-import { parse_column, parse_table_foreign_key } from "./column_parser";
+import { parse_column, parse_table_foreign_key, parse_table_unique_key } from "./column_parser";
 import { read_paren_group } from "./sql_tokens";
-import type { Dialect, StudioColumn, StudioFile, StudioStatement, TableForeignKey } from "./types";
+import type { Dialect, StudioColumn, StudioFile, StudioStatement, TableForeignKey, TableUniqueKey } from "./types";
 
 export { parse_column } from "./column_parser";
 
@@ -203,10 +203,16 @@ export function classify_statement(part: RawPart): StudioStatement {
 
 		const columns: StudioColumn[] = [];
 		const table_foreign_keys: TableForeignKey[] = [];
+		const table_unique_keys: TableUniqueKey[] = [];
 		for (const item of split_top_level_commas(body)) {
 			const fk = parse_table_foreign_key(item);
 			if (fk) {
 				table_foreign_keys.push(fk);
+				continue;
+			}
+			const unique_key = parse_table_unique_key(item);
+			if (unique_key) {
+				table_unique_keys.push(unique_key);
 				continue;
 			}
 			const column = parse_column(item);
@@ -217,7 +223,7 @@ export function classify_statement(part: RawPart): StudioStatement {
 			...base,
 			kind: "create_table",
 			object_name: table_match[1]!,
-			table: { name: table_match[1]!, columns, table_foreign_keys, table_suffix_raw },
+			table: { name: table_match[1]!, columns, table_foreign_keys, table_unique_keys, table_suffix_raw },
 		};
 	}
 

@@ -49,6 +49,7 @@
 				</field-wrapper>
 			{/if}
 
+
 			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="url">
 				<div class="grid">
 					<label class="px-3" for="detail-url">{_ labels.url}</label>

@@ -11,6 +11,7 @@ export async function get___table.exact___new(req: BunRequest): Promise<Response
 			record: __empty.record__,
 			errors: __empty.errors__,
 			action: base_path(),
+			__new.localization_data__
 			__new.foreign_key_options__
 			__new.tags_options__
 			__new.autocomplete_display_options__
