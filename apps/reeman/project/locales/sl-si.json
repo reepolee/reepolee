@@ -1,0 +1,15 @@
+{
+	"actions": {
+		"save_repos": "Shrani repozitorije",
+		"set_repos": "Repozitoriji za prijave"
+	},
+	"labels": {
+		"owner_repos": "Repozitoriji GitHub (en owner/repo v vrstici)"
+	},
+	"nav": "Projekt",
+	"ui": {
+		"project_description": "Nastavitve projekta.",
+		"project_title": "Projekt",
+		"set_repos_hint": "Prvi repozitorij je privzeti za prijave napak. Vsi repozitoriji so na voljo v izbirniku prijav."
+	}
+}

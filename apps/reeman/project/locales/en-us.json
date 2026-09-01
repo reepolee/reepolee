@@ -1,0 +1,15 @@
+{
+	"actions": {
+		"save_repos": "Save repositories",
+		"set_repos": "Issue repositories"
+	},
+	"labels": {
+		"owner_repos": "GitHub repositories (one owner/repo per line)"
+	},
+	"nav": "Project",
+	"ui": {
+		"project_description": "Project-level settings.",
+		"project_title": "Project",
+		"set_repos_hint": "The first repository is the default for issue reports. Every repository is offered as a choice in the issue reporter."
+	}
+}

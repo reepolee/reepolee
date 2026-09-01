@@ -1,0 +1,130 @@
+{#layout("layout")}
+{#with props}
+	<div class="py-4">
+		<div class="flex items-center gap-3 justify-between w-full flex-wrap px-4">
+			<div class="pagination-info">
+				{#if first_url}<a href="{~ localized_path(first_url) }" role="button" class="as-button"><ree-icon name="chevrons_left"></ree-icon></a>{:else}<ree-icon name="chevrons_left"></ree-icon>{/if}
+				{#if prev_url}<a href="{~ localized_path(prev_url) }" role="button" class="as-button"><ree-icon name="chevron_left"></ree-icon></a>{:else}<ree-icon name="chevron_left"></ree-icon>{/if}
+				{#if total > 0}<div style="width: {= total.toString().length * 3 + 6 }ch; text-align: center">{= offset + 1} - {= Math.min(offset + (limit === 'all' ? total : limit), total)} / {= total}</div>{:else}<div style="width: 9ch; text-align: center">0 / 0</div>{/if}
+				{#if next_url}<a href="{~ localized_path(next_url) }" role="button" class="as-button"><ree-icon name="chevron_right"></ree-icon></a>{:else}<ree-icon name="chevron_right"></ree-icon>{/if}
+				{#if last_url}<a href="{~ localized_path(last_url) }" role="button" class="as-button"><ree-icon name="chevrons_right"></ree-icon></a>{:else}<ree-icon name="chevrons_right"></ree-icon>{/if}
+			</div>
+
+			<form method="GET" action="{~ localized_path('/environment') }" class="flex items-center gap-2">
+				<input type="search" name="query" value="{= query }" placeholder="{_ actions.search}" class="w-[28ch]" />
+				<button type="submit" class="as-button-secondary">{_ actions.search}</button>
+			</form>
+
+			<select id="limit" class="w-[20ch]" onchange="navigate_to('limit', this.value)">
+				{#each limit_options as option}<option value="{= option }" {#if option === limit}selected{/if}>{#if option === 'all'}{_ selectors.all}{:else}{= option} {_ selectors.per_page}{/if}</option>{/each}
+			</select>
+
+			<select id="order_by" class="w-[38ch]" onchange="navigate_to('order_by', this.value)">
+				{#each sort_options as option}<option value="{= option.value }" {#if option.value === order_by}selected{/if}>{= props.translations.labels?.[option.field] || option.field}{#if option.direction} ({= option.direction === 'asc' ? props.translations.selectors.ascending : props.translations.selectors.descending}){/if}</option>{/each}
+			</select>
+
+			<button
+				id="toggle-environment-values"
+				type="button"
+				class="as-button-secondary w-[20ch]"
+				aria-pressed="false"
+				data-show-label="{_ actions.show_values}"
+				data-hide-label="{_ actions.hide_values}"
+			>
+				{_ actions.show_values}
+			</button>
+		</div>
+
+		<div class="flex items-center gap-4 px-4 my-4">
+			<button id="delete-selected" type="button" commandfor="delete-selected-dialog" command="show-modal" disabled class="as-button-tertiary">{_ actions.delete_selected}</button>
+		</div>
+
+		{#if records.length === 0}
+			<p class="p-4">{_ ui.no_records}</p>
+		{:else}
+			<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-4" style="grid-template-columns: 8ch minmax(18ch, 1fr) auto minmax(0, 3fr)">
+				<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+					<div class="grid grid-cols-2 place-items-center p-0!">
+						<button id="deselect_all" type="button" class="text-brand cursor-pointer"><ree-icon name="x" class="size-6"></ree-icon></button>
+						<label class="w-full h-full grid place-items-center hover:bg-brand rounded"><input type="checkbox" name="select_all" id="select_all" /></label>
+					</div>
+					<div>{_ labels.key}</div>
+					<div>{_ labels.value}</div>
+					<div>{_ labels.description}</div>
+				</div>
+
+				{#each records as record}
+					<a href="{~ localized_path(record.edit_url) }" class="group col-span-full *:py-2 grid cursor-pointer grid-cols-subgrid border-b border-b-neutral-200 *:px-2 hover:bg-primary hover:text-white">
+						<div class="grid grid-cols-2 place-items-center p-0! m-0!">
+							<div></div>
+							<label class="w-full h-full grid place-items-center hover:bg-brand rounded" onclick="event.stopPropagation()"><input type="checkbox" name="checkboxes[]" value="{= record.id}" onclick="event.stopPropagation()" /></label>
+						</div>
+						<div class="font-mono break-all">{= record.key}</div>
+						<div class="font-mono whitespace-nowrap">
+							<span data-environment-value class="blur-sm select-none" aria-hidden="true">{= record.value}</span>
+						</div>
+						<div class="md-inline min-w-0 truncate whitespace-nowrap text-sm text-text-secondary group-hover:text-white" title="{= record.description}">{~ md(record.description)}</div>
+					</a>
+				{/each}
+			</div>
+		{/if}
+
+		<dialog id="delete-selected-dialog" class="p-0 rounded-xl shadow-2xl w-100">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.delete_selected}</h2>
+				<p class="text-slate-600 mt-2">{_ confirm.delete_selected}</p>
+				<p class="text-slate-600">{_ labels.selected}: <span class="font-semibold text-brand" id="delete-count">0</span></p>
+				<div class="mt-6 flex justify-end gap-2">
+					<button type="button" class="as-button-secondary" commandfor="delete-selected-dialog" command="close">{_ actions.cancel}</button>
+					<button type="button" class="as-button-danger" commandfor="delete-selected-dialog" command="--confirm">{_ actions.confirm_delete}</button>
+				</div>
+			</div>
+		</dialog>
+
+		<form id="bulk-delete-form" method="POST" action="{~ localized_path('/environment/bulk-delete') }">
+			<input type="hidden" name="_csrf_token" value="{= csrf_token}" />
+		</form>
+
+		<script src="/checkbox-group.js?v={= version}"></script>
+		<script>
+			const environment_checkboxes = document.getElementById("select_all") ? new CheckboxGroup({ buttonSelectors: ["#delete-selected"] }) : null;
+			const delete_dialog = document.getElementById("delete-selected-dialog");
+			const bulk_delete_form = document.getElementById("bulk-delete-form");
+			const toggle_environment_values = document.getElementById("toggle-environment-values");
+
+			toggle_environment_values.addEventListener("click", () => {
+				const show_values = toggle_environment_values.getAttribute("aria-pressed") !== "true";
+				toggle_environment_values.setAttribute("aria-pressed", String(show_values));
+				toggle_environment_values.textContent = show_values
+					? toggle_environment_values.dataset.hideLabel
+					: toggle_environment_values.dataset.showLabel;
+				document.querySelectorAll("[data-environment-value]").forEach((value) => {
+					value.classList.toggle("blur-sm", !show_values);
+					value.classList.toggle("select-none", !show_values);
+					value.setAttribute("aria-hidden", String(!show_values));
+				});
+			});
+
+			document.addEventListener("change", (event) => {
+				if (event.target.name !== "select_all" && event.target.name !== "checkboxes[]") return;
+				const selected_count = document.querySelectorAll('input[name="checkboxes[]"]:checked').length;
+				document.getElementById("delete-count").textContent = selected_count;
+			});
+
+			delete_dialog.addEventListener("command", (event) => {
+				if (event.command !== "--confirm") return;
+				bulk_delete_form.querySelectorAll('input[name="ids"]').forEach((input) => input.remove());
+				const selected_checkboxes = document.querySelectorAll('input[name="checkboxes[]"]:checked');
+				for (const checkbox of selected_checkboxes) {
+					const id_input = document.createElement("input");
+					id_input.type = "hidden";
+					id_input.name = "ids";
+					id_input.value = checkbox.value;
+					bulk_delete_form.appendChild(id_input);
+				}
+				delete_dialog.close();
+				bulk_delete_form.requestSubmit();
+			});
+		</script>
+	</div>
+{/with}
