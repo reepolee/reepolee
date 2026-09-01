@@ -31,6 +31,11 @@ describe("generate_index_ts localized save", () => {
 		expect(source).toContain("const current_record = await get_record_by_id(id);");
 		expect(source).toContain('id: String(current_record.id ?? ""),');
 		expect(source).toContain("await save_locale_values(TABLE_NAME, Number(id), localized_inputs, LOCALE_PROTECTED_COLUMNS);");
+		expect(source).toContain("const has_localized_changes = Object.keys(localized_inputs).length > 0;");
+		expect(source).toContain("const has_base_changes = Object.keys(changed_data).length > 0;");
+		expect(source).toContain("if (has_base_changes) record = await update_record(id, changed_data);");
+		expect(source).toContain("if (has_changes) {");
+		expect(source).toContain('r:{ id: record.id, changes: changed_data, locales: localized_inputs }');
 		expect(source).toContain('const LOCALIZED_FIELDS = [{"field_name":"name"');
 		expect(source).toContain("parse_changed_localized_form");
 		expect(source).toContain("parse_localized_form");
@@ -77,6 +82,8 @@ describe("generate_index_ts localized save", () => {
 		});
 
 		expect(source).not.toContain("validate_touched_localized_inputs");
+		expect(source).toContain("const has_localized_changes = false;");
+		expect(source).toContain('r:{ id: record.id, changes: changed_data }');
 	});
 });
 

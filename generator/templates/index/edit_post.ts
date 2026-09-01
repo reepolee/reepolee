@@ -88,6 +88,7 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 	};
 
 	__edit.parse_localization__
+	__edit.localization_change_check__
 
 	const [errors, valid_data] = validate(data, ctx.translations.errors);
 	__edit.validate_localization__
@@ -122,14 +123,19 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 	}
 
 
-	let record;
+	let record = current_record;
+	let has_changes = false;
 	try {
 		const changed_data = Object.fromEntries(Object.entries(valid_data).filter(([field_name, value]) => UPDATE_COLUMNS.includes(field_name) && String(value) !== original_data[field_name]));
-		record = await update_record(id, changed_data__sql.edit_locale_arg__);
+		const has_base_changes = Object.keys(changed_data).length > 0;
+		has_changes = has_base_changes || has_localized_changes;
+		if (has_base_changes) record = await update_record(id, changed_data__sql.edit_locale_arg__);
 		__edit.save_localization__
-		await cache.invalidate(TABLE_NAME);
-		sql_log({s:"Update", "t":`${feature}`, r:{...record}}, ctx.user?.username)
-		notify_updates({ route: base_path(), action: "updated", column: "id", value: String(id), description: `${ctx.user?.display_name || ctx.user?.username || "Someone"} edited the record` });
+		if (has_changes) {
+			await cache.invalidate(TABLE_NAME);
+			sql_log({s:"Update", "t":`${feature}`, __edit.update_log_record__}, ctx.user?.username)
+			notify_updates({ route: base_path(), action: "updated", column: "id", value: String(id), description: `${ctx.user?.display_name || ctx.user?.username || "Someone"} edited the record` });
+		}
 	} catch (error) {
 		const error_key =
 			error instanceof Error && error.message.toLowerCase().includes("duplicate entry")
@@ -162,19 +168,20 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 		});
 	}
 
-	const cookie = create_toast_cookie({
-		record_id: record.id,
-		feature,
-		message: ctx.translations.messages.record_updated,
-		type: "green",
-		user: ctx.user?.display_name,
-	});
-
 	const headers = new Headers({
 		Location: redirect_url,
 	});
 
-	headers.append("Set-Cookie", cookie.toString());
+	if (has_changes) {
+		const cookie = create_toast_cookie({
+			record_id: record.id,
+			feature,
+			message: ctx.translations.messages.record_updated,
+			type: "green",
+			user: ctx.user?.display_name,
+		});
+		headers.append("Set-Cookie", cookie.toString());
+	}
 
 	return new Response(null, {
 		status: 303,

@@ -129,6 +129,21 @@ export interface SqlTsOptions {
 	readonly_fields?: ReadonlySet<string>;
 }
 
+/**
+ * A locale table supplies translations, never record existence or shared
+ * state. The base table remains the query source so lifecycle fields such as
+ * archived_at have one authoritative value across every locale.
+ */
+export function localized_read_source(table_name: string, column_names: readonly string[], localized_column_names: readonly string[]): string {
+	const selected_columns = column_names.map((column_name) => {
+		const source = localized_column_names.includes(column_name) ? `COALESCE(localized.${column_name}, canonical.${column_name})` : `canonical.${column_name}`;
+		return `${source} AS ${column_name}`;
+	});
+	const select_list = selected_columns.join(", ");
+
+	return `\n/** Base records are authoritative; locale rows provide only translated columns. */\nfunction resolve_table(locale_code: string): string {\n\tconst localized_table = locale_table(TABLE_NAME, locale_code);\n\tif (localized_table === TABLE_NAME) return TABLE_NAME;\n\treturn \`(SELECT ${select_list} FROM ${table_name} AS canonical LEFT JOIN \${localized_table} AS localized ON localized.id = canonical.id) AS localized_records\`;\n}\n`;
+}
+
 export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 	const {
 		table_name,
@@ -176,18 +191,18 @@ export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 	const localized_config = localized
 		? `\nexport const LOCALIZED_COLUMNS = ${JSON.stringify(localized_column_names)} as const;\nexport const WRITE_COLUMNS = ${JSON.stringify(write_column_names)} as const;${update_columns_config}\nconst FAN_OUT = { table_name: TABLE_NAME, localized_columns: LOCALIZED_COLUMNS as readonly string[], write_columns: WRITE_COLUMNS as readonly string[], update_columns: UPDATE_COLUMNS as readonly string[] };\n`
 		: update_columns_config;
-	// The physical table for a request's locale (D3): the base table for the
-	// default locale, `<table>_<locale>` otherwise. Resolved once per call
-	// rather than threaded into every query as a parameter.
+	const read_column_names = column_names.length > 0 ? column_names : ["id", ...fields.map((field) => field.name)];
+	// The physical base table is always the read source. A locale table is joined
+	// only to overlay explicitly localized values, never to decide which records
+	// exist or which lifecycle state they have.
 	const locale_resolver = localized
-		? `\n/** Physical table holding this locale's rows - base table for the default locale. */\nfunction resolve_table(locale_code: string): string {\n\treturn locale_table(TABLE_NAME, locale_code);\n}\n`
+		? localized_read_source(table_name, read_column_names, localized_column_names)
 		: "";
 	const from_source_setup = localized
 		? `const from_source = resolve_table(locale_code);\n\t\t\t\t\tconst from_params: string[] = [];`
 		: `const from_source = TABLE_NAME;\n\t\t\t\t\tconst from_params: string[] = [];`;
-	// Single-record reads (get_record_by_id) resolve the same physical table as
-	// a search does, so an edit page and its JSON view answer in the locale the
-	// request asked for instead of always serving the base table.
+	// Single-record reads use the same base-plus-translation source as list
+	// reads, so locale data can change text without changing record visibility.
 	const read_source = localized ? "resolve_table(locale_code)" : "TABLE_NAME";
 	// A localized search depends on every locale table, since a write fans out
 	// to all of them (D6a). Non-localized tables keep the introspected list.

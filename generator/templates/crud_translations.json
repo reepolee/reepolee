@@ -5,7 +5,6 @@
 		"cancel": "Cancel",
 		"do_it": "Yes, do it",
 		"bulk_action": "Archive selected __translation.plural_label__",
-		"bulk_action_2": "Bulk action 2",
 		"archive": "Archive",
 		"abort_archive": "Cancel",
 		"confirm_archive": "Yes, archive",

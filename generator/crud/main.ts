@@ -470,7 +470,7 @@ function archive_clause(archive_filter: ArchiveFilter): string {
 
 	const view_search_block = is_view_search_text ? `if (search) {\n\t\tconst search_term = search;\n\t\twhere_clauses.push(get_fulltext_clause());\n\t\tparams.push(get_fulltext_param(search_term));\n\t}` : `if (search) {\n\t\tconst search_term = '%' + search + '%';\n\t\twhere_clauses.push('${view_search} LIKE ?');\n\t\tparams.push(search_term);\n\t}`;
 
-	const view_search_count_block = is_view_search_text ? `if (search) {\n\t\tconst count_params: any[] = [get_fulltext_param(search)];\n${view_count_archive_setup}\t\tconst count_query = \`SELECT COUNT(*) as count FROM v_${table_name} WHERE \${get_fulltext_clause()}${view_count_archive_and}\`;\n\t\tconst count_result = await db.unsafe(count_query, count_params);\n\t\ttotal = (count_result[0] as any)?.count || 0;\n\t}` : `if (search) {\n\t\tconst count_params: any[] = ['%' + search + '%'];\n${view_count_archive_setup}\t\tconst count_query = \`SELECT COUNT(*) as count FROM v_${table_name} WHERE ${view_search} LIKE ?${view_count_archive_and}\`;\n\t\tconst count_result = await db.unsafe(count_query, count_params);\n\t\ttotal = (count_result[0] as any)?.count || 0;\n\t}`;
+	const view_search_count_block = is_view_search_text ? `if (search) {\n\t\tconst count_params: any[] = [get_fulltext_param(search)];\n${view_count_archive_setup}\t\tconst count_query = \`SELECT COUNT(*) as count FROM \${view_source} WHERE \${get_fulltext_clause()}${view_count_archive_and}\`;\n\t\tconst count_result = await db.unsafe(count_query, count_params);\n\t\ttotal = (count_result[0] as any)?.count || 0;\n\t}` : `if (search) {\n\t\tconst count_params: any[] = ['%' + search + '%'];\n${view_count_archive_setup}\t\tconst count_query = \`SELECT COUNT(*) as count FROM \${view_source} WHERE ${view_search} LIKE ?${view_count_archive_and}\`;\n\t\tconst count_result = await db.unsafe(count_query, count_params);\n\t\ttotal = (count_result[0] as any)?.count || 0;\n\t}`;
 
 	const view_interface = ["\tid: number;", ...(meta.v_fields ?? []).map((f) => field_interface_prop(f))].join("\n");
 
@@ -478,9 +478,8 @@ function archive_clause(archive_filter: ArchiveFilter): string {
 	const view_deps_json = JSON.stringify(view_deps);
 	const view_route_path = meta.route_prefix ? `/${meta.route_prefix}/${meta.route_name || table_name}` : `/${meta.route_name || table_name}`;
 
-	// A localized table's view is resolved per locale (v_frameworks vs
-	// v_frameworks_sl_si), the same way the base table is - no locale column,
-	// no CROSS JOIN, no locale predicate threaded into the SQL.
+	// The base view defines record existence and shared state. A locale view is
+	// joined only to overlay the columns explicitly marked localized.
 	const view_localized = !!meta.localization_enabled && !meta.is_nested;
 	const view_locale_param = view_localized ? ", locale_code: string = \"\"" : "";
 	const view_locale_arg = view_localized ? ", locale_code" : "";
@@ -489,9 +488,15 @@ function archive_clause(archive_filter: ArchiveFilter): string {
 	const view_locale_filter_param = "";
 	const view_locale_search_where = "";
 	const view_locale_search_param = "";
+	const view_columns = [...new Set(meta.view_column_names.length > 0 ? meta.view_column_names : ["id", ...(meta.v_fields ?? []).map((field) => field.name)])];
+	const view_localized_column_names = new Set(meta.localized_fields.map((field) => field.field_name));
+	const view_select_list = view_columns.map((column_name) => {
+		const source = view_localized_column_names.has(column_name) ? `COALESCE(localized.${column_name}, canonical.${column_name})` : `canonical.${column_name}`;
+		return `${source} AS ${column_name}`;
+	}).join(", ");
 	const view_source = view_localized ? "resolve_view(locale_code)" : `"v_${table_name}"`;
 	const view_resolver = view_localized
-		? `import { all_locale_tables, locale_table } from "$lib/locale_tables";\n\n/** Physical view for this locale - base view for the default locale. */\nfunction resolve_view(locale_code: string): string {\n\treturn locale_table("v_${table_name}", locale_code);\n}\n`
+		? `import { all_locale_tables, locale_table } from "$lib/locale_tables";\n\n/** Base view rows are authoritative; the locale view supplies translated columns only. */\nfunction resolve_view(locale_code: string): string {\n\tconst localized_view = locale_table("v_${table_name}", locale_code);\n\tif (localized_view === "v_${table_name}") return "v_${table_name}";\n\treturn \`(SELECT ${view_select_list} FROM v_${table_name} AS canonical LEFT JOIN \${localized_view} AS localized ON localized.id = canonical.id) AS localized_records\`;\n}\n`
 		: "";
 	const view_cache_dependencies = view_localized ? `all_locale_tables("${table_name}")` : view_deps_json;
 	const view_cache_import = "";

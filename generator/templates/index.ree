@@ -91,8 +91,6 @@
 					<!-- BULK ACTIONS -->
 					<div class="flex items-center gap-4 justify-start flex-wrap">
 						<button id="action" commandfor="action_dialog" command="show-modal" disabled class="as-button-tertiary">{_ actions.bulk_action}</button>
-
-						<button id="action_2" commandfor="action_2_dialog" command="show-modal" disabled class="as-button-primary">{_ actions.bulk_action_2}</button>
 					</div>
 				{/if}
 			</div>
@@ -126,7 +124,7 @@
 		__stream.end_if_norecords__
 		<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-4" style="grid-template-columns: {= grid_cols }" data-updates-route="__route_prefix__/__table.exact__">
 
-			<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+			<div class="col-span-full grid grid-cols-subgrid items-end bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
 				{#if enable_archive }
 					<div class="grid grid-cols-2 place-items-center p-0!">
 						<button id="deselect_all" class="text-brand cursor-pointer"><ree-icon name="x" class="size-6"></ree-icon></button>
@@ -192,19 +190,6 @@
 			</div>
 		</dialog>
 
-		<dialog id="action_2_dialog" class="p-0 rounded-xl shadow-2xl w-100">
-			<div class="p-6">
-				<h2 class="text-lg font-semibold">{_ actions.bulk_action_2}</h2>
-				<p class="text-slate-600 mt-2">
-					{_ ui.modifying} <span class="font-semibold text-brand" id="action_2_count">0</span> {_ ui.records}.
-				</p>
-				<div class="mt-6 flex justify-end gap-2">
-					<button class="as-button-secondary" commandfor="action_2_dialog" command="close">{_ actions.cancel}</button>
-					<button class="as-button-primary" command="--confirm" commandfor="action_2_dialog">{_ actions.do_it}</button>
-				</div>
-			</div>
-		</dialog>
-
 		<script src="/checkbox-group.js?v={= version}"></script>
 		<script src="/dialog-confirm.js?v={= version}"></script>
 		<script>
@@ -253,26 +238,11 @@
 				}
 			});
 
-			$("#action_2_dialog").addEventListener("command", (e) => {
-				if (e.command !== "--confirm") return;
-				e.currentTarget.close();
-				const selected = $$('input[name="checkboxes[]"]:checked');
-				const ids = Array.from(selected).map((el) => el.value);
-				console.log("Bulk action 2 on IDs:", ids);
-				// TODO: Implement server endpoint and replace with fetch
-				add_toast({
-					type: "yellow",
-					message: "Bulk action 2 not yet implemented.",
-					duration: 3000,
-				});
-			});
-
 			// Update count displays when selection changes
 			document.addEventListener("change", (e) => {
 				if (e.target.name === "select_all" || e.target.name === "checkboxes[]") {
 					const selected = $$('input[name="checkboxes[]"]:checked').length;
 					$("#action_count").textContent = selected;
-					$("#action_2_count").textContent = selected;
 				}
 			});
 		</script>

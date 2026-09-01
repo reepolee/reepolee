@@ -360,7 +360,11 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 		: "";
 	// Each non-default locale's row takes its own submitted values. Editing a
 	// value by hand clears its provenance - it is no longer a copy.
-	const save_localization = localized ? `await save_locale_values(TABLE_NAME, Number(id), localized_inputs, LOCALE_PROTECTED_COLUMNS);` : "";
+	const localization_change_check = localized ? "const has_localized_changes = Object.keys(localized_inputs).length > 0;" : "const has_localized_changes = false;";
+	const save_localization = localized ? `if (has_localized_changes) await save_locale_values(TABLE_NAME, Number(id), localized_inputs, LOCALE_PROTECTED_COLUMNS);` : "";
+	const update_log_record = localized
+		? "r:{ id: record.id, changes: changed_data, locales: localized_inputs }"
+		: "r:{ id: record.id, changes: changed_data }";
 	// Save-time failures (e.g. update_record throwing) must still re-render the
 	// full editor - including per-field language controls and panels - rather
 	// than falling back to a bare English-only form. Re-fetch the record fresh
@@ -460,7 +464,9 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 			"edit.validate_localization": validate_localization,
 			"edit.localization_errors_check": localization_errors_check,
 			"edit.localization_error_data": localization_error_data,
+			"edit.localization_change_check": localization_change_check,
 			"edit.save_localization": save_localization,
+			"edit.update_log_record": update_log_record,
 			"edit.catch_existing_record": catch_existing_record,
 			"edit.catch_title_data": catch_title_data,
 			"edit.catch_record_data": catch_record_data,
