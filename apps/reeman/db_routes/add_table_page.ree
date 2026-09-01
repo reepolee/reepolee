@@ -1,0 +1,184 @@
+{#layout("layout") }
+{#with props}
+	<div class="p-4">
+
+		<div class="flex items-center justify-between">
+			<div>
+				<h1 class="mb-1">{_ ui.add_table_page_title }</h1>
+				<p class="text-sm text-text-secondary">{_ ui.add_table_page_hint }</p>
+			</div>
+		</div>
+
+		{#if busy}
+			<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
+		{/if}
+
+		{#if tables.length === 0}
+			<app-banner type="red">{_ ui.no_tables }</app-banner>
+		{:else}
+			<form method="POST" action="{~ localized_path('/routes/add-table-page') }" class="mt-4 grid gap-4 max-w-[60ch] lg:max-w-[100ch] lg:grid-cols-2 lg:gap-x-6">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="return_to" value="/routes" />
+
+				<field-wrapper class="grid" data-field="prefix">
+					<div class="grid">
+						<label class="px-3" for="tp-prefix">{_ labels.prefix}</label>
+						<input id="tp-prefix" name="prefix" pattern="[a-z0-9_\-\/]*" list="reeman-modules" title="{_ hints.prefix }" />
+						<datalist id="reeman-modules">
+							{#each modules as m}
+								<option value="{= m.code }">{= m.name }</option>
+							{/each}
+						</datalist>
+					</div>
+				</field-wrapper>
+
+				<field-wrapper class="grid" data-field="folder_name">
+					<div class="grid">
+						<label class="px-3" for="tp-folder">{_ labels.folder_name}</label>
+						<input id="tp-folder" name="folder_name" required pattern="[a-z0-9][a-z0-9_\-]*" title="{_ hints.folder_name }" placeholder="my_page" />
+					</div>
+				</field-wrapper>
+
+				<field-wrapper class="grid lg:col-span-2" data-field="table">
+					<div class="grid">
+						<label class="px-3" for="tp-table">{_ labels.table_name}</label>
+						<select id="tp-table" name="table" required>
+							<option value="">{_ selectors.select_table }</option>
+							{#each tables as t}
+								<option value="{= t }">{= t }</option>
+							{/each}
+						</select>
+					</div>
+				</field-wrapper>
+
+				<field-wrapper class="grid lg:col-span-2" data-field="fields">
+					<div class="grid">
+						<label class="px-3">{_ labels.fields}</label>
+						<div id="tp-fields" class="rounded border border-border bg-surface-raised">
+							<p class="p-3 text-text-secondary">{_ ui.select_table_first }</p>
+						</div>
+					</div>
+				</field-wrapper>
+
+				<field-wrapper class="grid lg:col-span-2" data-field="order_by">
+					<div class="grid">
+						<label class="px-3">{_ labels.order_by}</label>
+						<div id="tp-order-rows" class="grid gap-2"></div>
+						<button type="button" id="tp-order-add" class="as-button-secondary mt-2 justify-self-start text-xs" disabled>{_ actions.add_condition }</button>
+					</div>
+				</field-wrapper>
+
+				<field-wrapper class="grid lg:col-span-2" data-field="where">
+					<div class="grid">
+						<label class="px-3">{_ labels.where}</label>
+						<div id="tp-where-rows" class="grid gap-2"></div>
+						<button type="button" id="tp-where-add" class="as-button-secondary mt-2 justify-self-start text-xs" disabled>{_ actions.add_condition }</button>
+					</div>
+				</field-wrapper>
+
+				<div class="flex gap-2 items-center lg:col-span-2">
+					<button type="submit" id="tp-submit" class="as-button-primary" {#if busy}disabled{/if}>{_ actions.create }</button>
+					<a href="{~ localized_path('/routes') }" role="button" class="as-button-secondary">{_ actions.cancel}</a>
+				</div>
+			</form>
+
+			<script id="tp-table-columns" type="application/json">{~ table_columns_json }</script>
+
+			<template id="tp-order-row-tpl">
+				<div class="tp-row flex flex-wrap items-center gap-2">
+					<select name="order_field" class="tp-field w-[30ch]"></select>
+					<select name="order_dir" class="w-[14ch]">
+						<option value="asc">ASC</option>
+						<option value="desc">DESC</option>
+					</select>
+					<button type="button" class="tp-remove as-button-secondary text-xs">{_ actions.remove }</button>
+				</div>
+			</template>
+
+			<template id="tp-where-row-tpl">
+				<div class="tp-row flex flex-wrap items-center gap-2">
+					<select name="where_field" class="tp-field w-[24ch]"></select>
+					<select name="where_op" class="w-[12ch]">
+						{#each where_operators as op}
+							<option value="{= op }">{= op }</option>
+						{/each}
+					</select>
+					<input name="where_value" class="w-[24ch]" placeholder="value" />
+					<button type="button" class="tp-remove as-button-secondary text-xs">{_ actions.remove }</button>
+				</div>
+			</template>
+
+			<script>
+				(function () {
+					const columns_by_table = JSON.parse(document.getElementById("tp-table-columns").textContent || "{}");
+					const table_select = document.getElementById("tp-table");
+					const fields_box = document.getElementById("tp-fields");
+					const order_rows = document.getElementById("tp-order-rows");
+					const where_rows = document.getElementById("tp-where-rows");
+					const order_add = document.getElementById("tp-order-add");
+					const where_add = document.getElementById("tp-where-add");
+					const order_tpl = document.getElementById("tp-order-row-tpl");
+					const where_tpl = document.getElementById("tp-where-row-tpl");
+					const select_first_text = fields_box.textContent.trim();
+
+					let current_cols = [];
+
+					function render_fields() {
+						if (current_cols.length === 0) {
+							fields_box.innerHTML = '<p class="p-3 text-text-secondary"></p>';
+							fields_box.querySelector("p").textContent = select_first_text;
+							return;
+						}
+						fields_box.innerHTML = "";
+						for (const col of current_cols) {
+							const label = document.createElement("label");
+							label.className = "flex cursor-pointer items-center gap-1.5 px-3 py-2 border-b border-border last:border-b-0";
+							const cb = document.createElement("input");
+							cb.type = "checkbox";
+							cb.name = "fields";
+							cb.value = col;
+							const span = document.createElement("span");
+							span.textContent = col;
+							label.append(cb, span);
+							fields_box.appendChild(label);
+						}
+					}
+
+					function fill_field_select(select) {
+						select.innerHTML = "";
+						for (const col of current_cols) {
+							const opt = document.createElement("option");
+							opt.value = col;
+							opt.textContent = col;
+							select.appendChild(opt);
+						}
+					}
+
+					function add_row(container, tpl) {
+						const row = tpl.content.firstElementChild.cloneNode(true);
+						fill_field_select(row.querySelector(".tp-field"));
+						row.querySelector(".tp-remove").addEventListener("click", () => row.remove());
+						container.appendChild(row);
+					}
+
+					table_select.addEventListener("change", () => {
+						current_cols = columns_by_table[table_select.value] || [];
+						const has_cols = current_cols.length > 0;
+						order_add.disabled = !has_cols;
+						where_add.disabled = !has_cols;
+						order_rows.innerHTML = "";
+						where_rows.innerHTML = "";
+						render_fields();
+					});
+
+					order_add.addEventListener("click", () => add_row(order_rows, order_tpl));
+					where_add.addEventListener("click", () => add_row(where_rows, where_tpl));
+
+					document.querySelector("form").addEventListener("submit", () => {
+						document.querySelectorAll("form > .flex > button, #tp-submit").forEach((btn) => { btn.disabled = true; });
+					});
+				})();
+			</script>
+		{/if}
+	</div>
+{/with}
