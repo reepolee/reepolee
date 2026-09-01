@@ -10,7 +10,7 @@
  */
 
 import { mock } from "bun:test";
-import { closeSync, mkdtempSync, openSync, rmSync } from "node:fs";
+import { closeSync, mkdtempSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -101,8 +101,9 @@ export async function get_test_db_connection(): Promise<SQL> { return await conn
  * that assert on the *whole table* being empty (e.g. "first user gets system
  * modules"), so those files must hold this cross-process lock for their
  * entire test suite - only one such file runs its DB-touching code at a
- * time. A plain lock file (not a DB-level lock) is used so it works
- * identically for both supported TEST_CONNECTION_STRING backends.
+ * time. A PID-owned lock file (not a DB-level lock) is used so it works
+ * identically for both supported TEST_CONNECTION_STRING backends. A later
+ * test run removes a lock left behind by an interrupted owner process.
  *
  * Usage (module scope, before any test() calls):
  * const release = await acquire_users_table_lock();
@@ -111,17 +112,40 @@ export async function get_test_db_connection(): Promise<SQL> { return await conn
 export async function acquire_users_table_lock(): Promise<() => Promise<void>> {
 	const lock_path = join(tmpdir(), "reepolee-test-users-table.lock");
 	const poll_ms = 50;
+	const lock_owner = `${process.pid}\n`;
 	while (true) {
 		try {
 			const fd = openSync(lock_path, "wx");
+			writeFileSync(fd, lock_owner);
 			closeSync(fd);
 			break;
 		} catch (error: any) {
 			if (error?.code !== "EEXIST") throw error;
+			if (!users_table_lock_owner_is_running(lock_path)) {
+				rmSync(lock_path, { force: true });
+				continue;
+			}
 			await new Promise((resolve) => setTimeout(resolve, poll_ms));
 		}
 	}
-	return async () => { rmSync(lock_path, { force: true }); };
+	return async () => {
+		try {
+			if (readFileSync(lock_path, "utf8") === lock_owner) rmSync(lock_path, { force: true });
+		} catch (error: any) {
+			if (error?.code !== "ENOENT") throw error;
+		}
+	};
+}
+
+function users_table_lock_owner_is_running(lock_path: string): boolean {
+	try {
+		const lock_owner = Number(readFileSync(lock_path, "utf8").trim());
+		if (!Number.isSafeInteger(lock_owner) || lock_owner <= 0) return false;
+		process.kill(lock_owner, 0);
+		return true;
+	} catch (error: any) {
+		return error?.code !== "ESRCH" && error?.code !== "ENOENT";
+	}
 }
 
 /**

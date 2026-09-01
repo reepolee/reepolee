@@ -346,8 +346,6 @@ async function build_view_actions(
 	expected: readonly ExpectedTable[],
 	localized_tables: ReadonlySet<string>,
 ): Promise<SyncAction[]> {
-	if (dialect !== "sqlite") return [];
-
 	const base_view = `v_${base_table}`;
 	const expected_view_names = new Set(expected.map((table) => `${base_view}_${table.name.slice(base_table.length + 1)}`));
 
@@ -358,20 +356,19 @@ async function build_view_actions(
 	// drops the clone tables; their views must go too, or they become broken
 	// views pointing at a table that no longer exists (introspection then logs
 	// "no such table" on every page load).
-	for (const view_name of await find_stale_views(db, base_view, expected_view_names)) {
-		actions.push({ kind: "drop_table", table: view_name, sql: `DROP VIEW IF EXISTS "${view_name}"` });
+	for (const view_name of await find_stale_views(db, dialect, base_view, expected_view_names)) {
+		actions.push({ kind: "drop_table", table: view_name, sql: drop_view_sql(view_name, dialect) });
 	}
 
 	if (expected.length === 0) return actions;
 
-	const rows = (await db.unsafe(`SELECT sql FROM sqlite_master WHERE type = 'view' AND name = ?`, [base_view])) as any[];
-	const base_sql = String(rows[0]?.sql ?? "");
+	const base_sql = await read_view_sql(db, dialect, base_view);
 	if (!base_sql) return actions;
 
 	for (const expected_table of expected) {
 		const suffix = expected_table.name.slice(base_table.length + 1);
 		const view_name = `${base_view}_${suffix}`;
-		let view_sql = base_sql.replace(new RegExp(`CREATE\\s+VIEW\\s+"?${base_view}"?`, "i"), `CREATE VIEW "${view_name}"`);
+		let view_sql = replace_view_name(base_sql, base_view, view_name, dialect);
 
 		// Point the view at this locale's tables. Longest names first so
 		// `developers` does not partially rewrite inside `developers_sl_si`.
@@ -384,15 +381,42 @@ async function build_view_actions(
 
 		// Only rebuild when missing or stale, so a converged schema still
 		// reports no actions and the syncer stays idempotent.
-		const existing = (await db.unsafe(`SELECT sql FROM sqlite_master WHERE type = 'view' AND name = ?`, [view_name])) as any[];
-		const current_sql = existing.length > 0 ? String(existing[0]?.sql ?? "") : "";
+		const current_sql = await read_view_sql(db, dialect, view_name);
 		if (current_sql === view_sql) continue;
 
-		if (current_sql) actions.push({ kind: "drop_table", table: view_name, sql: `DROP VIEW IF EXISTS "${view_name}"` });
+		if (current_sql) actions.push({ kind: "drop_table", table: view_name, sql: drop_view_sql(view_name, dialect) });
 		actions.push({ kind: "create_table", table: view_name, sql: view_sql });
 	}
 
 	return actions;
+}
+
+function quote_view_name(view_name: string, dialect: DbDialect): string {
+	return dialect === "mysql" ? `\`${view_name}\`` : `"${view_name}"`;
+}
+
+function drop_view_sql(view_name: string, dialect: DbDialect): string {
+	return `DROP VIEW IF EXISTS ${quote_view_name(view_name, dialect)}`;
+}
+
+function replace_view_name(view_sql: string, base_view: string, view_name: string, dialect: DbDialect): string {
+	const view_pattern = new RegExp(`\\bVIEW\\s+(?:\`|")?${base_view}(?:\`|")?`, "i");
+	return view_sql.replace(view_pattern, `VIEW ${quote_view_name(view_name, dialect)}`);
+}
+
+async function read_view_sql(db: SQL, dialect: DbDialect, view_name: string): Promise<string> {
+	if (dialect === "sqlite") {
+		const rows = (await db.unsafe(`SELECT sql FROM sqlite_master WHERE type = 'view' AND name = ?`, [view_name])) as any[];
+		return String(rows[0]?.sql ?? "");
+	}
+
+	try {
+		const rows = (await db.unsafe(`SHOW CREATE VIEW \`${view_name}\``)) as any[];
+		const row = rows[0];
+		return String(row?.["Create View"] ?? row?.["create view"] ?? row?.["Create_View"] ?? row?.create_view ?? "");
+	} catch {
+		return "";
+	}
 }
 
 /**
@@ -401,13 +425,15 @@ async function build_view_actions(
  * is dropped alongside its table; is_locale_suffixed guards against unrelated
  * same-prefix views such as `v_frameworks_summary`.
  */
-async function find_stale_views(db: SQL, base_view: string, expected_view_names: ReadonlySet<string>): Promise<string[]> {
+async function find_stale_views(db: SQL, dialect: DbDialect, base_view: string, expected_view_names: ReadonlySet<string>): Promise<string[]> {
 	const like_pattern = `${base_view}_%`;
-	const candidates = (await db.unsafe(`SELECT name FROM sqlite_master WHERE type = 'view' AND name LIKE ?`, [like_pattern])) as any[];
+	const rows = dialect === "sqlite"
+		? (await db.unsafe(`SELECT name FROM sqlite_master WHERE type = 'view' AND name LIKE ?`, [like_pattern])) as any[]
+		: (await db.unsafe(`SELECT TABLE_NAME FROM information_schema.VIEWS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME LIKE ?`, [like_pattern])) as any[];
 
 	const stale: string[] = [];
-	for (const candidate of candidates) {
-		const name = String(candidate.name ?? candidate);
+	for (const candidate of rows) {
+		const name = String(candidate.name ?? candidate.TABLE_NAME ?? candidate.table_name ?? candidate);
 		if (expected_view_names.has(name)) continue;
 		if (!is_locale_suffixed(name, base_view)) continue;
 		stale.push(name);

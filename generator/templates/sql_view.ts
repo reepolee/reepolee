@@ -111,6 +111,6 @@ export async function get_all_records_view(search: string = "", after: string | 
 		});
 	} catch (error) {
 		console.error("Error fetching records from view __view.name__:", error);
-		return { records: [], total: 0 };
+		throw error;
 	}
 }
