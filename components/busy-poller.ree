@@ -1,0 +1,126 @@
+<!--
+	Translation status strip. Generation and AI translation are separate phases:
+	the generator enqueues translate_batch and exits, so props.busy clears while
+	the AI work is still queued or running. This polls /__busy independently of
+	the busy banner so a finished generation with pending translations is visible
+	rather than looking complete.
+-->
+<div id="reeman-error-banner" hidden role="alert" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-[min(90vw,70ch)] rounded-md border border-brand bg-brand/10 px-4 py-3 text-sm shadow-lg">
+	<div class="font-semibold text-brand">Reeman action failed</div>
+	<div id="reeman-error-text" class="mt-1 whitespace-pre-wrap break-words"></div>
+	<div class="mt-2 flex items-center gap-3 text-xs">
+		<a href="/logs" class="font-semibold text-brand underline">View run log</a>
+		<button id="reeman-error-dismiss" type="button" class="text-text-secondary underline">Dismiss</button>
+	</div>
+</div>
+
+<div id="translating-strip" hidden class="fixed top-4 left-1/2 -translate-x-1/2 z-50 rounded-md border border-border bg-surface-raised px-3 py-2 text-xs text-text-secondary shadow-lg">
+	<span id="translating-text"></span>
+</div>
+<script>
+	(() => {
+		const POLL_INTERVAL_MS = 3000;
+		const strip = document.getElementById("translating-strip");
+		const text = document.getElementById("translating-text");
+		const error_banner = document.getElementById("reeman-error-banner");
+		const error_text = document.getElementById("reeman-error-text");
+		const error_dismiss = document.getElementById("reeman-error-dismiss");
+		if (!strip || !text || !error_banner || !error_text || !error_dismiss) return;
+
+		let dismissed_error_id = "";
+		let current_error_id = "";
+		try { dismissed_error_id = localStorage.getItem("reeman-dismissed-error-id") || ""; } catch {}
+		error_dismiss.addEventListener("click", () => {
+			error_banner.hidden = true;
+			try { localStorage.setItem("reeman-dismissed-error-id", current_error_id); } catch {}
+		});
+
+		const show_error = (error) => {
+			if (!error || !error.id || error.id === dismissed_error_id) return;
+			current_error_id = error.id;
+			error_text.textContent = `${error.action}${error.target ? ` (${error.target})` : ""}: ${error.message}`;
+			error_banner.hidden = false;
+		};
+		let last_count = 0;
+		const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+		// Returns false when polling should stop because the page is navigating away.
+		const poll_once = async () => {
+			if (document.hidden) return true;
+			try {
+				const response = await fetch("/__busy", { headers: { Accept: "application/json", "Accept-Language": document.documentElement.lang || "en-us" } });
+				if (!response.ok) return true;
+				const data = await response.json();
+				show_error(data?.error);
+				const count = (data && typeof data.translating === "number") ? data.translating : 0;
+				if (count > 0) {
+					text.textContent = "{_ ui.busy_poller_translating}".replace("{count}", count);
+					strip.hidden = false;
+				} else {
+					// Went from translating to done: pick up the new strings.
+					if (last_count > 0) { location.reload(); return false; }
+					strip.hidden = true;
+				}
+				last_count = count;
+			} catch {
+				// Server restarting - keep polling.
+			}
+			return true;
+		};
+
+		(async () => {
+			// Check before the first sleep. The generator reloads this page as it
+			// writes .ree files, so a page that loads mid-translation would show
+			// nothing for a whole poll interval on every reload - long enough to
+			// look like the strip is missing entirely.
+			if (!(await poll_once())) return;
+			for (;;) {
+				await sleep(POLL_INTERVAL_MS);
+				if (!(await poll_once())) return;
+			}
+		})();
+	})();
+</script>
+
+{#if props.busy}
+	<script>
+		(() => {
+			// This page rendered while a reeman action is running. Live-reload
+			// reloads the page mid-generation (generators write .ree files),
+			// which strands it on the busy banner once the action finishes -
+			// the 303 redirect + toast are lost to that reload. Poll the busy
+			// endpoint and navigate to the redirect target (if the handler
+			// stored one) as soon as the action completes.
+			const POLL_INTERVAL_MS = 2000;
+			const MAX_ATTEMPTS = 600; // 20 minutes
+			const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+			(async () => {
+				for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+					await sleep(POLL_INTERVAL_MS);
+					if (document.hidden) continue;
+					try {
+						const response = await fetch("/__busy", { headers: { Accept: "application/json", "Accept-Language": document.documentElement.lang || "en-us" } });
+						if (!response.ok) continue;
+						const data = await response.json();
+						// Strictly false - a redirect to login renders HTML with no busy key.
+						if (data && data.busy === false) {
+							if (data.error) {
+								// Keep the failed operation visible. Never redirect or
+								// reload over the diagnostic message.
+								return;
+							}
+							if (data.redirect_to) {
+								location.href = data.redirect_to;
+							} else {
+								location.reload();
+							}
+							return;
+						}
+					} catch {
+						// Server restarting - keep polling.
+					}
+				}
+			})();
+		})();
+	</script>
+{/if}
