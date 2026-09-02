@@ -1,0 +1,27 @@
+{
+	"actions": {
+		"add_locale": "Dodaj jezik",
+		"fields": "Samo polja",
+		"refresh_crud": "Osveži CRUD",
+		"sync_locale_tables": "Sinhroniziraj jezikovne tabele",
+		"sync_translations": "Sinhroniziraj prevode",
+		"translate": "Prevedi z AI"
+	},
+	"hints": {
+		"locale_code": "Koda jezika po BCP 47 za dodajanje (npr. de-at)"
+	},
+	"labels": {
+		"locale_code": "Koda jezika",
+		"route": "Pot",
+		"template_tags": "Predloge polj"
+	},
+	"nav": "Osvežitev",
+	"selectors": {
+		"default": "(privzeto)"
+	},
+	"ui": {
+		"busy": "Obdelava v teku — stran se bo osvežila, ko bo končano.",
+		"refresh_description": "Sinhroniziraj prevode, upravljaj jezike in osveži jezikovne tabele.",
+		"refresh_title": "Osvežitev in jeziki"
+	}
+}

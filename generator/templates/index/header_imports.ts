@@ -1,0 +1,25 @@
+import { get_cookie } from "$lib/cookies";
+import { get_locale_from_request, localized_url } from "$lib/route";
+import { get_table_name_from_dir } from "$lib/helpers";
+__import.conditional_helpers____import.crud_routes____import.pagination__
+__route.param_imports__import { get_global_scopes, get_scope_clause, resolve_scope_key } from "$lib/global_scopes";
+__import.archive__import { enrich_filter_definitions, get_filter_definitions, resolve_filters } from "$lib/table_filters";
+import { render, render_to_string } from "$lib/render";
+import { create_ctx } from "$lib/request_context";
+
+import { get_record_by_id, create_record, update_record, __archive.record_fn__, search_records__nested.import____archive.sql_imports__, TABLE_NAME, UPDATE_COLUMNS } from "./sql";
+__import.ree_icon__import { cache } from "$lib/cache";
+__import.view__
+import { default_locale } from "$config/supported_locales";
+import { strip_api_sensitive } from "$config/api_blocklist";
+import { wants_json } from "$lib/wants_json";
+import { sql_log } from "$lib/logger";
+import { notify_updates } from "$lib/livereload";
+__import.bun__
+
+import { validate, validate_touched__import.validation_schema__ } from "./validation_server";
+import { columns, enable_archive, fields, grid_filler } from "./config";
+
+__import.localization__
+__import.select_functions__
+__import.tags__

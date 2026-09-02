@@ -1,0 +1,109 @@
+{
+	"actions": {
+		"add_another_route": "Dodaj drugo pot",
+		"bulk_action": "Izbriši izbrane db tabele",
+		"bulk_action_2": "Skupna akcija 2",
+		"cancel": "Prekliči",
+		"do_it": "Da, naredi",
+		"fields": "Samo polja",
+		"force": "Prisili prepis",
+		"generate_crud": "Ustvari CRUD",
+		"new_db_table": "Nova Db tabela",
+		"refresh_crud": "Osveži CRUD",
+		"save": "Shrani",
+		"save_close": "Shrani in zapri",
+		"schema_only": "Samo shema",
+		"translate": "Prevedi z UI"
+	},
+	"child_ui": {
+		"actions": "Akcije",
+		"delete": "Briši",
+		"deleting": "Brišem…",
+		"edit": "Uredi",
+		"edit_title": "Uredi Db_table",
+		"empty_text": "Ni najdenih db tabel.",
+		"error_deleting": "Napaka pri brisanju zapisa.",
+		"error_loading": "Napaka pri nalagani zapisa.",
+		"error_saving": "Napaka pri shranjevanju zapisa.",
+		"new_button": "+ Nova Db_table",
+		"new_title": "Nova Db_table"
+	},
+	"errors": {
+		"duplicate_key": "Zapis s to vrednostjo že obstaja.",
+		"error_creating_record": "Med shranjevanjem zapisa je prišlo do napake.",
+		"has_crud_required": "Has crud je obvezen.",
+		"must_be_selected": "To polje je obvezno.",
+		"name_required": "Ime je obvezno.",
+		"title_required": "Naslov je obvezen.",
+		"value_required_or_use_original": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+	},
+	"hints": {
+		"prefix": "Neobvezna predpona URL poti za generirane poti (npr. admin). Pustite prazno za koren.",
+		"route_name": "Neobvezno ime URL, ki nadomesti ime tabele (npr. my-users)"
+	},
+	"labels": {
+		"actions": "Akcije",
+		"class": "Razred",
+		"column_count": "Število stolpcev",
+		"default": "(privzeto)",
+		"display": "Prikaz",
+		"filter": "Filter",
+		"fk_count": "Število FK",
+		"has_crud": "Ima CRUD",
+		"helper": "Predloga pomoči",
+		"index_columns": "Stolpci za indeks",
+		"localized": "Lokalizirano",
+		"mode": "Način",
+		"name": "Ime",
+		"no_helper": "Brez (privzeto)",
+		"pagination": "Straničenje",
+		"prefix": "Predpona",
+		"readonly": "Samo za branje",
+		"render_strategy": "Način izrisa",
+		"route_name": "Ime poti (neobvezno)",
+		"row_count": "Število vrstic",
+		"table": "Tabela / Pot",
+		"template_hash_status": "Predloge",
+		"template_tags": "Predloge polj",
+		"width": "Širina"
+	},
+	"messages": {
+		"bulk_delete_failed": "Skupno brisanje ni uspelo.",
+		"bulk_delete_no_ids": "Ni izbranih db tabel.",
+		"bulk_deleted": "Ni izbrisanih db tabel|{count} db tabela izbrisana|{count} db tabeli izbrisani|{count} db tabele izbrisane|{count} db tabel izbrisanih",
+		"bulk_errors": "|{count} db tabela ni uspela|{count} db tabeli nista uspeli|{count} db tabele niso uspele|{count} db tabel ni uspelo",
+		"record_created": "Zapis ustvarjen",
+		"record_updated": "Zapis posodobljen"
+	},
+	"nav": "Db tabele",
+	"route_name": "db-tabele",
+	"search": {
+		"search_term": "Iskanje db tabel...",
+		"submit": "Iskaj"
+	},
+	"selectors": {
+		"0": "Ne",
+		"1": "Da",
+		"all": "Vse",
+		"clean": "Čisto",
+		"default": "(ohrani trenutno)",
+		"modified": "Spremenjeno",
+		"per_page": "na stran",
+		"select_table": "-- Izberi tabelo ali pot --",
+		"untracked": "Brez sledenja"
+	},
+	"ui": {
+		"apply_filters": "Uporabi",
+		"busy": "Obdelava v teku — stran se bo osvežila, ko bo končano.",
+		"clear_all": "Briši vse",
+		"filter_not": "NI",
+		"loading_count": "Nalagam…",
+		"modifying": "Pred uporabami spremembo",
+		"no_records": "Ni najdenih db tabel.",
+		"no_selectable_columns": "Ni izbirnih stolpcev za indeks - uporabljene bodo privzete nastavitve generatorja.",
+		"no_tables_selected": "Pred ustvarjanjem CRUD izberite vsaj eno tabelo.",
+		"records": "zapis(ov)",
+		"refresh_skip_hint": "Tabele brez obstoječega CRUD so preskočene.",
+		"title": "Db tabela"
+	}
+}

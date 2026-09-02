@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="{= format_bcp47(props.locale) }" class="{= props.theme_class }">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<link rel="stylesheet" href='/app.css?v={= props.version }' />
+		<title>{= props.translations?.ui?.title || props.site_name}</title>
+
+		<script src="/helpers-client.js?v={= props.version }"></script>
+		<script src="/web-components/validation-error.js?v={= props.version }"></script>
+		<script src="/web-components/toasts-area.js?v={= props.version }"></script>
+		<script src="/web-components/markdown-editor.js?v={= props.version }"></script>
+		<script src="/web-components/date-input.js?v={= props.version }"></script>
+		<!-- <script src="/dpu.min.js?v={= props.version }" defer></script> -->
+
+		{#if (!props.is_dev)}
+			<!-- {#include('speculationrules.partial')} -->
+		{/if}
+		<meta http-equiv="Content-Language" content="{= format_bcp47(props.locale) }" />
+
+		<!-- Presentation boundaries: conventional BCP 47 casing for search/OG metadata.
+		     hreflang hrefs are absolute when a request origin is available, relative otherwise. -->
+		{#if props.request_url}
+			<link rel="alternate" hreflang="x-default" href="{~ `${props.request_origin}${localized_path_for_locale(props.default_locale, props.request_url)}` }" />
+			{#each props.active_locales as alt_locale}
+				<link rel="alternate" hreflang="{= format_bcp47(alt_locale) }" href="{~ `${props.request_origin}${localized_path_for_locale(alt_locale, props.request_url)}` }" />
+			{/each}
+		{/if}
+		<meta property="og:locale" content="{= format_og_locale(props.locale) }" />
+		{#each props.active_locales as alt_locale}
+			{#if alt_locale !== props.locale}
+				<meta property="og:locale:alternate" content="{= format_og_locale(alt_locale) }" />
+			{/if}
+		{/each}
+	</head>
+
+	<body class="bg-surface grid grid-cols-[30ch_1fr] min-h-screen">
+
+		{#if props.path_locale && props.locale_preferred && props.path_locale !== props.locale_preferred}
+			<!-- LANG MISMATCH DIALOG START -->
+			<dialog id="lang_mismatch_dialog" class="p-0 rounded-xl shadow-2xl min-w-100">
+				<div class="p-6">
+					<h2 class="text-lg font-semibold">{_ ui.lang_mismatch_title}</h2>
+					<p class="text-slate-600 mt-2">
+						{_ ui.lang_mismatch_body}
+						<strong>{= props.path_locale_name}</strong>
+					</p>
+					<div class="mt-6 flex justify-end gap-2">
+						<form method="dialog">
+							<button class="px-3 py-1 rounded bg-slate-200" value="dismiss">{_ actions.lang_mismatch_dismiss}</button>
+						</form>
+						<a href="?locale={= props.locale_preferred }" class="px-3 py-1 rounded bg-brand text-white no-underline">{_ actions.lang_mismatch_switch}</a>
+					</div>
+				</div>
+			</dialog>
+			<script>
+				document.getElementById("lang_mismatch_dialog")?.showModal();
+			</script>
+			<!-- LANG MISMATCH DIALOG END -->
+		{/if}
+		<aside class="flex flex-col bg-neutral-200  border-r border-r-neutral-300 h-screen sticky top-0 max-xl:hidden">
+			<sidebar-header></sidebar-header>
+			<sidebar-nav></sidebar-nav>
+			<sidebar-footer></sidebar-footer>
+		</aside>
+
+		<main id="main" class="max-xl:min-w-screen">{~ props.body}</main>
+
+		<toasts-area id="toasts-area">
+			<!-- TOASTS (server-rendered, no JS required) -->
+			{#each props.toasts as toast}
+				{{
+					const toast_classes = new Map([
+						['green', 'bg-green-600/90 text-white'],
+						['red', 'bg-brand/90 text-white'],
+						['yellow', 'bg-amber-300/90 text-black'],
+					]);
+					const toast_class = toast_classes.get(toast.type) ?? 'bg-white text-black border border-neutral-300';
+				}}
+				<div
+					id="toast-{= toast.key }"
+					class="animate-in-top"
+					style="--toast-duration:{= toast.duration ?? 3000 }ms"
+				>
+
+					<div class="relative px-3 py-2 mb-3 {= toast_class }	font-semibold rounded-sm min-w-96 pointer-events-auto">
+
+						<div class="pr-6">
+							{= toast.message } {~ toast.user ? `(${toast.user})` : "" }
+						</div>
+
+						<a href="#toast-{= toast.key }" class="absolute top-1 right-1 h-8 w-8 flex items-center justify-center text-lg leading-none opacity-70 hover:opacity-100 hover:bg-black/10 rounded-full no-underline" aria-label="Close toast">
+							🗙
+						</a>
+
+					</div>
+				</div>
+			{/each}
+		</toasts-area>
+		{#if is_dev}
+			<script src="/web-components/tailwind-size.js?v={= props.version }"></script>
+			<tailwind-size-toggle></tailwind-size-toggle>
+			<script>
+				console.info({~ props.toJSON});
+				window.addEventListener("pageshow", (event) => {
+					if (event.persisted) {
+						console.log("Page restored from BFCache");
+					} else {
+						console.log("Normal page load");
+					}
+				});
+				const nav = performance.getEntriesByType("navigation")[0];
+				console.log("navigation type:", nav?.type);
+			</script>
+		{/if}
+
+		<!-- Auto-refresh busy pages once the in-flight reeman action completes. Only
+		     apps that serve /__busy (reeman, reeqa) render this - the main app's
+		     generated/public pages have no such route, so polling it would 404. -->
+		{#if props.busy_poller}
+			<busy-poller></busy-poller>
+		{/if}
+	</body>
+
+	<script>
+		init_theme_toggle();
+
+		const automatic_nav_details = document.querySelectorAll('details[data-nav-module][data-nav-manual="false"], details[data-nav-section][data-nav-manual="false"]');
+		for (const automatic_nav_detail of automatic_nav_details) {
+			const current_entry = automatic_nav_detail.querySelector("a.current");
+			automatic_nav_detail.open = current_entry !== null;
+		}
+
+		function close_automatic_nav_siblings(nav_detail) {
+			const section_id = nav_detail.dataset.navSection;
+			const is_top_level = nav_detail.hasAttribute("data-nav-module") || section_id?.startsWith("root:");
+			const sibling_selector = is_top_level
+				? 'details[data-nav-module][data-nav-manual="false"], details[data-nav-section^="root:"][data-nav-manual="false"]'
+				: `details[data-nav-section^="${CSS.escape(section_id?.split(":")[0] || "") }:"][data-nav-manual="false"]`;
+			const sibling_details = document.querySelectorAll(sibling_selector);
+			for (const sibling_detail of sibling_details) {
+				if (sibling_detail !== nav_detail) sibling_detail.open = false;
+			}
+		}
+
+		const nav_summaries = document.querySelectorAll("details[data-nav-module] > summary, details[data-nav-section] > summary");
+		for (const nav_summary of nav_summaries) {
+			nav_summary.addEventListener("click", (event) => {
+				const nav_detail = nav_summary.parentElement;
+				if (!(nav_detail instanceof HTMLDetailsElement)) return;
+				if (nav_detail.dataset.navManual === "true") return;
+				event.preventDefault();
+
+				const should_open = !nav_detail.open;
+				if (should_open) close_automatic_nav_siblings(nav_detail);
+				nav_detail.open = should_open;
+			});
+		}
+
+		const nav_module_details = document.querySelectorAll("details[data-nav-module]");
+		for (const nav_module_detail of nav_module_details) {
+			nav_module_detail.addEventListener("toggle", () => {
+				const collapsed_modules = Array.from(document.querySelectorAll("details[data-nav-module]:not([open])"), (element) => element.dataset.navModule);
+				const cookie_value = encodeURIComponent(JSON.stringify(collapsed_modules));
+				document.cookie = `nav_collapsed_modules=${cookie_value}; path=/; max-age=31536000; samesite=lax`;
+			});
+		}
+
+		const nav_mode_buttons = document.querySelectorAll("button[data-nav-mode-toggle]");
+		for (const nav_mode_button of nav_mode_buttons) {
+			nav_mode_button.addEventListener("click", (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				const module_name = nav_mode_button.dataset.navModule;
+				const nav_detail = document.querySelector(`details[data-nav-module="${module_name}"]`);
+				if (!module_name || !(nav_detail instanceof HTMLDetailsElement)) return;
+
+				const is_manual = nav_detail.dataset.navManual === "true";
+				nav_detail.dataset.navManual = String(!is_manual);
+				nav_mode_button.setAttribute("aria-pressed", String(!is_manual));
+				const mode_label = is_manual ? nav_mode_button.dataset.autoLabel : nav_mode_button.dataset.manualLabel;
+				nav_mode_button.setAttribute("aria-label", mode_label || "");
+				nav_mode_button.title = mode_label || "";
+				nav_mode_button.querySelector("[data-nav-auto-icon]")?.toggleAttribute("hidden", !is_manual);
+				nav_mode_button.querySelector("[data-nav-manual-icon]")?.toggleAttribute("hidden", is_manual);
+
+				const manual_modules = Array.from(document.querySelectorAll('details[data-nav-module][data-nav-manual="true"]'), (element) => element.dataset.navModule);
+				const cookie_value = encodeURIComponent(JSON.stringify(manual_modules));
+				document.cookie = `nav_manual_modules=${cookie_value}; path=/; max-age=31536000; samesite=lax`;
+
+				if (is_manual) nav_detail.open = Boolean(nav_detail.querySelector("a.current"));
+			});
+		}
+
+		const nav_section_details = document.querySelectorAll("details[data-nav-section]");
+		for (const nav_section_detail of nav_section_details) {
+			nav_section_detail.addEventListener("toggle", () => {
+				const collapsed_sections = Array.from(document.querySelectorAll("details[data-nav-section]:not([open])"), (element) => element.dataset.navSection);
+				const cookie_value = encodeURIComponent(JSON.stringify(collapsed_sections));
+				document.cookie = `nav_collapsed_sections=${cookie_value}; path=/; max-age=31536000; samesite=lax`;
+			});
+		}
+
+		const nav_section_mode_buttons = document.querySelectorAll("button[data-nav-section-mode-toggle]");
+		for (const nav_section_mode_button of nav_section_mode_buttons) {
+			nav_section_mode_button.addEventListener("click", (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				const section_id = nav_section_mode_button.dataset.navSection;
+				const nav_detail = document.querySelector(`details[data-nav-section="${section_id}"]`);
+				if (!section_id || !(nav_detail instanceof HTMLDetailsElement)) return;
+
+				const is_manual = nav_detail.dataset.navManual === "true";
+				nav_detail.dataset.navManual = String(!is_manual);
+				nav_section_mode_button.setAttribute("aria-pressed", String(!is_manual));
+				const mode_label = is_manual ? nav_section_mode_button.dataset.autoLabel : nav_section_mode_button.dataset.manualLabel;
+				nav_section_mode_button.setAttribute("aria-label", mode_label || "");
+				nav_section_mode_button.title = mode_label || "";
+				nav_section_mode_button.querySelector("[data-nav-auto-icon]")?.toggleAttribute("hidden", !is_manual);
+				nav_section_mode_button.querySelector("[data-nav-manual-icon]")?.toggleAttribute("hidden", is_manual);
+
+				const manual_sections = Array.from(document.querySelectorAll('details[data-nav-section][data-nav-manual="true"]'), (element) => element.dataset.navSection);
+				const cookie_value = encodeURIComponent(JSON.stringify(manual_sections));
+				document.cookie = `nav_manual_sections=${cookie_value}; path=/; max-age=31536000; samesite=lax`;
+
+				if (is_manual) nav_detail.open = Boolean(nav_detail.querySelector("a.current"));
+			});
+		}
+	</script>
+
+</html>
