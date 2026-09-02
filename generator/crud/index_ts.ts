@@ -7,7 +7,6 @@ import { apply_template } from "./template_substitutor";
 import { select_templates } from "./template_selector";
 import type { LocalizedFieldMeta } from "./types";
 import type { FieldDef, ForeignKeyMap, ParentInfo } from "./types";
-import type { NavigationConfig } from "./schema_reader";
 
 // ---------------------------------------------------------------------------
 // Tags fields helpers
@@ -108,8 +107,8 @@ async function load_select_imports(foreign_keys: ForeignKeyMap): Promise<string>
 
 // A column is filterable either via the DDL comment `F` flag (synced into
 // fields[name].attributes.filter at schema-generation time) or via a manual
-// `filter: true` added to the `columns` map in table.ts after generation.
-// Both sources must be checked - table.ts customizations never round-trip
+// `filter: true` added to the `columns` map in config.ts after generation.
+// Both sources must be checked - config.ts customizations never round-trip
 // back into attributes.filter.
 function is_filterable_fk_field(f: FieldDef, columns?: Record<string, any> | null): boolean {
 	if (f.type !== "foreign_key" || !f.attributes?.foreign_key) return false;
@@ -168,7 +167,6 @@ export interface GenerateIndexConfig {
 	localized_fields?: LocalizedFieldMeta[];
 	/** Fields displayed on edit forms but never accepted from the request. */
 	readonly_fields?: ReadonlySet<string>;
-	navigation?: NavigationConfig;
 }
 
 // ---------------------------------------------------------------------------
@@ -525,7 +523,7 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 			lines.splice(last_import + 1, 0, routedef_import);
 			content = lines.join("\n");
 		}
-		const navigation_import = `import { navigation } from "./schema/table";`;
+		const navigation_import = `import { navigation } from "./config";`;
 		if (!content.includes(navigation_import)) {
 			const lines = content.split("\n");
 			const last_import = lines.findLastIndex((line) => line.trim().startsWith("import "));

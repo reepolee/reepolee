@@ -51,8 +51,8 @@ function walk_dir(dir: string, on_entry: (full_path: string, entry: Dirent, pare
  * index.ts and derive route metadata.
  *
  * Type is inferred from sibling files (same signals as get_route_detail):
- *   - crud     : has sql.ts + schema/ + form.ree
- *   - resource : has sql.ts (or schema/) but no form.ree
+ *   - crud     : has sql.ts + schema.generated.ts/config.ts + form.ree
+ *   - resource : has sql.ts (or schema metadata) but no form.ree
  *   - page     : plain index.ts route
  *
  * URL is derived from the folder path. The auth routes live under
@@ -66,7 +66,7 @@ export function list_route_paths(): Array<{ url: string; type: string; module: s
 	function classify(dir: string): string {
 		const has_sql = existsSync(join(dir, "sql.ts"));
 		const has_store = existsSync(join(dir, "store.ts"));
-		const has_schema = existsSync(join(dir, "schema"));
+		const has_schema = existsSync(join(dir, "schema.generated.ts")) || existsSync(join(dir, "config.ts"));
 		const has_form = existsSync(join(dir, "form.ree"));
 		if (has_store && has_schema && has_form) return "bread";
 		if ((has_sql || has_schema) && has_form) return "crud";
@@ -382,9 +382,9 @@ export async function get_route_detail(routeUrl: string): Promise<{ url: string;
 		"sql_view.ts",
 		"store.ts",
 		"store.custom.ts",
-		"schema/table.generated.ts",
-		"schema/table.ts",
-		"schema/validation_server.ts",
+		"schema.generated.ts",
+		"config.ts",
+		"validation_server.ts",
 	];
 	for (const p of patterns) {
 		const full_path = join(dir_path, p);
@@ -393,7 +393,7 @@ export async function get_route_detail(routeUrl: string): Promise<{ url: string;
 
 	const has_store = files.includes("store.ts");
 	const has_sql = files.includes("sql.ts");
-	const has_schema = files.some((file_path) => file_path.startsWith("schema/"));
+	const has_schema = files.includes("schema.generated.ts") || files.includes("config.ts");
 	const has_form = files.includes("form.ree");
 	const type = has_store && has_schema && has_form ? "bread" : has_sql && has_form ? "crud" : has_sql || has_schema ? "resource" : "page";
 	const storage = has_store ? "store" : has_sql ? "sql" : "none";

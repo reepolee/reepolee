@@ -34,7 +34,7 @@ import { generate_schema } from "../schema";
 import { create_bread, create_localized_bread } from "../crud/create_bread";
 import type { SyntheticSchema } from "../schema/types";
 import { run_full_pipeline } from "./callers/resource_caller";
-import { refresh_crud_fields_only, refresh_crud_for_table, update_pagination_strategy } from "./refresh_crud";
+import { refresh_crud_fields_only } from "./refresh_crud";
 import { sync_locale_tables_command } from "./sync_locale_tables";
 import { remove_examples_folder, remove_prefix_folder } from "./remove_prefix_route";
 import { remove_route } from "./remove_route";
@@ -245,8 +245,7 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 
 		case "bulk": {
 			const flags = parse_crud_flags(rest);
-			const { positionals } = parseArgs({ args: rest, allowPositionals: true, strict: false });
-			const tables = positionals.map((p) => String(p));
+			const tables = flags.positionals;
 			if (tables.length === 0) {
 				console.error("Usage: bun reeman bulk <table...> [--prefix <dir>] [--translate] [--pagination cursor|offset] [--render-strategy stream|load] [--template-tags flat|tags]");
 				process.exit(1);
@@ -486,49 +485,31 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 			const { values, positionals } = parseArgs({
 				args: rest,
 				options: {
-					mode: { type: "string", default: "full" },
+					mode: { type: "string", default: "fields" },
 					prefix: { type: "string", default: "" },
 					parent: { type: "string", default: "" },
 					"route-name": { type: "string", default: "" },
-					pagination: { type: "string" },
-					"template-tags": { type: "string" },
 					translate: { type: "boolean", default: false },
-					"reinject-children": { type: "boolean", default: false },
 				},
 				allowPositionals: true,
 				strict: false,
 			});
 			const table = positionals[0] !== undefined ? String(positionals[0]) : undefined;
-			const mode = values.mode === "fields" ? "fields" : "full";
-			const pagination_raw = values.pagination;
-			const pagination_method: "cursor" | "offset" | undefined = pagination_raw === "cursor" || pagination_raw === "offset" ? pagination_raw : undefined;
-			const template_tags_raw = values["template-tags"];
-			const template_tags: "flat" | "tags" | undefined = template_tags_raw === "flat" || template_tags_raw === "tags" ? template_tags_raw : undefined;
 			const prefix = String(values.prefix ?? "");
 			const parent = String(values.parent ?? "") || undefined;
 			const route_name = String(values["route-name"] ?? "") || undefined;
 			const translate = Boolean(values.translate);
 
 			if (!table) {
-				console.error("Usage: bun reeman refresh-crud <table> [--mode fields|full] [--prefix <dir>] [--parent <table>] [--pagination cursor|offset] [--template-tags flat|tags] [--translate] [--reinject-children]");
+				console.error("Usage: bun reeman refresh-crud <table> [--mode fields] [--prefix <dir>] [--parent <table>] [--translate]");
+				process.exit(1);
+			}
+			if (values.mode !== "fields") {
+				console.error("Full refresh is unavailable. Remove the route and generate it again for structural schema changes.");
 				process.exit(1);
 			}
 
-			if (pagination_method) { await update_pagination_strategy({ table, prefix, parent }, pagination_method); }
-
-			const success = mode === "fields"
-				? await refresh_crud_fields_only(table, prefix, parent, route_name, translate, template_tags)
-				: await refresh_crud_for_table(table, prefix, parent, route_name, translate, template_tags);
-
-			if (success && mode === "full" && values["reinject-children"]) {
-				const { discover_routes_with_schema } = await import("./utils/route_scan");
-				const routes = discover_routes_with_schema();
-				const child_routes = routes.filter((r) => r.parent === table && r.prefix === prefix);
-				for (const child of child_routes) {
-					console.log(`\n  ${color("Re-injecting child:", GREEN)} ${child.table}`);
-					await refresh_crud_for_table(child.table, child.prefix, child.parent, child.route_name, translate);
-				}
-			}
+			const success = await refresh_crud_fields_only(table, prefix, parent, route_name, translate);
 
 			process.exit(success ? 0 : 1);
 		}

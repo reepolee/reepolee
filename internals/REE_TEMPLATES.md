@@ -1083,7 +1083,7 @@ The `<image-upload>` component (`components/image-upload.ree`, `static/image-upl
 **Generator integration:** a column whose name ends in `_image` is auto-detected as `field.type === "image"` (see `IMAGE_SUFFIXES` in `config/db_structure.ts`) and gets:
 - A form field rendered via `<image-upload>` (`generator/templates/fields/image.ree`).
 - A grid cell rendered via `{~ image_thumbnail(record.field) }` - a 100x100 thumbnail helper (`lib/template_helpers.ts`), falling back to a placeholder box when empty.
-- A `domain: "image"` entry in the generated `schema/table.ts` `columns` map, checked against the canonical `VARCHAR(255)` SQL type by `check_domain_compliance`.
+- A `domain: "image"` entry in the generated `config.ts` `columns` map, checked against the canonical `VARCHAR(255)` SQL type by `check_domain_compliance`.
 
 `generate_input_field` (`generator/crud/form_ree.ts`) does not know a route's `module` at generation time, so the generated `<image-upload>` tag never sets `module` automatically - add it by hand to the generated `form.ree` where an upload should be gated.
 
@@ -1116,7 +1116,7 @@ The `<file-upload>` component (`components/file-upload.ree`, `static/file-upload
 **Generator integration:** a column whose name ends in `_file` is auto-detected as `field.type === "file"` (see `FILE_SUFFIXES` in `config/db_structure.ts`) and gets:
 - A form field rendered via `<file-upload>` (`generator/templates/fields/file.ree`).
 - A grid cell rendered via `{~ file_link(record.field) }` - a filename/download-link helper (`lib/template_helpers.ts`) that renders an em-dash when empty. A companion `file_icon_name(filename)` helper resolves a `<ree-icon>` name by extension (PDF, Word, Excel, CSV, PowerPoint, Zip), falling back to a generic file icon.
-- A `domain: "file"` entry in the generated `schema/table.ts` `columns` map, checked against the same canonical `VARCHAR(255)` SQL type as image fields by `check_domain_compliance`.
+- A `domain: "file"` entry in the generated `config.ts` `columns` map, checked against the same canonical `VARCHAR(255)` SQL type as image fields by `check_domain_compliance`.
 
 #### CRUD form-field ReeTags (`--template-tags tags` mode)
 

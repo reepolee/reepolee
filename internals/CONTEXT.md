@@ -111,7 +111,7 @@ A table comment containing the tag `crud-ignore` excludes that table from all re
 
 ## render_strategy
 
-A per-route configuration in `schema/table.ts` that selects the page rendering mode for CRUD index handlers. Follows the same pattern as `pagination_strategy`.
+A per-route configuration in `config.ts` that selects the page rendering mode for CRUD index handlers. Follows the same pattern as `pagination_strategy`.
 
 ```ts
 const render_strategy: "stream" | "load" = "load";
@@ -217,7 +217,7 @@ Both streaming handlers follow the same pattern: render shell → open `Readable
 
 ## Pagination strategies
 
-Generated CRUD index views support two pagination strategies, selectable per-route via the `pagination_strategy` export in `schema/table.ts`.
+Generated CRUD index views support two pagination strategies, selectable per-route via the `pagination_strategy` export in `config.ts`.
 
 ### Cursor
 
@@ -387,7 +387,7 @@ When a table has a `search_text` column, the CRUD generator produces fulltext se
 
 ## Sort options from indexed columns
 
-The CRUD generator produces sort options via `generate_sort_options()` in `generator/crud/helpers.ts` (not a schema export). It always provides `ASC`/`DESC` entries for `id` and the canonical `display` field, then adds indexed columns. The indexed column names are stored as `indexed_columns` in `table.generated.ts` at introspection time and are also exported from `table.ts` for user editing. FK `_id` sorting resolves to the view's corresponding `<stem>_display` column when present.
+The CRUD generator produces sort options via `generate_sort_options()` in `generator/crud/helpers.ts` (not a schema export). It always provides `ASC`/`DESC` entries for `id` and the canonical `display` field, then adds indexed columns. The indexed column names are stored as `indexed_columns` in `schema.generated.ts` at introspection time and are also re-exported from `config.ts`. FK `_id` sorting resolves to the view's corresponding `<stem>_display` column when present.
 
 ## `IGNORE_ORDER_FIELDS`
 
@@ -395,7 +395,7 @@ Global constant in `config/db_structure.ts` listing columns excluded from sort o
 
 ## Nested CRUD (master-detail)
 
-A parent-child relationship where a child table's records are scoped to a single parent record and managed via nested URLs. The parent ID appears in the URL path (e.g `/orders/:order_id/items`). The parent FK is auto-detected from DB foreign key constraints at schema generation time, overridable in `schema/table.ts` via a `parent` export.
+A parent-child relationship where a child table's records are scoped to a single parent record and managed via nested URLs. The parent ID appears in the URL path (e.g `/orders/:order_id/items`). The parent FK is auto-detected from DB foreign key constraints at schema generation time, overridable in `config.ts` via a `parent` export.
 
 ## Parent context
 
@@ -430,7 +430,7 @@ export const orders_items_crud = {
 - `POST /orders/:order_id/items/validate` - validate child data (scoped)
 - No dedicated child index page, no `bulk-delete` route
 
-## Parent export (`schema/table.ts`)
+## Parent export (`config.ts`)
 
 The child's schema exports a `parent` object describing the relationship:
 
@@ -629,7 +629,7 @@ locale-suffixed tables. Design record: `.agents/PLAN_locale_suffixed_tables.md`.
   pointing at the shared base table when it is not (`languages`).
 - **A single-locale app is unaffected.** No suffix, no clone, no flag - the
   generated output is identical to a non-localized app.
-- **Opt in per column** with `localized: true` in `schema/table.ts`. That flag
+- **Opt in per column** with `localized: true` in `config.ts`. That flag
   is the only generation-time localization decision; *which* locales exist is
   config, resolved per request.
 
@@ -726,7 +726,7 @@ is written in the present tense for readability; read it as a specification.
 
 A read-only JSON API that serves generated-table data to **build-time consumers** (notably the `reeweb` static-site generator, which bakes the responses into static HTML and keeps zero DB dependencies of its own). Not a public API and not a runtime data layer.
 
-- **`api` flag** - Per-table opt-in declared in `schema/table.ts`: `export const api = true;`. Default `false`. A table is reachable over the read API only when this is `true`; the CRUD generator adds the table to the API registry when it is set.
+- **`api` flag** - Per-table opt-in declared in `config.ts`: `export const api = true;`. Default `false`. A table is reachable over the read API only when this is `true`; the CRUD generator adds the table to the API registry when it is set.
 - **Endpoint shape** - `GET /api/v1/<table>` (list) and `GET /api/v1/<table>/:id` (single record). `<table>` is the **DB table name** (globally unique), not the route prefix path - e.g. the `partners` table (under the `user/` route prefix) is served at `/api/v1/partners`, never `/api/v1/user/partners`.
 - **List params** - `limit` (default 20, hard cap 100), `offset` (default 0), `order_by` (optional, e.g. `id::desc`, falls back to `id::asc`). No `search` / `scope` / `filters` in v1.
 - **Response envelope** - `{ data: Record[], total, limit, offset }`. `data` + `total` map onto `reeweb`'s paginator.

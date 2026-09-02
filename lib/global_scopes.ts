@@ -293,15 +293,15 @@ function scan_named_routes(): { route_name: string; table_name: string; }[] {
 			const entry_stat = statSync(entry_path);
 			if (!entry_stat.isDirectory()) continue;
 
-			// Check: <main app>/<table>/schema/table.ts (standalone table)
-			const direct_schema = join(entry_path, "schema", "table.ts");
+			// Check: <main app>/<table>/config.ts (standalone table)
+			const direct_schema = join(entry_path, "config.ts");
 			if (existsSync(direct_schema)) {
 				const named = detect_named_route(entry_path, entry);
 				if (named) results.push(named);
 				continue;
 			}
 
-			// Check: <main app>/<prefix>/<table>/schema/table.ts
+			// Check: <main app>/<prefix>/<table>/config.ts
 			const sub_entries = readdirSync(entry_path);
 			for (const sub of sub_entries) {
 				if (sub.startsWith(".") || sub.startsWith(INTERNAL_TABLE_PREFIX) || sub.startsWith("v_")) continue;
@@ -310,7 +310,7 @@ function scan_named_routes(): { route_name: string; table_name: string; }[] {
 				const sub_stat = statSync(sub_path);
 				if (!sub_stat.isDirectory()) continue;
 
-				const sub_schema = join(sub_path, "schema", "table.ts");
+				const sub_schema = join(sub_path, "config.ts");
 				if (!existsSync(sub_schema)) continue;
 
 				const named = detect_named_route(sub_path, sub);

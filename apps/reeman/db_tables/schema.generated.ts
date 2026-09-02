@@ -6,6 +6,7 @@ export type db_tables_type = {
 	column_count?: number;
 	fk_count?: number;
 	has_crud?: number;
+	template_hash_status?: "clean" | "modified" | "untracked" | null;
 	display?: string | null | undefined;
 	created_at?: string;
 	updated_at?: string | null | undefined;
@@ -60,6 +61,19 @@ export const fields: Record<string, FormFieldDef> = {
 			"column_type": "INTEGER",
 			"domain_type": "boolean",
 			"domain_compliant": true,
+			"initial_width": "15ch",
+			"initial_class": "text-center",
+		},
+	},
+	"template_hash_status": {
+		"name": "template_hash_status",
+		"type": "text",
+		"required": false,
+		"is_nullable": true,
+		"attributes": {
+			"column_type": "TEXT",
+			"domain_type": null,
+			"domain_compliant": false,
 			"initial_width": "15ch",
 			"initial_class": "text-center",
 		},

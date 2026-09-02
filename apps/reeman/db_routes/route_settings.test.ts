@@ -11,7 +11,7 @@ describe("route_settings_from_module", () => {
 			columns: {
 				checkbox: { width: "10ch", class: "text-center" },
 				id: { width: "10ch", class: "", grid: false },
-				name: { width: "auto", class: "font-semibold", filter: true },
+				name: { width: "auto", class: "font-semibold", filter: true, localized: true, readonly: true },
 				email: { width: "30ch", class: "", grid: false },
 			},
 			pagination_strategy: "cursor",
@@ -20,8 +20,8 @@ describe("route_settings_from_module", () => {
 		});
 
 		expect(settings.grid_columns).toEqual([
-			{ name: "name", default_selected: true, width: "auto", class_name: "font-semibold", filter: true, helper: "", default_helper: "" },
-			{ name: "email", default_selected: false, width: "30ch", class_name: "", filter: false, helper: "", default_helper: "" },
+			{ name: "name", default_selected: true, width: "auto", class_name: "font-semibold", filter: true, localized: true, readonly: true, helper: "", default_helper: "" },
+			{ name: "email", default_selected: false, width: "30ch", class_name: "", filter: false, localized: false, readonly: false, helper: "", default_helper: "" },
 		]);
 		expect(settings.pagination_strategy).toBe("cursor");
 		expect(settings.render_strategy).toBe("stream");
@@ -45,8 +45,8 @@ describe("route_settings_from_module", () => {
 			name: { name: "name", type: "text" },
 		});
 
-		expect(settings.grid_columns).toContainEqual({ name: "is_javascript", default_selected: true, width: "auto", class_name: "text-center", filter: false, helper: "", default_helper: "yes_no" });
-		expect(settings.grid_columns).toContainEqual({ name: "name", default_selected: true, width: "auto", class_name: "font-semibold", filter: true, helper: "", default_helper: "" });
+		expect(settings.grid_columns).toContainEqual({ name: "is_javascript", default_selected: true, width: "auto", class_name: "text-center", filter: false, localized: false, readonly: false, helper: "", default_helper: "yes_no" });
+		expect(settings.grid_columns).toContainEqual({ name: "name", default_selected: true, width: "auto", class_name: "font-semibold", filter: true, localized: false, readonly: false, helper: "", default_helper: "" });
 	});
 });
 

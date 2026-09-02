@@ -3,7 +3,7 @@ import { create_ctx } from "$lib/request_context";
 import { delete_from_local, delete_from_s3 } from "$lib/s3";
 import type { BunRequest } from "bun";
 
-import { validate_touched } from "./schema/validation_server";
+import { validate_touched } from "./validation_server";
 import { archive_record, get_record_by_id } from "./sql";
 
 const TABLE_NAME = "files";

@@ -1,3 +1,4 @@
+import { navigation } from "./config";
 import { make_toast } from "$lib/cookies";
 import { build_pagination_urls, get_limit_numeric, get_limit_options, parse_pagination_params } from "$lib/pagination";
 import { render } from "$lib/render";
@@ -121,8 +122,10 @@ export const route_definitions: RouteDefinition[] = [
 		nav_title_key: "reeman.environment",
 		module: "system",
 		nav_module: null,
-		nav_section_key: "reeman.nav.generator",
-		nav_section_order: 10,
-		nav_item_order: 50,
+		nav_section_key: navigation.section_key,
+		nav_section_order: navigation.section_order,
+		nav_item_order: navigation.item_order,
+		nav_group_order: navigation.group_order,
+		nav_final_order: navigation.final_order,
 	},
 ];

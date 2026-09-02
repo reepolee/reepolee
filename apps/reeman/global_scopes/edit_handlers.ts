@@ -14,8 +14,8 @@ import { notify_server_reload } from "$lib/server_notify";
 import type { BunRequest } from "bun";
 
 import { upsert_translation } from "../translations/sql";
-import { enable_archive } from "./schema/table";
-import { validate } from "./schema/validation_server";
+import { enable_archive } from "./config";
+import { validate } from "./validation_server";
 import { archive_record, get_record_by_id, restore_record, update_record } from "./sql";
 
 const feature = "global_scopes";

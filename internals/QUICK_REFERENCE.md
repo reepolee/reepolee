@@ -64,9 +64,9 @@ For each generated CRUD route, you get:
 
 ```
 apps/main/users/
-├-- schema/
-│   ├-- table.ts              # Hand-editable field config (once per table)
-│   └-- table.generated.ts    # Auto-generated from DB (regenerated)
+├-- config.ts                 # Hand-editable route settings
+├-- schema.generated.ts       # Auto-generated from DB (regenerated)
+├-- validation_server.ts      # Hand-editable server validation
 ├-- form.ree                   # Create/Edit form template (regenerated, markers preserved)
 ├-- index.ree                  # List/grid view template (regenerated, markers preserved)
 ├-- index.ts                   # Route handler (generated once, never regenerated)
@@ -96,7 +96,7 @@ apps/main/users/
 | **form.ree** | Outside markers | ❌ | Move to inside markers or sql.custom.ts |
 | **index.ree** | Outside markers | ❌ | Move to inside markers |
 | **sql.ts** | Anywhere | ❌ | Use sql.custom.ts instead |
-| **table.generated.ts** | Anywhere | ❌ | Edit table.ts instead |
+| **schema.generated.ts** | Anywhere | ❌ | Edit config.ts instead |
 | **Markers** | Delete/move markers | ❌ | Never delete markers |
 
 ---

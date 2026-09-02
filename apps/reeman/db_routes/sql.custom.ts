@@ -6,6 +6,7 @@ export interface DbRouteSnapshot {
 	table_name: string;
 	module: string;
 	removable: number;
+	template_hash_status: "clean" | "modified" | "untracked" | null;
 	display: string;
 }
 
@@ -35,6 +36,7 @@ function to_snapshot(route: RouteSchema, id: number, removable_urls: Set<string>
 		table_name: route.table,
 		module: route.prefix,
 		removable: removable_urls.has(route.url) ? 1 : 0,
+		template_hash_status: route.template_hash_status ?? null,
 		display: route.url,
 	};
 }

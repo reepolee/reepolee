@@ -13,8 +13,8 @@ import { create_ctx } from "$lib/request_context";
 import { enrich_filter_definitions, get_filter_definitions, resolve_filters } from "$lib/table_filters";
 import { type BunRequest, Cookie } from "bun";
 
-import { columns, enable_archive, fields } from "./schema/table";
-import { validate, validate_touched } from "./schema/validation_server";
+import { columns, enable_archive, fields } from "./config";
+import { validate, validate_touched } from "./validation_server";
 import { create_record, archive_record, get_archive_counts, get_record_by_id, restore_record, search_records, TABLE_NAME, update_record } from "./sql";
 import { strip_api_sensitive } from "$config/api_blocklist";
 import { wants_json } from "$lib/wants_json";

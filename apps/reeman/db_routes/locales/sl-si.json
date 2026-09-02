@@ -9,8 +9,8 @@
 		"create": "Ustvari",
 		"do_it": "Da, naredi",
 		"fields": "Samo polja",
-		"full": "Polna osvežitev",
-		"new_db_route": "Nova Db pot",
+		"force": "Prisili prepis",
+		"generate_crud": "Ustvari CRUD",
 		"refresh_crud": "Osveži CRUD",
 		"remove": "Odstrani",
 		"remove_route": "Odstrani pot",
@@ -42,7 +42,8 @@
 	},
 	"hints": {
 		"folder_name": "Male črke, števke, - ali _ (npr. moja_stran).",
-		"prefix": "Neobvezna predpona modula. Pustite prazno za neposredno umestitev pod /routes."
+		"prefix": "Neobvezna predpona modula. Pustite prazno za neposredno umestitev pod /routes.",
+		"route_name": "Enolično ime poti z malimi črkami, števkami, - ali _."
 	},
 	"labels": {
 		"class": "Razred",
@@ -54,6 +55,7 @@
 		"folder_name": "Ime mape",
 		"helper": "Predloga pomoči",
 		"index_columns": "Stolpci za indeks",
+		"localized": "Lokalizirano",
 		"mode": "Način",
 		"module": "Modul",
 		"name": "Ime",
@@ -61,10 +63,13 @@
 		"order_by": "Razvrsti po",
 		"pagination": "Oštevilčenje strani",
 		"prefix": "Predpona",
+		"readonly": "Samo za branje",
 		"removable": "Odstranljivo",
 		"render_strategy": "Način izrisa",
+		"route_name": "Ime poti",
 		"table": "Tabela / Pot",
 		"table_name": "Ime tabele",
+		"template_hash_status": "Predloge",
 		"template_tags": "Predloge polj",
 		"url": "URL",
 		"where": "Pogoj",
@@ -88,9 +93,12 @@
 		"0": "Ne",
 		"1": "Da",
 		"all": "Vse",
+		"clean": "Čisto",
 		"default": "(ohrani trenutno)",
+		"modified": "Spremenjeno",
 		"per_page": "na stran",
-		"select_table": "-- Izberi tabelo ali pot --"
+		"select_table": "-- Izberi tabelo ali pot --",
+		"untracked": "Brez sledenja"
 	},
 	"ui": {
 		"add_page_hint": "Ustvari statično stran (brez baze) iz predloge simple-page.",

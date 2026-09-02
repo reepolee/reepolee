@@ -10,21 +10,25 @@
 			<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
 		{/if}
 
-		<form method="POST" action="{~ localized_path('/routes/bulk-refresh') }" class="grid gap-4 max-w-[60ch] lg:max-w-[100ch] lg:grid-cols-2 lg:gap-x-6" id="route-refresh-form">
+		<form method="POST" action="{~ localized_path('/routes/save-settings') }" class="grid grid-cols-1 gap-4 max-w-[120ch]" id="route-refresh-form">
 			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 			<input type="hidden" name="return_to" value="{= route_detail_path }" />
 			<input type="hidden" name="urls" value="{= record.url }" />
+			<input type="hidden" id="route-refresh" name="refresh" value="" />
+			<input type="hidden" name="grid_localized_control" value="1" />
 			{#if route_settings}
-				<field-wrapper class="grid lg:col-span-2" data-field="grid_columns">
+				<field-wrapper class="grid" data-field="grid_columns">
 					<div class="grid">
 						<label class="px-3">{_ labels.index_columns}</label>
-						<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) minmax(0,22ch) auto">
+						<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) minmax(0,22ch) auto auto auto">
 							<div class="col-span-full grid grid-cols-subgrid gap-2 px-3 py-2 font-semibold border-b border-border bg-surface">
 								<span class="ml-3">{_ labels.name}</span>
 								<span class="ml-3">{_ labels.width}</span>
 								<span class="ml-3">{_ labels.class}</span>
 								<span class="ml-3">{_ labels.helper}</span>
-								<span class="ml-3">{_ labels.filter}</span>
+								<span class="text-center">{_ labels.filter}</span>
+								<span class="text-center">{_ labels.localized}</span>
+								<span class="text-center">{_ labels.readonly}</span>
 							</div>
 							{#each route_settings.grid_columns as col}
 								<div class="col-span-full grid grid-cols-subgrid items-center gap-2 px-3 py-2 border-b border-border last:border-b-0">
@@ -41,7 +45,9 @@
 											<option value="{= h }" {#if col.helper === h}selected{/if}>{= h }</option>
 										{/each}
 									</select>
-									<input type="checkbox" name="grid_filter_columns" value="{= col.name }" aria-label="{_ labels.filter}: {= col.name }" {#if col.filter}checked{/if} />
+									<input class="justify-self-center" type="checkbox" name="grid_filter_columns" value="{= col.name }" aria-label="{_ labels.filter}: {= col.name }" {#if col.filter}checked{/if} />
+									<input class="justify-self-center" type="checkbox" name="grid_localized_columns" value="{= col.name }" aria-label="{_ labels.localized}: {= col.name }" {#if col.localized}checked{/if} />
+									<input class="justify-self-center" type="checkbox" name="grid_readonly_columns" value="{= col.name }" aria-label="{_ labels.readonly}: {= col.name }" {#if col.readonly}checked{/if} />
 								</div>
 							{/each}
 						</div>
@@ -49,8 +55,12 @@
 				</field-wrapper>
 			{/if}
 
+			{#if route_settings}
+				<generator-settings id-prefix="route" pagination="{= route_settings.pagination_strategy }" render-strategy="{= route_settings.render_strategy }" template-tags="{= route_settings.template_tags }"></generator-settings>
+			{/if}
 
-			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="url">
+
+			<field-wrapper class="grid max-w-[60ch]" data-field="url">
 				<div class="grid">
 					<label class="px-3" for="detail-url">{_ labels.url}</label>
 					<input type="text" id="detail-url" value="{= record.url }" readonly />
@@ -58,7 +68,7 @@
 				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
 			</field-wrapper>
 
-			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="table_name">
+			<field-wrapper class="grid max-w-[60ch]" data-field="table_name">
 				<div class="grid">
 					<label class="px-3" for="detail-table-name">{_ labels.table_name}</label>
 					<input type="text" id="detail-table-name" value="{= record.table_name }" readonly />
@@ -66,7 +76,7 @@
 				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
 			</field-wrapper>
 
-			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="module">
+			<field-wrapper class="grid max-w-[60ch]" data-field="module">
 				<div class="grid">
 					<label class="px-3" for="detail-module">{_ labels.module}</label>
 					<input type="text" id="detail-module" value="{= record.module || '-' }" readonly />
@@ -74,7 +84,7 @@
 				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
 			</field-wrapper>
 
-			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="removable">
+			<field-wrapper class="grid max-w-[60ch]" data-field="removable">
 				<div class="grid">
 					<label class="px-3" for="detail-removable">{_ labels.removable}</label>
 					<input type="text" id="detail-removable" value="{= record.removable ? props.translations.selectors[1] : props.translations.selectors[0] }" readonly />
@@ -82,63 +92,23 @@
 				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
 			</field-wrapper>
 
-			<div class="flex gap-2 mt-8 items-center lg:col-span-1">
-				<button type="button" commandfor="refresh_dialog" command="show-modal" class="as-button-primary" {#if busy || !route_settings}disabled{/if}>{_ actions.refresh_crud}</button>
+			<field-wrapper class="grid max-w-[60ch]" data-field="template_hash_status">
+				<div class="grid">
+					<label class="px-3" for="detail-template-hash-status">{_ labels.template_hash_status}</label>
+					<input type="text" id="detail-template-hash-status" value="{= record.template_hash_status || '-' }" readonly />
+				</div>
+				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+			</field-wrapper>
+
+			<div class="flex gap-2 mt-8 items-center">
+				<button type="submit" onclick="document.getElementById('route-refresh').value='1'" class="as-button-primary" {#if busy || !route_settings}disabled{/if}>{_ actions.refresh_crud}</button>
+				<button type="submit" onclick="document.getElementById('route-refresh').value=''" class="as-button-secondary" {#if busy || !route_settings}disabled{/if}>{_ actions.save}</button>
 				<button type="button" onclick="history.back()" class="as-button-secondary">{_ actions.cancel}</button>
 
 				{#if record.removable}
 					<button type="button" commandfor="remove_dialog" command="show-modal" class="ml-auto as-button-tertiary" {#if busy}disabled{/if}>{_ actions.remove_route}</button>
 				{/if}
 			</div>
-
-			<!-- REFRESH CRUD DIALOG -->
-			<dialog id="refresh_dialog" class="p-0 rounded-xl shadow-2xl w-120">
-				<div class="p-6">
-					<h2 class="text-lg font-semibold">{_ actions.refresh_crud}</h2>
-					<div class="grid gap-3 mt-4">
-						<field-wrapper class="grid" data-field="mode">
-							<div class="grid">
-								<label class="px-3" for="route-refresh-mode">{_ labels.mode}</label>
-								<select id="route-refresh-mode" name="mode">
-									<option value="full" selected>{_ actions.full}</option>
-									<option value="fields">{_ actions.fields}</option>
-								</select>
-							</div>
-						</field-wrapper>
-						<field-wrapper class="grid" data-field="template_tags">
-							<div class="grid">
-								<label class="px-3" for="route-refresh-template-tags">{_ labels.template_tags}</label>
-								<select id="route-refresh-template-tags" name="template_tags">
-									<option value="flat" {#if route_settings && route_settings.template_tags === "flat"}selected{/if}>flat</option>
-									<option value="tags" {#if route_settings && route_settings.template_tags === "tags"}selected{/if}>tags</option>
-								</select>
-							</div>
-						</field-wrapper>
-						<field-wrapper class="grid" data-field="pagination">
-							<div class="grid">
-								<label class="px-3" for="route-refresh-pagination">{_ labels.pagination}</label>
-								<select id="route-refresh-pagination" name="pagination">
-									<option value="offset" {#if route_settings && route_settings.pagination_strategy === "offset"}selected{/if}>offset</option>
-									<option value="cursor" {#if route_settings && route_settings.pagination_strategy === "cursor"}selected{/if}>cursor</option>
-								</select>
-							</div>
-						</field-wrapper>
-						<field-wrapper class="grid" data-field="render_strategy">
-							<div class="grid">
-								<label class="px-3" for="route-refresh-render-strategy">{_ labels.render_strategy}</label>
-								<select id="route-refresh-render-strategy" name="render_strategy">
-									<option value="load" {#if route_settings && route_settings.render_strategy === "load"}selected{/if}>load</option>
-									<option value="stream" {#if route_settings && route_settings.render_strategy === "stream"}selected{/if}>stream</option>
-								</select>
-							</div>
-						</field-wrapper>
-					</div>
-					<div class="mt-6 flex justify-end gap-2">
-						<button type="button" class="as-button-secondary" commandfor="refresh_dialog" command="close">{_ actions.cancel}</button>
-						<button type="submit" class="as-button-primary">{_ actions.do_it}</button>
-					</div>
-				</div>
-			</dialog>
 		</form>
 
 		{#if record.removable}

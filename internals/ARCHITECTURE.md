@@ -234,7 +234,7 @@ Generated files are **committed to git** and treated as part of your codebase, w
 | **index.ree** | Yes | Marker content preserved | Inside `<!-- GEN:FIELDS:*:START/END -->` |
 | **index.ts** | No | All customizations preserved | Never regenerated after initial creation |
 | **sql.ts** | Yes (full file) | None | Entire file is replaced; use sql.custom.ts for extensions |
-| **table.generated.ts** | Yes (full file) | None | Always regenerated from DB introspection |
+| **schema.generated.ts** | Yes (full file) | None | Always regenerated from DB introspection |
 | **table.ts** | No (first run only) | All customizations preserved | Create once, edit forever |
 
 ### Protected Zones (Markers)

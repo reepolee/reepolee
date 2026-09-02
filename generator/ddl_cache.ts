@@ -19,9 +19,9 @@
  * introspects once at startup and shares that snapshot with its downstream readers.
  */
 
-import { require_env } from "$lib/env";
+import { db } from "$config/db";
 import { db_type } from "$lib/resolve_db_type";
-import { SQL } from "bun";
+import type { SQL } from "bun";
 
 import { escape_regex } from "./crud/helpers";
 import { pluralize_english, singularize } from "./naming";
@@ -187,104 +187,97 @@ export function invalidate_cache(): void {
 // ---------------------------------------------------------------------------
 
 async function introspect_database(): Promise<DdlCacheData> {
-	const url = require_env("DEV_CONNECTION_STRING");
-	const db = new SQL(url);
+	const introspector = db_type === "mysql" ? new MySQLIntrospector(db) : new SQLiteIntrospector(db);
 
-	try {
-		const introspector = db_type === "mysql" ? new MySQLIntrospector(db) : new SQLiteIntrospector(db);
+	const all_schemas = await introspector.get_database_schema();
+	const all_indexes = await introspector.get_all_indexes();
+	const broken_views = introspector.broken_views;
+	const schema_violations = collect_schema_display_violations(all_schemas);
+	report_display_violations(schema_violations, "tables and views");
 
-		const all_schemas = await introspector.get_database_schema();
-		const all_indexes = await introspector.get_all_indexes();
-		const broken_views = introspector.broken_views;
-		const schema_violations = collect_schema_display_violations(all_schemas);
-		report_display_violations(schema_violations, "tables and views");
-
-		// A broken view means the DDL is inconsistent - surface it (the reeman
-		// UI banner reads this field) instead of only logging the skip.
-		if (broken_views.length > 0) {
-			console.warn(`[DDL Cache] ${broken_views.length} broken view(s) skipped: ${broken_views.join(", ")} - repair the DDL (reeman /database) so the views work again.`);
-		}
-
-		// Build a table->columns map for implicit FK detection
-		const table_column_map = new Map();
-		for (const schema of all_schemas) {
-			if (schema.type === "table") { table_column_map.set(schema.name, schema.columns.map((c) => c.name.toLowerCase())); }
-		}
-
-		// Collect view definitions for view-based FK detection
-		// Get view names from schemas (already introspected correctly by get_database_schema())
-		const view_names = all_schemas.filter((s) => s.type === "view").map((s) => s.name.toLowerCase());
-		console.log(`[DDL Cache] Found ${all_schemas.length} schemas (${all_schemas.filter((s) => s.type === "table").length} tables, ${view_names.length} views)`);
-
-		const view_definitions = await get_view_definitions(db, view_names);
-
-		// Build the cache entry for each table
-		const tables: DdlCachedTable[] = [];
-
-		for (const schema of all_schemas) {
-			if (schema.type !== "table") continue;
-
-			// Skip internal tables
-			if (INTERNAL_PREFIXES.some((p) => schema.name.toLowerCase().startsWith(p))) continue;
-
-			// Is there a view for this table?
-			const view_name = schema.has_view ? `v_${schema.name}` : null;
-			const view_sql = view_name ? view_definitions.get(view_name.toLowerCase()) ?? null : null;
-
-			// Detect native FKs
-			const native_fks = schema.foreign_keys.map((fk) => ({
-				column_name: fk.column_name,
-				referenced_table: fk.referenced_table_name,
-				referenced_column: fk.referenced_column_name,
-				source: "native" as const,
-				confidence: "exact" as const,
-			}));
-
-			// Detect implicit FKs from *_id naming convention
-			const inferred_fks = detect_implicit_foreign_keys(schema, table_column_map);
-
-			// Detect FKs from view JOIN conditions
-			const view_fks = view_sql ? detect_view_foreign_keys(schema.name, view_sql, all_schemas) : [];
-
-			// Map view columns
-			const view_columns: DdlCachedColumn[] | null = schema.view_columns ? schema.view_columns.map((col) => ({
-				name: col.name,
-				type_string: col.type_string,
-				comment: col.comment,
-				is_nullable: col.is_nullable,
-				is_primary_key: col.is_primary_key,
-				is_auto_increment: col.is_auto_increment,
-				is_generated: col.is_generated ?? false,
-			})) : null;
-
-			// Indexed columns for this table
-			const table_indexes = all_indexes.get(schema.name.toLowerCase());
-			const indexed_columns = table_indexes ? Array.from(table_indexes).map((c) => c.toLowerCase()) : [];
-
-			tables.push({
-				name: schema.name,
-				comment: schema.comment ?? "",
-				columns: schema.columns.map(map_column),
-				indexed_columns,
-				foreign_keys: native_fks,
-				inferred_foreign_keys: inferred_fks,
-				view_foreign_keys: view_fks,
-				has_view: schema.has_view,
-				view_name,
-				view_columns,
-				view_definition: view_sql,
-				unique_columns: schema.unique_columns,
-				primary_key: schema.primary_key,
-			});
-		}
-
-		const cache = { generated_at: new Date().toISOString(), db_type, tables, broken_views };
-		const cache_violations = collect_ddl_cache_display_violations(cache);
-		report_display_violations(cache_violations, "FK display fields");
-		return cache;
-	} finally {
-		db.close();
+	// A broken view means the DDL is inconsistent - surface it (the reeman
+	// UI banner reads this field) instead of only logging the skip.
+	if (broken_views.length > 0) {
+		console.warn(`[DDL Cache] ${broken_views.length} broken view(s) skipped: ${broken_views.join(", ")} - repair the DDL (reeman /database) so the views work again.`);
 	}
+
+	// Build a table->columns map for implicit FK detection
+	const table_column_map = new Map();
+	for (const schema of all_schemas) {
+		if (schema.type === "table") { table_column_map.set(schema.name, schema.columns.map((c) => c.name.toLowerCase())); }
+	}
+
+	// Collect view definitions for view-based FK detection
+	// Get view names from schemas (already introspected correctly by get_database_schema())
+	const view_names = all_schemas.filter((s) => s.type === "view").map((s) => s.name.toLowerCase());
+	console.log(`[DDL Cache] Found ${all_schemas.length} schemas (${all_schemas.filter((s) => s.type === "table").length} tables, ${view_names.length} views)`);
+
+	const view_definitions = await get_view_definitions(db, view_names);
+
+	// Build the cache entry for each table
+	const tables: DdlCachedTable[] = [];
+
+	for (const schema of all_schemas) {
+		if (schema.type !== "table") continue;
+
+		// Skip internal tables
+		if (INTERNAL_PREFIXES.some((p) => schema.name.toLowerCase().startsWith(p))) continue;
+
+		// Is there a view for this table?
+		const view_name = schema.has_view ? `v_${schema.name}` : null;
+		const view_sql = view_name ? view_definitions.get(view_name.toLowerCase()) ?? null : null;
+
+		// Detect native FKs
+		const native_fks = schema.foreign_keys.map((fk) => ({
+			column_name: fk.column_name,
+			referenced_table: fk.referenced_table_name,
+			referenced_column: fk.referenced_column_name,
+			source: "native" as const,
+			confidence: "exact" as const,
+		}));
+
+		// Detect implicit FKs from *_id naming convention
+		const inferred_fks = detect_implicit_foreign_keys(schema, table_column_map);
+
+		// Detect FKs from view JOIN conditions
+		const view_fks = view_sql ? detect_view_foreign_keys(schema.name, view_sql, all_schemas) : [];
+
+		// Map view columns
+		const view_columns: DdlCachedColumn[] | null = schema.view_columns ? schema.view_columns.map((col) => ({
+			name: col.name,
+			type_string: col.type_string,
+			comment: col.comment,
+			is_nullable: col.is_nullable,
+			is_primary_key: col.is_primary_key,
+			is_auto_increment: col.is_auto_increment,
+			is_generated: col.is_generated ?? false,
+		})) : null;
+
+		// Indexed columns for this table
+		const table_indexes = all_indexes.get(schema.name.toLowerCase());
+		const indexed_columns = table_indexes ? Array.from(table_indexes).map((c) => c.toLowerCase()) : [];
+
+		tables.push({
+			name: schema.name,
+			comment: schema.comment ?? "",
+			columns: schema.columns.map(map_column),
+			indexed_columns,
+			foreign_keys: native_fks,
+			inferred_foreign_keys: inferred_fks,
+			view_foreign_keys: view_fks,
+			has_view: schema.has_view,
+			view_name,
+			view_columns,
+			view_definition: view_sql,
+			unique_columns: schema.unique_columns,
+			primary_key: schema.primary_key,
+		});
+	}
+
+	const cache = { generated_at: new Date().toISOString(), db_type, tables, broken_views };
+	const cache_violations = collect_ddl_cache_display_violations(cache);
+	report_display_violations(cache_violations, "FK display fields");
+	return cache;
 }
 
 // ---------------------------------------------------------------------------

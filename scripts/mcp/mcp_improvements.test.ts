@@ -59,13 +59,13 @@ describe("BREAD route inspection", () => {
 	test("reports store-backed files and the local data path", async () => {
 		// blog2 was removed from the template; the bread detection path is
 		// exercised with a minimal in-repo fixture instead (same shape
-		// create_bread emits: store.ts + schema/ + form.ree).
+		// create_bread emits: store.ts + schema.generated.ts + form.ree).
 		const fixture_dir = join(ROUTES_DIR, `bread-fixture-${process.pid}`);
 		temporary_dir = fixture_dir;
-		mkdirSync(join(fixture_dir, "schema"), { recursive: true });
+		mkdirSync(fixture_dir, { recursive: true });
 		writeFileSync(join(fixture_dir, "index.ts"), "export default {};\n");
 		writeFileSync(join(fixture_dir, "form.ree"), "<form></form>\n");
-		writeFileSync(join(fixture_dir, "schema", "table.generated.ts"), "export type Item = { id: string };\n");
+		writeFileSync(join(fixture_dir, "schema.generated.ts"), "export type Item = { id: string };\n");
 		// One ".." per app-root segment, plus one for the fixture folder itself,
 		// so the store's data path lands on the project root wherever the main
 		// app tree lives.
@@ -77,7 +77,7 @@ describe("BREAD route inspection", () => {
 		expect(detail.type).toBe("bread");
 		expect(detail.storage).toBe("store");
 		expect(detail.files).toContain("store.ts");
-		expect(detail.files).toContain("schema/table.generated.ts");
+		expect(detail.files).toContain("schema.generated.ts");
 		expect(detail.data_path).toBe("data/blog2.json");
 	});
 });

@@ -1,3 +1,4 @@
+import { navigation } from "./config";
 import { get_running_jobs, is_queue_available, queue_length } from "$queue/index";
 import { render } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
@@ -104,6 +105,10 @@ export const route_definitions: RouteDefinition[] = [
 		nav_title_key: "reeman.reeman",
 		module: "system",
 		nav_module: null,
-		nav_item_order: 10,
+		nav_section_key: navigation.section_key,
+		nav_item_order: navigation.item_order,
+		nav_section_order: navigation.section_order,
+		nav_group_order: navigation.group_order,
+		nav_final_order: navigation.final_order,
 	},
 ];

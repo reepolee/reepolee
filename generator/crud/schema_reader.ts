@@ -34,7 +34,7 @@ export interface TableMeta {
 	// `archived_at` if its SELECT list carries it through, so archive filtering
 	// on the view read has to be decided from this list, not the table's.
 	view_column_names: string[];
-	// Declared global scopes from schema/table.ts, in declaration order. The
+	// Declared global scopes from config.ts, in declaration order. The
 	// generator seeds these as global_scopes rows for archivable routes.
 	global_scopes: ScopeSeed[];
 	generated_fields: Record<string, any> | null;
@@ -50,7 +50,6 @@ export interface TableMeta {
 	render_strategy: "stream" | "load";
 	template_tags: "flat" | "tags";
 	grid_filler: string;
-	navigation: NavigationConfig;
 	route_param: string | undefined;
 	id_type: string;
 	id_type_interface: string;
@@ -66,22 +65,6 @@ export interface TableMeta {
 	changed_dirs: Set<string>;
 }
 
-export type NavigationConfig = {
-	section_key: string | null;
-	item_order: number | null;
-	section_order: number | null;
-	group_order: number | null;
-	final_order: number | null;
-};
-
-const default_navigation: NavigationConfig = {
-	section_key: null,
-	item_order: null,
-	section_order: null,
-	group_order: null,
-	final_order: null,
-};
-
 /**
  * Compute route directory and relative path for a table.
  * When route_name is specified, it replaces table_name in the path.
@@ -95,7 +78,7 @@ export function compute_route_dirs(table_name: string, clean_prefix: string, par
 }
 
 /**
- * Normalize the `global_scopes` const of a schema/table.ts into an ordered
+ * Normalize the `global_scopes` const of a config.ts into an ordered
  * array of seeds. Accepts the record form the generator writes
  * (`{ "__live": { display_name, where_clause?, sort_order?, is_default? } }`);
  * anything else yields an empty array, meaning nothing to seed.
@@ -127,7 +110,7 @@ export async function load_table_schema(table_name: string, options: {
 	const effective_route_name = raw_route_name || table_name;
 	const { route_dir, relative_dir } = compute_route_dirs(table_name, clean_prefix, parent_cli_table, effective_route_name);
 
-	const table_module_path = join(route_dir, "schema", "table.ts");
+	const table_module_path = join(route_dir, "config.ts");
 	log_step(`Importing table module: ${table_module_path}`);
 	let table_module: any;
 	try {
@@ -168,22 +151,22 @@ export async function load_table_schema(table_name: string, options: {
 	const fields = table_module.fields ? Object.values(table_module.fields) as FieldDef[] : [];
 	const v_fields: FieldDef[] | null = table_module.v_fields ? Object.values(table_module.v_fields) as FieldDef[] : null;
 	const columns = table_module.columns ?? null;
-	// Declared global scopes from schema/table.ts - the generator seeds these as
+	// Declared global scopes from config.ts - the generator seeds these as
 	// global_scopes rows. Record keyed by scope_key, converted to an ordered
 	// array; absent or empty means there is nothing to seed.
 	const global_scopes: ScopeSeed[] = normalize_declared_scopes(table_module.global_scopes);
 
-	if (fields.length === 0) throw new Error("Fields not found in table.ts");
+	if (fields.length === 0) throw new Error("Fields not found in config.ts");
 
 	let generated_fields: Record<string, any> | null = null;
 	let indexed_columns: string[] | undefined = table_module.indexed_columns;
 	try {
-		const gen_path = table_module_path.replace(/\.ts$/, ".generated.ts");
+		const gen_path = join(route_dir, "schema.generated.ts");
 		const gen_module = await load_table_module_fresh<any>(gen_path);
 		generated_fields = gen_module.fields || null;
 		if (!indexed_columns) indexed_columns = gen_module.indexed_columns || undefined;
 	} catch {
-		// table.generated.ts may not exist yet
+		// schema.generated.ts may not exist yet
 	}
 
 	const foreign_keys = extract_foreign_keys(fields, generated_fields);
@@ -235,56 +218,8 @@ export async function load_table_schema(table_name: string, options: {
 	const pagination_strategy: "cursor" | "offset" = cli_pagination || table_module.pagination_strategy || "offset";
 	const render_strategy: "stream" | "load" = table_module.render_strategy || "load";
 	const template_tags: "flat" | "tags" = cli_template_tags || table_module.template_tags || "flat";
-	// Trailing grid filler track. Absent in table.ts files scaffolded before it existed.
+	// Trailing grid filler track. Absent in older config.ts files.
 	const grid_filler: string = table_module.grid_filler || "1fr";
-	const navigation: NavigationConfig = { ...default_navigation, ...(table_module.navigation ?? {}) };
-
-	// Backfill grid_filler into table.ts files scaffolded before the const existed.
-	// The generated index.ts imports it by name, so a missing export would resolve to
-	// undefined and put the literal "undefined" into grid-template-columns.
-	if (table_module.grid_filler === undefined) {
-		const backfilled = backfill_grid_filler(await Bun.file(table_module_path).text(), grid_filler);
-		if (backfilled) {
-			await Bun.write(table_module_path, backfilled);
-			console.log(`  ${Bun.color("green", "ansi")}Added grid_filler = "${grid_filler}" to schema`);
-		}
-	}
-	if (table_module.navigation === undefined) {
-		const navigation_backfill = backfill_navigation(await Bun.file(table_module_path).text());
-		if (!navigation_backfill) throw new Error(`Could not add navigation configuration to ${table_module_path}`);
-		await Bun.write(table_module_path, navigation_backfill);
-		console.log(`  ${Bun.color("green", "ansi")}Added navigation configuration to schema`);
-	}
-
-	// Persist pagination strategy to schema file if CLI explicitly overrode it
-	if (cli_pagination && cli_pagination !== table_module.pagination_strategy) {
-		try {
-			let schema_content = await Bun.file(table_module_path).text();
-			const old_pattern = `const pagination_strategy: "cursor" | "offset" = "`;
-			const old_start = schema_content.indexOf(old_pattern);
-			if (old_start >= 0) {
-				const line_end = schema_content.indexOf("\n", old_start);
-				schema_content = `${schema_content.slice(0, old_start)}const pagination_strategy: "cursor" | "offset" = "${pagination_strategy}";${schema_content.slice(line_end)}`;
-				await Bun.write(table_module_path, schema_content);
-				console.log(`  ${Bun.color("green", "ansi")}Updated schema pagination to "${pagination_strategy}"`);
-			}
-		} catch {}
-	}
-
-	// Persist template_tags to schema file if CLI explicitly overrode it
-	if (cli_template_tags && cli_template_tags !== table_module.template_tags) {
-		try {
-			let schema_content = await Bun.file(table_module_path).text();
-			const old_pattern = `const template_tags: "flat" | "tags" = "`;
-			const old_start = schema_content.indexOf(old_pattern);
-			if (old_start >= 0) {
-				const line_end = schema_content.indexOf("\n", old_start);
-				schema_content = `${schema_content.slice(0, old_start)}const template_tags: "flat" | "tags" = "${template_tags}";${schema_content.slice(line_end)}`;
-				await Bun.write(table_module_path, schema_content);
-				console.log(`  ${Bun.color("green", "ansi")}Updated schema template_tags to "${template_tags}"`);
-			}
-		} catch {}
-	}
 
 	const route_param = table_module.route_param || undefined;
 	// The DDL cache's primary-key info is authoritative (it knows a TEXT key
@@ -335,7 +270,6 @@ export async function load_table_schema(table_name: string, options: {
 		render_strategy,
 		template_tags,
 		grid_filler,
-		navigation,
 		route_param,
 		id_type,
 		id_type_interface,
@@ -350,50 +284,6 @@ export async function load_table_schema(table_name: string, options: {
 		route_prefix,
 		changed_dirs,
 	};
-}
-
-function backfill_navigation(schema_content: string): string | null {
-	if (schema_content.includes("const navigation")) return null;
-	const export_anchor = "export { columns, route_param, enable_archive,";
-	if (!schema_content.includes(export_anchor)) return null;
-	const navigation_block = `
-
-// Navigation presentation for this route.
-// A group is the outer sidebar block for this route's module (for example, "admin").
-// A section is an optional translated heading within that group; without a section_key,
-// this route appears directly in its module group. Null order values preserve declaration order.
-const navigation = {
-	section_key: null as string | null, // Section heading translation key; null keeps this route directly in its module group.
-	item_order: null as number | null, // Link order within its section or group; lower values appear first.
-	section_order: null as number | null, // Section order; only used when section_key is set.
-	group_order: null as number | null, // Module group order; lower values appear first.
-	final_order: null as number | null, // Reserved final-sidebar-link order; currently unused by generated routes.
-};`;
-	const with_navigation = schema_content.replace(export_anchor, `${navigation_block}\n\n${export_anchor}`);
-	return with_navigation.replace(export_anchor, "export { columns, route_param, enable_archive, navigation,");
-}
-
-/**
- * Insert a `grid_filler` const and add it to the export list of a table.ts that
- * predates the const. Returns null when either anchor is missing, so a partial
- * patch (const without export, or vice versa) is never written - the generated
- * index.ts imports the name and would break on a half-applied edit.
- */
-function backfill_grid_filler(schema_content: string, grid_filler: string): string | null {
-	if (schema_content.includes("const grid_filler")) return null;
-
-	const const_anchor = "const enable_archive = ";
-	const const_start = schema_content.indexOf(const_anchor);
-	if (const_start < 0) return null;
-	const const_line_end = schema_content.indexOf("\n", const_start);
-	if (const_line_end < 0) return null;
-
-	const export_anchor = "export { columns, route_param, enable_archive,";
-	if (!schema_content.includes(export_anchor)) return null;
-
-	const const_block = `\n\n// Trailing filler track appended to the index grid's column widths.\n// "1fr" - filler absorbs the leftover row width, so the widths above are respected.\n// "0px" - no filler width, so columns stretch to fill the row instead.\nconst grid_filler = "${grid_filler}";`;
-	const with_const = schema_content.slice(0, const_line_end) + const_block + schema_content.slice(const_line_end);
-	return with_const.replace(export_anchor, "export { columns, route_param, enable_archive, grid_filler,");
 }
 
 const UNLOCALIZABLE_TYPES = ["autocomplete", "tags", "file", "password"];

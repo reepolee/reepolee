@@ -17,8 +17,8 @@ import { sql_log } from "$lib/logger";
 import { notify_updates } from "$lib/livereload";
 __import.bun__
 
-import { validate, validate_touched__import.validation_schema__ } from "./schema/validation_server";
-import { columns, enable_archive, fields, grid_filler } from "./schema/table";
+import { validate, validate_touched__import.validation_schema__ } from "./validation_server";
+import { columns, enable_archive, fields, grid_filler } from "./config";
 
 __import.localization__
 __import.select_functions__

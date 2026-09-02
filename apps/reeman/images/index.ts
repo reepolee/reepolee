@@ -1,3 +1,4 @@
+import { navigation } from "./config";
 import type { RouteDefinition } from "$lib/route_builder";
 import { feature_paths } from "$lib/crud_routes";
 import { default_locale } from "$config/supported_locales";
@@ -14,7 +15,7 @@ import type { BunRequest } from "bun";
 
 import { post_images_process, post_images_save } from "./editor_server";
 import { post_images_bulk_archive, post_images_validate } from "./handlers";
-import { columns, enable_archive, fields } from "./schema/table";
+import { columns, enable_archive, fields } from "./config";
 import { resolve_archive_filter } from "$lib/archive";
 import { archive_record, get_archive_counts, get_record_by_id, restore_record, search_records } from "./sql";
 import { strip_api_sensitive } from "$config/api_blocklist";
@@ -334,8 +335,10 @@ export const route_definitions: RouteDefinition[] = [
 		nav_title_key: "reeman.images",
 		module: "system",
 		nav_module: null,
-		nav_section_key: "reeman.nav.data",
-		nav_section_order: 20,
-		nav_item_order: 30,
+		nav_section_key: navigation.section_key,
+		nav_section_order: navigation.section_order,
+		nav_item_order: navigation.item_order,
+		nav_group_order: navigation.group_order,
+		nav_final_order: navigation.final_order,
 	},
 ];

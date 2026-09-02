@@ -334,11 +334,11 @@ the unpacked platform installer as a subprocess. User creation remains available
 
 ```bash
 bun reeman                                                                    # Interactive menu
-bun reeman schema <table_name|all> [--prefix <dir>] [--parent <table>]       # Introspect DB → schema/
+bun reeman schema <table_name|all> [--prefix <dir>] [--parent <table>]       # Introspect DB and write flat schema files
 bun reeman crud <table_name> [--force] [--prefix <dir>] [--parent <table>]   # Full pipeline: schema + CRUD
 bun reeman crud all [--force] [--translate] [--prefix <dir>]                 # Full pipeline for every table
 bun reeman bulk <table...> [--prefix <dir>]                                  # Full pipeline for a specific set of tables
-bun reeman refresh-crud <table> [--mode fields|full]                         # Regenerate CRUD for an existing route
+bun reeman refresh-crud <table> [--mode fields]                              # Refresh generated field sections
 bun reeman install <archive.tar.gz>                                          # Install a marketplace archive
 bun reeman sync-translations [namespace...] [--translate]                    # Sync translation keys across configured locales
 bun reeman insert-translations                                                # Add template keys missing from the co-located locale files
@@ -367,10 +367,9 @@ Generated files per route:
 
 ```
 apps/main/<table>/
-- schema/                  # Schema generator output
-  - table.generated.ts     # Auto-generated field definitions + TS types
-  - table.ts               # User-editable: exports fields, v_fields, columns
-  - validation_server.ts   # Zod validation schemas
+- config.ts                # User-editable route settings
+- schema.generated.ts      # Auto-generated field definitions + TS types
+- validation_server.ts     # User-editable server validation
 - {locale}.json            # Co-located UI translations (one file per locale)
 - index.ts                 # Route handlers (CRUD)
 - sql.ts                   # SQL queries (CRUD)
@@ -405,7 +404,7 @@ Without both settings, the endpoint is not registered and behaves as a normal 40
 
 ### `route_param` - Non-integer Primary Keys
 
-Every generated `schema/table.ts` includes `export const route_param = "id";`. For tables with non-integer PKs (e.g. VARCHAR `id`), change this value to use a different column for URL routing. The CRUD generator adapts all layers:
+Every generated `config.ts` includes `export const route_param = "id";`. For tables with non-integer PKs (e.g. VARCHAR `id`), change this value to use a different column for URL routing. The CRUD generator adapts all layers:
 
 - **Links** in `index.ree` use the route_param column
 - **Delete form** POSTs to the route_param URL
@@ -424,7 +423,7 @@ The CRUD generator runs `reettier` on the generated route directory automaticall
 | `--translate`      | Use the configured AI provider to auto-translate generated translation keys into configured locales. | `crud`, `all`, `bulk`, `sync-translations` |
 | `--prefix`         | Nest generated routes under a subdirectory (e.g. `--prefix admin`).                          | `schema`, `crud`, `all`, `bulk`     |
 | `--parent`         | Mark as nested child of `<table>`. Auto-detects FK, scopes routes/queries.                   | `schema`, `crud`, `refresh-crud`    |
-| `--pagination`     | Pagination strategy: `cursor` or `offset` (default: offset).                                 | `schema`, `crud`, `all`, `bulk`, `refresh-crud` |
+| `--pagination`     | Pagination strategy: `cursor` or `offset` (default: offset).                                 | `schema`, `crud`, `all`, `bulk` |
 | `--refresh-fields` | Regenerate only field sections in form.ree/index.ree using CRUD markers.                     | `refresh-crud --mode fields`        |
 
 ### Reeman subcommand reference
@@ -438,7 +437,7 @@ The CRUD generator runs `reettier` on the generated route directory automaticall
 | `crud <name>`   | Full pipeline for a single table: schema + CRUD.                                              |
 | `crud all`      | Full pipeline for every table in the database.                                                |
 | `bulk <t...>`   | Full pipeline for a specific set of tables (e.g. ones without CRUD yet). Same as reeman's interactive Bulk CRUD flow. |
-| `refresh-crud <name>` | Regenerate CRUD for a route that already has a schema folder.                            |
+| `refresh-crud <name>` | Refresh generated `.ree` field sections from the existing `config.ts`.                  |
 | `install <archive.tar.gz>` | Unpack and run a platform-specific marketplace installer.                       |
 | `sync-translations [namespace...] [--translate]` | Sync translation structure across configured locales, optionally filling missing values with the configured AI provider. |
 | `add-locale <locale_code> [--translate]` | Add a BCP 47 locale to `config/supported_locales.ts` and initialize its `{locale}.json` files. |

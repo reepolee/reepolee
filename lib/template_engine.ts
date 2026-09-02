@@ -139,12 +139,16 @@ class TemplateEngine {
 
 	private resolve_template_file(name: string): string {
 		const normalized_name = name.replaceAll("\\", "/");
+		const views_path = join(this.views_dir, normalized_name + this.ext);
+		// The apps/ tree is the primary root. Check it before route-module
+		// mounts because an app directory can share a name with a module
+		// (apps/reeman/ and apps/reeman/reeman/ are both valid here).
+		if (existsSync(views_path)) return views_path;
 		const slash_index = normalized_name.indexOf("/");
 		const module_code = slash_index === -1 ? normalized_name : normalized_name.slice(0, slash_index);
 		const module_root = this.route_module_mounts.get(module_code);
 		if (!module_root) {
-			const views_path = join(this.views_dir, normalized_name + this.ext);
-			if (!this.shared_views_dir || existsSync(views_path)) return views_path;
+			if (!this.shared_views_dir) return views_path;
 			const shared_path = join(this.shared_views_dir, normalized_name + this.ext);
 			return existsSync(shared_path) ? shared_path : views_path;
 		}

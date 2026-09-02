@@ -31,6 +31,7 @@ import {
 	action_json_to_sql,
 	action_spreadsheet_to_sql,
 	action_refresh,
+	action_save_route_settings,
 	action_reload_routes,
 	action_run_sql,
 	action_schema,
@@ -113,6 +114,9 @@ function parse_grid_form_settings(params: URLSearchParams): GridFormSettings {
 	const grid_column_helpers = raw_grid_column_helpers.map((helper) => helper.trim());
 	const raw_filter_columns = params.getAll("grid_filter_columns");
 	const filter_columns = new Set(raw_filter_columns);
+	const has_localized_control = params.get("grid_localized_control") === "1";
+	const raw_localized_columns = params.getAll("grid_localized_columns");
+	const localized_columns = new Set(raw_localized_columns);
 	const raw_readonly_columns = params.getAll("grid_readonly_columns");
 	const readonly_columns = new Set(raw_readonly_columns);
 	const definition_names = new Set(grid_column_names);
@@ -121,8 +125,9 @@ function parse_grid_form_settings(params: URLSearchParams): GridFormSettings {
 	const has_duplicate_definition = definition_names.size !== grid_column_names.length;
 	const has_unknown_selection = grid_columns.some((name) => !definition_names.has(name));
 	const has_unknown_filter = raw_filter_columns.some((name) => !definition_names.has(name));
+	const has_unknown_localized = raw_localized_columns.some((name) => !definition_names.has(name));
 	const has_unknown_readonly = raw_readonly_columns.some((name) => !definition_names.has(name));
-	if (has_invalid_definition_lengths || has_blank_definition || has_duplicate_definition || has_unknown_selection || has_unknown_filter || has_unknown_readonly) {
+	if (has_invalid_definition_lengths || has_blank_definition || has_duplicate_definition || has_unknown_selection || has_unknown_filter || has_unknown_localized || has_unknown_readonly) {
 		return { error: "Invalid grid column definitions." };
 	}
 
@@ -132,6 +137,7 @@ function parse_grid_form_settings(params: URLSearchParams): GridFormSettings {
 		class_name: grid_column_classes[index]!,
 		filter: filter_columns.has(name),
 		helper: grid_column_helpers[index] || undefined,
+		localized: has_localized_control ? localized_columns.has(name) : undefined,
 		readonly: readonly_columns.has(name),
 	}));
 	return { grid_columns, grid_column_definitions };
@@ -220,9 +226,9 @@ export async function post_bulk(req: BunRequest): Promise<Response> {
 	const return_to = get_param(params, "return_to");
 	const tables = params.getAll("tables").map((t) => t.trim()).filter(Boolean);
 	if (tables.length === 0) return redirect_result(req, "bulk", "", { ok: false, output: "", error: "No tables selected." }, return_to);
-	// Spawn subprocesses so generation survives bun --hot reloads. Keyed per
-	// table - tables already individually busy are skipped, not treated as a
-	// reason to reject the whole batch.
+	// Spawn one bulk subprocess so generation survives bun --hot reloads while
+	// preserving the shared apps/main/routes.ts registry. Tables already busy
+	// are skipped, not treated as a reason to reject the whole batch.
 	const started = await spawn_bulk_action(tables, {
 		force: is_checked(params, "force"),
 		translate: is_checked(params, "translate"),
@@ -255,8 +261,7 @@ export async function post_bulk_refresh(req: BunRequest): Promise<Response> {
 	const tables = params.getAll("tables").map((t) => t.trim()).filter(Boolean);
 	if (tables.length === 0) return redirect_result(req, "bulk-refresh", "", { ok: false, output: "", error: "No tables selected." }, return_to);
 	if (await is_busy()) return busy_response(req, return_to);
-	const mode = get_param(params, "mode") === "fields" ? "fields" : "full";
-	const result = await action_bulk_refresh({ tables, mode, template_tags: get_param(params, "template_tags") });
+	const result = await action_bulk_refresh({ tables });
 	return redirect_result(req, "bulk-refresh", tables.join(", "), result, return_to);
 }
 
@@ -266,19 +271,28 @@ export async function post_bulk_refresh_routes(req: BunRequest): Promise<Respons
 	const urls = params.getAll("urls").map((u) => u.trim()).filter(Boolean);
 	if (urls.length === 0) return redirect_result(req, "bulk-refresh-routes", "", { ok: false, output: "", error: "No routes selected." }, return_to);
 	if (await is_busy()) return busy_response(req, return_to);
+	const result = await action_bulk_refresh_routes({ urls });
+	return redirect_result(req, "bulk-refresh-routes", urls.join(", "), result, return_to);
+}
+
+export async function post_save_route_settings(req: BunRequest): Promise<Response> {
+	const params = await params_of(req);
+	const return_to = get_param(params, "return_to");
+	const url = get_param(params, "urls");
+	if (!url) return redirect_result(req, "save-route-settings", "", { ok: false, output: "", error: "No route selected." }, return_to);
+	if (await is_busy()) return busy_response(req, return_to);
 	const grid_settings = parse_grid_form_settings(params);
-	if (grid_settings.error) return redirect_result(req, "bulk-refresh-routes", urls.join(", "), { ok: false, output: "", error: grid_settings.error }, return_to);
-	const mode = get_param(params, "mode") === "fields" ? "fields" : "full";
-	const result = await action_bulk_refresh_routes({
-		urls,
-		mode,
+	if (grid_settings.error) return redirect_result(req, "save-route-settings", url, { ok: false, output: "", error: grid_settings.error }, return_to);
+	const result = await action_save_route_settings({
+		url,
 		template_tags: get_param(params, "template_tags"),
 		pagination: get_param(params, "pagination"),
 		render_strategy: get_param(params, "render_strategy"),
 		grid_columns: grid_settings.grid_columns,
 		grid_column_definitions: grid_settings.grid_column_definitions,
+		refresh: is_checked(params, "refresh"),
 	});
-	return redirect_result(req, "bulk-refresh-routes", urls.join(", "), result, return_to);
+	return redirect_result(req, is_checked(params, "refresh") ? "refresh-crud" : "save-route-settings", url, result, return_to);
 }
 
 export async function post_bulk_remove_route(req: BunRequest): Promise<Response> {
@@ -302,8 +316,7 @@ export async function post_refresh_crud(req: BunRequest): Promise<Response> {
 	const url = get_param(params, "url");
 	if (!url) return redirect_result(req, "refresh-crud", "", { ok: false, output: "", error: "No route selected." }, return_to);
 	if (await is_busy()) return busy_response(req, return_to);
-	const mode = get_param(params, "mode") === "fields" ? "fields" : "full";
-	const result = await action_refresh({ url, mode, template_tags: get_param(params, "template_tags") });
+	const result = await action_refresh({ url });
 	return redirect_result(req, "refresh-crud", url, result, return_to);
 }
 

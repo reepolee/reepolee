@@ -52,7 +52,7 @@ export function archive_row_restore(has_archive: boolean, route_param_value: str
 function archive_counts_block(has_archive: boolean): string {
 	if (!has_archive) return "";
 	return `{#if archive_counts }
-			<dl class="archive-counts grid grid-flow-col auto-cols-max gap-4 items-center text-sm">
+			<dl class="archive-counts grid grid-flow-col auto-cols-max gap-4 items-center px-4 py-2 text-sm">
 				<div><dt class="inline opacity-70">{_ counts.total}:</dt> <dd class="inline font-semibold">{= archive_counts.total }</dd></div>
 				<div><dt class="inline opacity-70">{_ counts.live}:</dt> <dd class="inline font-semibold">{= archive_counts.live }</dd></div>
 				<div><dt class="inline opacity-70">{_ counts.archived}:</dt> <dd class="inline font-semibold">{= archive_counts.archived }</dd></div>
@@ -128,7 +128,7 @@ export async function generate_index_ree(options: IndexReeOptions): Promise<{ in
 	// Collect CU fields separately - they'll be rendered as commented-out entries
 	const commented = display_fields.filter((f) => !f.attributes?.omit && f.attributes?.omit_index === true && !(IGNORE_INDEX_FIELDS as readonly string[]).includes(f.name));
 
-	// The column-configured template helper (from the table.ts columns map), if any.
+	// The column-configured template helper (from the config.ts columns map), if any.
 	const helper_for = (name: string): string => (columns_override?.[name]?.helper ? String(columns_override[name]!.helper) : "");
 
 	// Per-field header source: use v_fields prefix if field is in v_fields, otherwise fields

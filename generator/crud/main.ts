@@ -28,6 +28,7 @@ import { archive_row_restore, generate_index_ree } from "./index_ree";
 import { generate_index_ts } from "./index_ts";
 import { integrate_nested_child } from "./nested_integration";
 import { refresh_fields } from "./refresh_fields";
+import { stamp_generated_ree_hashes } from "./ree_hash";
 import { update_routes_ts } from "./route_registrar";
 import { load_table_schema } from "./schema_reader";
 import type { TableMeta } from "./schema_reader";
@@ -164,7 +165,6 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 		render_strategy: meta.render_strategy,
 		route_name: meta.route_name,
 		is_auto_increment_pk: meta.is_auto_increment_pk,
-		navigation: meta.navigation,
 	}));
 
 	const tags_fields = entry_fields(meta.fields, false).filter((f) => f.type === "tags" && f.attributes?.tags?.table);
@@ -224,7 +224,7 @@ export { integrate_nested_child } from "./nested_integration";
  */
 export { format_dirs, format_file } from "./file_writer";
 
-/** Columns whose table.ts `columns` entry carries `readonly: true`. */
+/** Columns whose config.ts `columns` entry carries `readonly: true`. */
 function readonly_field_names(columns: Record<string, { readonly?: boolean; }> | null): Set<string> {
 	const names = new Set<string>();
 	for (const [name, column] of Object.entries(columns ?? {})) {
@@ -297,7 +297,7 @@ export async function generate_crud(table_name: string, options: CrudOptions = {
 		await generate_crud_files(meta, safe_write);
 
 		// Phase 2b: Seed the declared global scope rows. Always for archivable
-		// top-level routes - the declaration in schema/table.ts is the source of
+		// top-level routes - the declaration in config.ts is the source of
 		// truth, and existing rows are never overwritten, so an admin's edits
 		// survive regeneration. Nested child grids never call search_records,
 		// so a scope row there would reach nothing.
@@ -370,6 +370,8 @@ export async function generate_crud(table_name: string, options: CrudOptions = {
 		// Phase 6: Format generated files
 		log_step(`Formatting generated files for ${table_name}`);
 		await format_dirs(meta.changed_dirs);
+		await stamp_generated_ree_hashes(meta.route_dir);
+		if (meta.is_nested && meta.parent_dir) await stamp_generated_ree_hashes(meta.parent_dir);
 
 		// Phase 7: Sync translations (AI translate) - scoped to the namespace(s) this CRUD touched
 		if (translate_in_args) {

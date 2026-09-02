@@ -1,5 +1,5 @@
-export type { users_type } from "./table.generated";
-export { fields, v_fields } from "./table.generated";
+export type { images_type } from "./schema.generated";
+export { fields, v_fields } from "./schema.generated";
 
 const columns: Record<string, {
 	width: string;
@@ -11,12 +11,17 @@ const columns: Record<string, {
 }> = {
 	checkbox: { width: "10ch", class: "text-center" },
 	id: { width: "10ch", class: "" },
-	username: { width: "1fr", class: "" },
-	email: { width: "1fr", class: "" },
-	name: { width: "1fr", class: "" },
-	nickname: { width: "15ch", class: "" },
-	verified_at: { width: "20ch", class: "" },
-	modules_tags: { width: "auto", class: "", filter: true },
+	folder: { width: "12ch", class: "", filter: true },
+	filename: { width: "1fr", class: "" },
+	s3_key: { width: "1fr", class: "" },
+	original_filename: { width: "1fr", class: "" },
+	title: { width: "1fr", class: "" },
+	description: { width: "1fr", class: "" },
+	tags: { width: "auto", class: "" },
+	mime_type: { width: "15ch", class: "" },
+	width: { width: "10ch", class: "text-right" },
+	height: { width: "10ch", class: "text-right" },
+	file_size: { width: "10ch", class: "text-right" },
 };
 
 // Route param for URL paths - change to a different column for URL obscurity.
@@ -32,3 +37,10 @@ const pagination_strategy: "cursor" | "offset" = "offset";
 
 const render_strategy: "stream" | "load" = "load";
 export { columns, enable_archive, pagination_strategy, render_strategy, route_param };
+export const navigation = {
+	section_key: "reeman.nav.data",
+	item_order: 30,
+	section_order: 20,
+	group_order: null,
+	final_order: null,
+};

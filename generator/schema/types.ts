@@ -118,6 +118,8 @@ export interface GridColumnDefinition {
 	 * type-based cell rendering.
 	 */
 	helper?: string;
+	/** Give this column a separate value in every configured locale. */
+	localized?: boolean;
 	/** Display this column's value on forms without an editor (never editable). */
 	readonly?: boolean;
 }

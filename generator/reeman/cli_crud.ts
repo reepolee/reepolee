@@ -57,6 +57,7 @@ export function parse_crud_flags(argv: string[]) {
 
 	return {
 		table: positionals[0] !== undefined ? String(positionals[0]) : undefined,
+		positionals: positionals.map((value) => String(value)),
 		force: Boolean(values.force),
 		translate: Boolean(values.translate),
 		prefix: String(values.prefix ?? ""),

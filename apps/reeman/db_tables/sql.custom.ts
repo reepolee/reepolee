@@ -10,6 +10,7 @@ export interface DbTableSnapshot {
 	column_count: number;
 	fk_count: number;
 	has_crud: number;
+	template_hash_status: "clean" | "modified" | "untracked" | null;
 	display: string;
 }
 
@@ -20,7 +21,8 @@ export async function refresh_db_tables(): Promise<DbTableSnapshot[]> {
 		load_ddl_cache({ force_refresh: true }),
 	]);
 
-	const crud_by_table = new Set(discover_existing_crud_tables().map((t) => t.name));
+	const crud_tables = discover_existing_crud_tables();
+	const crud_by_table = new Map(crud_tables.map((table) => [table.name, table]));
 	const locale_clones = locale_clone_table_names(cache.tables.map((t) => t.name), locales, default_locale);
 	const ignored_tables = new Set<string>(IGNORE_TABLES);
 	const rows = cache.tables
@@ -36,6 +38,7 @@ export async function refresh_db_tables(): Promise<DbTableSnapshot[]> {
 				column_count: t.columns.length,
 				fk_count: fk_columns.size,
 				has_crud: crud_by_table.has(t.name) ? 1 : 0,
+				template_hash_status: crud_by_table.get(t.name)?.template_hash_status ?? null,
 			};
 		});
 

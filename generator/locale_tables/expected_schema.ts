@@ -91,7 +91,7 @@ function sidecar_column(name: string): ExpectedColumn {
 
 export interface ExpectedSchemaOptions {
 	base_schema: SchemaObject;
-	/** Fields carrying `localized: true` in the table's schema/table.ts. */
+	/** Fields carrying `localized: true` in the route's config.ts. */
 	localized_field_names: readonly string[];
 	locale_codes: readonly string[];
 	default_locale_code: string;

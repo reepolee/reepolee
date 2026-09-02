@@ -6,6 +6,7 @@ export type db_routes_type = {
 	table_name?: string;
 	module?: string;
 	removable?: number;
+	template_hash_status?: "clean" | "modified" | "untracked" | null;
 	display?: string | null | undefined;
 	created_at?: string;
 	updated_at?: string | null | undefined;
@@ -62,6 +63,19 @@ export const fields: Record<string, FormFieldDef> = {
 			"domain_compliant": false,
 			"initial_width": "10ch",
 			"initial_class": "",
+		},
+	},
+	"template_hash_status": {
+		"name": "template_hash_status",
+		"type": "text",
+		"required": false,
+		"is_nullable": true,
+		"attributes": {
+			"column_type": "TEXT",
+			"domain_type": null,
+			"domain_compliant": false,
+			"initial_width": "15ch",
+			"initial_class": "text-center",
 		},
 	},
 	"display": {

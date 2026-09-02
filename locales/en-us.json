@@ -138,8 +138,6 @@
 			"reeqa": "ReeQA"
 		},
 		"auto_complete_no_results": "No results found",
-		"nav_group_auto": "Auto",
-		"nav_group_manual": "Manual",
 		"busy_poller_translating": "{count} translation job(s) running - translations appear when they finish.",
 		"clear_all": "Clear all",
 		"file_upload_click": "Click",
@@ -184,6 +182,8 @@
 			"sl": "Slovenian"
 		},
 		"modifying": "You are about to modify",
+		"nav_group_auto": "Auto",
+		"nav_group_manual": "Manual",
 		"no_records": "No records found.",
 		"page_not_found": "Page Not Found",
 		"page_not_found_description": "Sorry, we can't display this page",

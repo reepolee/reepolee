@@ -52,7 +52,7 @@ export const ENV_VAR_DESCRIPTIONS: Record<string, string> = {
 	// -- Common app toggles --
 	SQL_LOGGING: "Set to \"true\" to log every SQL statement to logs/sql/. Development aid; leave off in production.",
 	MAX_UPLOAD_SIZE_MB: "Upload size limit in MB, shared by image uploads and the data-to-sql tool. Required - missing or \"N/A\" fails loudly at the upload point rather than applying a silent default.",
-	LOCALIZE_CONTENT: "When \"true\", reeman marks every text/textarea/markdown field `localized: true` in newly generated schema columns. Existing table.ts files are never rewritten.",
+	LOCALIZE_CONTENT: "When \"true\", reeman marks every text/textarea/markdown field `localized: true` in newly generated route configuration. Existing config.ts files are never rewritten.",
 	GROUP_JS: "Off by default. Set to \"true\" (or \"on\") to group a page's script tags into one immediate and one deferred file, cached to disk. Unset or \"false\" leaves each script tag as its own request.",
 	BUNDLE_JS: "Set to \"true\" to additionally minify grouped output via Bun.build. Off by default: bundled scripts are hand-authored globals, and dead-code elimination can drop declarations used only by inline scripts. No effect when GROUP_JS=false.",
 

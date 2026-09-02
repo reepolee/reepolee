@@ -7,8 +7,8 @@ import { create_ctx } from "$lib/request_context";
 import { get_record_by_id as get_user_by_id, get_users_select_options } from "$reeman/users/sql";
 import type { BunRequest } from "bun";
 
-import { enable_archive } from "./schema/table";
-import { validate_touched } from "./schema/validation_server";
+import { enable_archive } from "./config";
+import { validate_touched } from "./validation_server";
 import { archive_record, get_record_by_id } from "./sql";
 
 // ---------------------------------------------------------------------------

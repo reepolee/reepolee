@@ -16,11 +16,11 @@
 		{#if tables.length === 0}
 			<app-banner type="red">{_ ui.no_tables }</app-banner>
 		{:else}
-			<form method="POST" action="{~ localized_path('/routes/add-table-page') }" class="mt-4 grid gap-4 max-w-[60ch] lg:max-w-[100ch] lg:grid-cols-2 lg:gap-x-6">
+			<form method="POST" action="{~ localized_path('/routes/add-table-page') }" class="mt-4 grid grid-cols-1 gap-4 max-w-[100ch]">
 				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 				<input type="hidden" name="return_to" value="/routes" />
 
-				<field-wrapper class="grid" data-field="prefix">
+				<field-wrapper class="grid max-w-[60ch]" data-field="prefix">
 					<div class="grid">
 						<label class="px-3" for="tp-prefix">{_ labels.prefix}</label>
 						<input id="tp-prefix" name="prefix" pattern="[a-z0-9_\-\/]*" list="reeman-modules" title="{_ hints.prefix }" />
@@ -32,14 +32,14 @@
 					</div>
 				</field-wrapper>
 
-				<field-wrapper class="grid" data-field="folder_name">
+				<field-wrapper class="grid max-w-[60ch]" data-field="folder_name">
 					<div class="grid">
 						<label class="px-3" for="tp-folder">{_ labels.folder_name}</label>
 						<input id="tp-folder" name="folder_name" required pattern="[a-z0-9][a-z0-9_\-]*" title="{_ hints.folder_name }" placeholder="my_page" />
 					</div>
 				</field-wrapper>
 
-				<field-wrapper class="grid lg:col-span-2" data-field="table">
+				<field-wrapper class="grid" data-field="table">
 					<div class="grid">
 						<label class="px-3" for="tp-table">{_ labels.table_name}</label>
 						<select id="tp-table" name="table" required>
@@ -51,7 +51,7 @@
 					</div>
 				</field-wrapper>
 
-				<field-wrapper class="grid lg:col-span-2" data-field="fields">
+				<field-wrapper class="grid" data-field="fields">
 					<div class="grid">
 						<label class="px-3">{_ labels.fields}</label>
 						<div id="tp-fields" class="rounded border border-border bg-surface-raised">
@@ -60,7 +60,7 @@
 					</div>
 				</field-wrapper>
 
-				<field-wrapper class="grid lg:col-span-2" data-field="order_by">
+				<field-wrapper class="grid" data-field="order_by">
 					<div class="grid">
 						<label class="px-3">{_ labels.order_by}</label>
 						<div id="tp-order-rows" class="grid gap-2"></div>
@@ -68,7 +68,7 @@
 					</div>
 				</field-wrapper>
 
-				<field-wrapper class="grid lg:col-span-2" data-field="where">
+				<field-wrapper class="grid" data-field="where">
 					<div class="grid">
 						<label class="px-3">{_ labels.where}</label>
 						<div id="tp-where-rows" class="grid gap-2"></div>
@@ -76,7 +76,7 @@
 					</div>
 				</field-wrapper>
 
-				<div class="flex gap-2 items-center lg:col-span-2">
+				<div class="flex gap-2 items-center">
 					<button type="submit" id="tp-submit" class="as-button-primary" {#if busy}disabled{/if}>{_ actions.create }</button>
 					<a href="{~ localized_path('/routes') }" role="button" class="as-button-secondary">{_ actions.cancel}</a>
 				</div>

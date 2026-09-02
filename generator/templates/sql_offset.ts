@@ -33,7 +33,7 @@ export async function get_all_records(): Promise<Record[]> {
 export async function get___table.exact___select_options(): Promise<Options[]> {
 	try {
 		return await timed_query("__table.exact__", "get_select_options", async () => {
-			const records = await db`SELECT id as option_value, __table.option_text_field__ as option_text FROM __table.exact____sql.archive_where__ ORDER BY __table.option_text_field__ ASC LIMIT 50`;
+			const records = await db`SELECT id as option_value, __table.option_text_field__ as option_text FROM __table.exact____sql.archive_where__ ORDER BY __table.option_text_field__ ASC`;
 			return records as Options[];
 		});
 	} catch (error) {

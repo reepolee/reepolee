@@ -12,8 +12,12 @@ import {
 } from "$config/db_structure";
 
 import { env_switch_on } from "$config/env_vars";
+import { readdirSync, statSync } from "node:fs";
+import { basename, dirname, join, relative } from "node:path";
+import { MAIN_APP } from "$config/paths";
 import { default_field_helper } from "../crud/render_field_cell";
 import { canonical_sql_for_domain, generate_fields_object } from "./field_generator";
+import { load_table_module_fresh } from "./table_module_loader";
 import type { TypeMapper } from "./type_mapper";
 import type { FormFieldDef, GridColumnDefinition, SchemaObject } from "./types";
 
@@ -28,6 +32,21 @@ import type { FormFieldDef, GridColumnDefinition, SchemaObject } from "./types";
 function has_auto_increment_pk(schema_obj: SchemaObject): boolean {
 	if (schema_obj.primary_key) return schema_obj.primary_key.is_auto_increment;
 	return schema_obj.columns.some((column) => column.is_primary_key && column.is_auto_increment);
+}
+
+function is_localizable_string(
+	field: FormFieldDef,
+	base_table_field_names: Set<string>,
+	unique_field_names: Set<string>,
+	foreign_key_field_names: Set<string>,
+): boolean {
+	return (
+		(LOCALIZABLE_STRING_TYPES as readonly string[]).includes(field.type) &&
+		!(LOCALIZATION_SYSTEM_FIELDS as readonly string[]).includes(field.name) &&
+		!unique_field_names.has(field.name.toLowerCase()) &&
+		!foreign_key_field_names.has(field.name.toLowerCase()) &&
+		base_table_field_names.has(field.name)
+	);
 }
 
 export async function write_table_generated_file(
@@ -83,7 +102,7 @@ export const indexed_columns: string[] = ${JSON.stringify(indexed_columns)};
 ${v_fields_export}${parent_export}
 `;
 
-	await Bun.write(`${dir}/schema/table.generated.ts`, content);
+	await Bun.write(join(dir, "schema.generated.ts"), content);
 }
 
 /**
@@ -181,8 +200,10 @@ export interface GridColumnChoice {
 	helper: string;
 	/** The type-based helper the CRUD generator would apply if none is selected. */
 	default_helper: string;
-	/** Whether this column is marked readonly in the existing table.ts columns map. */
+	/** Whether this column is marked readonly in the existing config.ts columns map. */
 	readonly: boolean;
+	/** Whether this column receives the current automatic localization default. */
+	localized: boolean;
 }
 
 function column_class(field: FormFieldDef): string {
@@ -212,6 +233,16 @@ export function list_grid_column_choices(
 	all_tables_indexes?: Map<string, Set<string>>,
 ): GridColumnChoice[] {
 	const sets = build_grid_field_sets(schema_obj, type_mapper, all_tables_columns, all_tables_indexes);
+	const unique_field_names = new Set([
+		...(schema_obj.unique_columns ?? []),
+		...schema_obj.columns.filter((column) => column.is_primary_key || column.is_unique === true).map((column) => column.name),
+	].map((name) => name.toLowerCase()));
+	const foreign_key_field_names = new Set(
+		sets.source_fields
+			.filter((field) => field.type === "foreign_key")
+			.map((field) => field.name.toLowerCase()),
+	);
+	const localize_content = env_switch_on("LOCALIZE_CONTENT") && has_auto_increment_pk(schema_obj);
 
 	// Same eligibility rule the writer applies: checkbox/id are always present, and
 	// an FK _id with a display sibling is hidden regardless of what the user picks.
@@ -240,6 +271,7 @@ export function list_grid_column_choices(
 		helper: "",
 		default_helper: default_field_helper(field),
 		readonly: field.attributes?.readonly === true,
+		localized: localize_content && is_localizable_string(field, sets.base_table_field_names, unique_field_names, foreign_key_field_names),
 	}));
 }
 
@@ -273,18 +305,6 @@ function build_column_lines(
 			.filter((field) => field.type === "foreign_key")
 			.map((field) => field.name.toLowerCase()),
 	);
-
-	function is_localizable_string(f: FormFieldDef): boolean {
-		return (
-			(LOCALIZABLE_STRING_TYPES as readonly string[]).includes(f.type) &&
-			!(LOCALIZATION_SYSTEM_FIELDS as readonly string[]).includes(f.name) &&
-			// Unique and foreign-key fields identify or relate records; they are
-			// shared metadata and must never be written to locale sidecars.
-			!unique_field_names.has(f.name.toLowerCase()) &&
-			!foreign_key_field_names.has(f.name.toLowerCase()) &&
-			base_table_field_names.has(f.name)
-		);
-	}
 
 	// Build a concise mismatch comment naming the actual vs. canonical SQL type.
 	function domain_mismatch_comment(f: FormFieldDef, domain: string | undefined, compliant: boolean | undefined): string {
@@ -343,7 +363,8 @@ function build_column_lines(
 		const helper_prop = definition?.helper ? `, helper: ${JSON.stringify(definition.helper)}` : "";
 		// Commented (CU) entries never carry the cap-based hide - they are already hidden.
 		const grid_prop = is_auto_hidden_fk || (!commented && hidden_by_cap.has(f.name)) ? ", grid: false" : "";
-		const localized_prop = localize_content && is_localizable_string(f) ? ", localized: true" : "";
+		const localized = definition?.localized ?? (localize_content && is_localizable_string(f, base_table_field_names, unique_field_names, foreign_key_field_names));
+		const localized_prop = localized ? ", localized: true" : "";
 		const readonly_prop = definition?.readonly ? ", readonly: true" : "";
 
 		const mismatch_comment = domain_mismatch_comment(f, domain, compliant);
@@ -393,15 +414,96 @@ export interface WriteTableConfig {
 	localize_content?: boolean;
 }
 
+type NavigationConfig = {
+	section_key: string | null;
+	item_order: number;
+	section_order: number | null;
+	group_order: number | null;
+	final_order: number | null;
+};
+
+function navigation_block(navigation: NavigationConfig): string {
+	return `// Navigation is the source of truth for this route's sidebar placement.
+const navigation = {
+	// Section heading translation key; null keeps this route directly in its module group.
+	section_key: ${JSON.stringify(navigation.section_key)},
+	// Link order within its section or group; lower values appear first.
+	item_order: ${navigation.item_order},
+	// Section order; only used when section_key is set.
+	section_order: ${navigation.section_order},
+	// Module group order; lower values appear first.
+	group_order: ${navigation.group_order},
+	// Reserved final-sidebar-link order; currently unused by generated routes.
+	final_order: ${navigation.final_order},
+};`;
+}
+
+export function next_navigation_item_order(item_orders: readonly number[]): number {
+	let highest_item_order = 0;
+	for (const item_order of item_orders) {
+		if (!Number.isFinite(item_order)) continue;
+		highest_item_order = Math.max(highest_item_order, item_order);
+	}
+	return highest_item_order + 10;
+}
+
+async function navigation_for_new_route(dir: string): Promise<NavigationConfig> {
+	const main_routes_dir = join(process.cwd(), MAIN_APP);
+	const route_relative_dir = relative(main_routes_dir, dir);
+	if (route_relative_dir === "" || route_relative_dir.startsWith("..")) {
+		return { section_key: null, item_order: 10, section_order: null, group_order: null, final_order: null };
+	}
+
+	const sibling_dir = dirname(dir);
+	const sibling_entries = readdirSync(sibling_dir, { withFileTypes: true });
+	const route_dir_name = basename(dir);
+	const sibling_item_orders: number[] = [];
+	let group_order: number | null = null;
+
+	for (const sibling of sibling_entries) {
+		if (!sibling.isDirectory() || sibling.name === route_dir_name) continue;
+		const sibling_config_path = join(sibling_dir, sibling.name, "config.ts");
+		if (!statSync(sibling_config_path, { throwIfNoEntry: false })?.isFile()) continue;
+
+		const module_data = await load_table_module_fresh<{ navigation?: Partial<NavigationConfig>; }>(sibling_config_path);
+		const navigation = module_data.navigation;
+		if (!navigation) continue;
+		if (navigation.section_key === null && typeof navigation.item_order === "number" && Number.isFinite(navigation.item_order)) {
+			sibling_item_orders.push(navigation.item_order);
+		}
+		if (typeof navigation.group_order === "number" && Number.isFinite(navigation.group_order)) {
+			group_order = navigation.group_order;
+		}
+	}
+
+	return {
+		section_key: null,
+		item_order: next_navigation_item_order(sibling_item_orders),
+		section_order: null,
+		group_order,
+		final_order: null,
+	};
+}
+
+function inject_navigation_declaration(source: string, navigation: NavigationConfig): string {
+	if (/^const navigation\s*=/m.test(source)) return source;
+	const export_index = source.indexOf("export { columns");
+	if (export_index < 0) return source;
+	const block = navigation_block(navigation);
+	const export_source = source.slice(export_index).replace("template_tags", "template_tags, navigation");
+	return `${source.slice(0, export_index)}${block}\n${export_source}`;
+}
+
 export async function write_table_file(config: WriteTableConfig): Promise<void> {
 	const { dir, schema_obj, type_mapper, all_tables_columns, all_tables_indexes, pagination_strategy = "offset", render_strategy = "load", template_tags = "flat", grid_columns, grid_column_definitions, localize_content: localize_content_override } = config;
-	const table_ts_path = `${dir}/schema/table.ts`;
-	const exists = await Bun.file(table_ts_path).exists();
-	// An existing table.ts is never rewritten wholesale. New DB columns are merged
+	const config_ts_path = join(dir, "config.ts");
+	const exists = await Bun.file(config_ts_path).exists();
+	const navigation = await navigation_for_new_route(dir);
+	// An existing config.ts is never rewritten wholesale. New DB columns are merged
 	// into its `columns` map, and explicit editor values update only their matching
 	// settings.
 	if (exists) {
-		await merge_columns_into_table_file(table_ts_path, config);
+		await merge_columns_into_table_file(config_ts_path, config, navigation);
 		return;
 	}
 
@@ -422,7 +524,7 @@ export async function write_table_file(config: WriteTableConfig): Promise<void> 
 	const columns_str = columns_lines.join("\n");
 
 	// URLs use the primary key unless the application owner explicitly changes
-	// table.ts. A reverse foreign key identifies a relationship, not a stable
+	// config.ts. A reverse foreign key identifies a relationship, not a stable
 	// public route identifier.
 	const route_param_export = 'const route_param = "id";';
 
@@ -439,8 +541,9 @@ export const parent = ${JSON.stringify(schema_obj.parent, null, 2)};
 ` : "";
 
 	const global_scopes_block = build_global_scopes_block(schema_obj);
+	const navigation_source = navigation_block(navigation);
 
-	const content = `export type { ${schema_obj.name}_type } from "./table.generated";	export { v_fields, fields, indexed_columns } from "./table.generated";
+	const content = `export type { ${schema_obj.name}_type } from "./schema.generated";	export { v_fields, fields, indexed_columns } from "./schema.generated";
 
 // domain - canonical domain type from DOMAIN_TYPES taxonomy. Null when no match.
 // Add compliant column to flag SQL mismatches against the canonical type.
@@ -479,25 +582,15 @@ const render_strategy: "stream" | "load" = "${render_strategy}";
 // Use "tags" once a form's layout is stable and won't need per-field HTML customization.
 const template_tags: "flat" | "tags" = "${template_tags}";
 
-// Navigation presentation for this route.
-// A group is the outer sidebar block for this route's module (for example, "admin").
-// A section is an optional translated heading within that group; without a section_key,
-// this route appears directly in its module group. Null order values preserve declaration order.
-const navigation = {
-	section_key: null as string | null, // Section heading translation key; null keeps this route directly in its module group.
-	item_order: null as number | null, // Link order within its section or group; lower values appear first.
-	section_order: null as number | null, // Section order; only used when section_key is set.
-	group_order: null as number | null, // Module group order; lower values appear first.
-	final_order: null as number | null, // Reserved final-sidebar-link order; currently unused by generated routes.
-};
+${navigation_source}
 ${global_scopes_block ? `\n${global_scopes_block}\n` : ""}${parent_export_block}export { columns, route_param, enable_archive, grid_filler, pagination_strategy, render_strategy, template_tags, navigation${global_scopes_block ? ", global_scopes" : ""} };
 `;
 
-	await Bun.write(`${dir}/schema/table.ts`, content);
+	await Bun.write(config_ts_path, content);
 }
 
 /**
- * The `global_scopes` declaration block for a table.ts, or null when the table
+ * The `global_scopes` declaration block for a config.ts, or null when the table
  * is not archivable. Built from ARCHIVE_SCOPE_SEEDS so the scaffold and the
  * seed rows stay in sync. The declaration is the source of truth for seeding -
  * editing keys here and regenerating seeds the new rows (existing rows in the
@@ -527,7 +620,7 @@ ${entries.join("\n")}
 }
 
 /**
- * Insert the global_scopes declaration into an existing table.ts, just before
+ * Insert the global_scopes declaration into an existing config.ts, just before
  * the final `export { ... }` statement, and add `global_scopes` to that export
  * list. Returns the source unchanged when the statement cannot be found.
  */
@@ -544,7 +637,7 @@ function inject_global_scopes_declaration(source: string, block: string): string
 }
 
 /**
- * Locate the `columns` object literal in a table.ts source and return the offsets
+ * Locate the `columns` object literal in a config.ts source and return the offsets
  * of its opening brace and matching closing brace. Brace-counting rather than a
  * regex, because entries carry `{ width: ... }` sub-objects and trailing comments.
  * Returns null when the declaration or its terminator cannot be found, so the
@@ -578,7 +671,7 @@ function find_columns_body(source: string): { open: number; close: number; } | n
 }
 
 /**
- * Which column names a table.ts `columns` body already mentions - including
+ * Which column names a config.ts `columns` body already mentions - including
  * commented-out (CU) entries, so re-running a refresh never resurrects a column
  * the developer deliberately commented out.
  */
@@ -612,15 +705,17 @@ function set_string_property_on_line(line: string, property: "width" | "class", 
 	return line.replace(property_pattern, `${property}: ${JSON.stringify(value)}`);
 }
 
-function set_true_flag_on_line(line: string, property: "filter" | "readonly", enabled: boolean): string {
+function set_true_flag_on_line(line: string, property: "filter" | "localized" | "readonly", enabled: boolean): string {
 	const property_pattern = new RegExp(`,\\s*${property}:\\s*true`);
 	if (!enabled) return line.replace(property_pattern, "");
 	if (property_pattern.test(line)) return line;
 	const later_property_indexes = [line.indexOf(", grid:"), line.indexOf(", localized:")].filter((index) => index >= 0);
-	// filter sits before grid/localized; readonly goes after them, right before
-	// the closing brace.
+	// filter sits before grid/localized; localized follows grid and precedes
+	// readonly, which stays right before the closing brace.
 	const insert_index = property === "filter"
 		? (later_property_indexes[0] ?? line.lastIndexOf("}"))
+		: property === "localized"
+			? (line.indexOf(", readonly:") >= 0 ? line.indexOf(", readonly:") : line.lastIndexOf("}"))
 		: line.lastIndexOf("}");
 	if (insert_index < 0) return line;
 	const before_close = line.slice(0, insert_index);
@@ -677,6 +772,7 @@ function apply_grid_settings(source: string, settings: TableFileSettings): { sou
 		updated = set_string_property_on_line(updated, "class", definition.class_name);
 		updated = set_true_flag_on_line(updated, "filter", definition.filter);
 		if (definition.helper !== undefined) updated = set_helper_property_on_line(updated, definition.helper);
+		if (definition.localized !== undefined) updated = set_true_flag_on_line(updated, "localized", definition.localized);
 		if (definition.readonly !== undefined) updated = set_true_flag_on_line(updated, "readonly", definition.readonly);
 		if (selected) updated = set_grid_flag_on_line(updated, !selected.has(definition.name));
 		if (updated === match[0]) continue;
@@ -707,16 +803,22 @@ export async function update_table_file_settings(table_ts_path: string, settings
 }
 
 /**
- * Append `columns` entries for DB columns that appeared since table.ts was
+ * Append `columns` entries for DB columns that appeared since config.ts was
  * scaffolded. Explicit settings from the index-column editor update width,
  * class, filter and visibility on existing entries while leaving domain,
  * localized and comments untouched.
  */
-async function merge_columns_into_table_file(table_ts_path: string, config: WriteTableConfig): Promise<void> {
+async function merge_columns_into_table_file(table_ts_path: string, config: WriteTableConfig, navigation: NavigationConfig): Promise<void> {
 	const { schema_obj, type_mapper, all_tables_columns, all_tables_indexes, grid_columns, grid_column_definitions, localize_content: localize_content_override } = config;
 	let source = await Bun.file(table_ts_path).text();
+	const navigation_source = inject_navigation_declaration(source, navigation);
+	if (navigation_source !== source) {
+		await Bun.write(table_ts_path, navigation_source);
+		source = navigation_source;
+		console.log(`  ${Bun.color("green", "ansi")}Added navigation declaration to schema`);
+	}
 
-	// Inject the global_scopes declaration into table.ts files scaffolded before
+	// Inject the global_scopes declaration into config.ts files scaffolded before
 	// the const existed (archivable tables only). A declaration already present
 	// is hand-edited territory and is left byte-for-byte alone.
 	const global_scopes_block = build_global_scopes_block(schema_obj);
@@ -786,5 +888,5 @@ async function merge_columns_into_table_file(table_ts_path: string, config: Writ
 
 	await Bun.write(table_ts_path, merged);
 	const added_names = new_lines.map((entry) => entry.name).join(", ");
-	console.log(`  ${Bun.color("green", "ansi")}Merged ${new_lines.length} new column(s) into table.ts: ${added_names}`);
+	console.log(`  ${Bun.color("green", "ansi")}Merged ${new_lines.length} new column(s) into config.ts: ${added_names}`);
 }

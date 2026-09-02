@@ -335,33 +335,19 @@ export async function check_domain_compliance(): Promise<{ compliant: boolean; n
 // ---------------------------------------------------------------------------
 
 /**
- * Regenerate CRUD files for a table that already has a schema folder.
- * Mirrors the reeman "Refresh CRUD" command without the prompts: pass
- * refresh_fields to update only .ree field sections, otherwise a full
- * force-overwrite of generated files.
+ * Refresh generated field sections for a configured CRUD route.
  */
 export async function refresh_crud(table: string, options: {
 	prefix?: string;
 	parent_table?: string;
 	route_name?: string;
-	refresh_fields?: boolean;
 	translate?: boolean;
 } = {}): Promise<{ success: boolean; stdout: string; stderr: string; }> {
 	assert_mcp_mutation_enabled();
 	await refresh_ddl_cache_before_generation();
 	return run_captured(async () => {
-		if (options.refresh_fields) {
-			return await generate_crud(table, {
-				refresh_fields: true,
-				interactive: false,
-				translate: options.translate ?? false,
-				prefix: options.prefix,
-				parent_table: options.parent_table,
-				route_name: options.route_name,
-			});
-		}
 		return await generate_crud(table, {
-			force: true,
+			refresh_fields: true,
 			interactive: false,
 			translate: options.translate ?? false,
 			prefix: options.prefix,

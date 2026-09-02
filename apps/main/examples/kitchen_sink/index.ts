@@ -2,7 +2,7 @@ import { render } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
 import type { BunRequest } from "bun";
 
-import { validate_touched } from "./schema/validation_server";
+import { validate_touched } from "./validation_server";
 
 export const kitchen_sink_page = {
 	"/examples/kitchen-sink": { GET: get_kitchen_sink },

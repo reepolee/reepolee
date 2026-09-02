@@ -1,5 +1,5 @@
-export type { modules_type } from "./table.generated";
-export { fields, indexed_columns, v_fields } from "./table.generated";
+export type { modules_type } from "./schema.generated";
+export { fields, indexed_columns, v_fields } from "./schema.generated";
 
 // domain - canonical domain type from DOMAIN_TYPES taxonomy. Null when no match.
 // Add compliant column to flag SQL mismatches against the canonical type.
@@ -37,3 +37,10 @@ const pagination_strategy: "cursor" | "offset" = "offset";
 // as <template for> chunks after DB queries resolve.
 const render_strategy: "stream" | "load" = "load";
 export { columns, enable_archive, pagination_strategy, render_strategy, route_param };
+export const navigation = {
+	section_key: "reeman.nav.data",
+	item_order: 50,
+	section_order: 20,
+	group_order: null,
+	final_order: null,
+};

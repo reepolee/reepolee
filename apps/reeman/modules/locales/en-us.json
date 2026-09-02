@@ -36,9 +36,9 @@
 	"errors": {
 		"code_max": "Code must be at most 15 characters.",
 		"code_required": "Code is required.",
-		"duplicate_key": "A record with this value already exists.",
 		"description_max": "Description must be at most 100 characters.",
 		"description_required": "Description is required.",
+		"duplicate_key": "A record with this value already exists.",
 		"error_creating_record": "An error occurred while saving the record.",
 		"must_be_selected": "This field is required.",
 		"name_max": "Name must be at most 30 characters.",

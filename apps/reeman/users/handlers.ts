@@ -9,10 +9,10 @@ import { render } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
 import type { BunRequest } from "bun";
 
-import { validate, validate_touched } from "./schema/validation_server";
+import { validate, validate_touched } from "./validation_server";
 import { archive_record, get_record_by_id, restore_record, strip_log_sensitive, update_record } from "./sql";
 
-import { enable_archive } from "./schema/table";
+import { enable_archive } from "./config";
 
 export { enable_archive };
 

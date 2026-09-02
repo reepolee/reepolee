@@ -22,7 +22,7 @@ coverage
 *.lcov
 
 # logs
-logs
+/logs
 !routes_reeman/logs/
 !routes_reeman/logs/**
 _.log

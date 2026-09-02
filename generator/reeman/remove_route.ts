@@ -259,8 +259,8 @@ async function find_orphaned_route_folders(registered_urls: Set<string>): Promis
 		const entry_path = join(routes_dir, entry);
 		if (!statSync(entry_path).isDirectory()) continue;
 
-		// A route folder has a schema/ subdirectory or generated .ree/.ts files
-		const has_schema = existsSync(join(entry_path, "schema"));
+		// A route folder has generated schema metadata or generated .ree/.ts files.
+		const has_schema = existsSync(join(entry_path, "schema.generated.ts")) || existsSync(join(entry_path, "config.ts"));
 		const has_index_ree = existsSync(join(entry_path, "index.ree"));
 		if (!has_schema && !has_index_ree) continue;
 

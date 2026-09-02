@@ -1,3 +1,4 @@
+import { navigation } from "./config";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
@@ -110,8 +111,10 @@ export const route_definitions: RouteDefinition[] = [
 		nav_title_key: "reeman.database",
 		module: "system",
 		nav_module: null,
-		nav_section_key: "reeman.nav.generator",
-		nav_section_order: 10,
-		nav_item_order: 30,
+		nav_section_key: navigation.section_key,
+		nav_section_order: navigation.section_order,
+		nav_item_order: navigation.item_order,
+		nav_group_order: navigation.group_order,
+		nav_final_order: navigation.final_order,
 	},
 ];

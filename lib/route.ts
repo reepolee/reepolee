@@ -6,7 +6,7 @@
  * `create_ctx()` in `lib/request_context.ts`.
  */
 
-import { MAIN_APP_POSIX, PLATFORM_DIR } from "$config/paths";
+import { APPS_DIR, MAIN_APP_POSIX, PLATFORM_DIR } from "$config/paths";
 import { active_locales, default_locale } from "$config/supported_locales";
 import { get_cookie } from "$lib/cookies";
 import { canonical_locale } from "$lib/locale";
@@ -72,10 +72,17 @@ export function route_template_namespace_from_dir(dir: string): string {
 	const normalized = dir.replaceAll("\\", "/");
 	for (const root of [MAIN_APP_POSIX, PLATFORM_DIR]) {
 		const root_segment = `/${root}`;
-		const idx = normalized.lastIndexOf(`${root_segment}/`);
-		if (idx !== -1) return normalized.substring(idx + root_segment.length + 1);
+		const route_index = normalized.lastIndexOf(`${root_segment}/`);
+		if (route_index !== -1) {
+			const relative_dir = normalized.substring(route_index + root_segment.length + 1);
+			if (root !== MAIN_APP_POSIX) return relative_dir;
+			const main_dir = MAIN_APP_POSIX.slice(`${APPS_DIR}/`.length);
+			return relative_dir ? `${main_dir}/${relative_dir}` : main_dir;
+		}
 		const end_idx = normalized.lastIndexOf(root_segment);
-		if (end_idx !== -1 && end_idx + root_segment.length === normalized.length) return "";
+		if (end_idx !== -1 && end_idx + root_segment.length === normalized.length) {
+			return root === MAIN_APP_POSIX ? MAIN_APP_POSIX.slice(`${APPS_DIR}/`.length) : "";
+		}
 	}
 
 	const module_namespace = resolve_route_module_template_namespace(dir);

@@ -158,3 +158,10 @@ export function write_supported_locales(cfg: LocalesConfig): void {
 
 	writeFileSync(CONFIG_PATH(), next, "utf-8");
 }
+export const navigation = {
+	section_key: "reeman.nav.system",
+	item_order: 20,
+	section_order: 30,
+	group_order: null,
+	final_order: null,
+};

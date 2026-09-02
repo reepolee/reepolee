@@ -127,6 +127,38 @@
 	<script>
 		init_theme_toggle();
 
+		const automatic_nav_details = document.querySelectorAll('details[data-nav-module][data-nav-manual="false"], details[data-nav-section][data-nav-manual="false"]');
+		for (const automatic_nav_detail of automatic_nav_details) {
+			const current_entry = automatic_nav_detail.querySelector("a.current");
+			automatic_nav_detail.open = current_entry !== null;
+		}
+
+		function close_automatic_nav_siblings(nav_detail) {
+			const section_id = nav_detail.dataset.navSection;
+			const is_top_level = nav_detail.hasAttribute("data-nav-module") || section_id?.startsWith("root:");
+			const sibling_selector = is_top_level
+				? 'details[data-nav-module][data-nav-manual="false"], details[data-nav-section^="root:"][data-nav-manual="false"]'
+				: `details[data-nav-section^="${CSS.escape(section_id?.split(":")[0] || "") }:"][data-nav-manual="false"]`;
+			const sibling_details = document.querySelectorAll(sibling_selector);
+			for (const sibling_detail of sibling_details) {
+				if (sibling_detail !== nav_detail) sibling_detail.open = false;
+			}
+		}
+
+		const nav_summaries = document.querySelectorAll("details[data-nav-module] > summary, details[data-nav-section] > summary");
+		for (const nav_summary of nav_summaries) {
+			nav_summary.addEventListener("click", (event) => {
+				const nav_detail = nav_summary.parentElement;
+				if (!(nav_detail instanceof HTMLDetailsElement)) return;
+				if (nav_detail.dataset.navManual === "true") return;
+				event.preventDefault();
+
+				const should_open = !nav_detail.open;
+				if (should_open) close_automatic_nav_siblings(nav_detail);
+				nav_detail.open = should_open;
+			});
+		}
+
 		const nav_module_details = document.querySelectorAll("details[data-nav-module]");
 		for (const nav_module_detail of nav_module_details) {
 			nav_module_detail.addEventListener("toggle", () => {

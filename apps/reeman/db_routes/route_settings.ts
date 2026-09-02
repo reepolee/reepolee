@@ -11,6 +11,8 @@ export interface RouteGridColumn {
 	width: string;
 	class_name: string;
 	filter: boolean;
+	localized: boolean;
+	readonly: boolean;
 	/** Built-in template helper applied to this column's grid cell ("" = default). */
 	helper: string;
 	/** The type-based helper the CRUD generator would apply if none is selected. */
@@ -45,6 +47,8 @@ type TableColumn = {
 	filter?: boolean;
 	helper?: string;
 	grid?: boolean;
+	localized?: boolean;
+	readonly?: boolean;
 };
 
 type TableModule = {
@@ -52,7 +56,7 @@ type TableModule = {
 	pagination_strategy: "cursor" | "offset";
 	render_strategy: "stream" | "load";
 	template_tags: "flat" | "tags";
-	/** Field metadata (type, attributes) keyed by column name, from table.generated.ts. */
+	/** Field metadata (type, attributes) keyed by column name, from schema.generated.ts. */
 	fields?: Record<string, DefaultHelperField>;
 };
 
@@ -65,6 +69,8 @@ export function route_settings_from_module(route: RouteSchema, table_module: Tab
 		width: column.width,
 		class_name: column.class,
 		filter: column.filter === true,
+		localized: column.localized === true,
+		readonly: column.readonly === true,
 		helper: column.helper ?? "",
 		default_helper: fields?.[name] ? default_field_helper(fields[name]!) : "",
 	}));
@@ -86,7 +92,7 @@ export async function load_route_settings(url: string): Promise<RouteSettings | 
 
 	const raw_parts = route.url.split("/");
 	const route_parts = raw_parts.filter(Boolean);
-	const table_path = join(process.cwd(), MAIN_APP, ...route_parts, "schema", "table.ts");
+	const table_path = join(process.cwd(), MAIN_APP, ...route_parts, "config.ts");
 	const table_module = await load_table_module_fresh<TableModule>(table_path);
 
 	return route_settings_from_module(route, table_module);

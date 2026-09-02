@@ -2,7 +2,7 @@
 //
 // Flags control which processes to run:
 //   --app      main app server (bun --hot apps/main/server.ts --dev) + tailwind watcher
-//   --reeman   reeman server  (bun --no-clear-screen apps/reeman/server.ts --dev)
+//   --reeman   reeman server  (bun --hot --no-clear-screen apps/reeman/server.ts --dev)
 //   --reeqa    reeqa server   (bun --no-clear-screen apps/reeqa/server.ts --dev)
 //   --worker   queue worker   (bun --hot worker.ts)
 //   --agent    run servers in agent mode (localhost only, no dev UI)
@@ -20,7 +20,7 @@
 //
 // .env and config/ changes trigger a restart of the --app child only.
 
-import { watch } from "node:fs";
+import { readdirSync, statSync, watch, type Dirent } from "node:fs";
 import { join } from "node:path";
 
 import { APPS_DIR } from "$config/paths";
@@ -84,7 +84,7 @@ function spawn_app(): Bun.Subprocess<"ignore", "pipe", "pipe"> {
 }
 
 function spawn_reeman(): Bun.Subprocess<"ignore", "pipe", "pipe"> {
-	const args = ["bun", "--no-clear-screen", join(APPS_DIR, "reeman", "server.ts"), "--dev"];
+	const args = ["bun", "--hot", "--no-clear-screen", join(APPS_DIR, "reeman", "server.ts"), "--dev"];
 	if (is_agent_mode) args.push("--agent");
 	if (other_ips_flag) args.push("--other-ips");
 	return Bun.spawn(args, { stdout: "pipe", stderr: "pipe" });
@@ -152,6 +152,54 @@ wk?.exited.then((code) => { if (!shutting_down) console.error(`${GREEN}[wk]${RES
 
 let restarting = false;
 
+const env_config_file_mtimes = new Map<string, number>();
+
+function get_file_mtime(filename: string): number | null {
+	const file_path = join(process.cwd(), filename);
+	try {
+		return statSync(file_path).mtimeMs;
+	} catch {
+		return null;
+	}
+}
+
+function seed_file_mtime(filename: string): void {
+	const normalized_filename = filename.replaceAll("\\", "/");
+	const mtime = get_file_mtime(normalized_filename);
+	if (mtime !== null) env_config_file_mtimes.set(normalized_filename, mtime);
+}
+
+function seed_config_file_mtimes(dir: string = "config"): void {
+	const dir_path = join(process.cwd(), dir);
+	let entries: Dirent[];
+	try {
+		entries = readdirSync(dir_path, { withFileTypes: true });
+	} catch {
+		return;
+	}
+
+	for (const entry of entries) {
+		const entry_path = join(dir, entry.name);
+		if (entry.isDirectory()) {
+			seed_config_file_mtimes(entry_path);
+			continue;
+		}
+		if (entry.isFile()) seed_file_mtime(entry_path);
+	}
+}
+
+function has_file_mtime_changed(filename: string): boolean {
+	const mtime = get_file_mtime(filename);
+	const previous_mtime = env_config_file_mtimes.get(filename);
+	if (mtime === null) {
+		env_config_file_mtimes.delete(filename);
+		return previous_mtime !== undefined;
+	}
+
+	env_config_file_mtimes.set(filename, mtime);
+	return previous_mtime !== mtime;
+}
+
 function debounced_restart(reason: string): void {
 	if (restart_timeout) clearTimeout(restart_timeout);
 	restart_timeout = setTimeout(() => {
@@ -164,12 +212,20 @@ function debounced_restart(reason: string): void {
 
 if (should_run_app) {
 	const env_config_watch_targets = [".env", "config"];
-	env_watcher = watch(process.cwd(), { recursive: true }, (_event, filename) => {
+	seed_file_mtime(".env");
+	seed_config_file_mtimes();
+	env_watcher = watch(process.cwd(), { recursive: true }, (event_type, filename) => {
 		if (!filename) return;
 		const posix_path = filename.replaceAll("\\", "/");
 		const is_watched = env_config_watch_targets.some((target) => posix_path === target || posix_path.startsWith(`${target}/`));
 		if (!is_watched) return;
-		debounced_restart(`${_event}: ${filename}`);
+		if (event_type === "change") {
+			const has_changed = has_file_mtime_changed(posix_path);
+			if (!has_changed) return;
+		} else {
+			has_file_mtime_changed(posix_path);
+		}
+		debounced_restart(`${event_type}: ${filename}`);
 	});
 }
 

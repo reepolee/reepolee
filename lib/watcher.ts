@@ -28,7 +28,7 @@
  * cold-start cost per real edit.
  */
 
-import { watch } from "node:fs";
+import { readdirSync, statSync, watch, type Dirent } from "node:fs";
 import { join } from "node:path";
 
 import { translations } from "$lib/i18n";
@@ -37,6 +37,7 @@ import { now_epoch_ms } from "$lib/temporal";
 
 let watcher: ReturnType<typeof watch> | null = null;
 const file_timestamps = new Map();
+const file_mtimes = new Map<string, number>();
 let reload_timeout: Timer | null = null;
 
 function debounced_reload(work: () => void | Promise<void>, message: string) {
@@ -64,12 +65,66 @@ async function reload_translations_and_notify(notify_clients: () => void) {
 // sl-si.json). Applied to the basename so only translation files match.
 const locale_json_pattern = /^[a-z]{2,3}-[a-z0-9]{2,8}\.json$/;
 
+function is_reloadable_file(filename: string): boolean {
+	const basename = filename.split("/").pop() ?? "";
+	if (filename.endsWith(".ree") || locale_json_pattern.test(basename)) return true;
+	if (filename.endsWith("static/app-dev.css")) return true;
+	const is_javascript = filename.endsWith(".js");
+	const is_static_file = filename.startsWith("static/") || filename.includes("/static/");
+	return is_javascript && is_static_file;
+}
+
+function get_file_mtime(project_root: string, filename: string): number | null {
+	const file_path = join(project_root, filename);
+	try {
+		return statSync(file_path).mtimeMs;
+	} catch {
+		return null;
+	}
+}
+
+function seed_file_mtimes(project_root: string, dir: string = ""): void {
+	const dir_path = join(project_root, dir);
+	let entries: Dirent[];
+	try {
+		entries = readdirSync(dir_path, { withFileTypes: true });
+	} catch {
+		return;
+	}
+
+	for (const entry of entries) {
+		if (entry.name === ".git" || entry.name === "node_modules") continue;
+		const entry_path = join(dir, entry.name);
+		const normalized_path = entry_path.replaceAll("\\", "/");
+		if (entry.isDirectory()) {
+			seed_file_mtimes(project_root, entry_path);
+			continue;
+		}
+		if (!entry.isFile() || !is_reloadable_file(normalized_path)) continue;
+		const mtime = get_file_mtime(project_root, normalized_path);
+		if (mtime !== null) file_mtimes.set(normalized_path, mtime);
+	}
+}
+
+function has_file_mtime_changed(project_root: string, filename: string): boolean {
+	const mtime = get_file_mtime(project_root, filename);
+	const previous_mtime = file_mtimes.get(filename);
+	if (mtime === null) {
+		file_mtimes.delete(filename);
+		return previous_mtime !== undefined;
+	}
+
+	file_mtimes.set(filename, mtime);
+	return previous_mtime !== mtime;
+}
+
 export function start_watcher(notify_clients: () => void) {
 	// Only start watcher once globally, close old one if exists
 	if (watcher) { watcher.close(); }
 
 	// Watch routes folder
 	const project_root = join(import.meta.dir, "../");
+	seed_file_mtimes(project_root);
 
 	watcher = watch(project_root, { recursive: true }, async (eventType, filename) => {
 		if (!filename) return;
@@ -77,6 +132,9 @@ export function start_watcher(notify_clients: () => void) {
 
 		// Ignore changes in node_modules and .git
 		if (filename.includes("node_modules") || filename.includes(".git")) { return; }
+		if (!is_reloadable_file(normalized_filename)) return;
+		if (eventType === "change" && !has_file_mtime_changed(project_root, normalized_filename)) return;
+		if (eventType !== "change") has_file_mtime_changed(project_root, normalized_filename);
 
 		const now = now_epoch_ms();
 		const last_event_time = file_timestamps.get(filename) || 0;

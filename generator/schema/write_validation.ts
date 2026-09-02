@@ -1,6 +1,7 @@
 import { MAINTENANCE_FIELDS } from "$config/db_structure";
 
 import { generate_validation_server_content, generate_zod_fields_from_array } from "../validation_generator";
+import { join } from "node:path";
 import { generate_fields_object } from "./field_generator";
 import type { TypeMapper } from "./type_mapper";
 import type { FieldKind, FormFieldDef, SchemaObject } from "./types";
@@ -12,6 +13,8 @@ export async function write_validation_file(
 	all_tables_columns?: Map<string, string[]>,
 	all_tables_indexes?: Map<string, Set<string>>,
 ): Promise<void> {
+	const validation_path = join(dir, "validation_server.ts");
+	if (await Bun.file(validation_path).exists()) return;
 	let index_schema_source: SchemaObject;
 
 	if (schema_obj.view_columns) {
@@ -105,5 +108,5 @@ export async function write_validation_file(
 
 	const content = await generate_validation_server_content(zod_index_fields, zod_form_fields, zod_validate_fields);
 
-	await Bun.write(`${dir}/schema/validation_server.ts`, content);
+	await Bun.write(validation_path, content);
 }

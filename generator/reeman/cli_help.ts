@@ -22,28 +22,24 @@ ${color("CRUD generators:", GREEN)}
        [--grid-columns <a,b,c>]
       Full pipeline: schema + CRUD generation for one table, or every table when
       <table> is "all"/"all-tables".
-      For a table carrying archived_at, schema/table.ts declares its global_scopes and
+      For a table carrying archived_at, config.ts declares its global_scopes and
       the reserved __live/__archived/__all scope rows are seeded automatically, which is
       what puts the archived view in the index-page scope dropdown. Existing rows are
       never overwritten; edit the declaration to add custom scope keys.
       --grid-columns picks exactly which columns the index grid displays (comma-separated,
       no count limit). Columns left out are written with grid: false - hidden from the
       grid but still available for filtering. Omit the flag to apply the default cap of
-      5 usable columns. When schema/table.ts already exists, only the grid visibility
+      5 usable columns. When config.ts already exists, only the grid visibility
       of already-present columns is updated to match - width, class, domain, filter,
       localized and comments on those entries are left untouched.
 
   bulk <table...> [--prefix <dir>] [--translate] [--pagination cursor|offset] [--render-strategy stream|load] [--template-tags flat|tags]
       Full pipeline for a specific set of tables (e.g. ones without CRUD yet). Always forces overwrite.
 
-  refresh-crud <table> [--mode fields|full] [--prefix <dir>] [--parent <table>]
-               [--pagination cursor|offset] [--template-tags flat|tags] [--translate] [--reinject-children]
-      Regenerate CRUD for a route that already has a schema folder. fields mode only
-      touches .ree field sections (preserves CSS/layout) and reuses the existing schema.
-      full re-introspects the DB, rewrites schema/table.generated.ts, then overwrites all
-      generated files. Neither mode rewrites schema/table.ts wholesale - full mode merges
-      columns added to the DB since scaffolding into its columns map, leaving existing
-      entries untouched.
+  refresh-crud <table> [--mode fields] [--prefix <dir>] [--parent <table>] [--translate]
+      Refresh generated .ree field sections while preserving config.ts, validation_server.ts,
+      and layout customizations. For structural schema changes, remove the route and generate
+      it again.
 
   create_bread --from <schema.json> [--force] [--prefix <dir>] [--route-name <name>]
        [--pagination cursor|offset] [--render-strategy stream|load] [--template-tags flat|tags]
@@ -53,7 +49,7 @@ ${color("CRUD generators:", GREEN)}
       stub; implement it against whatever actually holds the resource's data.
       --template-tags controls form field rendering: "flat" (raw <input>/<select> markup,
       default) or "tags" (single ReeTag component per field, e.g. <input-text>) - sticky
-      per-entity, persisted to schema/table.ts whenever explicitly passed.
+      per-entity, persisted to config.ts whenever explicitly passed during generation.
 
   create_localized_bread --from <schema.json> [--force] [--prefix <dir>] [--route-name <name>]
        [--pagination cursor|offset] [--render-strategy stream|load] [--template-tags flat|tags]

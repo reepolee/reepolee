@@ -87,10 +87,10 @@ runs the unpacked marketplace `install.ps1` or `install.sh` as a subprocess.
 
 | Subcommand                 | Description                                                                                                                                                                                                                 |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `schema <table\|all>`       | `[--prefix <dir>] [--parent <table>]` - introspects DB, writes `apps/main/<table>/schema/`. `--parent` detects FK and nests child under `apps/main/<parent>/<child>/`.                                                          |
+| `schema <table\|all>`       | `[--prefix <dir>] [--parent <table>]` - introspects DB and writes flat route schema files. `--parent` detects FK and nests child under `apps/main/<parent>/<child>/`.                                                          |
 | `crud <table_name\|all>`    | `[--force] [--prefix <dir>] [--parent <table>]` - full pipeline: schema + CRUD generation for one table, or every table when the target is `all`/`all-tables`.                                                            |
 | `bulk <table...>`           | Full pipeline for a specific set of tables. See [README.md](../README.md#reeman-subcommand-reference) for usage.                                                                                                          |
-| `refresh-crud <table>`      | Regenerate CRUD for a route that already has a schema folder.                                                                                                                                                              |
+| `refresh-crud <table>`      | Refresh generated `.ree` field sections for a configured CRUD route.                                                                                                                                                       |
 | `install <archive.tar.gz>`  | CLI-only. Warns to back up the repository and database, unpacks one folder under `marketplace/`, runs the current platform installer, then asks whether to keep the unpacked folder.                                  |
 | *(bare)* `bun reeman`       | Interactive terminal UI for resource generation, DB ops, locale management, and bulk CRUD generation.                                                                                                                     |
 | `add-locale <locale_code>`  | `[--translate]` - adds a BCP 47 locale to the project.                                                                                                                                                                     |
@@ -124,7 +124,7 @@ See [README.md](../README.md#generators) for the common flags (`--force`, `--tra
 
 #### Bulk CRUD flow
 
-1. Scans all DB tables, excludes those already having a `apps/main/*/schema/table.ts` folder
+1. Scans all DB tables, excludes those already having an `apps/main/*/config.ts` route
 2. Shows remaining tables in an **interactive multi-select** (arrow keys, space to toggle, Ctrl+A for select all/deselect all, enter to confirm)
 3. Asks for a module prefix (0 = no prefix, placed directly in `/routes`)
 4. Runs the full pipeline for each selected table, nested under `--prefix <module>`
@@ -217,7 +217,7 @@ Rules:
 
 ### Pagination strategies
 
-Generated CRUD index views support two pagination strategies, selectable per-route via the `pagination_strategy` export in `schema/table.ts`.
+Generated CRUD index views support two pagination strategies, selectable per-route via the `pagination_strategy` export in `config.ts`.
 
 Set to `"cursor"` for keyset-based pagination (stable on real-time data) or `"offset"` (default) for LIMIT/OFFSET pagination (requires `COUNT(*)` on every request).
 
@@ -269,7 +269,7 @@ Columns ending in `_image` (`IMAGE_SUFFIXES` in `config/db_structure.ts`) are au
 
 - **Form field**: `generate_input_field` (`generator/crud/form_ree.ts`) dispatches to `generator/templates/fields/image.ree`, which renders a `<image-upload>` ReeTag (see [REE_TEMPLATES.md](REE_TEMPLATES.md#image-upload-component)) instead of a plain text input.
 - **Grid cell**: `render_field_cell` (`generator/crud/render_field_cell.ts`) emits `{~ image_thumbnail(record.field) }` - a 100x100 thumbnail helper (`lib/template_helpers.ts`) - instead of the raw path string.
-- **Domain compliance**: the column is assigned `domain: "image"` in the generated `schema/table.ts`, checked against the canonical `VARCHAR(255)` SQL type from `config/domain_types/{mysql,sqlite}.ts` by `check_domain_compliance`.
+- **Domain compliance**: the column is assigned `domain: "image"` in the generated `config.ts`, checked against the canonical `VARCHAR(255)` SQL type from `config/domain_types/{mysql,sqlite}.ts` by `check_domain_compliance`.
 
 `generate_input_field` does not know a route's `module` at generation time, so the generated `<image-upload>` tag never sets the `module` attribute automatically - add it by hand in `form.ree` when the upload should require a specific module.
 
@@ -279,7 +279,7 @@ Columns ending in `_file` (`FILE_SUFFIXES` in `config/db_structure.ts`) are auto
 
 - **Form field**: `generate_input_field` (`generator/crud/form_ree.ts`) dispatches to `generator/templates/fields/file.ree`, which renders a `<file-upload>` ReeTag instead of a plain text input.
 - **Grid cell**: `render_field_cell` (`generator/crud/render_field_cell.ts`) emits `{~ file_link(record.field) }` - a filename/download-link helper (`lib/template_helpers.ts`) that renders an em-dash when empty - instead of the raw path string. A companion `file_icon_name(filename)` helper resolves a `<ree-icon>` name (PDF, Word, Excel, CSV, PowerPoint, Zip, plain text) by extension, falling back to a generic "file" icon.
-- **Domain compliance**: the column is assigned `domain: "file"` in the generated `schema/table.ts`, checked against the canonical `VARCHAR(255)` SQL type from `config/domain_types/{mysql,sqlite}.ts` by `check_domain_compliance` - same canonical type as image fields.
+- **Domain compliance**: the column is assigned `domain: "file"` in the generated `config.ts`, checked against the canonical `VARCHAR(255)` SQL type from `config/domain_types/{mysql,sqlite}.ts` by `check_domain_compliance` - same canonical type as image fields.
 
 ### Markdown fields
 

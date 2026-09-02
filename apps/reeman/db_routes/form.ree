@@ -14,13 +14,13 @@
 			</div>
 		{/if}
 
-		<form method="POST" action="{~ localized_path(action) }" class="grid gap-4 max-w-[60ch] lg:max-w-[100ch] lg:grid-cols-2 lg:gap-x-6" id="entry-form">
+		<form method="POST" action="{~ localized_path(action) }" class="grid grid-cols-1 gap-4 max-w-[60ch]" id="entry-form">
 
 			<!-- CSRF token -->
 			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 
 			<!-- GEN:FIELDS:START -->
-			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="url">
+			<field-wrapper class="grid" data-field="url">
 				<div class="grid">
 					<label class="px-3" for="url">{_ labels.url}</label>
 					<input type="text" id="url" name="url" value="{= record.url}" />
@@ -30,7 +30,7 @@
 			</field-wrapper>
 
 
-			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="table_name">
+			<field-wrapper class="grid" data-field="table_name">
 				<div class="grid">
 					<label class="px-3" for="table_name">{_ labels.table_name}</label>
 					<input type="text" id="table_name" name="table_name" value="{= record.table_name}" />
@@ -40,7 +40,7 @@
 			</field-wrapper>
 
 
-			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="module">
+			<field-wrapper class="grid" data-field="module">
 				<div class="grid">
 					<label class="px-3" for="module">{_ labels.module}</label>
 					<input type="text" id="module" name="module" value="{= record.module}" />
@@ -50,7 +50,7 @@
 			</field-wrapper>
 
 
-			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="removable">
+			<field-wrapper class="grid" data-field="removable">
 				<div class="grid">
 					<label class="px-3" for="removable">{_ labels.removable}</label>
 					<input type="number" id="removable" name="removable" value="{= record.removable}" />

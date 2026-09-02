@@ -35,7 +35,7 @@
  * - get_queue_status         Show background job queue status
  * - run_tests                Run project tests
  * - check_domain_compliance  Report columns not matching the canonical domain types (read-only)
- * - refresh_crud             Regenerate CRUD for an existing route (full or fields-only)
+ * - refresh_crud             Refresh generated field sections for an existing route
  * - prune_translations       Find or delete file-backed translation keys no longer referenced
  * - insert_translations      Find or add translation keys missing from locale files
  * - add_translations          Add translation entries directly to locale files

@@ -1,3 +1,4 @@
+import { navigation } from "./config";
 import type { RouteDefinition } from "$lib/route_builder";
 import { feature_paths } from "$lib/crud_routes";
 import { default_locale } from "$config/supported_locales";
@@ -15,8 +16,8 @@ import { enrich_filter_definitions, get_filter_definitions, load_tags_filter_opt
 import type { BunRequest } from "bun";
 
 import { get_users_edit, get_users_new, post_users_bulk_archive, post_users_edit, post_users_validate } from "./handlers";
-import { columns, enable_archive, fields } from "./schema/table";
-import { validate } from "./schema/validation_server";
+import { columns, enable_archive, fields } from "./config";
+import { validate } from "./validation_server";
 import { is_archive_scope_key, resolve_archive_filter } from "$lib/archive";
 import { create_record, get_archive_counts, search_records, strip_log_sensitive } from "./sql";
 import { strip_api_sensitive } from "$config/api_blocklist";
@@ -207,5 +208,5 @@ export async function post_users_index(req: BunRequest): Promise<Response> {
 }
 
 export const route_definitions: RouteDefinition[] = [
-	{ url: "/users", crud: system_users_crud, nav_title_key: "reeman.users", module: "system", nav_module: null, nav_section_key: "reeman.nav.system", nav_section_order: 30, nav_item_order: 40 },
+	{ url: "/users", crud: system_users_crud, nav_title_key: "reeman.users", module: "system", nav_module: null, nav_section_key: navigation.section_key, nav_section_order: navigation.section_order, nav_item_order: navigation.item_order, nav_group_order: navigation.group_order, nav_final_order: navigation.final_order },
 ];

@@ -112,7 +112,6 @@ export async function generate_schema(target: string, options: SchemaOptions = {
 				return join(parent_dir, dir_name);
 			})() : clean_prefix ? join(MAIN_APP, clean_prefix, dir_name) : join(MAIN_APP, dir_name);
 			mkdirSync(route_dir, { recursive: true });
-			mkdirSync(join(route_dir, "schema"), { recursive: true });
 
 			await write_table_generated_file(
 				route_dir,
@@ -122,10 +121,9 @@ export async function generate_schema(target: string, options: SchemaOptions = {
 				all_indexes
 			);
 
-			// If --parent is specified, ensure the parent export is in table.ts
-			// (write_table_file skips if table.ts already exists, so we inject it here)
+			// If --parent is specified, ensure the parent export is in config.ts.
 			if (parent_table && schema_obj.parent) {
-				const table_ts_path = join(route_dir, "schema", "table.ts");
+				const table_ts_path = join(route_dir, "config.ts");
 				if (await Bun.file(table_ts_path).exists()) {
 					let table_ts_content = await Bun.file(table_ts_path).text();
 					if (!table_ts_content.includes("export const parent")) {
@@ -136,7 +134,7 @@ export async function generate_schema(target: string, options: SchemaOptions = {
 						)};\n`;
 						table_ts_content = table_ts_content.replace("export { columns, route_param };", `${parent_block}export { columns, route_param };`);
 						await Bun.write(table_ts_path, table_ts_content);
-						console.log(`✓ Injected parent export into existing table.ts`);
+						console.log(`✓ Injected parent export into existing config.ts`);
 					}
 				}
 			}

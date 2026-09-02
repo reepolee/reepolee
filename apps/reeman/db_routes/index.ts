@@ -1,3 +1,4 @@
+import { navigation } from "./config";
 import { feature_paths } from "$lib/crud_routes";
 import { build_pagination_urls as build_offset_pagination_urls, get_limit_options, parse_pagination_params as parse_offset_pagination_params } from "$lib/pagination";
 
@@ -12,10 +13,10 @@ import { wants_json } from "$lib/wants_json";
 import { strip_api_sensitive } from "$config/api_blocklist";
 import { type BunRequest } from "bun";
 
-import { columns, enable_archive, fields, grid_filler } from "./schema/table";
+import { columns, enable_archive, fields, grid_filler } from "./config";
 import type { RouteDefinition } from "$lib/route_builder";
 
-import { post_bulk_refresh_routes, post_bulk_remove_route, post_simple_page, post_simple_route } from "../reeman/handlers";
+import { post_bulk_refresh_routes, post_bulk_remove_route, post_save_route_settings, post_simple_page, post_simple_route } from "../reeman/handlers";
 import { load_reeman_data } from "../reeman/page";
 import { load_route_settings, route_edit_path } from "./route_settings";
 import type { Record as DbRouteRecord } from "./sql";
@@ -25,6 +26,7 @@ import { DEFAULT_HELPER_NAMES } from "$lib/helper_names";
 export const reeman_db_routes_crud = {
 	"/routes": { GET: get_db_routes_index },
 	"/routes/bulk-refresh": { POST: post_bulk_refresh_routes },
+	"/routes/save-settings": { POST: post_save_route_settings },
 	"/routes/bulk-remove": { POST: post_bulk_remove_route },
 	// Simple page / simple table page generators, mirroring the `bun reeman`
 	// CLI flows. Static paths are matched before the "/routes/:id" param route.
@@ -204,5 +206,5 @@ export async function get_add_table_page_form(req: BunRequest): Promise<Response
 }
 
 export const route_definitions: RouteDefinition[] = [
-	{ url: "/routes", crud: reeman_db_routes_crud, nav_title_key: "reeman.db_routes", module: "system", nav_module: null, nav_section_key: "reeman.nav.generator", nav_section_order: 10, nav_item_order: 20 },
+	{ url: "/routes", crud: reeman_db_routes_crud, nav_title_key: "reeman.db_routes", module: "system", nav_module: null, nav_section_key: navigation.section_key, nav_section_order: navigation.section_order, nav_item_order: navigation.item_order, nav_group_order: navigation.group_order, nav_final_order: navigation.final_order },
 ];

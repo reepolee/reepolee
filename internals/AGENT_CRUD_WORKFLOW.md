@@ -25,9 +25,9 @@ Read **all** of these before touching any CRUD route:
 
 | File                          | Purpose                                                                        | Edit-safe?                                   |
 | ----------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------- |
-| `schema/table.ts`             | Field definitions, `route_param`, `parent` export, `indexed_columns`           | **Yes** - user-editable                      |
-| `schema/table.generated.ts`   | Auto-generated fields, `indexed_columns`, `TYPES`, `STORE`                     | **No** - overwritten on `--force`            |
-| `schema/validation_server.ts` | Zod validation schemas                                                         | **No** - overwritten on `--force`            |
+| `config.ts`                   | Route settings, `route_param`, `parent` export, and columns                     | **Yes** - user-editable                      |
+| `schema.generated.ts`         | Auto-generated fields, `indexed_columns`, and types                             | **No** - regenerated                         |
+| `validation_server.ts`        | Server validation schemas                                                       | **Yes** - user-editable and preserved        |
 | `sql.ts`                      | SQL query functions (contains `db.unsafe()` in `search_records`)               | **No** - generated                           |
 | `sql_view.ts`                 | View-based queries (if view exists)                                            | **No** - generated                           |
 | `index.ts`                    | Route handlers                                                                 | **Yes** - generated once, never regenerated (skipped by the safe writer) |
@@ -105,7 +105,7 @@ When asked to modify or fix a CRUD route:
 
 ## 5. Common pitfalls
 
-- **Editing `table.generated.ts`**: This file is overwritten by `--force`. Edit `table.ts` instead.
+- **Editing `schema.generated.ts`**: This file is regenerated. Edit `config.ts` instead.
 - **Adding new fields to a generated CRUD**: Regenerate via `bun reeman refresh-crud <table>`, don't edit files manually.
 - **Using `db.unsafe()` for dynamic queries**: Use the validated sort_field pattern from templates or refactor to avoid dynamic SQL entirely.
 - **Editing between marker comments**: In `form.ree` and `index.ree`, content between `<!-- GEN:FIELDS:START -->` and `<!-- GEN:FIELDS:END -->` is owned by the generator. Edit outside these markers.

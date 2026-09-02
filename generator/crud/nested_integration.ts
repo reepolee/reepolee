@@ -216,7 +216,7 @@ async function inject_parent_index_marker(parent_index_path: string, table_name:
 	// which become escape sequences (\t, \n, ...) inside generated string literals
 	const child_relative_path_raw = relative(join(process.cwd(), MAIN_APP), route_dir);
 	const child_relative_path = child_relative_path_raw.replaceAll("\\", "/");
-	const child_columns_import_path = `./${table_name}/schema/table`;
+	const child_columns_import_path = `./${table_name}/config`;
 
 	// Skip FK option lists the parent handler (or another child) already loads
 	const new_fk_options = child_fk_options.filter((fk) => !parent_index.includes(`const ${fk.var_name} = await`));

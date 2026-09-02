@@ -22,7 +22,7 @@ export interface FieldDef {
 	};
 }
 
-// Grid/display config for a table.ts column entry, as written by write_table.ts.
+// Grid/display config for a config.ts column entry, as written by write_table.ts.
 export interface ColumnDef {
 	width: string;
 	class: string;

@@ -17,7 +17,7 @@ Everything runs through `reeman`, the Reepolee Resource Manager - interactively 
 | File                              | Role                                                              |
 | --------------------------------- | ---------------------------------------------------------------- |
 | `reeman.ts`                       | The actual entry point (`bun reeman` in package.json) - delegates to `reeman/cli.ts` for subcommands, `reeman/index.ts` for the interactive menu |
-| `schema.ts`                       | Library: introspect DB -> `apps/main/<table>/schema/` (called by `bun reeman schema`/`crud`) |
+| `schema.ts`                       | Library: introspect DB -> flat route schema files (called by `bun reeman schema`/`crud`) |
 | `crud/main.ts`                    | Library: generate CRUD routes + `.ree` templates from an existing schema (called by `bun reeman crud`/`refresh-crud`) |
 | `add_locale.ts` / `remove_locale.ts` | Add/remove a configured BCP 47 locale (called by `bun reeman add-locale`/`remove-locale`) |
 | `validation_generator.ts`         | Generate Zod validation schemas (called internally by the CRUD generator) |
@@ -60,7 +60,7 @@ Controls how `generate_input_field()` (`crud/form_ree.ts`) renders each form fie
 - `flat` (default) - loads a per-field-type snippet from `generator/templates/fields/*.ree`, which inlines raw `<input>`/`<select>`/`<label>` markup plus `<field-wrapper>`/`<validation-error>`. Use when a field's HTML needs per-field customization after generation.
 - `tags` - builds a single ReeTag component call in-memory (e.g. `<input-text name="..." label="..." value="...">`), no template file on disk - see `TAGS_MODE_TAG`/`generate_tags_mode_field()` in `crud/form_ree.ts`. Each tag wraps its own `<field-wrapper>`/`<validation-error>` internally. Reusable components live in `components/input-*.ree` (see [apps/main/AGENTS.md](../apps/main/AGENTS.md) "Templates & components"). Use once a form's layout is stable and won't need per-field HTML edits - the generated `form.ree` is shorter and layout tweaks made in the shared component apply to every table using it.
 
-Sticky per-entity: persisted as a `template_tags` const in the table's `schema/table.ts`, written at first scaffold (default `"flat"`) and re-patched in place (`load_table_schema()`, `crud/schema_reader.ts`) whenever `--template-tags` is explicitly passed on a later `crud`/`bulk`/`refresh-crud` run - mirrors `pagination_strategy`'s persistence model. Omitting the flag on a given run reads and keeps the existing `table.ts` value; it is never silently reset.
+Sticky per-entity: persisted as a `template_tags` const in the route's `config.ts` when explicitly saved or supplied during generation. Refresh reads and preserves that value.
 
 Nested CRUD's hidden parent-FK input is always raw HTML in both modes (no ReeTag needed for a hidden field). Child tables render with their own `template_tags` value independently of the parent's.
 

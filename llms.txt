@@ -187,8 +187,8 @@ underlying functions directly (no subprocess spawning).
 | `bun reeman crud <table> [--force] [--translate] [--prefix <dir>] [--parent <table>]`                                                                                                               | Full pipeline: schema + CRUD for a single table |
 | `bun reeman crud all [--force] [--translate] [--prefix <dir>]`                                                                                                                                       | Full pipeline for all tables                               |
 | `bun reeman bulk <table...> [--prefix <dir>]`                                                                                                                                                        | Full pipeline for a specific set of tables (e.g. ones without CRUD yet) |
-| `bun reeman schema <table\|all> [--prefix <dir>] [--parent <table>]`                                                                                                                                 | Introspect DB → schema/ subfolder only                     |
-| `bun reeman refresh-crud <table> [--mode fields\|full]`                                                                                                                                              | Regenerate CRUD for a route that already has a schema folder |
+| `bun reeman schema <table\|all> [--prefix <dir>] [--parent <table>]`                                                                                                                                 | Introspect DB and write flat route schema files            |
+| `bun reeman refresh-crud <table> [--mode fields]`                                                                                                                                                    | Refresh generated field sections for a configured route   |
 | `bun reeman sync-translations [namespace...] [--translate]`                                                                                                                                          | Sync translation keys across configured locales            |
 | `bun reeman add-locale <locale_code> [--translate]`                                                                                                                                                  | Add a BCP 47 locale to the project                         |
 | `bun reeman insert-translations`                                                                                                                                                                      | Add template keys missing from the translation JSON files   |
@@ -201,7 +201,7 @@ underlying functions directly (no subprocess spawning).
 
 **Auto-formatting:** The CRUD generator runs `reettier` on the generated route directory automatically.
 
-**`route_param`:** Every generated `schema/table.ts` exports `route_param = "id"`. For non-integer PKs, change this value to use a different column for URL routing. The CRUD generator adapts all layers (links, delete forms, SQL).
+**`route_param`:** Every generated `config.ts` exports `route_param = "id"`. For non-integer PKs, change this value to use a different column for URL routing. The CRUD generator adapts all layers (links, delete forms, SQL).
 
 ### Nested CRUD (Master-Detail)
 
@@ -239,7 +239,7 @@ Nested children follow the same pattern:
 
 **Return URL flow:** Child forms auto-set `_return_url` to the parent's edit page. On success, user is redirected back to the parent edit page.
 
-**Parent export:** The child's `schema/table.ts` exports a `parent` object: `{ table, fk_column, route_param }`. Auto-detected from DB foreign key constraints, overridable.
+**Parent export:** The child's `config.ts` exports a `parent` object: `{ table, fk_column, route_param }`. Auto-detected from DB foreign key constraints, overridable.
 
 ### Cursor-based pagination (keyset pagination)
 
@@ -302,10 +302,9 @@ Marker-based mechanism to regenerate only the field sections in `form.ree` and `
 
 ```
 apps/main/<table>/
-├-- schema/                  # Schema generator output
-│   ├-- table.generated.ts   # Auto-generated field definitions (overwritten on --force)
-│   ├-- table.ts             # User-editable: exports fields, columns, route_param, parent
-│   └-- validation_server.ts # Zod validation schemas (overwritten on --force)
+├-- config.ts                # User-editable route settings
+├-- schema.generated.ts      # Auto-generated field definitions
+├-- validation_server.ts     # User-editable server validation
 ├-- index.ts                 # CRUD route handlers
 ├-- sql.ts                   # SQL query functions
 ├-- sql_view.ts              # View-based queries (if view exists)
@@ -346,7 +345,7 @@ Redis-backed cache for `search_records` query results, using dependency-set inva
 
 - **Generated columns** - MySQL VIRTUAL/STORED and SQLite generated columns are excluded from form inputs (cannot be INSERTed/UPDATEed) but remain in view columns for display.
 - **Fulltext search** - Tables with a `search_text` column produce `MATCH(search_text) AGAINST(? IN BOOLEAN MODE)` queries instead of `LIKE '%term%'`. Requires a MySQL FULLTEXT index.
-- **Sort options** - The CRUD generator builds sort options from **every column with a DB index** (stored as `indexed_columns` in `table.generated.ts`), always providing `id` and the canonical `display` field.
+- **Sort options** - The CRUD generator builds sort options from **every column with a DB index** (stored as `indexed_columns` in `schema.generated.ts`), always providing `id` and the canonical `display` field.
 - **`IGNORE_ORDER_FIELDS`** - Global constant in `config/db_structure.ts`: `["option_display", "search_text", "hashed_password", "previous_hashed_password"]` - excluded from sort dropdown.
 - **`CRUD-ignore` table tag** - MySQL table comment containing `crud-ignore` (case-insensitive) excludes the table from reeman listings, bulk CRUD, and `all` schema generation. MySQL-only (SQLite does not support table comments).
 

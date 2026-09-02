@@ -1,12 +1,12 @@
 {
 	"actions": {
+		"add_another_route": "Add another route",
 		"bulk_action": "Delete selected db tables",
 		"bulk_action_2": "Bulk action 2",
 		"cancel": "Cancel",
 		"do_it": "Yes, do it",
 		"fields": "Fields only",
 		"force": "Force overwrite",
-		"full": "Full refresh",
 		"generate_crud": "Generate CRUD",
 		"new_db_table": "New Db Table",
 		"refresh_crud": "Refresh CRUD",
@@ -42,6 +42,7 @@
 		"route_name": "Optional URL name that replaces the table name (e.g. my-users)"
 	},
 	"labels": {
+		"actions": "Actions",
 		"class": "Class",
 		"column_count": "Column Count",
 		"default": "(default)",
@@ -51,6 +52,7 @@
 		"has_crud": "Has Crud",
 		"helper": "Template helper",
 		"index_columns": "Index columns",
+		"localized": "Localized",
 		"mode": "Mode",
 		"name": "Name",
 		"no_helper": "None (default)",
@@ -61,6 +63,7 @@
 		"route_name": "Route name (optional)",
 		"row_count": "Row count",
 		"table": "Table / Route",
+		"template_hash_status": "Templates",
 		"template_tags": "Template tags",
 		"width": "Width"
 	},
@@ -72,7 +75,7 @@
 		"record_created": "Record created",
 		"record_updated": "Record updated"
 	},
-	"nav": "Db tables",
+	"nav": "DB tables",
 	"route_name": "db_tables",
 	"search": {
 		"search_term": "Search db tables...",
@@ -82,9 +85,12 @@
 		"0": "No",
 		"1": "Yes",
 		"all": "All",
+		"clean": "Clean",
 		"default": "(keep current)",
+		"modified": "Modified",
 		"per_page": "per page",
-		"select_table": "-- Select table or route --"
+		"select_table": "-- Select table or route --",
+		"untracked": "Untracked"
 	},
 	"ui": {
 		"apply_filters": "Apply",
@@ -95,6 +101,7 @@
 		"modifying": "You are about to modify",
 		"no_records": "No db tables found.",
 		"no_selectable_columns": "No selectable index columns - generator defaults will be used.",
+		"no_tables_selected": "Select at least one table before generating CRUD.",
 		"records": "record(s)",
 		"refresh_skip_hint": "Tables without existing CRUD are skipped.",
 		"title": "Db Table"

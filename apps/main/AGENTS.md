@@ -46,10 +46,9 @@ the reeman app (`apps/reeman/server.ts`) at root URLs, gated by the "system" mod
 
 ```
 apps/main/<table>/
-├-- schema/
-│   ├-- table.generated.ts   # auto-generated field defs + TS types
-│   ├-- table.ts             # user-editable: fields, v_fields, columns, route_param
-│   └-- validation_server.ts # Zod validation
+├-- config.ts                # user-editable route settings
+├-- schema.generated.ts      # auto-generated field defs + TS types
+├-- validation_server.ts     # user-editable server validation
 ├-- {locale}.json            # co-located UI translations, one file per locale
 ├-- index.ts                 # CRUD handlers
 ├-- sql.ts                   # CRUD queries
@@ -58,7 +57,7 @@ apps/main/<table>/
 └-- index.ree                # list/index page
 ```
 
-- `route_param` (in `schema/table.ts`) selects the column used for URL routing (default `"id"`). See [README.md](../../README.md) "route_param".
+- `route_param` (in `config.ts`) selects the column used for URL routing (default `"id"`). See [README.md](../../README.md) "route_param".
 - Translations are co-located `{locale}.json` files. Edit the files directly or use `/translations` in Reeman. See the root [AGENTS.md](../../AGENTS.md) translation policy.
 
 ## Templates & components

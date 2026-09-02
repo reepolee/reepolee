@@ -1,7 +1,7 @@
 /**
  * Seed the global scope rows declared by a generated CRUD route.
  *
- * The declaration lives in the route's `schema/table.ts` as a `global_scopes`
+ * The declaration lives in the route's `config.ts` as a `global_scopes`
  * const - that is the source of truth, and this is the only writer of rows
  * from it. Seeding is automatic for every archivable top-level route: a table
  * carrying `archived_at` scaffolds the three reserved keys (`__live`,
@@ -29,7 +29,7 @@ export interface ArchiveScopeTarget {
 	module_code: string;
 }
 
-/** One declared scope entry, as written in a route's schema/table.ts. */
+/** One declared scope entry, as written in a route's config.ts. */
 export interface ScopeSeed {
 	scope_key: string;
 	display_name: string;

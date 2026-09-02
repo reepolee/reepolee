@@ -148,7 +148,7 @@ export const PERCENT_FIELD = "decimal(12,4)" as const;
 
 // ---------------------------------------------------------------------------
 // Column width defaults - initial grid column widths for generated CRUD index views.
-// These can be overridden by the user in the generated schema/table.ts columns map.
+// These can be overridden by the user in the generated config.ts columns map.
 // ---------------------------------------------------------------------------
 
 // Default width for decimal/numeric columns.

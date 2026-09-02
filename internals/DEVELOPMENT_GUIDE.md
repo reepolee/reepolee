@@ -62,7 +62,7 @@ bun run reeman
 bun reeman crud users --pagination offset
 ```
 
-This creates `apps/main/users/schema/` with introspected field definitions, plus the CRUD route files.
+This creates `apps/main/users/config.ts`, `schema.generated.ts`, and `validation_server.ts`, plus the CRUD route files.
 
 ### Step 4: Verify Generated Files
 
@@ -483,7 +483,7 @@ SELECT * FROM users WHERE id > 50000 LIMIT 20;  -- 10-50ms
 Configure streaming for lists with many rows:
 
 ```typescript
-// apps/main/users/schema/table.ts
+// apps/main/users/config.ts
 export const render_strategy: "stream" | "load" = "stream";
 ```
 
@@ -611,7 +611,7 @@ If still lost, double-check:
 
 - Edit sql.ts directly (it gets regenerated)
 - Delete or move markers
-- Modify table.generated.ts (always regenerated)
+- Modify schema.generated.ts (always regenerated)
 - Add custom code outside markers in form.ree/index.ree
 - Ignore database schema errors (generator will fail loudly)
 - Use offset pagination for tables > 1M rows

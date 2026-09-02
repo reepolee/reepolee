@@ -9,7 +9,7 @@ type WorkerResult = {
  *
  * Bun caches file imports by canonical path and ignores URL query parameters.
  * A short-lived worker has a fresh module graph, so a CRUD refresh reads the
- * table.ts contents just written by schema regeneration without restarting the
+ * config.ts contents just written by explicit settings saves without restarting the
  * Reeman server.
  */
 export async function load_table_module_fresh<T>(table_path: string): Promise<T> {

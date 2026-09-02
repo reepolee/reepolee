@@ -89,7 +89,7 @@ export const operations_tools: Tool[] = [
 	},
 	{
 		name: "refresh_crud",
-		description: "Regenerate CRUD files for a table that already has a schema folder. Use refresh_fields to update only .ree field sections (preserves layout customizations); otherwise a full force-overwrite of generated files.",
+		description: "Refresh generated .ree field sections for a configured CRUD route while preserving route configuration and layout customizations.",
 		inputSchema: {
 			type: "object",
 			properties: {
@@ -100,10 +100,6 @@ export const operations_tools: Tool[] = [
 					type: "string",
 					description: "Optional route name when it differs from the table name",
 				},
-				refresh_fields: {
-					type: "boolean",
-					description: "Only refresh .ree field sections instead of a full overwrite (default false)",
-				},
 				translate: { type: "boolean", description: "Translate missing keys via AI (default false)" },
 			},
 			required: ["table"],
@@ -113,7 +109,6 @@ export const operations_tools: Tool[] = [
 				prefix: args.prefix,
 				parent_table: args.parent,
 				route_name: args.route_name,
-				refresh_fields: args.refresh_fields,
 				translate: args.translate,
 			});
 			return json_content(result);

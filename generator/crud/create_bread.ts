@@ -23,9 +23,10 @@ import { MySQLTypeMapper } from "../schema/mysql/mysql_type_mapper";
 import { SQLiteTypeMapper } from "../schema/sqlite/sqlite_type_mapper";
 import type { FormFieldDef, SyntheticSchema } from "../schema/types";
 import { field_interface_prop } from "./helpers";
-import { create_safe_writer, ensure_dir, format_dirs, format_file, type SafeWriter, type WriteStatus } from "./file_writer";
+import { create_safe_writer, format_dirs, format_file, type SafeWriter, type WriteStatus } from "./file_writer";
 import { generate_crud_files, sync_crud_translations, sync_nav_prefix_title, sync_nav_translations, sync_validation_translations, update_routes_ts } from "./main";
 import { load_table_schema } from "./schema_reader";
+import { stamp_generated_ree_hashes } from "./ree_hash";
 import { apply_template } from "./template_substitutor";
 import type { FieldDef } from "./types";
 import { MAIN_APP } from "$config/paths";
@@ -218,9 +219,9 @@ async function create_bread_resource(schema: SyntheticSchema, options: CreateBre
 		const type_mapper = type_mapper_map.get(db_type)?.();
 		if (!type_mapper) throw new Error(`Unsupported db_type: ${db_type}`);
 		const directly_written_paths = [
-			join(route_dir, "schema", "table.generated.ts"),
-			join(route_dir, "schema", "table.ts"),
-			join(route_dir, "schema", "validation_server.ts"),
+			join(route_dir, "schema.generated.ts"),
+			join(route_dir, "config.ts"),
+			join(route_dir, "validation_server.ts"),
 		];
 		const existing_direct_paths = new Set<string>();
 		for (const direct_path of directly_written_paths) {
@@ -232,7 +233,6 @@ async function create_bread_resource(schema: SyntheticSchema, options: CreateBre
 		const resolved_fields = Object.values(generate_fields_object(schema, type_mapper));
 		validate_bread_field_kinds(schema.name, resolved_fields);
 
-		ensure_dir(join(route_dir, "schema"));
 		const table_column_map = new Map<string, string[]>();
 		const table_indexes = new Map<string, Set<string>>();
 		await write_table_generated_file(route_dir, schema, type_mapper, table_column_map, table_indexes);
@@ -298,6 +298,7 @@ async function create_bread_resource(schema: SyntheticSchema, options: CreateBre
 		const translation_obj = await read_namespace_file(initial_namespace, default_locale);
 		const translation_seeded_keys = flatten_translation_object(translation_obj).length;
 		await format_dirs(meta.changed_dirs);
+		await stamp_generated_ree_hashes(route_dir);
 
 		if (route_result.routes_content) {
 			const routes_path = join(process.cwd(), MAIN_APP, "routes.ts");

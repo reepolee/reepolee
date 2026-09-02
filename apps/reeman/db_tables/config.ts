@@ -1,4 +1,4 @@
-export type { db_tables_type } from "./table.generated"; export { v_fields, fields, indexed_columns } from "./table.generated";
+export type { db_tables_type } from "./schema.generated"; export { v_fields, fields, indexed_columns } from "./schema.generated";
 
 // domain - canonical domain type from DOMAIN_TYPES taxonomy. Null when no match.
 // Add compliant column to flag SQL mismatches against the canonical type.
@@ -11,6 +11,8 @@ const columns: Record<string, { width: string; class: string; domain?: string; f
 	"column_count": { width: "15ch", class: "text-center" },
 	"fk_count": { width: "15ch", class: "text-center" },
 	"has_crud": { width: "15ch", class: "text-center", domain: "boolean" },
+	"template_hash_status": { width: "15ch", class: "text-center" },
+	"actions": { width: "20ch", class: "text-center" },
 }
 
 // Route param for URL paths - change to a different column for URL obscurity.
@@ -40,3 +42,10 @@ const render_strategy: "stream" | "load" = "load";
 // Use "tags" once a form's layout is stable and won't need per-field HTML customization.
 const template_tags: "flat" | "tags" = "flat";
 export { columns, route_param, enable_archive, grid_filler, pagination_strategy, render_strategy, template_tags };
+export const navigation = {
+	section_key: "reeman.nav.generator",
+	item_order: 10,
+	section_order: 10,
+	group_order: null,
+	final_order: null,
+};

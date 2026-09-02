@@ -69,17 +69,19 @@ export function resolve_route_module_namespace(dir: string): string | null {
 }
 
 /**
- * Resolve the template path for a mounted module without its translation
- * namespace prefix. TemplateEngine addresses mounted files as
- * `<module_code>/...`; `admin/` and `reeqa/` are translation-only scopes.
+ * Resolve the template path for a mounted module from the apps/ views root.
+ * A module's namespace prefix is its app directory, so templates under
+ * apps/reeman/db_tables resolve as reeman/db_tables.
  */
 export function resolve_route_module_template_namespace(dir: string): string | null {
 	const mounted = mounted_module_relative_dir(dir);
 	if (!mounted) return null;
 
 	const { mount, relative_dir } = mounted;
-	if (!relative_dir) return mount.module_code;
-	return `${mount.module_code}/${relative_dir.replaceAll("\\", "/")}`;
+	const app_prefix = mount.namespace_prefix ? `${mount.namespace_prefix}/` : "";
+	const module_path = `${app_prefix}${mount.module_code}`;
+	if (!relative_dir) return module_path;
+	return `${module_path}/${relative_dir.replaceAll("\\", "/")}`;
 }
 
 export async function mount_route_module(module_code: string, module_entry: string, namespace_prefix: string = ""): Promise<RouteDefinition[]> {

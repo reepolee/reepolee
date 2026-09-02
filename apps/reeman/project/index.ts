@@ -1,3 +1,4 @@
+import { navigation } from "./config";
 import { localized_url, resolve_locale } from "$lib/route";
 import { render } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
@@ -59,8 +60,10 @@ export const route_definitions: RouteDefinition[] = [
 		nav_title_key: "reeman.project",
 		module: "system",
 		nav_module: null,
-		nav_section_key: "reeman.nav.generator",
-		nav_section_order: 10,
-		nav_item_order: 40,
+		nav_section_key: navigation.section_key,
+		nav_section_order: navigation.section_order,
+		nav_item_order: navigation.item_order,
+		nav_group_order: navigation.group_order,
+		nav_final_order: navigation.final_order,
 	},
 ];

@@ -35,7 +35,7 @@ async function generate_foreign_key_select_functions(foreign_keys: ForeignKeyMap
 		functions.push(`export async function get_${fk_table}_options_by_${fk_info.column}(): Promise<Options[]> {
 \ttry {
 \t\treturn await timed_query("${fk_table}", "get_${fk_table}_options_by_${fk_info.column}", async () => {
-\t\t\tconst records = await db\`SELECT ${fk_info.column} as option_value, ${option_text_field} as option_text FROM ${fk_table}${fk_archive_where} ORDER BY ${option_text_field} ASC LIMIT 50\`;
+\t\t\tconst records = await db\`SELECT ${fk_info.column} as option_value, ${option_text_field} as option_text FROM ${fk_table}${fk_archive_where} ORDER BY ${option_text_field} ASC\`;
 \t\t\treturn records as Options[];
 \t\t});
 \t} catch (error) {

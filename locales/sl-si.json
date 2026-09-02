@@ -138,8 +138,6 @@
 			"reeqa": "ReeQA"
 		},
 		"auto_complete_no_results": "Ni najdenih zadetkov.",
-		"nav_group_auto": "Samodejno",
-		"nav_group_manual": "Ročno",
 		"busy_poller_translating": "{count} prevajalskih opravil se izvaja - prevodi se prikažejo, ko se zaključijo.",
 		"clear_all": "Počisti vse",
 		"file_upload_click": "Kliknite",
@@ -184,6 +182,8 @@
 			"sl": "slovenščino"
 		},
 		"modifying": "Spremenili boste",
+		"nav_group_auto": "Samodejno",
+		"nav_group_manual": "Ročno",
 		"no_records": "Ni najdenih zapisov.",
 		"page_not_found": "Stran ne obstaja",
 		"page_not_found_description": "Žal te strani ne moremo prikazati",

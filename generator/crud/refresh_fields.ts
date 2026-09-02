@@ -16,6 +16,7 @@ import { generate_field_block } from "./form_ree";
 import { find_v_field, log_step, replace_between_markers, route_dir_to_namespace, smart_merge_fields } from "./helpers";
 import { refresh_child_section_in_parent } from "./nested_integration";
 import { render_field_cell } from "./render_field_cell";
+import { stamp_generated_ree_hashes } from "./ree_hash";
 import type { ColumnDef, FieldDef, ForeignKeyMap, LocalizedFieldMeta, ParentInfo } from "./types";
 import { MAIN_APP } from "$config/paths";
 
@@ -59,7 +60,7 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 
 		const schema_obj = all_schemas.find((s: SchemaObject) => s.name === table_name);
 		if (schema_obj) {
-			log_step(`Regenerating table.generated.ts for ${table_name}`);
+			log_step(`Regenerating schema.generated.ts for ${table_name}`);
 			await write_table_generated_file(
 				route_dir,
 				schema_obj,
@@ -116,6 +117,7 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 	} catch (err) {
 		console.error("Error formatting refreshed files:", err instanceof Error ? err.message : err);
 	}
+	await stamp_generated_ree_hashes(route_dir);
 
 	if (translate_in_args) {
 		const namespace = route_dir_to_namespace(route_dir);
@@ -173,23 +175,7 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 		} catch (err) {
 			console.error("Error formatting parent directory:", err instanceof Error ? err.message : err);
 		}
-	}
-
-	// Sync this table's locale clones. A table that just gained (or lost) a
-	// `localized: true` column via refresh needs its clone tables created,
-	// altered, or dropped to match - idempotent, so a non-localized table
-	// costs one no-op call. Mirrors Phase 9 of generate_crud() - refresh is a
-	// separate return path that would otherwise skip it entirely.
-	log_step(`Syncing locale tables for ${table_name}`);
-	const { format_sync_actions, run_locale_table_sync } = await import("../locale_tables/run");
-	const { results } = await run_locale_table_sync({ table: table_name });
-	const result = results.find((entry) => entry.base_table === table_name);
-	// A non-localized table has no clone tables to create/alter/drop - an empty
-	// report is the no-op outcome, not an error (see the run.ts contract).
-	if (!result) {
-		log_step(`No locale clone tables to sync for ${table_name}`);
-	} else {
-		for (const description of format_sync_actions(result.actions)) console.log(`  ${description}`);
+		await stamp_generated_ree_hashes(resolved_parent_dir);
 	}
 
 	log_step(`Field refresh finished for ${table_name}`);
@@ -277,7 +263,7 @@ async function refresh_index_ree(
 	let index_filtered: FieldDef[];
 	let commented_index_fields: FieldDef[] = [];
 
-	// The column-configured template helper (from the table.ts columns map), if any.
+	// The column-configured template helper (from the config.ts columns map), if any.
 	const helper_for = (name: string): string => (columns?.[name]?.helper ? String(columns[name]!.helper) : "");
 
 	if (columns) {

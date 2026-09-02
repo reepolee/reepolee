@@ -36,8 +36,8 @@ describe("mounted route modules", () => {
 
 		expect(route_namespace_from_dir(fixture.module_root)).toBe("reeman/users");
 		expect(route_namespace_from_dir(join(fixture.module_root, "lib"))).toBe("reeman/users/lib");
-		expect(resolve_route_module_template_namespace(fixture.module_root)).toBe("users");
-		expect(resolve_route_module_template_namespace(join(fixture.module_root, "lib"))).toBe("users/lib");
+		expect(resolve_route_module_template_namespace(fixture.module_root)).toBe("reeman/users");
+		expect(resolve_route_module_template_namespace(join(fixture.module_root, "lib"))).toBe("reeman/users/lib");
 		expect(get_route_module_mounts()).toEqual([{
 			module_code: "users",
 			module_root: fixture.module_root,

@@ -16,6 +16,7 @@ import { clear_busy, get_busy, GLOBAL_BUSY_KEY, set_busy, type BusyEntry } from 
 import { record_run, update_run } from "./lib/state";
 
 import { DB_CONNECTION_STRING } from "$config/db";
+import { MAIN_APP } from "$config/paths";
 import type { OrderByItem, WhereItem } from "$generator/reeman/types";
 import type { GridColumnDefinition } from "$generator/schema/types";
 import { db_type } from "$lib/resolve_db_type";
@@ -197,13 +198,12 @@ export async function action_bulk_schema(params: { tables: string[]; prefix?: st
 	});
 }
 
-export async function action_bulk_refresh(params: { tables: string[]; mode: "fields" | "full"; template_tags?: string; }): Promise<ActionResult> {
+export async function action_bulk_refresh(params: { tables: string[]; }): Promise<ActionResult> {
 	const target = params.tables.join(", ");
 	return run_captured_action("bulk-refresh", target, async () => {
 		const { discover_routes_with_schema } = await import("$generator/reeman/utils/route_scan");
-		const { refresh_crud_fields_only, refresh_crud_for_table } = await import("$generator/reeman/refresh_crud");
+		const { refresh_crud_fields_only } = await import("$generator/reeman/refresh_crud");
 		const routes = discover_routes_with_schema();
-		const template_tags = pick(params.template_tags, ["flat", "tags"]);
 		let fail = 0;
 		for (const table of params.tables) {
 			const route = routes.find((r) => r.table === table);
@@ -212,27 +212,56 @@ export async function action_bulk_refresh(params: { tables: string[]; mode: "fie
 				fail++;
 				continue;
 			}
-			const ok = params.mode === "fields"
-				? await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name, false, template_tags)
-				: await refresh_crud_for_table(route.table, route.prefix, route.parent, route.route_name, false, template_tags);
+			const ok = await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name);
 			if (!ok) fail++;
 		}
 		return fail === 0;
 	});
 }
 
-export async function action_refresh(params: { url: string; mode: "fields" | "full"; template_tags?: string; }): Promise<ActionResult> {
+export async function action_refresh(params: { url: string; }): Promise<ActionResult> {
 	return run_captured_action("refresh-crud", params.url, async () => {
 		const { discover_routes_with_schema } = await import("$generator/reeman/utils/route_scan");
 		const route = discover_routes_with_schema().find((r) => r.url === params.url);
 		if (!route) throw new Error(`Route not found: ${params.url}`);
-		const template_tags = pick(params.template_tags, ["flat", "tags"]);
-		if (params.mode === "fields") {
+		const { refresh_crud_fields_only } = await import("$generator/reeman/refresh_crud");
+		return await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name);
+	}, params.url);
+}
+
+export async function action_save_route_settings(params: {
+	url: string;
+	pagination?: string;
+	render_strategy?: string;
+	template_tags?: string;
+	grid_columns?: string[];
+	grid_column_definitions?: GridColumnDefinition[];
+	refresh?: boolean;
+}): Promise<ActionResult> {
+	const action = params.refresh ? "save-and-refresh-route" : "save-route-settings";
+	return run_captured_action(action, params.url, async () => {
+		const { discover_routes_with_schema } = await import("$generator/reeman/utils/route_scan");
+		const route = discover_routes_with_schema().find((candidate) => candidate.url === params.url);
+		if (!route) throw new Error(`Route not found: ${params.url}`);
+		const route_directory = route.route_name || route.table;
+		const config_parts = [process.cwd(), MAIN_APP];
+		if (route.prefix) config_parts.push(route.prefix);
+		if (route.parent) config_parts.push(route.parent);
+		config_parts.push(route_directory, "config.ts");
+		const config_path = join(...config_parts);
+		const { update_table_file_settings } = await import("$generator/schema/write_table");
+		await update_table_file_settings(config_path, {
+			pagination_strategy: pick(params.pagination, ["cursor", "offset"]),
+			render_strategy: pick(params.render_strategy, ["stream", "load"]),
+			template_tags: pick(params.template_tags, ["flat", "tags"]),
+			grid_columns: params.grid_columns,
+			grid_column_definitions: params.grid_column_definitions,
+		});
+		if (params.refresh) {
 			const { refresh_crud_fields_only } = await import("$generator/reeman/refresh_crud");
-			return await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name, false, template_tags);
+			return await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name);
 		}
-		const { refresh_crud_for_table } = await import("$generator/reeman/refresh_crud");
-		return await refresh_crud_for_table(route.table, route.prefix, route.parent, route.route_name, false, template_tags);
+		return true;
 	}, params.url);
 }
 
@@ -428,32 +457,22 @@ export async function action_bulk_remove_route(params: { urls: string[]; delete_
 	});
 }
 
-export async function action_bulk_refresh_routes(params: { urls: string[]; mode: "fields" | "full"; template_tags?: string; pagination?: string; render_strategy?: string; grid_columns?: string[]; grid_column_definitions?: GridColumnDefinition[]; }): Promise<ActionResult> {
+export async function action_bulk_refresh_routes(params: { urls: string[]; }): Promise<ActionResult> {
 	const target = params.urls.join(", ");
 	return run_captured_action("bulk-refresh-routes", target, async () => {
 		const { discover_routes_with_schema } = await import("$generator/reeman/utils/route_scan");
-		const { refresh_crud_fields_only, refresh_crud_for_table } = await import("$generator/reeman/refresh_crud");
+		const { refresh_crud_fields_only } = await import("$generator/reeman/refresh_crud");
 		const routes = discover_routes_with_schema();
-		const template_tags = pick(params.template_tags, ["flat", "tags"]);
-		const is_single_route = params.urls.length === 1;
-		const refresh_options = is_single_route ? {
-			pagination_strategy: pick(params.pagination, ["cursor", "offset"]),
-			render_strategy: pick(params.render_strategy, ["stream", "load"]),
-			grid_columns: params.grid_columns,
-			grid_column_definitions: params.grid_column_definitions,
-		} : undefined;
 		let fail = 0;
 		for (const url of params.urls) {
 			const route = routes.find((r) => r.url === url);
 			if (!route) {
-				// Simple pages / simple table routes have no CRUD schema and cannot
+				// Simple pages / simple table routes have no CRUD config and cannot
 				// be refreshed - skip them instead of failing the whole batch.
-				console.log(`  - Skipped ${url}: not a CRUD route (no schema folder)`);
+				console.log(`  - Skipped ${url}: not a configured CRUD route`);
 				continue;
 			}
-			const ok = params.mode === "fields"
-				? await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name, false, template_tags, refresh_options)
-				: await refresh_crud_for_table(route.table, route.prefix, route.parent, route.route_name, false, template_tags, refresh_options);
+			const ok = await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name);
 			if (!ok) fail++;
 		}
 		return fail === 0;
@@ -481,24 +500,27 @@ export async function action_reload_routes(): Promise<ActionResult> {
 
 // ---------------------------------------------------------------------------
 // Spawn-based CRUD generation - survives bun --hot reloads by running in a
-// separate process. Busy state is file-backed (./lib/busy_state.ts) and keyed
-// per table, so generating "sessions" does not block starting "files" -
-// spawn_bulk_action locks each table in the batch independently and each
-// clears on its own subprocess's exit, rather than one flag for the batch.
+// separate process. A bulk request must use one subprocess because every CRUD
+// generation writes the shared apps/main/routes.ts registry.
 // ---------------------------------------------------------------------------
 
-/** Spawn `bun run reeman crud <table>` with the given flags. Caller has already reserved `table`'s busy key and created the pending run record. */
-async function spawn_one(
-	table: string,
-	opts: { force?: boolean; translate?: boolean; prefix?: string; route_name?: string; pagination?: string; render_strategy?: string; template_tags?: string; grid_columns?: string[]; grid_column_definitions?: GridColumnDefinition[]; },
-	run_id: string,
-	action: "crud" | "bulk",
-): Promise<void> {
-	const args: string[] = ["run", "reeman", "crud", table];
+type SpawnOptions = {
+	force?: boolean;
+	translate?: boolean;
+	prefix?: string;
+	route_name?: string;
+	pagination?: string;
+	render_strategy?: string;
+	template_tags?: string;
+	grid_columns?: string[];
+	grid_column_definitions?: GridColumnDefinition[];
+};
+
+function append_spawn_options(args: string[], opts: SpawnOptions): void {
 	if (opts.force) args.push("--force");
 	if (opts.translate) args.push("--translate");
 	if (opts.prefix) args.push("--prefix", opts.prefix);
-	if (opts.route_name) args.push("--route_name", opts.route_name);
+	if (opts.route_name) args.push("--route-name", opts.route_name);
 	if (opts.pagination) args.push("--pagination", opts.pagination);
 	if (opts.render_strategy) args.push("--render-strategy", opts.render_strategy);
 	if (opts.template_tags) args.push("--template-tags", opts.template_tags);
@@ -509,6 +531,23 @@ async function spawn_one(
 		const shell_safe_definitions = encoded_definitions.replaceAll("'", "%27");
 		args.push("--grid-column-definitions", shell_safe_definitions);
 	}
+}
+
+export function build_bulk_command_args(tables: string[], opts: SpawnOptions): string[] {
+	const args = ["run", "reeman", "bulk", ...tables];
+	append_spawn_options(args, opts);
+	return args;
+}
+
+/** Spawn `bun run reeman crud <table>` with the given flags. Caller has already reserved `table`'s busy key and created the pending run record. */
+async function spawn_one(
+	table: string,
+	opts: SpawnOptions,
+	run_id: string,
+	action: "crud" | "bulk",
+): Promise<void> {
+	const args: string[] = ["run", "reeman", "crud", table];
+	append_spawn_options(args, opts);
 
 	let proc: ReturnType<typeof Bun.spawn>;
 	try {
@@ -568,15 +607,74 @@ export async function spawn_crud_action(table: string, opts: { force?: boolean; 
 	return true;
 }
 
-/** Spawn multiple table CRUD generations as subprocesses, one busy key per table. Tables already busy are skipped; returns the tables actually started. */
-export async function spawn_bulk_action(tables: string[], opts: { force?: boolean; translate?: boolean; prefix?: string; pagination?: string; render_strategy?: string; template_tags?: string; }): Promise<string[]> {
+/** Spawn one sequential bulk CRUD process. Tables already busy are skipped; returns the tables actually started. */
+export async function spawn_bulk_action(tables: string[], opts: SpawnOptions): Promise<string[]> {
 	const started: string[] = [];
+	const run_ids = new Map<string, string>();
 	for (const table of tables) {
 		const acquired = await set_busy(table, { action: "bulk", target: table });
 		if (!acquired) continue;
 		const run_id = await record_run({ action: "bulk", target: table, ok: true, output: "Generation started in background." });
-		await spawn_one(table, opts, run_id, "bulk");
+		run_ids.set(table, run_id);
 		started.push(table);
 	}
+
+	if (started.length === 0) return started;
+
+	const args = build_bulk_command_args(started, opts);
+	let proc: ReturnType<typeof Bun.spawn>;
+	try {
+		proc = Bun.spawn(["bun", ...args], {
+			cwd: process.cwd(),
+			stdout: "pipe",
+			stderr: "pipe",
+		});
+	} catch (err) {
+		const message = err instanceof Error ? err.message : String(err);
+		for (const table of started) {
+			const run_id = run_ids.get(table);
+			if (run_id) await update_run(run_id, { ok: false, output: "", error: message });
+			await clear_busy(table);
+		}
+		return [];
+	}
+
+	const stdout_stream = proc.stdout;
+	const stderr_stream = proc.stderr;
+	const stdout_promise =
+		typeof stdout_stream === "object" && stdout_stream !== null
+			? new Response(stdout_stream).text()
+			: Promise.resolve("");
+	const stderr_promise =
+		typeof stderr_stream === "object" && stderr_stream !== null
+			? new Response(stderr_stream).text()
+			: Promise.resolve("");
+	const completion = Promise.all([proc.exited, stdout_promise, stderr_promise]);
+
+	void completion.then(async ([exit_code, stdout, stderr]) => {
+		const output = clean_output([stdout, stderr]);
+		const error = exit_code === 0
+			? undefined
+			: `Bulk CRUD generation failed with exit code ${exit_code}. See the captured generator output below.`;
+		for (const table of started) {
+			const run_id = run_ids.get(table);
+			if (run_id) await update_run(run_id, { ok: exit_code === 0, output, error });
+			await clear_busy(table);
+		}
+		if (exit_code !== 0) {
+			console.error(`[reeman] ${error}`);
+			if (output) console.error(`[reeman] Bulk generator output:\n${output}`);
+		}
+	}).catch(async (err) => {
+		const message = err instanceof Error ? err.message : String(err);
+		for (const table of started) {
+			const run_id = run_ids.get(table);
+			if (run_id) await update_run(run_id, { ok: false, output: "", error: `Failed to collect bulk generator output: ${message}` });
+			await clear_busy(table);
+		}
+		console.error(`[reeman] Failed to collect bulk generator output: ${message}`);
+	});
+
+	proc.unref();
 	return started;
 }

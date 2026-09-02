@@ -9,8 +9,8 @@
 		"create": "Create",
 		"do_it": "Yes, do it",
 		"fields": "Fields only",
-		"full": "Full refresh",
-		"new_db_route": "New DB route",
+		"force": "Force overwrite",
+		"generate_crud": "Generate CRUD",
 		"refresh_crud": "Refresh CRUD",
 		"remove": "Remove",
 		"remove_route": "Remove route",
@@ -42,7 +42,8 @@
 	},
 	"hints": {
 		"folder_name": "Lowercase letters, digits, - or _ (e.g. my_page).",
-		"prefix": "Optional module prefix. Leave empty to place directly under /routes."
+		"prefix": "Optional module prefix. Leave empty to place directly under /routes.",
+		"route_name": "A unique route name using lowercase letters, digits, - or _."
 	},
 	"labels": {
 		"class": "Class",
@@ -54,6 +55,7 @@
 		"folder_name": "Folder name",
 		"helper": "Template helper",
 		"index_columns": "Index columns",
+		"localized": "Localized",
 		"mode": "Mode",
 		"module": "Module",
 		"name": "Name",
@@ -61,10 +63,13 @@
 		"order_by": "Order by",
 		"pagination": "Pagination",
 		"prefix": "Prefix",
+		"readonly": "Read-only",
 		"removable": "Removable",
 		"render_strategy": "Render strategy",
+		"route_name": "Route name",
 		"table": "Table / Route",
 		"table_name": "Table Name",
+		"template_hash_status": "Templates",
 		"template_tags": "Template tags",
 		"url": "Url",
 		"where": "Where",
@@ -88,9 +93,12 @@
 		"0": "No",
 		"1": "Yes",
 		"all": "All",
+		"clean": "Clean",
 		"default": "(keep current)",
+		"modified": "Modified",
 		"per_page": "per page",
-		"select_table": "-- Select table or route --"
+		"select_table": "-- Select table or route --",
+		"untracked": "Untracked"
 	},
 	"ui": {
 		"add_page_hint": "Creates a static page route (no database) from the simple-page template.",

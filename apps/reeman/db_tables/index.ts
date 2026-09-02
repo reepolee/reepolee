@@ -1,3 +1,4 @@
+import { navigation } from "./config";
 import { feature_paths } from "$lib/crud_routes";
 import { build_pagination_urls as build_offset_pagination_urls, get_limit_options, parse_pagination_params as parse_offset_pagination_params } from "$lib/pagination";
 
@@ -13,7 +14,7 @@ import { strip_api_sensitive } from "$config/api_blocklist";
 import { type BunRequest } from "bun";
 import { localized_url, resolve_locale } from "$lib/route";
 
-import { columns, enable_archive, fields, grid_filler } from "./schema/table";
+import { columns, enable_archive, fields, grid_filler } from "./config";
 import type { RouteDefinition } from "$lib/route_builder";
 
 import { post_bulk, post_bulk_refresh, post_bulk_schema, post_crud } from "../reeman/handlers";
@@ -25,6 +26,7 @@ import { DEFAULT_HELPER_NAMES } from "$lib/helper_names";
 
 export const reeman_db_tables_crud = {
 	"/tables": { GET: get_db_tables_index },
+	"/tables/new": { GET: get_db_tables_new },
 	// Single-table CRUD generation used by the table detail form (was mounted
 	// by the removed /generate module - the Tables page now owns it).
 	"/crud": { POST: post_crud },
@@ -120,10 +122,12 @@ export async function get_db_tables_index(req: BunRequest): Promise<Response> {
 
 export async function get_db_table_detail(req: BunRequest): Promise<Response> {
 	const table = req.params.name ?? "";
+	const request_url = new URL(req.url);
+	const new_route = request_url.searchParams.get("new_route") === "1";
 	const routes_with_schema = discover_routes_with_schema();
 	const route_edit_paths = route_edit_paths_by_table(routes_with_schema);
 	const route_edit_url = route_edit_paths[table];
-	if (route_edit_url) {
+	if (route_edit_url && !new_route) {
 		const localized_edit_url = localized_url(route_edit_url, resolve_locale(req));
 		return Response.redirect(localized_edit_url, 302);
 	}
@@ -148,6 +152,7 @@ export async function get_db_table_detail(req: BunRequest): Promise<Response> {
 		data: {
 			busy,
 			modules: reeman_data.modules,
+			new_route,
 			table,
 			row_count,
 			grid_columns,
@@ -157,6 +162,36 @@ export async function get_db_table_detail(req: BunRequest): Promise<Response> {
 	});
 }
 
+export async function get_db_tables_new(req: BunRequest): Promise<Response> {
+	const ctx = await create_ctx(req, import.meta.dir);
+	const request_url = new URL(req.url);
+	const raw_tables = request_url.searchParams.getAll("tables");
+	const trimmed_tables = raw_tables.map((table) => table.trim());
+	const requested_tables = trimmed_tables.filter(Boolean);
+	const reeman_data = await load_reeman_data();
+	const available_table_names = reeman_data.tables.map((table) => table.name);
+	const available_tables = new Set(available_table_names);
+	const selected_tables: string[] = [];
+	const selected_table_names = new Set<string>();
+
+	for (const table of requested_tables) {
+		if (!available_tables.has(table) || selected_table_names.has(table)) continue;
+		selected_table_names.add(table);
+		selected_tables.push(table);
+	}
+
+	return render("new", {
+		data: {
+			busy: reeman_data.busy,
+			modules: reeman_data.modules,
+			selected_tables,
+			return_to: "/tables",
+			valid_selection: selected_tables.length > 0,
+		},
+		ctx,
+	});
+}
+
 export const route_definitions: RouteDefinition[] = [
-	{ url: "/tables", crud: reeman_db_tables_crud, nav_title_key: "reeman.db_tables", module: "system", nav_module: null, nav_section_key: "reeman.nav.generator", nav_section_order: 10, nav_item_order: 10 },
+	{ url: "/tables", crud: reeman_db_tables_crud, nav_title_key: "reeman.db_tables", module: "system", nav_module: null, nav_section_key: navigation.section_key, nav_section_order: navigation.section_order, nav_item_order: navigation.item_order, nav_group_order: navigation.group_order, nav_final_order: navigation.final_order },
 ];

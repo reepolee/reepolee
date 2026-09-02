@@ -56,7 +56,7 @@ export async function generate_child_section_html(
 
 	if (child_fields_for_dialog.length > MAX_CHILD_DIALOG_FIELDS) { child_fields_for_dialog = child_fields_for_dialog.slice(0, MAX_CHILD_DIALOG_FIELDS); }
 
-	// The column-configured template helper (from the table.ts columns map), if any.
+	// The column-configured template helper (from the config.ts columns map), if any.
 	const helper_for = (name: string): string => (columns?.[name]?.helper ? String(columns[name]!.helper) : "");
 
 	// Render headers and cells with dynamic class from props.{child_columns_var}

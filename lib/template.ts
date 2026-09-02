@@ -1,7 +1,7 @@
 // $lib/template.ts
 import { join } from "node:path";
 
-import { MAIN_APP, PLATFORM_DIR } from "$config/paths";
+import { APPS_DIR, PLATFORM_DIR } from "$config/paths";
 import { default_locale, locales } from "$config/supported_locales";
 import { DEFAULT_HELPER_NAMES } from "$lib/helper_names";
 import { stamp_ree_i18n, stamp_ree_source } from "$lib/inspector_stamp";
@@ -24,10 +24,7 @@ export function create_template_engine(is_dev: boolean = true) {
 	const route_module_mounts = get_route_module_mounts();
 	const project_root = join(import.meta.dir, "..");
 	return new TemplateEngine({
-		views: join(project_root, MAIN_APP),
-		// Templates every app shares (notfound, the auth pages). They keep
-		// plain views-relative names, so nothing has to know they moved out
-		// of the main app tree.
+		views: join(project_root, APPS_DIR),
 		shared_views: join(project_root, PLATFORM_DIR),
 		project_root,
 		route_module_mounts,

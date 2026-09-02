@@ -2,7 +2,6 @@
 	"actions": {
 		"add_locale": "Add locale",
 		"fields": "Fields only",
-		"full": "Full refresh",
 		"refresh_crud": "Refresh CRUD",
 		"sync_locale_tables": "Sync locale tables",
 		"sync_translations": "Sync translations",

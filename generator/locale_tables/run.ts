@@ -1,7 +1,7 @@
 /**
  * Driving the syncer from reeman and from the generators.
  *
- * Discovers which tables are localized by reading each route's schema/table.ts
+ * Discovers which tables are localized by reading each route's config.ts
  * `columns` map (the `localized: true` flag is the only generation-time
  * localization decision - see read_localization in crud/schema_reader.ts),
  * then syncs every one of them.
@@ -25,7 +25,7 @@ export interface LocalizedTableInfo {
 }
 
 /**
- * Read `localized: true` flags out of a route's schema/table.ts.
+ * Read `localized: true` flags out of a route's config.ts.
  *
  * Imported rather than parsed so a computed columns map still works, with a
  * cache-busting query string because reeman regenerates these files inside a
@@ -35,7 +35,7 @@ async function read_localized_fields(route: RouteSchema): Promise<string[]> {
 	const segments = [MAIN_APP];
 	if (route.prefix) segments.push(route.prefix);
 	if (route.parent) segments.push(route.parent);
-	segments.push(route.route_name || route.table, "schema", "table.ts");
+	segments.push(route.route_name || route.table, "config.ts");
 	const module_path = join(process.cwd(), ...segments);
 
 	const file = Bun.file(module_path);

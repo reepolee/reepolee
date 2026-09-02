@@ -1,12 +1,12 @@
 {
 	"actions": {
+		"add_another_route": "Dodaj drugo pot",
 		"bulk_action": "Izbriši izbrane db tabele",
 		"bulk_action_2": "Skupna akcija 2",
 		"cancel": "Prekliči",
 		"do_it": "Da, naredi",
 		"fields": "Samo polja",
 		"force": "Prisili prepis",
-		"full": "Polna osvežitev",
 		"generate_crud": "Ustvari CRUD",
 		"new_db_table": "Nova Db tabela",
 		"refresh_crud": "Osveži CRUD",
@@ -42,6 +42,7 @@
 		"route_name": "Neobvezno ime URL, ki nadomesti ime tabele (npr. my-users)"
 	},
 	"labels": {
+		"actions": "Akcije",
 		"class": "Razred",
 		"column_count": "Število stolpcev",
 		"default": "(privzeto)",
@@ -51,6 +52,7 @@
 		"has_crud": "Ima CRUD",
 		"helper": "Predloga pomoči",
 		"index_columns": "Stolpci za indeks",
+		"localized": "Lokalizirano",
 		"mode": "Način",
 		"name": "Ime",
 		"no_helper": "Brez (privzeto)",
@@ -61,6 +63,7 @@
 		"route_name": "Ime poti (neobvezno)",
 		"row_count": "Število vrstic",
 		"table": "Tabela / Pot",
+		"template_hash_status": "Predloge",
 		"template_tags": "Predloge polj",
 		"width": "Širina"
 	},
@@ -82,9 +85,12 @@
 		"0": "Ne",
 		"1": "Da",
 		"all": "Vse",
+		"clean": "Čisto",
 		"default": "(ohrani trenutno)",
+		"modified": "Spremenjeno",
 		"per_page": "na stran",
-		"select_table": "-- Izberi tabelo ali pot --"
+		"select_table": "-- Izberi tabelo ali pot --",
+		"untracked": "Brez sledenja"
 	},
 	"ui": {
 		"apply_filters": "Uporabi",
@@ -95,6 +101,7 @@
 		"modifying": "Pred uporabami spremembo",
 		"no_records": "Ni najdenih db tabel.",
 		"no_selectable_columns": "Ni izbirnih stolpcev za indeks - uporabljene bodo privzete nastavitve generatorja.",
+		"no_tables_selected": "Pred ustvarjanjem CRUD izberite vsaj eno tabelo.",
 		"records": "zapis(ov)",
 		"refresh_skip_hint": "Tabele brez obstoječega CRUD so preskočene.",
 		"title": "Db tabela"
