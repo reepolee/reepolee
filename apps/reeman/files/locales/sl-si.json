@@ -1,0 +1,73 @@
+{
+	"actions": {
+		"abort_archive": "Prekliči",
+		"abort_delete": "Prekliči",
+		"abort_restore": "Prekliči",
+		"archive": "Arhiviraj",
+		"back": "Nazaj",
+		"bulk_action": "Arhiviraj izbrane datoteke",
+		"cancel": "Prekliči",
+		"confirm_archive": "Da, arhiviraj",
+		"confirm_delete": "Da, izbriši",
+		"confirm_restore": "Da, obnovi",
+		"delete": "Izbriši to datoteko za vedno?",
+		"do_it": "Izvedi",
+		"new_file": "Nova datoteka",
+		"restore": "Obnovi",
+		"save": "Shrani",
+		"save_close": "Shrani in zapri"
+	},
+	"counts": {
+		"archived": "Arhivirani",
+		"live": "Aktivni",
+		"total": "Skupaj"
+	},
+	"labels": {
+		"description": "Opis",
+		"file_size": "Velikost datoteke",
+		"file_type": "Vrsta datoteke",
+		"filename": "Ime datoteke",
+		"folder": "Mapa",
+		"mime_type": "Mime tip",
+		"original_filename": "Izvirno ime datoteke",
+		"s3_key": "S3 ključ",
+		"tags": "Oznake",
+		"title": "Naslov"
+	},
+	"messages": {
+		"record_archived": "Zapis arhiviran",
+		"record_restored": "Zapis obnovljen"
+	},
+	"nav": "Datoteke",
+	"route_name": "datoteke",
+	"scopes": {
+		"__all": "Vsi",
+		"__archived": "Arhivirani"
+	},
+	"selectors": {
+		"all": "Vse",
+		"per_page": "na stran"
+	},
+	"ui": {
+		"edit_title": "Uredi datoteko",
+		"index_title": "Datoteke",
+		"file": "Datoteka",
+		"file_type": "Vrsta",
+		"modifying": "Spreminjanje",
+		"no_records": "Ni najdenih datotek.",
+		"new_title": "Nova datoteka",
+		"records": "zapisov",
+		"title": "Datoteke"
+	},
+	"v_labels": {
+		"description": "Opis",
+		"file_size": "Velikost datoteke",
+		"file_type": "Vrsta datoteke",
+		"filename": "Ime datoteke",
+		"folder": "Mapa",
+		"mime_type": "MIME Vrsta",
+		"original_filename": "Originalno ime datoteke",
+		"tags": "Oznake",
+		"title": "Naslov"
+	}
+}

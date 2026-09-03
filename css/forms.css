@@ -1,0 +1,271 @@
+@layer base {
+	form {
+		/* Field border width: labels above an input align with the input's
+		   *content*, so their left offset must cover border + padding. Kept as
+		   a variable here so the two stay in sync if the border changes. */
+		--field-border-width: 1px;
+
+		input,
+		textarea,
+		.input {
+			@apply bg-surface-raised rounded-sm border border-border px-3 py-1;
+		}
+
+		input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+		.input {
+			@apply h-10;
+		}
+
+		textarea {
+			field-sizing: content;
+			@apply min-h-[5lh];
+		}
+
+		button[type="submit"] {
+			@apply inline-flex h-10 cursor-pointer items-center justify-center whitespace-nowrap rounded-sm border border-transparent px-3 py-2 hover:scale-105;
+			transition: opacity 0.2s, transform 0.15s;
+
+			&:not(.secondary):not(.tertiary):not(.danger):not(.as-button-secondary):not(.as-button-tertiary):not(.as-button-danger) {
+				@apply primary;
+			}
+
+			&:disabled {
+				@apply cursor-not-allowed opacity-60;
+				transform: none;
+			}
+		}
+	}
+
+	validation-error {
+		@apply text-brand ml-3;
+	}
+
+	select {
+		/* Chevron drawn with a background-image instead of the experimental
+		   `appearance: base-select` + `::picker-icon` pair, which rendered
+		   off-center in browsers without full support. `appearance: none`
+		   removes the native arrow; the five-frame SVG sprite below replaces
+		   it. Each frame renders the same ❯ (U+276F) glyph used by
+		   <summary>/filter-group chevrons elsewhere, so the shape and weight
+		   are identical rather than approximated with a hand-drawn path.
+		   Sprite sweeps left (closed - pointing into the field, not out of
+		   it) through 22.5-degree steps to down (open - pointing into the
+		   revealed options below), a mirror of the <summary> marker's
+		   right-to-down sweep. `:open` steps `background-position` through
+		   them. Browsers without `:open` support keep it at the closed,
+		   left-pointing frame. */
+		--select-chevron: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2020%20200'%3E%3Ctext%20x='10'%20y='20'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%23525252'%20transform='rotate(180%2010%2020)'%3E%26%2310095%3B%3C/text%3E%3Ctext%20x='10'%20y='60'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%23525252'%20transform='rotate(157.5%2010%2060)'%3E%26%2310095%3B%3C/text%3E%3Ctext%20x='10'%20y='100'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%23525252'%20transform='rotate(135%2010%20100)'%3E%26%2310095%3B%3C/text%3E%3Ctext%20x='10'%20y='140'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%23525252'%20transform='rotate(112.5%2010%20140)'%3E%26%2310095%3B%3C/text%3E%3Ctext%20x='10'%20y='180'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%23525252'%20transform='rotate(90%2010%20180)'%3E%26%2310095%3B%3C/text%3E%3C/svg%3E");
+
+		@apply bg-surface-raised h-10 rounded-sm border border-border px-3 py-1;
+		appearance: none;
+		background-image: var(--select-chevron);
+		background-repeat: no-repeat;
+		background-position: right 0.75rem top;
+		background-size: 1.25rem 12.5rem;
+		padding-right: 2.5rem;
+		transition: background-position 0.3s steps(4);
+	}
+
+	select:open {
+		background-position: right 0.75rem bottom;
+	}
+
+	/* `appearance: none` turns the select into a plain focusable box, so
+	   Chrome paints its default thick focus outline on click. The native
+	   `base-select` never showed one; suppress it to match. */
+	select:focus,
+	select:focus-visible {
+		outline: none;
+	}
+
+}
+
+/* Native checkboxes are too small for reliable table-row selection. Keep one
+   shared two-times control size across generated forms and handwritten routes,
+   while preserving the native checked/indeterminate appearance. */
+input[type="checkbox"] {
+	width: 1.5rem;
+	height: 1.5rem;
+	flex-shrink: 0;
+}
+
+/* Generated CRUD forms use the same Tailwind grid/subgrid utilities as the
+   handwritten forms. Child sections are emitted with `col-span-full`, so a
+   form never grows a third details column. */
+
+/* Generated validation elements carry the mt-1 utility. Keep that spacing for
+   real messages, but do not let an empty row change a field's layout. This is
+   intentionally unlayered so it wins over Tailwind's utilities layer. */
+validation-error:empty {
+	margin-top: 0;
+}
+
+/* Dark mode: swap the chevron stroke for the lighter text-secondary token
+   so it stays visible on the dark raised surface. */
+@media (prefers-color-scheme: dark) {
+	:root:not(.light) select {
+		--select-chevron: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2020%20200'%3E%3Ctext%20x='10'%20y='20'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%239ca3af'%20transform='rotate(180%2010%2020)'%3E%26%2310095%3B%3C/text%3E%3Ctext%20x='10'%20y='60'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%239ca3af'%20transform='rotate(157.5%2010%2060)'%3E%26%2310095%3B%3C/text%3E%3Ctext%20x='10'%20y='100'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%239ca3af'%20transform='rotate(135%2010%20100)'%3E%26%2310095%3B%3C/text%3E%3Ctext%20x='10'%20y='140'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%239ca3af'%20transform='rotate(112.5%2010%20140)'%3E%26%2310095%3B%3C/text%3E%3Ctext%20x='10'%20y='180'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%239ca3af'%20transform='rotate(90%2010%20180)'%3E%26%2310095%3B%3C/text%3E%3C/svg%3E");
+	}
+}
+
+html.dark select {
+	--select-chevron: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2020%20200'%3E%3Ctext%20x='10'%20y='20'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%239ca3af'%20transform='rotate(180%2010%2020)'%3E%26%2310095%3B%3C/text%3E%3Ctext%20x='10'%20y='60'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%239ca3af'%20transform='rotate(157.5%2010%2060)'%3E%26%2310095%3B%3C/text%3E%3Ctext%20x='10'%20y='100'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%239ca3af'%20transform='rotate(135%2010%20100)'%3E%26%2310095%3B%3C/text%3E%3Ctext%20x='10'%20y='140'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%239ca3af'%20transform='rotate(112.5%2010%20140)'%3E%26%2310095%3B%3C/text%3E%3Ctext%20x='10'%20y='180'%20font-family='sans-serif'%20font-size='20'%20text-anchor='middle'%20dominant-baseline='central'%20fill='%239ca3af'%20transform='rotate(90%2010%20180)'%3E%26%2310095%3B%3C/text%3E%3C/svg%3E");
+}
+
+/* Labels above an input align with the input's content, not its border:
+   form inputs are px-3 padded *and* 1px-bordered, so the label's left offset
+   is padding (0.75rem) plus the border width (--field-border-width, defined
+   in the base layer above, defaulting to 1px outside a form). Generated
+   field-wrappers already put px-3 on the label itself; bare labels
+   (handwritten forms, examples) get the offset here via margin. The
+   :has(+ input...) sibling guard keeps inline checkbox/radio labels (their
+   input lives inside the label) and group headings untouched. */
+field-wrapper > div > label:not([class*="px-"]):not([class*="pl-"]):not([class*="ml-"]),
+field-wrapper > label:has(+ input, + select, + textarea, + date-input):not([class*="px-"]):not([class*="pl-"]):not([class*="ml-"]) {
+	margin-left: calc(var(--spacing) * 3 + var(--field-border-width, 1px));
+}
+
+/* Utility: align any element with form input content (accounts for
+   padding + border on inputs). Use on hints, descriptions and other
+   elements that sit below a form label inside a field-wrapper. */
+.ml-input {
+	margin-left: calc(var(--spacing) * 3 + var(--field-border-width, 1px));
+}
+
+/* Localized editor. Each translatable field owns its own CSS-only tab
+   switcher: a radio per locale (name="loc-tab-<field>"), a label per radio,
+   and a panel per locale. A <style> block generated alongside each field
+   (components/localized-field-tabs.ree) pairs each radio's id with its
+   panel via :has() - the locale set is config, not fixed markup, so that
+   pairing can't live in this static stylesheet. No JS is required to
+   switch locales. */
+
+[data-localized-form] field-wrapper > div,
+[data-localized-form] field-wrapper > p {
+	grid-column: 1 / -1;
+}
+
+/* Every localized-eligible field-wrapper already spans the full row width
+   itself (lg:col-span-2 lg:grid-cols-subgrid), so this container spanning
+   the same width doesn't disturb that alignment. It is just a heading row
+   (label + locale tabs) followed by a body that stacks field-wrapper and
+   every locale panel in the same grid cell. Exactly one is ever
+   display:grid at a time (the rest display:none), which drops the hidden
+   ones out of the grid's size calculation - the cell's height always
+   matches only the visible item, so switching locale tabs never grows or
+   shrinks the field even when a translation wraps to a different number of
+   lines, and nothing below the field shifts.
+   field-wrapper's own <label> is always hidden - localized-field-tabs
+   renders one label itself instead (translated the same way, via a
+   pre-rendered {_ labels.<field>} lookup passed in as an attribute), always
+   visible in .localized-field-heading regardless of which locale is shown.
+   That "only the visible item sizes the cell" guarantee only holds if the
+   two stacked items also share the same internal row structure - a
+   .localized-field-panel with fewer/more top-level rows than field-wrapper
+   still changes the cell's height when swapped in, even though the other
+   one is display:none. localized-panel.ree mirrors field-wrapper's exact
+   shape for this reason: an inner .grid holding input + error (matching
+   label + input + validation-error, minus the label which lives in the
+   heading instead) as one child, and the stale-notice <p> as the second
+   child in the same position as field-wrapper's hint <p>. */
+.localized-field-source field-wrapper > div > label {
+	display: none;
+}
+
+.localized-tab-radio {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.localized-field-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-bottom: 0.25rem;
+}
+
+.localized-field-heading > label {
+	padding: 0 0.75rem;
+}
+
+.localized-field-tabbar {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.localized-field-body {
+	display: grid;
+	grid-template-areas: "stack";
+}
+
+.localized-field-body > field-wrapper,
+.localized-field-body > .localized-tab-panel {
+	grid-area: stack;
+}
+
+.localized-tab-label {
+	position: relative;
+	z-index: 1;
+	border: 0;
+	background: transparent;
+	color: var(--color-neutral-500);
+	font-weight: 600;
+	font-size: 0.75rem;
+	line-height: 1;
+	padding: 0.25rem 0.5rem;
+	cursor: pointer;
+	transition: color 150ms ease;
+}
+
+.localized-tab-entry {
+	display: inline-flex;
+	align-items: center;
+}
+
+.localized-tab-remove {
+	border: 0;
+	background: transparent;
+	color: var(--color-neutral-400);
+	font-size: 0.875rem;
+	line-height: 1;
+	padding: 0 0.25rem;
+	cursor: pointer;
+}
+
+.localized-tab-remove:hover {
+	color: var(--color-brand);
+}
+
+.localized-tab-panel {
+	display: none;
+	gap: 0.25rem;
+}
+
+.localized-field-panel input,
+.localized-field-panel select,
+.localized-field-panel textarea,
+.localized-field-panel markdown-editor {
+	width: 100%;
+	max-width: none;
+}
+
+.localized-stale-notice {
+	border-left: 3px solid var(--color-amber-300, #fcd34d);
+	padding-left: 0.5rem;
+	color: var(--color-neutral-600);
+}
+
+/* Mirrors validation-error:empty above - both panel messages are always
+   rendered (never conditionally omitted), so the panel's height matches
+   field-wrapper's own always-present validation-error slot instead of
+   growing/shrinking a line depending on whether there happens to be an
+   error or stale notice for the currently shown locale. */
+.localized-error:empty,
+.localized-stale-notice[hidden] {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
