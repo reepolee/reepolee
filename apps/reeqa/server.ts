@@ -13,7 +13,7 @@ import { bootstrap } from "$lib/bootstrap";
 import { handle_inspector_message } from "$lib/inspector_ws";
 import { handle_create_issue, handle_issue_repos } from "$lib/issue_reporter";
 import { canonical_locale } from "$lib/locale";
-import { clients, is_same_origin_upgrade, notify_clients, notify_evidence_ready, notify_recording_ready } from "$lib/livereload";
+import { clients, handle_dev_client_request, is_same_origin_upgrade, notify_clients, notify_evidence_ready, notify_recording_ready } from "$lib/livereload";
 import type { WebSocketData } from "$lib/livereload";
 import { log_error } from "$lib/logger";
 import { handle_open_request } from "$lib/open_in_editor";
@@ -120,6 +120,12 @@ function create_dev_fetch_handler() {
 		}
 		if (req.method === "GET" && url.pathname === "/__issue_repos") {
 			return handle_issue_repos(req);
+		}
+
+		// Dev client scripts (livereload/inspector/issue reporter) as external files
+		if (req.method === "GET") {
+			const dev_client = await handle_dev_client_request(url);
+			if (dev_client) return dev_client;
 		}
 
 		// The evidence job runs in the queue worker (a separate process), so it

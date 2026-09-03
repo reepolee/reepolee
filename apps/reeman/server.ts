@@ -21,7 +21,7 @@
 import { join } from "node:path";
 import { bootstrap } from "$lib/bootstrap";
 import { env_available } from "$config/env_vars";
-import { clients, is_same_origin_upgrade, notify_clients } from "$lib/livereload";
+import { clients, handle_dev_client_request, is_same_origin_upgrade, notify_clients } from "$lib/livereload";
 import type { WebSocketData } from "$lib/livereload";
 import { log_error } from "$lib/logger";
 import { initialize_render } from "$lib/render";
@@ -127,6 +127,12 @@ function create_dev_fetch_handler() {
 		// Dev-only GitHub issue reporter (Ctrl+Shift+I overlay)
 		if (req.method === "POST" && url.pathname === "/__issue") { return handle_create_issue(req); }
 		if (req.method === "GET" && url.pathname === "/__issue_repos") { return handle_issue_repos(req); }
+
+		// Dev client scripts (livereload/inspector/issue reporter) as external files
+		if (req.method === "GET") {
+			const dev_client = await handle_dev_client_request(url);
+			if (dev_client) return dev_client;
+		}
 
 		// Dev-only "open in editor" for the inspector (Meta+Shift / Alt+Shift overlay)
 		if (req.method === "POST" && url.pathname === "/__ree_open") { return handle_open_request(process.cwd(), url); }

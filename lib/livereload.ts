@@ -95,10 +95,7 @@ export function is_same_origin_upgrade(req: Request): boolean {
 }
 
 export async function inject_live_reload(html_content: string): Promise<string> {
-	const script = await get_client_script();
-	const tag = `<script>
-		${script};
-	</script>`;
+	const tag = `<script src="${DEV_CLIENT_ROUTES.livereload}" defer></script>`;
 
 	if (html_content.match(/<\/body>/i)) { return html_content.replace(/<\/body>/i, `${tag}</body>`); }
 
@@ -106,10 +103,7 @@ export async function inject_live_reload(html_content: string): Promise<string> 
 }
 
 export async function inject_issue_reporter(html_content: string): Promise<string> {
-	const script = await get_issue_reporter_script();
-	const tag = `<script>
-		${script};
-	</script>`;
+	const tag = `<script src="${DEV_CLIENT_ROUTES.issue_reporter}" defer></script>`;
 
 	if (html_content.match(/<\/body>/i)) { return html_content.replace(/<\/body>/i, `${tag}</body>`); }
 
@@ -117,14 +111,61 @@ export async function inject_issue_reporter(html_content: string): Promise<strin
 }
 
 export async function inject_inspector(html_content: string): Promise<string> {
-	const script = await get_inspector_script();
-	const tag = `<script>
-		${script};
-	</script>`;
+	const tag = `<script src="${DEV_CLIENT_ROUTES.inspector}" defer></script>`;
 
 	if (html_content.match(/<\/body>/i)) { return html_content.replace(/<\/body>/i, `${tag}</body>`); }
 
 	return html_content + tag;
+}
+
+// ---------------------------------------------------------------------------
+// Dev client script endpoint (GET /__ree_client/<name>.js)
+// ---------------------------------------------------------------------------
+
+/**
+ * Dev client scripts exposed as external files instead of streamed inline into
+ * every HTML page. The three files are the same ones the injectors above used
+ * to inline; serving them as responses keeps ~60 KB of unminified JS out of
+ * every dev page render, gives the scripts real entries (and working
+ * breakpoints) in the browser debugger, and keeps the page HTML cacheable
+ * separately from the scripts.
+ *
+ * GET handler only - served in dev mode from the same `__` endpoint block as
+ * the issue reporter, so production never exposes it (the injectors above run
+ * only when is_dev is true). Cache-Control is no-store so an edit to a client
+ * script is picked up on the next reload without any cache busting.
+ */
+export const DEV_CLIENT_ROUTES = {
+	livereload: "/__ree_client/livereload.js",
+	issue_reporter: "/__ree_client/issue_reporter.js",
+	inspector: "/__ree_client/inspector.js",
+} as const;
+
+const DEV_CLIENT_FILES: Record<keyof typeof DEV_CLIENT_ROUTES, { read: () => Promise<string>; }> = {
+	livereload: { read: get_client_script },
+	issue_reporter: { read: get_issue_reporter_script },
+	inspector: { read: get_inspector_script },
+};
+
+/**
+ * Serve one of the dev client scripts by name. Returns null for unknown names
+ * so the caller can fall through to normal routing (404). The name is derived
+ * from the URL's last segment and must match a DEV_CLIENT_ROUTES key exactly.
+ */
+export async function handle_dev_client_request(url: URL): Promise<Response | null> {
+	const match = /\/__ree_client\/([a-z_]+)\.js$/.exec(url.pathname);
+	if (!match) return null;
+
+	const name = match[1] as keyof typeof DEV_CLIENT_FILES;
+	const entry = DEV_CLIENT_FILES[name];
+	if (!entry) return null;
+
+	return new Response(await entry.read(), {
+		headers: {
+			"Content-Type": "text/javascript; charset=utf-8",
+			"Cache-Control": "no-store",
+		},
+	});
 }
 
 export function notify_clients() {
