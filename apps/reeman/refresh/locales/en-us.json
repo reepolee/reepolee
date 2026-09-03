@@ -1,0 +1,27 @@
+{
+	"actions": {
+		"add_locale": "Add locale",
+		"fields": "Fields only",
+		"refresh_crud": "Refresh CRUD",
+		"sync_locale_tables": "Sync locale tables",
+		"sync_translations": "Sync translations",
+		"translate": "Translate via AI"
+	},
+	"hints": {
+		"locale_code": "BCP 47 locale code to add (e.g. de-at)"
+	},
+	"labels": {
+		"locale_code": "Locale code",
+		"route": "Route",
+		"template_tags": "Template tags"
+	},
+	"nav": "Refresh",
+	"selectors": {
+		"default": "(default)"
+	},
+	"ui": {
+		"busy": "Processing — the page will refresh when complete.",
+		"refresh_description": "Sync translations, manage locales and refresh locale tables.",
+		"refresh_title": "Refresh & languages"
+	}
+}
