@@ -1,0 +1,14 @@
+<footer class="bottom flex flex-col gap-2 px-4 py-4">
+	<div class="flex items-center gap-2">
+		<locale-switcher></locale-switcher>
+		<button id="theme-toggle" aria-label="Toggle dark mode" class="ml-auto cursor-pointer px-2 py-1 text-xs rounded border border-transparent hover:border-neutral-300 hover:bg-neutral-100">🌙</button>
+	</div>
+	<div class="flex items-center gap-2 font-semibold pl-2" title="{= Bun.env.DEV_CONNECTION_STRING || '' }">
+		{#each props.nav_final_links as entry}
+			{#if entry.requires_user === !!props.user}
+				<a href="{~ localized_path(entry.url) }">{#if entry.key === "profile"}{= props.user.display_name}{:else}{_ nav_auth.login}{/if}</a>
+			{/if}
+		{/each}
+	</div>
+
+</footer>

@@ -1,0 +1,24 @@
+{
+	"actions": {
+		"submit": "Zaključi registracijo"
+	},
+	"errors": {
+		"name_required": "Obvezen vnos",
+		"password_confirm_required": "Obvezen vnos",
+		"password_too_short": "Geslo mora vsebovati vsaj 8 znakov",
+		"passwords_mismatch": "Gesli nista enaki"
+	},
+	"labels": {
+		"name": "Polno ime",
+		"password": "Geslo (najmanj 8 znakov)",
+		"password_confirm": "Potrdi geslo"
+	},
+	"route_name": "registracija",
+	"ui": {
+		"already_used": "Ta povabilo je že bilo uporabljeno. Prosim prijavite se.",
+		"invalid_link": "Ta povezava je neveljavna.",
+		"invalid_title": "Neveljavno povabilo",
+		"registering_as": "Registracija kot:",
+		"title": "Zaključi registracijo"
+	}
+}
