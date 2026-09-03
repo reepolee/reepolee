@@ -1,6 +1,6 @@
 import { MAINTENANCE_FIELDS } from "$config/db_structure";
 
-import { generate_validation_server_content, generate_zod_fields_from_array } from "../validation_generator";
+import { configured_form_fields, generate_validation_server_content, generate_zod_fields_from_array } from "../validation_generator";
 import { join } from "node:path";
 import { generate_fields_object } from "./field_generator";
 import type { TypeMapper } from "./type_mapper";
@@ -12,6 +12,7 @@ export async function write_validation_file(
 	type_mapper: TypeMapper,
 	all_tables_columns?: Map<string, string[]>,
 	all_tables_indexes?: Map<string, Set<string>>,
+	columns?: Record<string, { form?: boolean; }> | null,
 ): Promise<void> {
 	const validation_path = join(dir, "validation_server.ts");
 	if (await Bun.file(validation_path).exists()) return;
@@ -84,7 +85,8 @@ export async function write_validation_file(
 
 	const form_fields_array = Object.values(form_fields_obj);
 	apply_index_nullable(form_fields_array);
-	const zod_form_fields = generate_zod_fields_from_array(form_fields_array, "form");
+	const configured_fields = configured_form_fields(form_fields_array, columns);
+	const zod_form_fields = generate_zod_fields_from_array(configured_fields, "form");
 
 	const validate_base_fields = generate_fields_object(schema_obj, type_mapper, all_tables_columns, all_tables_indexes);
 
@@ -104,7 +106,7 @@ export async function write_validation_file(
 	const validate_fields_array = Object.values(validate_fields_obj);
 	apply_index_nullable(validate_fields_array);
 
-	const zod_validate_fields = generate_zod_fields_from_array(validate_fields_array, "validate");
+	const zod_validate_fields = generate_zod_fields_from_array(configured_form_fields(validate_fields_array, columns), "validate");
 
 	const content = await generate_validation_server_content(zod_index_fields, zod_form_fields, zod_validate_fields);
 

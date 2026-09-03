@@ -38,6 +38,8 @@ export interface ColumnDef {
 	localized?: boolean;
 	/** Display this column's value on forms without an editor (never editable). */
 	readonly?: boolean;
+	/** Include this column as an editable field on generated forms. */
+	form?: boolean;
 }
 
 export interface ParentInfo {

@@ -49,10 +49,13 @@
 		"per_page": "per page"
 	},
 	"ui": {
+		"edit_title": "Edit file",
+		"index_title": "Files",
 		"file": "File",
 		"file_type": "Type",
 		"modifying": "Modifying",
 		"no_records": "No files found.",
+		"new_title": "New file",
 		"records": "records",
 		"title": "Files"
 	},

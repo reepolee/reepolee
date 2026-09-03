@@ -9,6 +9,35 @@ const fields: FieldDef[] = [
 ];
 
 describe("generate_index_ts localized save", () => {
+	test("passes translated page titles to index and form renders", async () => {
+		const source = await generate_index_ts({
+			table_name: "metrics",
+			fields,
+			column_names: ["id", "name"],
+			view_column_names: [],
+			sort_options: "[]",
+			view_name: "v_metrics",
+			has_view: false,
+			first_field: "name",
+			foreign_keys: new Map(),
+			localization_enabled: false,
+			localized_fields: [],
+			readonly_fields: new Set(["id"]),
+			form_columns: null,
+			columns: null,
+			route_prefix: "",
+			crud_name: "metrics_crud",
+			route_param_value: "id",
+			is_nested: false,
+			pagination_strategy: "offset",
+			render_strategy: "load",
+		});
+
+		expect(source).toContain("page_title: ctx.translations.ui?.index_title");
+		expect(source).toContain("page_title: ctx.translations.ui?.new_title");
+		expect(source).toContain("page_title: ctx.translations.ui?.edit_title");
+	});
+
 	test("updates the default row and preserves locale save plumbing", async () => {
 		const source = await generate_index_ts({
 			table_name: "metrics",

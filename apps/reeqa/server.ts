@@ -18,7 +18,7 @@ import type { WebSocketData } from "$lib/livereload";
 import { log_error } from "$lib/logger";
 import { handle_open_request } from "$lib/open_in_editor";
 import { initialize_render } from "$lib/render";
-import { detect_locale, resolve_canonical } from "$lib/route_map";
+import { detect_locale, resolve_canonical_match } from "$lib/route_map";
 import { rebuild_routes_and_state } from "$lib/route_state";
 import { get_base_data, get_route_table, is_first_run, match_route, set_base_data } from "$lib/route_table";
 import { handle_s3_request } from "$lib/s3";
@@ -173,10 +173,10 @@ function create_dev_fetch_handler() {
 
 		const locale = detect_locale(url.pathname);
 		if (locale) {
-			const canonical = resolve_canonical(url.pathname, locale);
-			if (canonical) {
-				const localized_handler = route_table[canonical];
-				if (localized_handler) return call_route_handler(localized_handler, req, server);
+			const localized_match = resolve_canonical_match(url.pathname, locale);
+			if (localized_match) {
+				const localized_handler = route_table[localized_match.canonical];
+				if (localized_handler) return call_route_handler(localized_handler, req, server, localized_match.params);
 			}
 		}
 

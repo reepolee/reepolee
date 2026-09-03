@@ -115,7 +115,7 @@ export async function get_global_scopes_index(req: BunRequest): Promise<Response
 
 	return render("index", {
 		data: {
-			title: "Global Scopes",
+			page_title: ctx.translations.ui?.index_title,
 			records: result.records,
 			query: query || "",
 			limit,
@@ -173,6 +173,7 @@ export async function post_global_scopes_index(req: BunRequest): Promise<Respons
 		const [module_options, table_options] = await Promise.all([get_available_modules(), get_available_tables()]);
 		return render("form", {
 			data: {
+				page_title: ctx.translations.ui?.new_title,
 				record: { ...data, table: data.table_name },
 				errors,
 				form_errors: null,
@@ -196,7 +197,7 @@ export async function post_global_scopes_index(req: BunRequest): Promise<Respons
 		return render("form", {
 			data: {
 				save_label: "Shrani zapis",
-				title: "New record",
+				page_title: ctx.translations.ui?.new_title,
 				record: { ...data, table: data.table_name },
 				errors,
 				form_errors: error_message,

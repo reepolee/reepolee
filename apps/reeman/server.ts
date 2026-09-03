@@ -30,7 +30,7 @@ import { handle_inspector_message } from "$lib/inspector_ws";
 import { handle_open_request } from "$lib/open_in_editor";
 import { handle_generic_upload_endpoints } from "$lib/upload_endpoints";
 import { canonical_locale } from "$lib/locale";
-import { detect_locale, resolve_canonical } from "$lib/route_map";
+import { detect_locale, resolve_canonical_match } from "$lib/route_map";
 import { default_locale } from "$config/supported_locales";
 import { rebuild_routes_and_state } from "$lib/route_state";
 import { get_base_data, get_route_table, is_first_run, match_route, set_base_data } from "$lib/route_table";
@@ -157,10 +157,10 @@ function create_dev_fetch_handler() {
 		// Dynamic route resolution for localized paths (route_name translations).
 		const locale = detect_locale(url.pathname);
 		if (locale) {
-			const canonical = resolve_canonical(url.pathname, locale);
-			if (canonical) {
-				const localized_handler = route_table[canonical];
-				if (localized_handler) { return call_route_handler(localized_handler, req, server); }
+			const localized_match = resolve_canonical_match(url.pathname, locale);
+			if (localized_match) {
+				const localized_handler = route_table[localized_match.canonical];
+				if (localized_handler) { return call_route_handler(localized_handler, req, server, localized_match.params); }
 			}
 		}
 

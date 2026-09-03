@@ -120,7 +120,7 @@ export async function get_modules_index(req: BunRequest): Promise<Response> {
 
 	return render("index", {
 		data: {
-			title: "Modules",
+			page_title: ctx.translations.ui?.index_title,
 			records: result.records,
 			query: query || "",
 			limit,
@@ -166,7 +166,7 @@ export async function post_modules_index(req: BunRequest): Promise<Response> {
 
 	if (Object.keys(errors).length > 0 || !valid_data) {
 		return render("form", {
-			data: { record: data, errors, action: base_path(), enable_archive },
+			data: { page_title: ctx.translations.ui?.new_title, record: data, errors, action: base_path(), enable_archive },
 			ctx,
 		});
 	}
@@ -191,7 +191,7 @@ export async function post_modules_index(req: BunRequest): Promise<Response> {
 		return render("form", {
 			data: {
 				save_label: "Shrani zapis",
-				title: "New record",
+				page_title: ctx.translations.ui?.new_title,
 				record: data,
 				errors,
 				form_errors: error_message,
@@ -208,7 +208,7 @@ export async function get_modules_new(req: BunRequest): Promise<Response> {
 
 	return render("form", {
 		data: {
-			title: "New record",
+			page_title: ctx.translations.ui?.new_title,
 			record: { code: "", name: "", description: "" },
 			errors: { code: "", name: "", description: "" },
 			action: base_path(),
@@ -235,7 +235,7 @@ export async function get_modules_edit(req: BunRequest): Promise<Response> {
 	const bp = base_path();
 	return render("form", {
 		data: {
-			title: `Edit ${record.code}`,
+			page_title: ctx.translations.ui?.edit_title,
 			record,
 			back_route: `${bp}?there_should_be_back_params`,
 			errors: { code: "", name: "", description: "" },
@@ -309,7 +309,7 @@ export async function post_modules_edit(req: BunRequest): Promise<Response> {
 
 			return render("form", {
 				data: {
-					title: `Edit ${existing_record.name}`,
+					page_title: ctx.translations.ui?.edit_title,
 					record: existing_record,
 					form_errors: error_message,
 					errors: {},
@@ -336,7 +336,7 @@ export async function post_modules_edit(req: BunRequest): Promise<Response> {
 		}
 		return render("form", {
 			data: {
-				title: `Edit ${existing_record.code}`,
+				page_title: ctx.translations.ui?.edit_title,
 				record: { ...existing_record, ...data },
 				errors,
 				action: entity_path(id),

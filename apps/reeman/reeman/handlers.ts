@@ -120,6 +120,8 @@ function parse_grid_form_settings(params: URLSearchParams): GridFormSettings {
 	const localized_columns = new Set(raw_localized_columns);
 	const raw_readonly_columns = params.getAll("grid_readonly_columns");
 	const readonly_columns = new Set(raw_readonly_columns);
+	const raw_form_columns = params.getAll("grid_form_columns");
+	const form_columns = new Set(raw_form_columns);
 	const definition_names = new Set(grid_column_names);
 	const has_invalid_definition_lengths = grid_column_names.length !== grid_column_widths.length || grid_column_names.length !== grid_column_classes.length || grid_column_names.length !== grid_column_helpers.length;
 	const has_blank_definition = grid_column_names.some((name, index) => !name || !grid_column_widths[index]);
@@ -128,7 +130,8 @@ function parse_grid_form_settings(params: URLSearchParams): GridFormSettings {
 	const has_unknown_filter = raw_filter_columns.some((name) => !definition_names.has(name));
 	const has_unknown_localized = raw_localized_columns.some((name) => !definition_names.has(name));
 	const has_unknown_readonly = raw_readonly_columns.some((name) => !definition_names.has(name));
-	if (has_invalid_definition_lengths || has_blank_definition || has_duplicate_definition || has_unknown_selection || has_unknown_filter || has_unknown_localized || has_unknown_readonly) {
+	const has_unknown_form = raw_form_columns.some((name) => !definition_names.has(name));
+	if (has_invalid_definition_lengths || has_blank_definition || has_duplicate_definition || has_unknown_selection || has_unknown_filter || has_unknown_localized || has_unknown_readonly || has_unknown_form) {
 		return { error: "Invalid grid column definitions." };
 	}
 
@@ -140,6 +143,7 @@ function parse_grid_form_settings(params: URLSearchParams): GridFormSettings {
 		helper: grid_column_helpers[index] || undefined,
 		localized: has_localized_control ? localized_columns.has(name) : undefined,
 		readonly: readonly_columns.has(name),
+		form: form_columns.has(name),
 	}));
 	return { grid_columns, grid_column_definitions };
 }
@@ -346,7 +350,7 @@ export async function post_bulk_remove_route(req: BunRequest): Promise<Response>
 	// Let the 303 response leave this request before Bun rebuilds the main
 	// app's route table. Rebuilding while the POST is still unwinding can
 	// strand the browser on the deleted /routes/:id page.
-	setTimeout(() => { void notify_server_reload(); }, 0);
+	setTimeout(() => { void notify_server_reload(true, Bun.env.MAIN_APP_URL); }, 0);
 	return response;
 }
 

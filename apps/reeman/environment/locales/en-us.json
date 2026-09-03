@@ -25,6 +25,7 @@
 	"nav": "Environment",
 	"ui": {
 		"edit_title": "Edit environment variable",
+		"index_title": "Environment variables",
 		"no_records": "No environment variables found."
 	}
 }

@@ -54,7 +54,10 @@
 		"all": "Vse"
 	},
 	"ui": {
+		"edit_title": "Uredi uporabnika",
+		"index_title": "Uporabniki",
 		"no_records": "Ni najdenih uporabnikov.",
+		"new_title": "Nov uporabnik",
 		"title": "Uporabniki"
 	}
 }

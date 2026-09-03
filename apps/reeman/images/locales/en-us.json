@@ -51,7 +51,10 @@
 		"all": "All"
 	},
 	"ui": {
+		"edit_title": "Edit image",
+		"index_title": "Images",
 		"no_records": "No images found.",
+		"new_title": "New image",
 		"title": "Images"
 	},
 	"v_labels": {

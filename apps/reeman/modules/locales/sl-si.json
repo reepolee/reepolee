@@ -81,10 +81,13 @@
 	"ui": {
 		"apply_filters": "Uporabi",
 		"clear_all": "Briši vse",
+		"edit_title": "Uredi modul",
 		"filter_not": "NI",
+		"index_title": "Moduli",
 		"loading_count": "Nalagam…",
 		"modifying": "Pred uporabami spremembo",
 		"no_records": "Ni najdenih modulov.",
+		"new_title": "Nov modul",
 		"records": "zapis(ov)",
 		"title": "Moduli"
 	}

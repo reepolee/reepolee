@@ -49,10 +49,13 @@
 		"per_page": "na stran"
 	},
 	"ui": {
+		"edit_title": "Uredi datoteko",
+		"index_title": "Datoteke",
 		"file": "Datoteka",
 		"file_type": "Vrsta",
 		"modifying": "Spreminjanje",
 		"no_records": "Ni najdenih datotek.",
+		"new_title": "Nova datoteka",
 		"records": "zapisov",
 		"title": "Datoteke"
 	},

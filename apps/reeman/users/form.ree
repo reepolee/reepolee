@@ -4,7 +4,7 @@
 	<div class="p-4">
 
 		<div class="flex items-center justify-between">
-			<h1 class="mb-4">{_ ui.title}</h1>
+			<h1 class="mb-4">{#if record.id}{_ ui.edit_title}{:else}{_ ui.new_title}{/if}</h1>
 			<div class="text-sm">{~ js_timestamp_to_locale_string(record.updated_at ?? record.created_at)}</div>
 		</div>
 

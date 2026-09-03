@@ -46,7 +46,7 @@ export async function get_global_scopes_new(req: BunRequest): Promise<Response> 
 
 	return render("form", {
 		data: {
-			title: "New record",
+			page_title: ctx.translations.ui?.new_title,
 			record: {
 				feature_name: "",
 				table_name: "",
@@ -108,7 +108,7 @@ export async function get_global_scopes_edit(req: BunRequest): Promise<Response>
 
 	return render("form", {
 		data: {
-			title: `Edit ${ns_for_translations}`,
+			page_title: ctx.translations.ui?.edit_title,
 			record: { ...record, module_code: module_part, table: table_part },
 			back_route: `/global_scopes?there_should_be_back_params`,
 			errors: {

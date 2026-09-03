@@ -91,6 +91,7 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 			form_hints: meta.form_hints,
 			form_details: meta.form_details,
 			readonly_fields: readonly_field_names(meta.columns),
+			form_columns: meta.columns,
 		}));
 
 		log_step(`Generating index.ree for ${table_name}`);
@@ -148,6 +149,7 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 		localization_enabled: meta.localization_enabled,
 		localized_fields: meta.localized_fields,
 		readonly_fields: readonly_field_names(meta.columns),
+		form_columns: meta.columns,
 		table_name,
 		fields: meta.fields,
 		column_names: meta.column_names,
@@ -190,6 +192,7 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 		localization_enabled: meta.localization_enabled,
 		localized_fields: meta.localized_fields,
 		readonly_fields: readonly_field_names(meta.columns),
+		form_columns: meta.columns,
 	}));
 
 	// sql.custom.ts: extension point for custom queries - never regenerated

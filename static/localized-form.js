@@ -11,6 +11,25 @@ document.addEventListener("change", (event) => {
 	document.cookie = `preferred_locale=${encodeURIComponent(radio.value)};path=/;max-age=31536000;samesite=lax`;
 });
 
+// A locale reset button is a submitter so its formaction and name/value pair
+// are preserved when it is clicked. Keep it out of the form's implicit-submit
+// path: pressing Enter in a locale input must activate the primary Save action.
+document.addEventListener("keydown", (event) => {
+	if (event.key !== "Enter" || event.isComposing) return;
+
+	const input = event.target;
+	if (!(input instanceof HTMLInputElement) || input.type === "hidden" || input.type === "radio") return;
+
+	const form = input.form;
+	if (!form?.matches("[data-localized-form]")) return;
+
+	const save_button = form.querySelector("#btn-submit");
+	if (!(save_button instanceof HTMLButtonElement) || save_button.disabled) return;
+
+	event.preventDefault();
+	save_button.click();
+});
+
 document.addEventListener("dblclick", (event) => {
 	const label = event.target.closest(".localized-tab-label");
 	if (!label) return;

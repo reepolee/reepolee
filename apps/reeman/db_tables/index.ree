@@ -65,6 +65,13 @@
 			</div>
 
 			<div class="flex items-center gap-2">
+				<select id="list_filter" class="w-[30ch]" onchange="navigate_to('list_filter', this.value)">
+					<option value="non_system" {#if list_filter === 'non_system' } selected{/if}>{_ selectors.non_system_tables}</option>
+					<option value="all" {#if list_filter === 'all' } selected{/if}>{_ selectors.all_tables}</option>
+				</select>
+			</div>
+
+			<div class="flex items-center gap-2">
 				<select id="order_by" class="w-[40ch]" onchange="navigate_to('order_by', this.value)">
 					{#each sort_options as option }
 						<option value="{= option.value }" {#if option.value === order_by }selected{/if}>{= props.translations.labels?.[option.field] || option.field } ({= option.direction === 'asc' ? props.translations.selectors.ascending : props.translations.selectors.descending })</option>

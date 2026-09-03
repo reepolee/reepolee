@@ -305,6 +305,11 @@ function smart_merge_fields_flat(old_section: string, new_field_blocks: string[]
 			// Element attributes changed - use new block
 			return new_block;
 		}
+		// Migrate the old tags-field translation expression. It referenced a
+		// bare field variable that is not present in form scope and crashes at
+		// render time; preserve other user customizations during refresh.
+		const old_tag_translation = new RegExp(`\\{=\\s*${escape_regex(field_name)}\\?\\.\\[tag\\.tag_key\\]`).test(_full);
+		if (old_tag_translation && new_block.includes("props.translations.")) return new_block;
 		// Same container, template type, and element signature - keep old block
 		// (preserves customizations)
 		return _full;

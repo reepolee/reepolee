@@ -5,11 +5,11 @@
  * 1. Full-page (reeman admin editor, default) - `initImageEditor(config)`
  *    scopes lookups to the whole document, matching the markup rendered by
  *    routes_reeman/images/form.ree. Saves navigate via config.returnUrl.
- * 2. Dialog (CRUD field component) - `image-upload.ree` renders a `<dialog>`
- *    with the same editor markup and calls initImageEditor(config) with
- *    `root` (dialog content element), `id_prefix` (unique per field),
- *    `dialog` (element to close) and `onSave(result)` callback. No reeman
- *    folder/table assumptions - process/save URLs come from config.
+ * 2. Dialog embedding - a caller renders the editor markup and calls
+ *    initImageEditor(config) with `root` (dialog content element), `id_prefix`
+ *    (unique per instance), `dialog` (element to close), and
+ *    `onSave(result)` callback. No reeman folder/table assumptions -
+ *    process/save URLs come from config.
  *
  * config:
  * processUrl   - POST endpoint for preview/processing
@@ -40,7 +40,10 @@ window.initImageEditor = (config) => {
 
 	// Scope all DOM lookups to a root + optional id prefix (dialog mode).
 	const root = config.root || document;
-	const id_prefix = config.id_prefix || "";
+	const raw_id_prefix = config.id_prefix || "";
+	const id_prefix = raw_id_prefix && !raw_id_prefix.endsWith("-")
+		? `${raw_id_prefix}-`
+		: raw_id_prefix;
 	const q = (sel) => root.querySelector(sel);
 	const qi = (id) => root.querySelector(`#${id_prefix}${id}`);
 	const qai = (sel) => root.querySelectorAll(sel);

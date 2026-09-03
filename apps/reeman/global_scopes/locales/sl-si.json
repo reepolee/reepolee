@@ -85,7 +85,10 @@
 		"user_filters": "Uporabniški filtri"
 	},
 	"ui": {
+		"edit_title": "Uredi globalni filter",
+		"index_title": "Globalni filtri",
 		"no_records": "Ni najdenih globalnih filtrov.",
+		"new_title": "Nov globalni filter",
 		"title": "Globalni filtri"
 	}
 }

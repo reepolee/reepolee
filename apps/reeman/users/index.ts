@@ -117,7 +117,7 @@ export async function get_users_index(req: BunRequest): Promise<Response> {
 
 	return render("index", {
 		data: {
-			title: "Users",
+			page_title: ctx.translations.ui?.index_title,
 			records: result.records,
 			query: query || "",
 			limit,
@@ -176,7 +176,7 @@ export async function post_users_index(req: BunRequest): Promise<Response> {
 
 	if (Object.keys(errors).length > 0 || !valid_data) {
 		return render("form", {
-			data: { record: data, errors, form_errors: null, action: base_path(), module_options, enable_archive },
+			data: { page_title: ctx.translations.ui?.new_title, record: data, errors, form_errors: null, action: base_path(), module_options, enable_archive },
 			ctx,
 		});
 	}
@@ -194,7 +194,7 @@ export async function post_users_index(req: BunRequest): Promise<Response> {
 		return render("form", {
 			data: {
 				save_label: "Shrani zapis",
-				title: "New record",
+				page_title: ctx.translations.ui?.new_title,
 				record: data,
 				errors,
 				form_errors: error_message,

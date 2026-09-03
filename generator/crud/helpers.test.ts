@@ -33,3 +33,20 @@ test("refreshing a flat form as tags replaces field wrappers instead of duplicat
 	expect(merged.match(/name="code"/g)?.length).toBe(1);
 	expect(merged.match(/name="min_value"/g)?.length).toBe(1);
 });
+
+test("refreshing a flat tags field migrates the obsolete translation scope", () => {
+	const old_section = `
+<field-wrapper class="grid" data-field="modules_tags"><input type="hidden" name="modules_tags" />
+{= modules_tags?.[tag.tag_key] || tag.tag_value}
+</field-wrapper>`;
+	const new_fields = [
+		`<field-wrapper class="grid" data-field="modules_tags"><input type="hidden" name="modules_tags" />
+{= props.translations.modules_tags?.[tag.tag_key] || tag.tag_value}
+</field-wrapper>`,
+	];
+
+	const merged = smart_merge_fields(old_section, new_fields, "flat");
+
+	expect(merged).toContain("props.translations.modules_tags?.[tag.tag_key]");
+	expect(merged).not.toContain("{= modules_tags?.[tag.tag_key]");
+});

@@ -155,6 +155,21 @@ describe("route_map", () => {
 			const result = rm.resolve_canonical("/posts/123", "en");
 			expect(result).toBe("/posts/:id");
 		});
+
+		test("returns captured params for localized dynamic paths", () => {
+			rm.build_route_maps({
+				en: {},
+				sl: { admin: { users: { route_name: "Uporabniki" } } },
+			}, {
+				"/": {} as any,
+				"/admin/users/:id/edit": {} as any,
+			}, ["en", "sl"]);
+
+			expect(rm.resolve_canonical_match("/admin/uporabniki/2/edit", "sl")).toEqual({
+				canonical: "/admin/users/:id/edit",
+				params: { id: "2" },
+			});
+		});
 	});
 
 	describe("resolve_localized", () => {

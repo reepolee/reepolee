@@ -1,7 +1,9 @@
+import { join } from "node:path";
+
 import { beforeAll, describe, expect, test } from "bun:test";
 
 import { dev_app_links } from "$config/apps";
-import { MAIN_APP_POSIX } from "$config/paths";
+import { APPS_DIR } from "$config/paths";
 import { RequestContext } from "$lib/request_context";
 import { initialize_render, render_to_string } from "$lib/render";
 import TemplateEngine from "$lib/template_engine";
@@ -10,6 +12,7 @@ import { build_route_maps } from "$lib/route_map";
 import { DEFAULT_HELPER_NAMES } from "$lib/helper_names";
 
 const engine = new TemplateEngine({ views: process.cwd(), cache: false, ext: ".ree", helper_names: DEFAULT_HELPER_NAMES });
+const shared_layout_template = join(APPS_DIR, "layout");
 
 // The current page is the localized Slovenian spelling of /products, served
 // on a per-request origin - exactly the input the hreflang/og block consumes.
@@ -54,11 +57,11 @@ const rule_nav_groups = [
 ];
 
 function render_layout_with_nav(nav_groups: any[]): Promise<string> {
-	return engine.render(`${MAIN_APP_POSIX}/layout`, { ...render_data, nav_groups, helpers: create_template_helpers(render_data) });
+	return engine.render(shared_layout_template, { ...render_data, nav_groups, helpers: create_template_helpers(render_data) });
 }
 
 function render_layout(): Promise<string> {
-	return engine.render(`${MAIN_APP_POSIX}/layout`, { ...render_data, helpers: create_template_helpers(render_data) });
+	return engine.render(shared_layout_template, { ...render_data, helpers: create_template_helpers(render_data) });
 }
 
 describe("layout presentation-boundary metadata", () => {
@@ -114,7 +117,7 @@ describe("layout presentation-boundary metadata", () => {
 	test("renders a localized, independently collapsible section", async () => {
 		const nav_groups = [{ label: "", items: [], sections: [{ key: "reeman.nav.data", title_key: "reeman.nav.data", order: 10, items: [{ url: "/tables", nav_title_key: "reeman.tables", required_module: null, is_menu_entry: true }] }] }];
 		const section_data = { ...render_data, translations: { ui: { title: "Test" }, nav: { reeman: { nav: { data: "Data" }, tables: "Tables" } } } };
-		const html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...section_data, nav_groups, helpers: create_template_helpers(section_data) });
+		const html = await engine.render(shared_layout_template, { ...section_data, nav_groups, helpers: create_template_helpers(section_data) });
 		expect(html).toContain('data-nav-section="root:reeman.nav.data"');
 		expect(html).toContain("Data");
 		expect(html).toContain('href="/tables"');
@@ -123,17 +126,17 @@ describe("layout presentation-boundary metadata", () => {
 	test("opens the current section despite its collapsed cookie", async () => {
 		const nav_groups = [{ label: "", items: [], sections: [{ key: "reeman.nav.data", title_key: "reeman.nav.data", order: 10, items: [{ url: "/tables", nav_title_key: "reeman.tables", required_module: null, is_menu_entry: true }] }] }];
 		const section_data = { ...render_data, request_url: "/tables", collapsed_nav_sections: ["root:reeman.nav.data"], translations: { ui: { title: "Test", nav_group_auto: "Auto", nav_group_manual: "Manual" }, nav: { reeman: { nav: { data: "Data" }, tables: "Tables" } } } };
-		const html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...section_data, nav_groups, helpers: create_template_helpers(section_data) });
+		const html = await engine.render(shared_layout_template, { ...section_data, nav_groups, helpers: create_template_helpers(section_data) });
 		expect(html).toContain('data-nav-section="root:reeman.nav.data" data-nav-manual="false" open');
 	});
 
 	test("keeps manual sections closed and auto sections open for the current route", async () => {
 		const nav_groups = [{ label: "", items: [], sections: [{ key: "reeman.nav.data", title_key: "reeman.nav.data", order: 10, items: [{ url: "/tables", nav_title_key: "reeman.tables", required_module: null, is_menu_entry: true }] }] }];
 		const base_section_data = { ...render_data, request_url: "/tables", collapsed_nav_sections: ["root:reeman.nav.data"], translations: { ui: { title: "Test", nav_group_auto: "Auto", nav_group_manual: "Manual" }, nav: { reeman: { nav: { data: "Data" }, tables: "Tables" } } } };
-		const auto_html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...base_section_data, nav_groups, helpers: create_template_helpers(base_section_data) });
+		const auto_html = await engine.render(shared_layout_template, { ...base_section_data, nav_groups, helpers: create_template_helpers(base_section_data) });
 		expect(auto_html).toContain('data-nav-section="root:reeman.nav.data" data-nav-manual="false" open');
 		const manual_data = { ...base_section_data, manual_nav_sections: ["root:reeman.nav.data"] };
-		const manual_html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...manual_data, nav_groups, helpers: create_template_helpers(manual_data) });
+		const manual_html = await engine.render(shared_layout_template, { ...manual_data, nav_groups, helpers: create_template_helpers(manual_data) });
 		expect(manual_html).toContain('data-nav-section="root:reeman.nav.data" data-nav-manual="true"');
 		expect(manual_html).not.toContain('data-nav-section="root:reeman.nav.data" data-nav-manual="true" open');
 		expect(manual_html).toContain('data-nav-section-mode-toggle');
@@ -142,13 +145,30 @@ describe("layout presentation-boundary metadata", () => {
 	test("keeps manual groups closed and auto groups open for the current route", async () => {
 		const nav_groups = [{ label: "admin", items: [{ url: "/tables", nav_title_key: "tables", required_module: "admin", is_menu_entry: true }], sections: [] }];
 		const base_group_data = { ...render_data, request_url: "/tables", user: { modules_tags: "admin" }, collapsed_nav_modules: ["admin"], translations: { ui: { title: "Test", nav_group_auto: "Auto", nav_group_manual: "Manual" }, nav: { tables: "Tables" }, nav_prefix_title: { admin: "Admin" } } };
-		const auto_html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...base_group_data, nav_groups, helpers: create_template_helpers(base_group_data) });
+		const auto_html = await engine.render(shared_layout_template, { ...base_group_data, nav_groups, helpers: create_template_helpers(base_group_data) });
 		expect(auto_html).toContain('data-nav-module="admin" data-nav-manual="false" open');
 		const manual_data = { ...base_group_data, manual_nav_modules: ["admin"] };
-		const manual_html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...manual_data, nav_groups, helpers: create_template_helpers(manual_data) });
+		const manual_html = await engine.render(shared_layout_template, { ...manual_data, nav_groups, helpers: create_template_helpers(manual_data) });
 		expect(manual_html).toContain('data-nav-module="admin" data-nav-manual="true"');
 		expect(manual_html).not.toContain('data-nav-module="admin" data-nav-manual="true" open');
 		expect(manual_html).toContain('data-nav-mode-toggle');
+	});
+
+	test("keeps sidebar mode buttons outside navigation summaries", async () => {
+		const nav_groups = [{ label: "admin", items: [], sections: [{ key: "admin.data", title_key: "admin.data", order: 10, items: [{ url: "/tables", nav_title_key: "tables", required_module: "admin", is_menu_entry: true }] }] }];
+		const sidebar_data = { ...render_data, user: { modules_tags: "admin" }, translations: { ui: { title: "Test", nav_group_auto: "Auto", nav_group_manual: "Manual" }, nav: { tables: "Tables" }, nav_prefix_title: { admin: "Admin" } } };
+		const html = await engine.render(shared_layout_template, { ...sidebar_data, nav_groups, helpers: create_template_helpers(sidebar_data) });
+		const summaries = html.match(/<summary\b[\s\S]*?<\/summary>/g) ?? [];
+		const section_start = html.indexOf('data-nav-section="admin:admin.data"');
+		const section_end = html.indexOf("</details>", section_start);
+		const section_button = html.indexOf("data-nav-section-mode-toggle");
+		const group_end = html.lastIndexOf("</details>");
+		const group_button = html.indexOf("data-nav-mode-toggle");
+
+		expect(summaries).toHaveLength(2);
+		expect(summaries.every((summary) => !summary.includes("<button"))).toBe(true);
+		expect(section_button).toBeGreaterThan(section_end);
+		expect(group_button).toBeGreaterThan(group_end);
 	});
 
 	test("keeps bootstrap development app links in the render pipeline", async () => {
@@ -188,7 +208,7 @@ describe("layout presentation-boundary metadata", () => {
 				nav: {},
 			},
 		};
-		const html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...switcher_data, helpers: create_template_helpers(switcher_data) });
+		const html = await engine.render(shared_layout_template, { ...switcher_data, helpers: create_template_helpers(switcher_data) });
 
 		expect(html).toContain('aria-label="Apps"');
 		expect(html).toContain('aria-current="page"');
@@ -225,7 +245,7 @@ describe("layout presentation-boundary metadata", () => {
 				nav: {},
 			},
 		};
-		const html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...switcher_data, helpers: create_template_helpers(switcher_data) });
+		const html = await engine.render(shared_layout_template, { ...switcher_data, helpers: create_template_helpers(switcher_data) });
 
 		expect(html).toContain('aria-label="Apps"');
 		expect(html).not.toContain('href="http://localhost:2339/"');
@@ -268,7 +288,7 @@ describe("layout presentation-boundary metadata", () => {
 			},
 			csrf_token: "test-token",
 		};
-		const html = await engine.render(`${MAIN_APP_POSIX}/layout`, { ...sidebar_data, helpers: create_template_helpers(sidebar_data) });
+		const html = await engine.render(shared_layout_template, { ...sidebar_data, helpers: create_template_helpers(sidebar_data) });
 
 		expect(html).toContain('aria-label="Language" onchange="location.href=this.value" class="text-base w-36 px-2 py-1"');
 	});

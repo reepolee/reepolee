@@ -74,6 +74,7 @@ export async function get_database_page(req: BunRequest, overrides: PageOverride
 	// separate as the historical fallback/template reference.
 	return render("index_template", {
 		data: {
+			page_title: ctx.translations.ui?.database_title,
 			sql_files: page_files,
 			busy: data.busy,
 			broken_views: data.broken_views,

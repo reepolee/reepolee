@@ -71,10 +71,7 @@ export async function get_db_routes_index(req: BunRequest): Promise<Response> {
 	const { labels } = ctx.translations;
 	const filter_definitions = enrich_filter_definitions(raw_filter_definitions, labels, filters, filter_not, {});
 
-	const all_records = (await refresh_db_routes()).filter((record) => record.table_name !== "users");
 	const result = await search_records(query, offset, limit_numeric, order_by, "", filter_clauses);
-	result.records = result.records.filter((record) => all_records.some((allowed) => allowed.url === record.url));
-	result.total = result.records.length;
 
 	if (wants_json(req)) {
 		if (!Bun.argv.includes("--dev")) return Response.json({ error: "not found" }, { status: 404 });
@@ -96,7 +93,7 @@ export async function get_db_routes_index(req: BunRequest): Promise<Response> {
 
 	return render("index", {
 		data: {
-			title: "Routes",
+			page_title: ctx.translations.ui?.index_title,
 			busy: reeman_data.busy,
 			records,
 			query: query || "",
@@ -153,6 +150,7 @@ async function render_db_route_detail(req: BunRequest, record: DbRouteRecord | u
 
 	return render("detail", {
 		data: {
+			page_title: ctx.translations.ui?.edit_title,
 			busy: reeman_data.busy,
 			record,
 			route_settings,
@@ -169,6 +167,7 @@ export async function get_add_page_form(req: BunRequest): Promise<Response> {
 
 	return render("add_page", {
 		data: {
+			page_title: ctx.translations.ui?.add_page_title,
 			busy: reeman_data.busy,
 			modules: reeman_data.modules,
 		},
@@ -194,6 +193,7 @@ export async function get_add_table_page_form(req: BunRequest): Promise<Response
 
 	return render("add_table_page", {
 		data: {
+			page_title: ctx.translations.ui?.add_table_page_title,
 			busy: reeman_data.busy,
 			modules: reeman_data.modules,
 			tables,
@@ -229,6 +229,7 @@ export async function get_add_nested_children_form(req: BunRequest): Promise<Res
 	const children = all_children.filter((child) => !nested_tables.has(child.table));
 	return render("add_children", {
 		data: {
+			page_title: ctx.translations.actions?.add_children,
 			busy: reeman_data.busy,
 			parent,
 			children,

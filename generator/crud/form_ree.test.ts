@@ -27,6 +27,14 @@ test("generates the standalone localized text input", async () => {
 	expect(output).toBe('<localized-input-text name="title" label="{_ labels.title}" localization="{= props.localization }"></localized-input-text>');
 });
 
+test("tags fields read dynamic labels from form translations", async () => {
+	const field: FieldDef = { name: "modules_tags", type: "tags", required: false, is_nullable: true };
+	const output = await generate_field_block(field, new Map(), "users", "admin", false, null, "flat", new Set());
+
+	expect(output).toContain("props.translations.modules_tags?.[tag.tag_key]");
+	expect(output).not.toContain("{= modules_tags?.[tag.tag_key]");
+});
+
 test("generated form layout uses two field tracks and a third details track", async () => {
 	const output = await generate_form_ree({
 		table_name: "sensors",
@@ -42,6 +50,25 @@ test("generated form layout uses two field tracks and a third details track", as
 	expect(output).toContain('class="col-span-full grid gap-4 lg:col-span-2 lg:grid-cols-subgrid"');
 	expect(output).toContain('class="col-span-full gap-4 grid empty:hidden lg:col-start-3 lg:self-start"');
 	expect(output).toContain("data-localized-form");
+	expect(output).toContain('{#layout("layout") }');
+	expect(output).toContain("{#if record.id}{_ ui.edit_title }{:else}{_ ui.new_title }{/if}");
 	expect(output).not.toContain("class=\"form-layout");
 	expect(output).not.toContain("class=\"localized-form");
+});
+
+test("omits columns disabled by the config form flag", async () => {
+	const output = await generate_form_ree({
+		table_name: "sensors",
+		fields: [
+			{ name: "code", type: "text", required: true, is_nullable: false },
+			{ name: "secret", type: "text", required: false, is_nullable: true },
+			{ name: "protected", type: "text", required: false, is_nullable: true },
+		],
+		foreign_keys: new Map(),
+		form_columns: { code: { form: true }, secret: { form: false } },
+	});
+
+	expect(output).toContain('name="code"');
+	expect(output).not.toContain('name="secret"');
+	expect(output).not.toContain('name="protected"');
 });

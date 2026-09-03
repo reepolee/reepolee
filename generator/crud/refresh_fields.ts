@@ -11,7 +11,7 @@ import { MySQLTypeMapper } from "../schema/mysql/mysql_type_mapper";
 import { SQLiteTypeMapper } from "../schema/sqlite/sqlite_type_mapper";
 import type { SchemaObject } from "../schema/types";
 import { sync_single_namespace } from "../translate_namespace";
-import { entry_fields } from "../validation_generator";
+import { configured_form_fields, entry_fields } from "../validation_generator";
 import { generate_field_block } from "./form_ree";
 import { find_v_field, log_step, replace_between_markers, route_dir_to_namespace, smart_merge_fields } from "./helpers";
 import { integrate_nested_child } from "./nested_integration";
@@ -215,7 +215,7 @@ async function refresh_form_ree(
 	for (const [name, column] of Object.entries(columns ?? {})) {
 		if (column?.readonly === true) readonly_names.add(name);
 	}
-	const filtered = entry_fields(fields, false);
+	const filtered = configured_form_fields(fields, columns);
 	const input_fields_promises = filtered.map((f) => generate_field_block(
 		f,
 		foreign_keys,

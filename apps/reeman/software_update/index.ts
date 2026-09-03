@@ -115,6 +115,7 @@ export async function get_software_update_page(req: BunRequest, form_error = "",
 	if (!snapshot) {
 		return render("index", {
 			data: {
+				page_title: ctx.translations.ui?.software_update_title,
 				form_error: form_error_message,
 				last_source,
 				snapshot: null,
@@ -131,6 +132,7 @@ export async function get_software_update_page(req: BunRequest, form_error = "",
 	const groups = group_by_folder(snapshot.entries);
 	return render("index", {
 		data: {
+			page_title: ctx.translations.ui?.software_update_title,
 			form_error: form_error_message,
 			last_source: snapshot.source_root,
 			snapshot,

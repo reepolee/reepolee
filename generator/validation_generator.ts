@@ -21,6 +21,13 @@ export function entry_fields(fields: FieldDef[], include_maintenance = true): Fi
 	return readable_fields.filter((f) => f.name !== "display" && f.name !== "option_display" && f.name !== "archived_by_user_display");
 }
 
+/** Apply the optional per-column form setting while retaining legacy defaults. */
+export function configured_form_fields(fields: FieldDef[], columns?: Record<string, { form?: boolean; }> | null): FieldDef[] {
+	const candidates = entry_fields(fields, false);
+	if (!columns) return candidates;
+	return candidates.filter((field) => columns[field.name] !== undefined && columns[field.name]?.form !== false);
+}
+
 export function generate_zod_fields_from_array(fields: FieldDef[], type: "index" | "form" | "validate", foreign_keys?: Map<string, any>): string {
 	const zod_fields: string[] = [];
 	const filtered_fields = type === "index" ? read_fields(fields) : entry_fields(fields);

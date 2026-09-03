@@ -54,7 +54,10 @@
 		"all": "All"
 	},
 	"ui": {
+		"edit_title": "Edit user",
+		"index_title": "Users",
 		"no_records": "No users found.",
+		"new_title": "New user",
 		"title": "Users"
 	}
 }

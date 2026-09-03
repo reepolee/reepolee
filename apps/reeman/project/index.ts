@@ -25,7 +25,7 @@ export async function get_project_page(req: BunRequest, form_error = ""): Promis
 	const current_repos = await read_current_repos();
 
 	return render("index", {
-		data: { current_repos, form_error },
+		data: { page_title: ctx.translations.ui?.project_title, current_repos, form_error },
 		ctx,
 	});
 }

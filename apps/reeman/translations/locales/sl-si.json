@@ -32,6 +32,7 @@
 		"per_page": "na stran"
 	},
 	"ui": {
+		"edit_title": "Uredi prevod",
 		"bulk_delete_warning": "S tem boste trajno izbrisali",
 		"bulk_delete_warning_suffix": "skupin(o) ključev - vključno z vsemi gnezdenimi ključi in vsemi jeziki.",
 		"filter_label": "Filtriraj po imenskem prostoru",

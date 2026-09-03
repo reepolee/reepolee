@@ -53,7 +53,7 @@ export async function get_system_rate_limits(req: BunRequest): Promise<Response>
 		}
 	}
 
-	return render("form", { data: { scope_list, total_keys: status?.total_keys ?? 0, error }, ctx });
+	return render("form", { data: { page_title: ctx.translations.ui?.title, scope_list, total_keys: status?.total_keys ?? 0, error }, ctx });
 }
 
 export async function post_reset_limits(req: BunRequest): Promise<Response> {

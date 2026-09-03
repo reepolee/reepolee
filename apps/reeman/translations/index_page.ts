@@ -323,7 +323,7 @@ export async function get_translations_index(req: BunRequest): Promise<Response>
 
 	const response = await render("index", {
 		data: {
-			title: "Translations",
+			page_title: ctx.translations.ui?.title,
 			flat_keys,
 			page_key_count,
 			shadowed_files,

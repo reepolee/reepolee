@@ -6,7 +6,7 @@ import { get_filter_definitions, resolve_filters, enrich_filter_definitions } fr
 import { render } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
 
-import { search_records } from "./sql";
+import { resolve_db_tables_list_filter, search_records } from "./sql";
 import { get_table_sample_records, get_table_row_count } from "./sql.custom";
 
 import { wants_json } from "$lib/wants_json";
@@ -50,19 +50,24 @@ const SORT_OPTIONS = [
 ];
 
 const { base_path } = feature_paths(route_prefix, "tables");
-const parse_pagination_params = (url: string) => parse_offset_pagination_params(url, DEFAULT_LIMIT);
+const parse_pagination_params = (url: string) => parse_offset_pagination_params(url, DEFAULT_LIMIT, ["list_filter"]);
 const build_pagination_urls = (
 	current_offset: number,
 	limit_numeric: number,
 	total: number,
 	query: string,
 	order_by: string,
-) => build_offset_pagination_urls(base_path(), current_offset, limit_numeric, total, query, order_by);
+	list_filter: string,
+	filters: Record<string, string>,
+	filter_not: Record<string, string>,
+) => build_offset_pagination_urls(base_path(), current_offset, limit_numeric, total, query, order_by, "", filters, filter_not, { list_filter });
 
 export async function get_db_tables_index(req: BunRequest): Promise<Response> {
 	const ctx = await create_ctx(req, import.meta.dir);
-	const { query, offset, limit, order_by, filters, filter_not } = parse_pagination_params(req.url);
+	const { query, offset, limit, order_by, list_filter: raw_list_filter, filters, filter_not } = parse_pagination_params(req.url);
 	const limit_numeric = limit === "all" ? 999999 : limit;
+	const list_filter = resolve_db_tables_list_filter(raw_list_filter as string);
+	const include_system_tables = list_filter === "all";
 
 	const reeman_data = await load_reeman_data({ tables: false });
 
@@ -72,7 +77,7 @@ export async function get_db_tables_index(req: BunRequest): Promise<Response> {
 	const { labels } = ctx.translations;
 	const filter_definitions = enrich_filter_definitions(raw_filter_definitions, labels, filters, filter_not, {});
 
-	const result = await search_records(query, offset, limit_numeric, order_by, "", filter_clauses);
+	const result = await search_records(query, offset, limit_numeric, order_by, "", filter_clauses, include_system_tables);
 
 	if (wants_json(req)) {
 		if (!Bun.argv.includes("--dev")) return Response.json({ error: "not found" }, { status: 404 });
@@ -81,7 +86,7 @@ export async function get_db_tables_index(req: BunRequest): Promise<Response> {
 	}
 
 	const limit_options = get_limit_options(limit === "all" ? "all" : (limit as number));
-	const { prev_url, next_url, first_url, last_url } = build_pagination_urls(offset, limit_numeric, result.total, query, order_by);
+	const { prev_url, next_url, first_url, last_url } = build_pagination_urls(offset, limit_numeric, result.total, query, order_by, list_filter, filters, filter_not);
 
 	const column_entries = Object.entries(columns);
 	const visible_column_entries = column_entries.filter(([key, value]: [string, any]) => value.grid !== false && (key !== "checkbox" || enable_archive));
@@ -92,7 +97,7 @@ export async function get_db_tables_index(req: BunRequest): Promise<Response> {
 
 	return render("index", {
 		data: {
-			title: "Tables",
+			page_title: ctx.translations.ui?.index_title,
 			busy: reeman_data.busy,
 			modules: reeman_data.modules,
 			records: result.records,
@@ -103,6 +108,7 @@ export async function get_db_tables_index(req: BunRequest): Promise<Response> {
 			total: result.total,
 			limit_options,
 			sort_options: SORT_OPTIONS,
+			list_filter,
 			prev_url,
 			next_url,
 			first_url,
@@ -153,6 +159,7 @@ export async function get_db_table_detail(req: BunRequest): Promise<Response> {
 
 	return render("detail", {
 		data: {
+			page_title: ctx.translations.ui?.edit_title,
 			busy,
 			modules: reeman_data.modules,
 			new_route,
@@ -188,6 +195,7 @@ export async function get_db_tables_new(req: BunRequest): Promise<Response> {
 
 	return render("new", {
 		data: {
+			page_title: ctx.translations.actions?.generate_crud,
 			busy: reeman_data.busy,
 			modules: reeman_data.modules,
 			selected_tables,

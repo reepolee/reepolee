@@ -47,7 +47,10 @@
 		"record_restored": "Record restored"
 	},
 	"ui": {
+		"edit_title": "Edit __translation.singular_label_display_cap__",
+		"index_title": "__translation.plural_label_cap__",
 		"loading_count": "Loading…",
+		"new_title": "New __translation.singular_label_display_cap__",
 		"clear_all": "Clear all",
 		"apply_filters": "Apply",
 		"filter_not": "NOT",

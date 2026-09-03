@@ -114,7 +114,7 @@ export async function get_files_index(req: BunRequest): Promise<Response> {
 
 	return render("index", {
 		data: {
-			title: "Files",
+			page_title: ctx.translations.ui?.index_title,
 			records: result.records,
 			query: query || "",
 			limit,
@@ -161,6 +161,7 @@ export async function get_files_new(req: BunRequest): Promise<Response> {
 
 	return render("form", {
 		data: {
+			page_title: ctx.translations.ui?.new_title,
 			title: ctx.translations.ui?.new_file || "New File",
 			record,
 			save_url: "/files/save",
@@ -191,6 +192,7 @@ export async function get_files_edit(req: BunRequest): Promise<Response> {
 
 	return render("form", {
 		data: {
+			page_title: ctx.translations.ui?.edit_title,
 			title: `Edit ${record.original_filename || record.filename || "file"}`,
 			record,
 			action: entity_path(record.id),
@@ -244,6 +246,7 @@ export async function post_files_edit(req: BunRequest): Promise<Response> {
 
 			return render("form", {
 				data: {
+					page_title: ctx.translations.ui?.edit_title,
 					title: `Edit ${existing_record.original_filename || existing_record.filename || "file"}`,
 					record: { ...existing_record, title, description, tags },
 					action: entity_path(id),
@@ -303,6 +306,7 @@ export async function post_files_edit(req: BunRequest): Promise<Response> {
 
 			return render("form", {
 				data: {
+					page_title: ctx.translations.ui?.edit_title,
 					title: `Edit ${existing_record.original_filename || existing_record.filename || "file"}`,
 					record: existing_record,
 					action: entity_path(id),

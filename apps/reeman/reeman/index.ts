@@ -39,7 +39,7 @@ export async function get_reeman_page(req: BunRequest, overrides: PageOverrides 
 	const ctx = await create_ctx(req, import.meta.dir);
 
 	return render("index", {
-		data: { ...data, form_error: overrides.form_error ?? "" },
+		data: { ...data, page_title: ctx.translations.ui?.title, form_error: overrides.form_error ?? "" },
 		ctx,
 		status: overrides.status ?? 200,
 	});

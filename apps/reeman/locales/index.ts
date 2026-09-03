@@ -117,7 +117,7 @@ export async function get_locales_index(req: BunRequest): Promise<Response> {
 
 	return render("index", {
 		data: {
-			title: "Locales",
+			page_title: ctx.translations.ui?.index_title,
 			records: result.records,
 			inactive_supported_locales,
 			available_seed_locales,
@@ -162,7 +162,7 @@ export async function get_locale_detail(req: BunRequest): Promise<Response> {
 
 	return render("detail", {
 		data: {
-			title: record.code,
+			page_title: ctx.translations.ui?.edit_title,
 			record,
 			busy: await is_busy(),
 		},

@@ -85,7 +85,10 @@
 		"user_filters": "User-created filters"
 	},
 	"ui": {
+		"edit_title": "Edit global filter",
+		"index_title": "Global Filters",
 		"no_records": "No global scopes found.",
+		"new_title": "New global filter",
 		"title": "Global Scopes"
 	}
 }

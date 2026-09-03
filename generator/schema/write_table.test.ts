@@ -249,4 +249,28 @@ const form_details = false;
 		expect(updated).not.toContain("helper");
 		expect(updated).toContain('"observed_at":');
 	});
+
+	test("writes the per-column form setting and preserves false", async () => {
+		temp_dir = await mkdtemp(join(tmpdir(), "reepolee-table-form-setting-"));
+		const table_path = join(temp_dir, "table.ts");
+		const source = `const columns: Record<string, { width: string; class: string; localized?: boolean }> = {
+	"name": { width: "auto", class: "" },
+}
+`;
+		await Bun.write(table_path, source);
+
+		await update_table_file_settings(table_path, {
+			grid_column_definitions: [{ name: "name", width: "auto", class_name: "", filter: false, form: false }],
+		});
+
+		let updated = await Bun.file(table_path).text();
+		expect(updated).toContain("localized?: boolean; form?: boolean");
+		expect(updated).toContain('"name": { width: "auto", class: "", form: false }');
+
+		await update_table_file_settings(table_path, {
+			grid_column_definitions: [{ name: "name", width: "auto", class_name: "", filter: false, form: true }],
+		});
+		updated = await Bun.file(table_path).text();
+		expect(updated).toContain('"name": { width: "auto", class: "", form: true }');
+	});
 });

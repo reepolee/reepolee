@@ -204,6 +204,8 @@ export interface GridColumnChoice {
 	readonly: boolean;
 	/** Whether this column receives the current automatic localization default. */
 	localized: boolean;
+	/** Whether this column is included as an input on generated forms. */
+	form: boolean;
 }
 
 function column_class(field: FormFieldDef): string {
@@ -272,6 +274,7 @@ export function list_grid_column_choices(
 		default_helper: default_field_helper(field),
 		readonly: field.attributes?.readonly === true,
 		localized: localize_content && is_localizable_string(field, sets.base_table_field_names, unique_field_names, foreign_key_field_names),
+		form: true,
 	}));
 }
 
@@ -366,12 +369,13 @@ function build_column_lines(
 		const localized = definition?.localized ?? (localize_content && is_localizable_string(f, base_table_field_names, unique_field_names, foreign_key_field_names));
 		const localized_prop = localized ? ", localized: true" : "";
 		const readonly_prop = definition?.readonly ? ", readonly: true" : "";
+		const form_prop = definition?.form !== undefined ? `, form: ${definition.form}` : "";
 
 		const mismatch_comment = domain_mismatch_comment(f, domain, compliant);
 		const prefix = commented ? "  // " : "  ";
 		const width_value = JSON.stringify(width);
 		const class_value = JSON.stringify(cls);
-		return `${prefix}"${f.name}": { width: ${width_value}, class: ${class_value}${domain_prop}${filter_prop}${helper_prop}${grid_prop}${localized_prop}${readonly_prop} },${mismatch_comment}`;
+		return `${prefix}"${f.name}": { width: ${width_value}, class: ${class_value}${domain_prop}${filter_prop}${helper_prop}${grid_prop}${localized_prop}${readonly_prop}${form_prop} },${mismatch_comment}`;
 	}
 
 	const lines: ColumnLine[] = [];
@@ -552,9 +556,10 @@ export const parent = ${JSON.stringify(schema_obj.parent, null, 2)};
 // grid - set to false to hide from index grid while keeping for filtering.
 // localized - set to true to give this column its own value per locale.
 // readonly - set to true to display this column's value on forms without an editor.
+// form - set to false to omit this column from generated form inputs.
 // helper - built-in template helper applied to this column's index-grid cell, e.g.
 // "js_date_to_locale_string" renders the value as {~ js_date_to_locale_string(record.field) }.
-const columns: Record<string, { width: string; class: string; domain?: string; filter?: boolean; helper?: string; grid?: boolean; localized?: boolean; readonly?: boolean }> = ${columns_str}
+const columns: Record<string, { width: string; class: string; domain?: string; filter?: boolean; helper?: string; grid?: boolean; localized?: boolean; readonly?: boolean; form?: boolean }> = ${columns_str}
 
 // Route param for URL paths - change to a different column for URL obscurity.
 ${route_param_export}
@@ -730,6 +735,24 @@ function set_true_flag_on_line(line: string, property: "filter" | "localized" | 
 	return `${trimmed_before_close}, ${property}: true${separator}${suffix}`;
 }
 
+function set_form_flag_on_line(line: string, enabled: boolean): string {
+	const property_pattern = /,\s*form:\s*(?:true|false)/;
+	const without_property = line.replace(property_pattern, "");
+	const insert_index = without_property.lastIndexOf("}");
+	if (insert_index < 0) return line;
+	const before_close = without_property.slice(0, insert_index).trimEnd();
+	return `${before_close}, form: ${enabled} ${without_property.slice(insert_index)}`;
+}
+
+function ensure_form_column_type(source: string): string {
+	if (!source.includes("const columns") || source.includes("form?: boolean")) return source;
+	for (const property of ["readonly?: boolean", "localized?: boolean", "grid?: boolean", "filter?: boolean"]) {
+		if (!source.includes(property)) continue;
+		return source.replace(property, `${property}; form?: boolean`);
+	}
+	return source;
+}
+
 /**
  * Set or clear the optional `helper` property on one column line. An empty
  * value removes any existing `, helper: "..."` clause; a non-empty value
@@ -781,6 +804,7 @@ function apply_grid_settings(source: string, settings: TableFileSettings): { sou
 		if (definition.helper !== undefined) updated = set_helper_property_on_line(updated, definition.helper);
 		if (definition.localized !== undefined) updated = set_true_flag_on_line(updated, "localized", definition.localized);
 		if (definition.readonly !== undefined) updated = set_true_flag_on_line(updated, "readonly", definition.readonly);
+		if (definition.form !== undefined) updated = set_form_flag_on_line(updated, definition.form);
 		if (selected) updated = set_grid_flag_on_line(updated, !selected.has(definition.name));
 		if (updated === match[0]) continue;
 		working_source = working_source.replace(match[0]!, updated);
@@ -812,19 +836,29 @@ function apply_table_file_settings(source: string, settings: TableFileSettings):
 
 export async function update_table_file_settings(table_ts_path: string, settings: TableFileSettings): Promise<void> {
 	const source = await Bun.file(table_ts_path).text();
-	const result = apply_table_file_settings(source, settings);
+	const typed_source = settings.grid_column_definitions?.some((definition) => definition.form !== undefined)
+		? ensure_form_column_type(source)
+		: source;
+	const result = apply_table_file_settings(typed_source, settings);
 	if (result.source !== source) await Bun.write(table_ts_path, result.source);
 }
 
 /**
  * Append `columns` entries for DB columns that appeared since config.ts was
  * scaffolded. Explicit settings from the index-column editor update width,
- * class, filter and visibility on existing entries while leaving domain,
- * localized and comments untouched.
+ * class, filter, visibility and form inclusion on existing entries while
+ * leaving domain, localized and comments untouched.
  */
 async function merge_columns_into_table_file(table_ts_path: string, config: WriteTableConfig, navigation: NavigationConfig): Promise<void> {
 	const { schema_obj, type_mapper, all_tables_columns, all_tables_indexes, grid_columns, grid_column_definitions, localize_content: localize_content_override } = config;
 	let source = await Bun.file(table_ts_path).text();
+	const typed_source = grid_column_definitions?.some((definition) => definition.form !== undefined)
+		? ensure_form_column_type(source)
+		: source;
+	if (typed_source !== source) {
+		await Bun.write(table_ts_path, typed_source);
+		source = typed_source;
+	}
 	const navigation_source = inject_navigation_declaration(source, navigation);
 	if (navigation_source !== source) {
 		await Bun.write(table_ts_path, navigation_source);

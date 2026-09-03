@@ -44,6 +44,7 @@ export async function get_environment_index(req: BunRequest): Promise<Response> 
 
 	return render("index", {
 		data: {
+			page_title: ctx.translations.ui?.index_title,
 			records: result.items,
 			query: pagination.query,
 			limit: pagination.limit,
@@ -67,7 +68,7 @@ export async function get_environment_edit(req: BunRequest): Promise<Response> {
 	if (!record) return render("notfound", { data: { title: "404 Not Found" }, status: 404, ctx });
 
 	return render("form", {
-		data: { record, form_error: "" },
+		data: { page_title: ctx.translations.ui?.edit_title, record, form_error: "" },
 		ctx,
 		debug_redact_keys: ["record"],
 	});

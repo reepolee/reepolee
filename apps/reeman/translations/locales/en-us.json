@@ -32,6 +32,7 @@
 		"per_page": "per page"
 	},
 	"ui": {
+		"edit_title": "Edit translation",
 		"bulk_delete_warning": "This will permanently delete",
 		"bulk_delete_warning_suffix": "key group(s) - including every nested key and every language.",
 		"filter_label": "Filter by namespace",

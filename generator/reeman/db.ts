@@ -124,7 +124,7 @@ export async function get_child_tables(parent_table: string): Promise<{ table: s
 // write_table_file() will later decide about.
 // ---------------------------------------------------------------------------
 
-export async function get_grid_column_choices(table_name: string): Promise<{ name: string; default_selected: boolean; width: string; class_name: string; filter: boolean; helper: string; readonly: boolean; localized: boolean; }[]> {
+export async function get_grid_column_choices(table_name: string): Promise<{ name: string; default_selected: boolean; width: string; class_name: string; filter: boolean; helper: string; readonly: boolean; localized: boolean; form: boolean; }[]> {
 	try {
 		const { db_type } = await import("$lib/resolve_db_type");
 		const { load_ddl_cache, ddl_cache_to_schema_objects } = await import("../ddl_cache");
@@ -153,13 +153,16 @@ export async function get_grid_column_choices(table_name: string): Promise<{ nam
 		const table_column_map = build_table_column_map(all_schemas);
 		const choices = list_grid_column_choices(schema_obj, type_mapper, table_column_map, all_indexes);
 
-		// Pre-check the checkbox from the existing config.ts columns map (a saved
-		// readonly flag), not just column-comment attributes. Best-effort: no
+		// Pre-check the checkboxes from the existing config.ts columns map (saved
+		// readonly/form flags), not just column-comment attributes. Best-effort: no
 		// generated route yet means no saved state, so attribute defaults stand.
 		const existing_readonly = await existing_readonly_columns(table_name);
+		const existing_form = await existing_form_columns(table_name);
 		for (const choice of choices) {
-			const saved = existing_readonly.get(choice.name);
-			if (saved !== undefined) choice.readonly = saved;
+			const saved_readonly = existing_readonly.get(choice.name);
+			if (saved_readonly !== undefined) choice.readonly = saved_readonly;
+			const saved_form = existing_form.get(choice.name);
+			if (saved_form !== undefined) choice.form = saved_form;
 		}
 		return choices;
 	} catch (err) {
@@ -186,6 +189,26 @@ async function existing_readonly_columns(table_name: string): Promise<Map<string
 		// No schema module yet - defaults stand.
 	}
 	return readonly;
+}
+
+/** Which of the table's columns carry an explicit `form` flag in config.ts. */
+async function existing_form_columns(table_name: string): Promise<Map<string, boolean>> {
+	const form = new Map<string, boolean>();
+	try {
+		const { discover_routes_with_schema } = await import("./utils/route_scan");
+		const { load_table_module_fresh } = await import("../schema/table_module_loader");
+		const route = discover_routes_with_schema().find((r) => r.table === table_name);
+		if (!route) return form;
+		const dir_name = route.route_name ?? route.table;
+		const parts = [MAIN_APP, ...(route.prefix ? [route.prefix] : []), dir_name, "config.ts"];
+		const module = await load_table_module_fresh<{ columns?: Record<string, { form?: unknown; }> }>(join(...parts));
+		for (const [name, column] of Object.entries(module.columns ?? {})) {
+			if (typeof column?.form === "boolean") form.set(name, column.form);
+		}
+	} catch {
+		// No schema module yet - defaults stand.
+	}
+	return form;
 }
 
 // ---------------------------------------------------------------------------

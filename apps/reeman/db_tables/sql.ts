@@ -13,8 +13,15 @@ export interface Options {
 	option_text: string;
 }
 
-async function records(): Promise<Record[]> {
-	return refresh_db_tables();
+export type DbTablesListFilter = "non_system" | "all";
+
+/** The Tables page defaults to application tables and can opt into system tables. */
+export function resolve_db_tables_list_filter(value: string): DbTablesListFilter {
+	return value === "all" ? "all" : "non_system";
+}
+
+async function records(include_system_tables = false): Promise<Record[]> {
+	return refresh_db_tables(include_system_tables);
 }
 
 export async function get_all_records(): Promise<Record[]> {
@@ -34,10 +41,10 @@ export async function get_record_by_id(id: number): Promise<Record | undefined> 
 	catch (error) { console.error("Error fetching record by id:", error); return undefined; }
 }
 
-export async function search_records(search = "", offset = 0, limit = 20, order_by = "id::asc", _scope_clause = "", _filter_clauses: { clause: string; params: any[] }[] = []): Promise<{ records: Record[]; total: number; }> {
+export async function search_records(search = "", offset = 0, limit = 20, order_by = "id::asc", _scope_clause = "", filter_clauses: { clause: string; params: any[] }[] = [], include_system_tables = false): Promise<{ records: Record[]; total: number; }> {
 	try {
 		return await timed_query(TABLE_NAME, "search_records", async () => {
-			return search_metadata(await records(), search, offset, limit, order_by, ["name", "display"], _filter_clauses);
+			return search_metadata(await records(include_system_tables), search, offset, limit, order_by, ["name", "display"], filter_clauses);
 		});
 	} catch (error) { console.error("Error searching records:", error); return { records: [], total: 0 }; }
 }

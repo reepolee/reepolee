@@ -1,6 +1,6 @@
 import { join } from "node:path";
 
-import { entry_fields, is_boolean_field } from "../validation_generator";
+import { configured_form_fields, is_boolean_field } from "../validation_generator";
 import { capitalize_first } from "../naming";
 import { get_autocomplete_fk_tables, has_archive_column, unique_fk_tables, user_fields } from "./helpers";
 import { apply_template } from "./template_substitutor";
@@ -12,7 +12,7 @@ import type { FieldDef, ForeignKeyMap, ParentInfo } from "./types";
 // Tags fields helpers
 // ---------------------------------------------------------------------------
 
-function generate_tags_fields(fields: FieldDef[]): FieldDef[] { return entry_fields(fields, false).filter((f) => f.type === "tags" && f.attributes?.tags?.table); }
+function generate_tags_fields(fields: FieldDef[], columns: Record<string, { form?: boolean; }> | null): FieldDef[] { return configured_form_fields(fields, columns).filter((f) => f.type === "tags" && f.attributes?.tags?.table); }
 
 function generate_tags_loader(tags_fields: FieldDef[]): string {
 	if (tags_fields.length === 0) return "";
@@ -33,22 +33,25 @@ function load_tags_imports(tags_fields: FieldDef[]): string {
 // index.ts controller generator helpers
 // ---------------------------------------------------------------------------
 
-function generate_form_params(fields: FieldDef[]): string { return entry_fields(fields, false).map((f) => `\t\t${f.name}: params.get(\`${f.name}\`)?.trim() || "",`).join("\n"); }
-function generate_original_form_params(fields: FieldDef[]): string { return entry_fields(fields, false).map((f) => `\t\t${f.name}: params.get(\`_original_${f.name}\`)?.trim() || "",`).join("\n"); }
+function generate_form_params(fields: FieldDef[], columns: Record<string, { form?: boolean; }> | null): string { return configured_form_fields(fields, columns).map((f) => `\t\t${f.name}: params.get(\`${f.name}\`)?.trim() || "",`).join("\n"); }
+function generate_original_form_params(fields: FieldDef[], columns: Record<string, { form?: boolean; }> | null): string { return configured_form_fields(fields, columns).map((f) => `\t\t${f.name}: params.get(\`_original_${f.name}\`)?.trim() || "",`).join("\n"); }
 function generate_readonly_record_values(readonly_fields: ReadonlySet<string>): string {
 	if (readonly_fields.size === 0) return "";
 	return `\n\tObject.assign(data, {\n${[...readonly_fields].map((field_name) => `\t\t${field_name}: String(current_record.${field_name} ?? ""),`).join("\n")}\n\t});`;
 }
 
-function generate_validate_params(fields: FieldDef[]): string { return entry_fields(fields, false).map((f) => `\t\t${f.name}: body.${f.name} || "",`).join("\n"); }
+function generate_validate_params(fields: FieldDef[], columns: Record<string, { form?: boolean; }> | null): string { return configured_form_fields(fields, columns).map((f) => `\t\t${f.name}: body.${f.name} || "",`).join("\n"); }
 
-function generate_empty_record(fields: FieldDef[]): string {
-	const props = entry_fields(fields, false).map((f) => is_boolean_field(f.name) ? `${f.name}: -1` : `${f.name}: ''`);
+function generate_empty_record(fields: FieldDef[], columns: Record<string, { form?: boolean; }> | null): string {
+	const props = configured_form_fields(fields, columns).map((f) => is_boolean_field(f.name) ? `${f.name}: -1` : `${f.name}: ''`);
 	return `{ ${props.join(", ")} }`;
 }
 
-function generate_empty_errors(fields: FieldDef[]): string {
-	const props = user_fields(fields).map((f) => `${f.name}: ''`);
+function generate_empty_errors(fields: FieldDef[], columns: Record<string, { form?: boolean; }> | null): string {
+	const form_field_names = new Set(configured_form_fields(fields, columns).map((field) => field.name));
+	const editable_fields = user_fields(fields);
+	const form_fields = editable_fields.filter((field) => form_field_names.has(field.name));
+	const props = form_fields.map((f) => `${f.name}: ''`);
 	return `{ ${props.join(", ")} }`;
 }
 
@@ -167,6 +170,8 @@ export interface GenerateIndexConfig {
 	localized_fields?: LocalizedFieldMeta[];
 	/** Fields displayed on edit forms but never accepted from the request. */
 	readonly_fields?: ReadonlySet<string>;
+	/** Per-column form settings from config.ts; absent form means included. */
+	form_columns?: Record<string, { form?: boolean; }> | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -174,7 +179,7 @@ export interface GenerateIndexConfig {
 // ---------------------------------------------------------------------------
 
 export async function generate_index_ts(config: GenerateIndexConfig): Promise<string> {
-	const { table_name, fields, column_names = [], view_column_names = [], sort_options, view_name, has_view, first_field, foreign_keys, columns = null, route_prefix = "", crud_name = "", route_param_value = "id", is_nested = false, parent_info = null, pagination_strategy = "cursor", render_strategy = "load", route_name = "", is_auto_increment_pk = true, localization_enabled = false, localized_fields = [], readonly_fields = new Set<string>() } = config;
+	const { table_name, fields, column_names = [], view_column_names = [], sort_options, view_name, has_view, first_field, foreign_keys, columns = null, route_prefix = "", crud_name = "", route_param_value = "id", is_nested = false, parent_info = null, pagination_strategy = "cursor", render_strategy = "load", route_name = "", is_auto_increment_pk = true, localization_enabled = false, localized_fields = [], readonly_fields = new Set<string>(), form_columns = columns } = config;
 	const parts_dir = join(process.cwd(), "generator", "templates", "index");
 	const tmpl = select_templates({ pagination_strategy, render_strategy, is_nested, has_view });
 
@@ -270,7 +275,7 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 
 	const effective_route_name = route_name || table_name;
 	const table_crud_name = crud_name || `${effective_route_name}_crud`;
-	const tags_fields = generate_tags_fields(fields);
+	const tags_fields = generate_tags_fields(fields, form_columns);
 
 	// Conditional imports - build only what's needed per route type
 	const conditional_helpers = is_nested ? "" : "import { create_toast_cookie } from \"$lib/cookies\";\n";
@@ -332,7 +337,7 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => colum
 	// New forms have no database row to load, but still need the localization
 	// metadata that makes localized editors render their labels and locale tabs.
 	const new_localization_data = localized
-		? `localization: build_localization_props({ fields: LOCALIZED_FIELDS, record: ${generate_empty_record(fields)}, copy_action: ""${preferred_locale_arg} }),`
+		? `localization: build_localization_props({ fields: LOCALIZED_FIELDS, record: ${generate_empty_record(fields, form_columns)}, copy_action: ""${preferred_locale_arg} }),`
 		: "";
 	const new_post_localization_data = localized
 		? `localization: build_localization_props({ fields: LOCALIZED_FIELDS, record: data, copy_action: ""${preferred_locale_arg} }),`
@@ -420,14 +425,14 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => colum
 			"import.view": view_import,
 			"view.name": view_name,
 			"field.first": first_field,
-			"create.params": generate_form_params(fields),
-			"update.params": generate_form_params(fields),
-			"update.original_params": generate_original_form_params(fields),
+			"create.params": generate_form_params(fields, form_columns),
+			"update.params": generate_form_params(fields, form_columns),
+			"update.original_params": generate_original_form_params(fields, form_columns),
 			"update.readonly_values": generate_readonly_record_values(readonly_fields),
-			"validate.params": generate_validate_params(fields),
+			"validate.params": generate_validate_params(fields, form_columns),
 			"validate.localized": validate_localized_touched,
-			"empty.record": generate_empty_record(fields),
-			"empty.errors": generate_empty_errors(fields),
+			"empty.record": generate_empty_record(fields, form_columns),
+			"empty.errors": generate_empty_errors(fields, form_columns),
 			"new.get_foreign_key_options": generate_select_fields_loader(foreign_keys),
 			"new.foreign_key_options": generate_select_options(foreign_keys),
 			"edit.get_foreign_key_options": generate_select_fields_loader(foreign_keys),

@@ -55,7 +55,7 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 
 			return render("form", {
 				data: {
-					title: `Edit ${existing_record.__field.first__}`,
+					page_title: ctx.translations.ui?.edit_title,
 					record: existing_record,
 					form_errors: error_message,
 					errors: {},
@@ -106,7 +106,7 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 		// GEN:CHILD:FETCH:END
 		return render("form", {
 			data:{
-				title: `Edit ${existing_record.__field.first__}`,
+				page_title: ctx.translations.ui?.edit_title,
 				record: { ...existing_record, ...data },
 				errors,
 				form_errors: null,

@@ -13,6 +13,7 @@ export async function get_refresh_page(req: BunRequest, overrides: PageOverrides
 
 	return render("index", {
 		data: {
+			page_title: ctx.translations.ui?.refresh_title,
 			locales_info: data.locales_info,
 			busy: data.busy,
 			form_error: overrides.form_error ?? "",

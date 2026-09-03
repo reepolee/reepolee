@@ -45,6 +45,7 @@ async function get_system_queues(req: BunRequest): Promise<Response> {
 	if (!queue_available()) {
 		return render("index", {
 			data: {
+				page_title: ctx.translations.ui?.title,
 				error: ctx.translations.ui.redis_unavailable,
 				queues: [],
 				failed: [],
@@ -74,6 +75,7 @@ async function get_system_queues(req: BunRequest): Promise<Response> {
 
 		return render("index", {
 			data: {
+				page_title: ctx.translations.ui?.title,
 				...dashboard,
 				worker_state_label,
 				queue_columns,
@@ -88,6 +90,7 @@ async function get_system_queues(req: BunRequest): Promise<Response> {
 		console.error("[system/queues] Error loading dashboard:", error_message);
 		return render("index", {
 			data: {
+				page_title: ctx.translations.ui?.title,
 				error: `${ctx.translations.ui.error_loading}: ${error_message}`,
 				queues: [],
 				failed: [],

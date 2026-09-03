@@ -51,6 +51,7 @@ export async function get_translations_edit(req: BunRequest): Promise<Response> 
 
 	return render("form", {
 		data: {
+			page_title: ctx.translations.ui?.edit_title,
 			breadcrumb_items,
 			namespace,
 			parent_path: parent,

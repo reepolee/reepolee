@@ -4,7 +4,7 @@
 	<div class="p-4" data-updates-route="__route_prefix__/__table.exact__">
 
 		<div class="flex items-center justify-between">
-			<h1 class="mb-4">{_ ui.title }</h1>
+			<h1 class="mb-4">{#if record.id}{_ ui.edit_title }{:else}{_ ui.new_title }{/if}</h1>
 			<div class="text-sm">
 				<!-- ws "updated record" bullet - filled by updates-client.js, just in front of the timestamps -->
 				<span class="updates-marker-cell" data-record-id="{= record.id }"></span>

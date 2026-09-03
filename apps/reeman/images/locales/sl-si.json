@@ -51,7 +51,10 @@
 		"all": "Vse"
 	},
 	"ui": {
+		"edit_title": "Uredi sliko",
+		"index_title": "Slike",
 		"no_records": "Ni najdenih slik.",
+		"new_title": "Nova slika",
 		"title": "Slike"
 	},
 	"v_labels": {

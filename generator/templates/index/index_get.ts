@@ -90,7 +90,7 @@ export async function get___table.exact___index(req: BunRequest): Promise<Respon
 
 	return render("index", {
 		data:{
-			title: "__table.title__",
+			page_title: ctx.translations.ui?.index_title,
 			records,
 			query: query || "",
 			limit,

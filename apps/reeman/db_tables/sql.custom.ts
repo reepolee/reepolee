@@ -64,7 +64,7 @@ export async function get_table_sample_records(table_name: string, eligible_colu
 }
 
 /** Discover the current database tables without persisting a metadata snapshot. */
-export async function refresh_db_tables(): Promise<DbTableSnapshot[]> {
+export async function refresh_db_tables(include_system_tables = false): Promise<DbTableSnapshot[]> {
 	const [{ discover_existing_crud_tables }, cache] = await Promise.all([
 		import("$generator/reeman/utils/route_scan"),
 		load_ddl_cache({ force_refresh: true }),
@@ -75,7 +75,7 @@ export async function refresh_db_tables(): Promise<DbTableSnapshot[]> {
 	const locale_clones = locale_clone_table_names(cache.tables.map((t) => t.name), locales, default_locale);
 	const ignored_tables = new Set<string>(IGNORE_TABLES);
 	const rows = cache.tables
-		.filter((t) => !locale_clones.has(t.name) && !ignored_tables.has(t.name))
+		.filter((t) => !locale_clones.has(t.name) && (include_system_tables || !ignored_tables.has(t.name)))
 		.map((t) => {
 			const fk_columns = new Set([
 				...t.foreign_keys.map((fk) => fk.column_name),

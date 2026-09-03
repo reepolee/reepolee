@@ -1,6 +1,6 @@
 import { join } from "node:path";
 
-import { entry_fields } from "../validation_generator";
+import { configured_form_fields, entry_fields } from "../validation_generator";
 import { has_archive_column } from "./helpers";
 import { apply_template } from "./template_substitutor";
 import type { FieldDef, ForeignKeyMap, LocalizedFieldMeta, ParentInfo } from "./types";
@@ -192,6 +192,8 @@ export interface FormReeOptions {
 	form_details?: boolean;
 	/** Fields whose value is displayed on the form without an editor. */
 	readonly_fields?: ReadonlySet<string>;
+	/** Per-column form settings from config.ts; absent form means included. */
+	form_columns?: Record<string, { form?: boolean; }> | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -241,10 +243,10 @@ function archive_form_restore_ui(has_archive: boolean, route_prefix: string, rou
 export async function generate_form_ree(options: FormReeOptions): Promise<string> {
 	const { table_name, fields, column_names = [], foreign_keys, route_prefix = "", route_param_value = "id", is_nested = false, parent_info = null, route_name = "", localization_enabled = false, localized_fields = [], template_tags = "flat", form_hints = false, form_details = false } = options;
 	// For nested CRUD, exclude parent FK from visible form fields, but include it as hidden
-	let filtered = entry_fields(fields, false);
+	let filtered = configured_form_fields(fields, options.form_columns);
 	let parent_fk_field: FieldDef | null = null;
 	if (is_nested && parent_info) {
-		parent_fk_field = filtered.find((f) => f.name === parent_info.fk_column) || null;
+		parent_fk_field = entry_fields(fields, false).find((f) => f.name === parent_info.fk_column) || null;
 		filtered = filtered.filter((f) => f.name !== parent_info.fk_column);
 	}
 	// Re-add parent FK field to the end so generate_input_field renders it as hidden input

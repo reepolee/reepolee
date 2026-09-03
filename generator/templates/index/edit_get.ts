@@ -25,7 +25,7 @@ export async function get___table.exact___edit(req: BunRequest): Promise<Respons
 	const bp = base_path();
 	return render("form", {
 		data:{
-			title: `Edit ${record.__field.first__}`,
+			page_title: ctx.translations.ui?.edit_title,
 			record,
 			__edit.localization_data__
 			back_route: `${bp}?there_should_be_back_params`,

@@ -61,7 +61,7 @@ export async function get_users_new(req: BunRequest): Promise<Response> {
 
 	return render("form", {
 		data: {
-			title: "New record",
+			page_title: ctx.translations.ui?.new_title,
 			record: empty_strings(USER_FIELDS),
 			errors: empty_strings(USER_FIELDS),
 			action: base_path(),
@@ -89,7 +89,7 @@ export async function get_users_edit(req: BunRequest): Promise<Response> {
 
 	return render("form", {
 		data: {
-			title: `Edit ${record.email}`,
+			page_title: ctx.translations.ui?.edit_title,
 			record,
 			back_route: `${bp}?there_should_be_back_params`,
 			errors: empty_strings(USER_FIELDS),
@@ -161,7 +161,7 @@ export async function post_users_edit(req: BunRequest): Promise<Response> {
 			const error_message = error instanceof Error && error.message.includes("foreign key") ? "Cannot archive this record because it's referenced by other records." : "Error archiving record.";
 			return render("form", {
 				data: {
-					title: `Edit ${existing_record.name}`,
+					page_title: ctx.translations.ui?.edit_title,
 					record: existing_record,
 					form_errors: error_message,
 					errors: {},
@@ -190,7 +190,7 @@ export async function post_users_edit(req: BunRequest): Promise<Response> {
 	if (Object.keys(errors).length > 0 || !valid_data) {
 		return render("form", {
 			data: {
-				title: `Edit ${existing_record.email}`,
+				page_title: ctx.translations.ui?.edit_title,
 				record: { ...existing_record, ...data },
 				errors,
 				action: entity_path(id),

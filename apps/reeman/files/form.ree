@@ -3,7 +3,7 @@
 
 	<div class="p-4 max-w-[120ch] mx-auto">
 		<div class="flex items-center justify-between mb-6">
-			<h1>{= title}</h1>
+			<h1>{#if edit_mode}{_ ui.edit_title}: {= title}{:else}{_ ui.new_title}{/if}</h1>
 			<div class="text-sm text-gray-500">
 				{#if record.created_at}
 					{~ js_datetime_to_locale_string(record.created_at)}

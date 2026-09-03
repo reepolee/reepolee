@@ -7,7 +7,7 @@ export async function get___table.exact___new(req: BunRequest): Promise<Response
 
 	return render("form", {
 		data:{
-			title: "New record",
+			page_title: ctx.translations.ui?.new_title,
 			record: __empty.record__,
 			errors: __empty.errors__,
 			action: base_path(),

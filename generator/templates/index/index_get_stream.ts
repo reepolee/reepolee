@@ -65,7 +65,7 @@ export async function get___table.exact___index(req: BunRequest): Promise<Respon
 	// Render shell via render_to_string (handles all context merging automatically)
 	const shell_html = await render_to_string("index", {
 		data: {
-			title: "__table.title__",
+			page_title: ctx.translations.ui?.index_title,
 			records: [],
 			query: query || "",
 			limit,

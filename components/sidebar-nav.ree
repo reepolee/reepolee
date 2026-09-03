@@ -9,47 +9,51 @@
 			{{ const group_is_manual = props.manual_nav_modules.includes(group.label); }}
 			{#if !group.label || user_has_module(props.user, group.label)}
 				{#if group.label}
-					<details class="group mb-8" data-nav-module="{= group.label }" data-nav-manual="{= group_is_manual }" {#if group_is_manual ? !props.collapsed_nav_modules.includes(group.label) : group_has_current_entry }open{/if}>
-						<summary class="flex cursor-pointer items-center pl-4 pr-0 text-xs font-semibold uppercase tracking-wider text-brand marker:content-none">
-							<span class="mr-2 transition-transform group-open:rotate-90">❯</span>
-							{= props.translations.nav_prefix_title?.[group.label]}
-							<button type="button" class="ml-auto grid size-7 place-items-center cursor-pointer rounded text-neutral-500 hover:bg-neutral-300 hover:text-neutral-900" data-nav-mode-toggle data-nav-module="{= group.label }" data-auto-label="{= props.translations.ui.nav_group_auto}" data-manual-label="{= props.translations.ui.nav_group_manual}" aria-label="{#if group_is_manual}{= props.translations.ui.nav_group_manual}{:else}{= props.translations.ui.nav_group_auto}{/if}" title="{#if group_is_manual}{= props.translations.ui.nav_group_manual}{:else}{= props.translations.ui.nav_group_auto}{/if}" aria-pressed="{= group_is_manual }"><span data-nav-auto-icon {#if group_is_manual}hidden{/if}><ree-icon name="pin_off" class="size-4"></ree-icon></span><span data-nav-manual-icon {#if !group_is_manual}hidden{/if}><ree-icon name="push_pin" class="size-4"></ree-icon></span></button>
-						</summary>
-						<div class="mt-2 flex flex-col">
-							{#each group.items as entry}
-								{#if user_has_module(props.user, entry.required_module)}
-									<a href="{~ localized_path(entry.url) }" class="{= is_current(localized_path(entry.url)) } pl-6 hover:bg-neutral-100">{= nav_label(entry.nav_title_key)}</a>
-									{#if entry.nav_rule_after}
-										<hr class="mx-4 my-4 border-neutral-300" />
+					<div class="relative mb-8 w-full">
+						<details class="group w-full" data-nav-module="{= group.label }" data-nav-manual="{= group_is_manual }" {#if group_is_manual ? !props.collapsed_nav_modules.includes(group.label) : group_has_current_entry }open{/if}>
+							<summary class="flex min-h-7 cursor-pointer items-center pl-4 pr-8 text-xs font-semibold uppercase tracking-wider text-brand marker:content-none">
+								<span class="mr-2 transition-transform group-open:rotate-90">❯</span>
+								{= props.translations.nav_prefix_title?.[group.label]}
+							</summary>
+							<div class="mt-2 flex flex-col">
+								{#each group.items as entry}
+									{#if user_has_module(props.user, entry.required_module)}
+										<a href="{~ localized_path(entry.url) }" class="{= is_current(localized_path(entry.url)) } pl-6 hover:bg-neutral-100">{= nav_label(entry.nav_title_key)}</a>
+										{#if entry.nav_rule_after}
+											<hr class="mx-4 my-4 border-neutral-300" />
+										{/if}
 									{/if}
-								{/if}
-							{/each}
-							{#each group.sections as section}
-								{{ const section_id = `${group.label || "root"}:${section.key}`; }}
-								{{ const section_has_current_entry = section.items.some((entry) => is_current(localized_path(entry.url)).includes("current")); }}
-								{{ const section_is_manual = props.manual_nav_sections.includes(section_id); }}
-								{#if section.items.some((entry) => user_has_module(props.user, entry.required_module))}
-									<details class="group mt-3" data-nav-section="{= section_id }" data-nav-manual="{= section_is_manual }" {#if section_is_manual ? !props.collapsed_nav_sections.includes(section_id) : section_has_current_entry }open{/if}>
-										<summary class="flex cursor-pointer items-center pl-4 pr-0 text-xs font-semibold uppercase tracking-wider text-brand marker:content-none">
-											<span class="mr-2 transition-transform group-open:rotate-90">❯</span>
-											{= nav_label(section.title_key)}
-											<button type="button" class="ml-auto grid size-7 place-items-center cursor-pointer rounded text-neutral-500 hover:bg-neutral-300 hover:text-neutral-900" data-nav-section-mode-toggle data-nav-section="{= section_id }" data-auto-label="{= props.translations.ui.nav_group_auto}" data-manual-label="{= props.translations.ui.nav_group_manual}" aria-label="{#if section_is_manual}{= props.translations.ui.nav_group_manual}{:else}{= props.translations.ui.nav_group_auto}{/if}" title="{#if section_is_manual}{= props.translations.ui.nav_group_manual}{:else}{= props.translations.ui.nav_group_auto}{/if}" aria-pressed="{= section_is_manual }"><span data-nav-auto-icon {#if section_is_manual}hidden{/if}><ree-icon name="pin_off" class="size-4"></ree-icon></span><span data-nav-manual-icon {#if !section_is_manual}hidden{/if}><ree-icon name="push_pin" class="size-4"></ree-icon></span></button>
-										</summary>
-										<div class="mt-2 flex flex-col">
-											{#each section.items as entry}
-												{#if user_has_module(props.user, entry.required_module)}
-													<a href="{~ localized_path(entry.url) }" class="{= is_current(localized_path(entry.url)) } pl-8 hover:bg-neutral-100">{= nav_label(entry.nav_title_key)}</a>
-													{#if entry.nav_rule_after}
-														<hr class="mx-4 my-4 border-neutral-300" />
-													{/if}
-												{/if}
-											{/each}
+								{/each}
+								{#each group.sections as section}
+									{{ const section_id = `${group.label || "root"}:${section.key}`; }}
+									{{ const section_has_current_entry = section.items.some((entry) => is_current(localized_path(entry.url)).includes("current")); }}
+									{{ const section_is_manual = props.manual_nav_sections.includes(section_id); }}
+									{#if section.items.some((entry) => user_has_module(props.user, entry.required_module))}
+										<div class="relative mt-3 w-full">
+											<details class="group w-full" data-nav-section="{= section_id }" data-nav-manual="{= section_is_manual }" {#if section_is_manual ? !props.collapsed_nav_sections.includes(section_id) : section_has_current_entry }open{/if}>
+												<summary class="flex min-h-7 cursor-pointer items-center pl-6 pr-8 text-xs font-semibold uppercase tracking-wider text-brand marker:content-none">
+													<span class="mr-2 transition-transform group-open:rotate-90">❯</span>
+													{= nav_label(section.title_key)}
+												</summary>
+												<div class="mt-2 flex flex-col">
+													{#each section.items as entry}
+														{#if user_has_module(props.user, entry.required_module)}
+															<a href="{~ localized_path(entry.url) }" class="{= is_current(localized_path(entry.url)) } pl-8 hover:bg-neutral-100">{= nav_label(entry.nav_title_key)}</a>
+															{#if entry.nav_rule_after}
+																<hr class="mx-4 my-4 border-neutral-300" />
+															{/if}
+														{/if}
+													{/each}
+												</div>
+											</details>
+											<button type="button" class="absolute right-0 top-0 grid size-7 place-items-center cursor-pointer rounded text-neutral-500 hover:bg-neutral-300 hover:text-neutral-900" data-nav-section-mode-toggle data-nav-section="{= section_id }" data-auto-label="{= props.translations.ui.nav_group_auto}" data-manual-label="{= props.translations.ui.nav_group_manual}" aria-label="{#if section_is_manual}{= props.translations.ui.nav_group_manual}{:else}{= props.translations.ui.nav_group_auto}{/if}" title="{#if section_is_manual}{= props.translations.ui.nav_group_manual}{:else}{= props.translations.ui.nav_group_auto}{/if}" aria-pressed="{= section_is_manual }"><span data-nav-auto-icon {#if section_is_manual}hidden{/if}><ree-icon name="pin_off" class="size-4"></ree-icon></span><span data-nav-manual-icon {#if !section_is_manual}hidden{/if}><ree-icon name="push_pin" class="size-4"></ree-icon></span></button>
 										</div>
-									</details>
-								{/if}
-							{/each}
-						</div>
-					</details>
+									{/if}
+								{/each}
+							</div>
+						</details>
+						<button type="button" class="absolute right-0 top-0 grid size-7 place-items-center cursor-pointer rounded text-neutral-500 hover:bg-neutral-300 hover:text-neutral-900" data-nav-mode-toggle data-nav-module="{= group.label }" data-auto-label="{= props.translations.ui.nav_group_auto}" data-manual-label="{= props.translations.ui.nav_group_manual}" aria-label="{#if group_is_manual}{= props.translations.ui.nav_group_manual}{:else}{= props.translations.ui.nav_group_auto}{/if}" title="{#if group_is_manual}{= props.translations.ui.nav_group_manual}{:else}{= props.translations.ui.nav_group_auto}{/if}" aria-pressed="{= group_is_manual }"><span data-nav-auto-icon {#if group_is_manual}hidden{/if}><ree-icon name="pin_off" class="size-4"></ree-icon></span><span data-nav-manual-icon {#if !group_is_manual}hidden{/if}><ree-icon name="push_pin" class="size-4"></ree-icon></span></button>
+					</div>
 				{:else}
 					{#each group.items as entry}
 						{#if user_has_module(props.user, entry.required_module)}
@@ -64,23 +68,25 @@
 						{{ const section_has_current_entry = section.items.some((entry) => is_current(localized_path(entry.url)).includes("current")); }}
 						{{ const section_is_manual = props.manual_nav_sections.includes(section_id); }}
 						{#if section.items.some((entry) => user_has_module(props.user, entry.required_module))}
-							<details class="group mt-3" data-nav-section="{= section_id }" data-nav-manual="{= section_is_manual }" {#if section_is_manual ? !props.collapsed_nav_sections.includes(section_id) : section_has_current_entry }open{/if}>
-								<summary class="flex cursor-pointer items-center pl-4 pr-0 text-xs font-semibold uppercase tracking-wider text-brand marker:content-none">
-									<span class="mr-2 transition-transform group-open:rotate-90">❯</span>
-									{= nav_label(section.title_key)}
-									<button type="button" class="ml-auto grid size-7 place-items-center cursor-pointer rounded text-neutral-500 hover:bg-neutral-300 hover:text-neutral-900" data-nav-section-mode-toggle data-nav-section="{= section_id }" data-auto-label="{= props.translations.ui.nav_group_auto}" data-manual-label="{= props.translations.ui.nav_group_manual}" aria-label="{#if section_is_manual}{= props.translations.ui.nav_group_manual}{:else}{= props.translations.ui.nav_group_auto}{/if}" title="{#if section_is_manual}{= props.translations.ui.nav_group_manual}{:else}{= props.translations.ui.nav_group_auto}{/if}" aria-pressed="{= section_is_manual }"><span data-nav-auto-icon {#if section_is_manual}hidden{/if}><ree-icon name="pin_off" class="size-4"></ree-icon></span><span data-nav-manual-icon {#if !section_is_manual}hidden{/if}><ree-icon name="push_pin" class="size-4"></ree-icon></span></button>
-								</summary>
-								<div class="mt-2 flex flex-col">
-									{#each section.items as entry}
-										{#if user_has_module(props.user, entry.required_module)}
-											<a href="{~ localized_path(entry.url) }" class="{= is_current(localized_path(entry.url)) } pl-8 hover:bg-neutral-100">{= nav_label(entry.nav_title_key)}</a>
-											{#if entry.nav_rule_after}
-												<hr class="mx-4 my-4 border-neutral-300" />
+							<div class="relative mt-3 w-full">
+								<details class="group w-full" data-nav-section="{= section_id }" data-nav-manual="{= section_is_manual }" {#if section_is_manual ? !props.collapsed_nav_sections.includes(section_id) : section_has_current_entry }open{/if}>
+									<summary class="flex min-h-7 cursor-pointer items-center pl-6 pr-8 text-xs font-semibold uppercase tracking-wider text-brand marker:content-none">
+										<span class="mr-2 transition-transform group-open:rotate-90">❯</span>
+										{= nav_label(section.title_key)}
+									</summary>
+									<div class="mt-2 flex flex-col">
+										{#each section.items as entry}
+											{#if user_has_module(props.user, entry.required_module)}
+												<a href="{~ localized_path(entry.url) }" class="{= is_current(localized_path(entry.url)) } pl-8 hover:bg-neutral-100">{= nav_label(entry.nav_title_key)}</a>
+												{#if entry.nav_rule_after}
+													<hr class="mx-4 my-4 border-neutral-300" />
+												{/if}
 											{/if}
-										{/if}
-									{/each}
-								</div>
-							</details>
+										{/each}
+									</div>
+								</details>
+								<button type="button" class="absolute right-0 top-0 grid size-7 place-items-center cursor-pointer rounded text-neutral-500 hover:bg-neutral-300 hover:text-neutral-900" data-nav-section-mode-toggle data-nav-section="{= section_id }" data-auto-label="{= props.translations.ui.nav_group_auto}" data-manual-label="{= props.translations.ui.nav_group_manual}" aria-label="{#if section_is_manual}{= props.translations.ui.nav_group_manual}{:else}{= props.translations.ui.nav_group_auto}{/if}" title="{#if section_is_manual}{= props.translations.ui.nav_group_manual}{:else}{= props.translations.ui.nav_group_auto}{/if}" aria-pressed="{= section_is_manual }"><span data-nav-auto-icon {#if section_is_manual}hidden{/if}><ree-icon name="pin_off" class="size-4"></ree-icon></span><span data-nav-manual-icon {#if !section_is_manual}hidden{/if}><ree-icon name="push_pin" class="size-4"></ree-icon></span></button>
+							</div>
 						{/if}
 					{/each}
 					<div class="mb-8"></div>

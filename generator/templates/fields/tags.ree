@@ -6,7 +6,7 @@
 			{#each __field.name___options || [] as tag}
 				<label class="flex items-center gap-1.5 text-sm cursor-pointer">
 					<input type="checkbox" class="__field.name__-checkbox" value="{= tag.tag_key}" {#if record.__field.name__ && record.__field.name__.split(/[\s,]+/).filter(Boolean).includes(tag.tag_key)}checked{/if} />
-					{= __field.name__?.[tag.tag_key] || tag.tag_value}
+					{= props.translations.__field.name__?.[tag.tag_key] || tag.tag_value}
 				</label>
 			{/each}
 		</div>

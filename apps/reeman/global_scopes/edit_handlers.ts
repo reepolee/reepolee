@@ -118,7 +118,7 @@ export async function post_global_scopes_edit(req: BunRequest): Promise<Response
 
 			return render("form", {
 				data: {
-					title: `Edit ${existing_record.table_name}`,
+					page_title: ctx.translations.ui?.edit_title,
 					record: { ...existing_record, module_code: module_part, table: table_part },
 					form_errors: error_message,
 					errors: {},
@@ -153,7 +153,7 @@ export async function post_global_scopes_edit(req: BunRequest): Promise<Response
 		const [module_options, table_options] = await Promise.all([get_available_modules(), get_available_tables()]);
 		return render("form", {
 			data: {
-				title: `Edit ${existing_record.table_name}`,
+				page_title: ctx.translations.ui?.edit_title,
 				record: { ...existing_record, ...data, table: data.table_name },
 				errors,
 				action: entity_path(id),

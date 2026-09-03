@@ -23,6 +23,7 @@ import { SQLiteTypeMapper } from "./schema/sqlite/sqlite_type_mapper";
 import { default_locale } from "$config/supported_locales";
 import { MAIN_APP } from "$config/paths";
 import type { GridColumnDefinition } from "./schema/types";
+import { load_table_module_fresh } from "./schema/table_module_loader";
 
 // ---------------------------------------------------------------------------
 // Exported API - callable from other modules
@@ -160,7 +161,8 @@ export async function generate_schema(target: string, options: SchemaOptions = {
 				grid_columns: options.grid_columns,
 				grid_column_definitions: options.grid_column_definitions,
 			});
-			await write_validation_file(route_dir, schema_obj, type_mapper, table_column_map, all_indexes);
+			const table_module = await load_table_module_fresh<{ columns?: Record<string, { form?: boolean; }>; }>(join(route_dir, "config.ts"));
+			await write_validation_file(route_dir, schema_obj, type_mapper, table_column_map, all_indexes, table_module.columns);
 			await write_translation_files(
 				route_dir,
 				schema_obj,

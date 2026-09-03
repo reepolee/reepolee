@@ -53,14 +53,19 @@ export async function sync_crud_translations(
 	v_fields: FieldDef[] | null = null,
 ): Promise<void> {
 	const plural_label = table_name.replace(/_/g, " ");
+	const plural_label_cap = capitalize_first(plural_label);
 	const singular_label = singularize(table_name);
 	const singular_label_cap = capitalize_first(singular_label);
+	const singular_label_display = singular_label.replace(/_/g, " ");
+	const singular_label_display_cap = capitalize_first(singular_label_display);
 
 	log_step(`Loading CRUD translation keys`);
 	const crud_keys: Record<string, Record<string, string>> = JSON.parse(apply_template(await Bun.file(join(process.cwd(), "generator", "templates", "crud_translations.json")).text(), {
 		"translation.plural_label": plural_label,
+		"translation.plural_label_cap": plural_label_cap,
 		"translation.singular_label": singular_label,
 		"translation.singular_label_cap": singular_label_cap,
+		"translation.singular_label_display_cap": singular_label_display_cap,
 	}));
 
 	// Grid headers reflect what's actually rendered in the child grid, which

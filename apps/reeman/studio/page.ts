@@ -101,7 +101,7 @@ export async function render_studio_page(req: BunRequest, overrides: PageOverrid
 
 	return render("index", {
 		data: {
-			title: ctx.translations.ui?.title ?? "Studio",
+			page_title: ctx.translations.ui?.title,
 			file_groups,
 			path,
 			model,

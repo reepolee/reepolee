@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { ARCHIVE_TIMESTAMP_FIELD, ARCHIVE_USER_FIELD } from "$config/db_structure";
 
 import { resolve_option_display_field } from "../schema/display_contract";
-import { entry_fields } from "../validation_generator";
+import { configured_form_fields } from "../validation_generator";
 import { field_interface_prop, get_autocomplete_fk_tables, has_archive_column, log_step, unique_fk_tables, user_fields } from "./helpers";
 import { get_view_dependencies, resolve_display_source } from "./sql_introspector";
 import { select_templates } from "./template_selector";
@@ -127,6 +127,8 @@ export interface SqlTsOptions {
 	localization_enabled?: boolean;
 	localized_fields?: LocalizedFieldMeta[];
 	readonly_fields?: ReadonlySet<string>;
+	/** Per-column form settings from config.ts; absent form means included. */
+	form_columns?: Record<string, { form?: boolean; }> | null;
 }
 
 /**
@@ -164,6 +166,7 @@ export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 		localization_enabled = false,
 		localized_fields = [],
 		readonly_fields = new Set(),
+		form_columns = null,
 	} = options;
 
 	const localized = localization_enabled;
@@ -182,7 +185,7 @@ export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 	// LOCALIZED_COLUMNS is read by the runtime locale-table guard and by the
 	// write fan-out, which needs to know which columns must NOT be copied
 	// across locales.
-	const write_column_names = entry_fields(fields, false).map((field) => field.name);
+	const write_column_names = configured_form_fields(fields, form_columns).map((field) => field.name);
 	const update_column_names = write_column_names.filter((field_name) => !readonly_fields.has(field_name));
 	const update_columns_config = `\nexport const UPDATE_COLUMNS = ${JSON.stringify(update_column_names)} as const;`;
 	const localized_config = localized
@@ -206,7 +209,7 @@ export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 	const cache_dependencies = localized ? "all_locale_tables(TABLE_NAME)" : "VIEW_DEPENDENCIES";
 	const write_locale_param = localized ? ", locale_code: string = \"\"" : "";
 	const filtered = user_fields(fields);
-	const editable = entry_fields(fields, false);
+	const editable = configured_form_fields(fields, form_columns);
 	const field_names = fields.map((field) => field.name);
 	const option_text_field = resolve_option_display_field(field_names);
 	const display_field_names = option_text_field === "option_display" ? ["display", "option_display"] : ["display"];

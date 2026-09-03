@@ -81,10 +81,13 @@
 	"ui": {
 		"apply_filters": "Apply",
 		"clear_all": "Delete all",
+		"edit_title": "Edit module",
 		"filter_not": "NOT",
+		"index_title": "Modules",
 		"loading_count": "Loading…",
 		"modifying": "You are about to modify",
 		"no_records": "No modules found.",
+		"new_title": "New module",
 		"records": "record(s)",
 		"title": "Modules"
 	}

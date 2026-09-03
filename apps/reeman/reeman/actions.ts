@@ -571,7 +571,7 @@ export async function action_reload_routes(): Promise<ActionResult> {
 		const { notify_server_reload } = await import("$lib/server_notify");
 		// Cross-process: the translations live in the main app's memory too.
 		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
-		await notify_server_reload(true);
+		await notify_server_reload(true, Bun.env.MAIN_APP_URL);
 		return true;
 	});
 }

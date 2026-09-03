@@ -88,6 +88,9 @@ function parse_grid_column_definitions(raw: string): GridColumnDefinition[] {
 		if (typeof candidate.width !== "string" || !candidate.width.trim()) throw new Error(`Grid column "${candidate.name}" requires a width.`);
 		if (typeof candidate.class_name !== "string") throw new Error(`Grid column "${candidate.name}" requires a class string.`);
 		if (typeof candidate.filter !== "boolean") throw new Error(`Grid column "${candidate.name}" requires a boolean filter value.`);
+		if (candidate.localized !== undefined && typeof candidate.localized !== "boolean") throw new Error(`Grid column "${candidate.name}" requires a boolean localized value.`);
+		if (candidate.readonly !== undefined && typeof candidate.readonly !== "boolean") throw new Error(`Grid column "${candidate.name}" requires a boolean readonly value.`);
+		if (candidate.form !== undefined && typeof candidate.form !== "boolean") throw new Error(`Grid column "${candidate.name}" requires a boolean form value.`);
 		if (names.has(candidate.name)) throw new Error(`Duplicate grid column definition: ${candidate.name}.`);
 		names.add(candidate.name);
 		definitions.push({
@@ -95,7 +98,9 @@ function parse_grid_column_definitions(raw: string): GridColumnDefinition[] {
 			width: candidate.width,
 			class_name: candidate.class_name,
 			filter: candidate.filter,
+			...(candidate.localized !== undefined ? { localized: candidate.localized } : {}),
 			readonly: candidate.readonly === true,
+			...(candidate.form !== undefined ? { form: candidate.form } : {}),
 		});
 	}
 	return definitions;
@@ -150,7 +155,8 @@ export async function run_all_tables(flags: ReturnType<typeof parse_crud_flags>)
 	if (flags.translate) {
 		await sync_all_namespaces();
 		const { notify_server_reload } = await import("$lib/server_notify");
-		await notify_server_reload();
+		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
+		await notify_server_reload(true, Bun.env.MAIN_APP_URL);
 	}
 	return success;
 }

@@ -4,7 +4,7 @@
 	<div class="p-4">
 
 		<div class="flex items-center justify-between">
-			<h1 class="mb-4">{_ ui.title }</h1>
+			<h1 class="mb-4">{_ ui.edit_title }</h1>
 		</div>
 
 		{#if busy}

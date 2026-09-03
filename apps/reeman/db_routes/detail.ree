@@ -3,7 +3,7 @@
 	<div class="p-4">
 
 		<div class="flex items-center justify-between">
-			<h1 class="mb-4">{= record.url }</h1>
+			<h1 class="mb-4">{_ ui.edit_title }: {= record.url }</h1>
 		</div>
 
 		{#if busy}
@@ -20,7 +20,7 @@
 				<field-wrapper class="grid" data-field="grid_columns">
 					<div class="grid">
 						<label class="px-3">{_ labels.index_columns}</label>
-						<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) minmax(0,22ch) auto auto auto">
+						<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) minmax(0,22ch) auto auto auto auto">
 							<div class="col-span-full grid grid-cols-subgrid gap-2 px-3 py-2 font-semibold border-b border-border bg-surface">
 								<span class="ml-3">{_ labels.name}</span>
 								<span class="ml-3">{_ labels.width}</span>
@@ -29,6 +29,7 @@
 								<span class="text-center">{_ labels.filter}</span>
 								<span class="text-center">{_ labels.localized}</span>
 								<span class="text-center">{_ labels.readonly}</span>
+								<span class="text-center">{_ labels.form}</span>
 							</div>
 							{#each route_settings.grid_columns as col}
 								<div class="col-span-full grid grid-cols-subgrid items-center gap-2 px-3 py-2 border-b border-border last:border-b-0">
@@ -48,6 +49,7 @@
 									<input class="justify-self-center" type="checkbox" name="grid_filter_columns" value="{= col.name }" aria-label="{_ labels.filter}: {= col.name }" {#if col.filter}checked{/if} />
 									<input class="justify-self-center" type="checkbox" name="grid_localized_columns" value="{= col.name }" aria-label="{_ labels.localized}: {= col.name }" {#if col.localized}checked{/if} />
 									<input class="justify-self-center" type="checkbox" name="grid_readonly_columns" value="{= col.name }" aria-label="{_ labels.readonly}: {= col.name }" {#if col.readonly}checked{/if} />
+									<input class="justify-self-center" type="checkbox" name="grid_form_columns" value="{= col.name }" aria-label="{_ labels.form}: {= col.name }" {#if col.form}checked{/if} />
 								</div>
 							{/each}
 						</div>

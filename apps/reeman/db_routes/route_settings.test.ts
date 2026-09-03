@@ -22,8 +22,8 @@ describe("route_settings_from_module", () => {
 		});
 
 		expect(settings.grid_columns).toEqual([
-			{ name: "name", default_selected: true, width: "auto", class_name: "font-semibold", filter: true, localized: true, readonly: true, helper: "", default_helper: "" },
-			{ name: "email", default_selected: false, width: "30ch", class_name: "", filter: false, localized: false, readonly: false, helper: "", default_helper: "" },
+			{ name: "name", default_selected: true, width: "auto", class_name: "font-semibold", filter: true, localized: true, readonly: true, form: true, helper: "", default_helper: "" },
+			{ name: "email", default_selected: false, width: "30ch", class_name: "", filter: false, localized: false, readonly: false, form: true, helper: "", default_helper: "" },
 		]);
 		expect(settings.pagination_strategy).toBe("cursor");
 		expect(settings.render_strategy).toBe("stream");
@@ -49,8 +49,19 @@ describe("route_settings_from_module", () => {
 			name: { name: "name", type: "text" },
 		});
 
-		expect(settings.grid_columns).toContainEqual({ name: "is_javascript", default_selected: true, width: "auto", class_name: "text-center", filter: false, localized: false, readonly: false, helper: "", default_helper: "yes_no" });
-		expect(settings.grid_columns).toContainEqual({ name: "name", default_selected: true, width: "auto", class_name: "font-semibold", filter: true, localized: false, readonly: false, helper: "", default_helper: "" });
+		expect(settings.grid_columns).toContainEqual({ name: "is_javascript", default_selected: true, width: "auto", class_name: "text-center", filter: false, localized: false, readonly: false, form: true, helper: "", default_helper: "yes_no" });
+		expect(settings.grid_columns).toContainEqual({ name: "name", default_selected: true, width: "auto", class_name: "font-semibold", filter: true, localized: false, readonly: false, form: true, helper: "", default_helper: "" });
+	});
+
+	test("reads an explicitly disabled form column", () => {
+		const settings = route_settings_from_module({ table: "reports", prefix: "", url: "/reports" }, {
+			columns: { title: { width: "auto", class: "", form: false } },
+			pagination_strategy: "offset",
+			render_strategy: "load",
+			template_tags: "flat",
+		});
+
+		expect(settings.grid_columns[0]?.form).toBe(false);
 	});
 });
 

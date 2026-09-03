@@ -194,27 +194,35 @@ export function reload_route_maps(translations: Record<string, any>, routes?: Ro
 // O(1) lookups
 // ---------------------------------------------------------------------------
 
+export interface CanonicalRouteMatch {
+	canonical: string;
+	params: Record<string, string>;
+}
+
 /**
- * Given a localized URL path, return the canonical route pattern.
- *
- * Handles both exact matches (static routes) and pattern matches
- * (routes with dynamic segments like /some/path/123 -> :id).
+ * Given a localized URL path, return the canonical route pattern and captured
+ * dynamic parameters.
  */
-export function resolve_canonical(localized_path: string, locale: string): string | null {
+export function resolve_canonical_match(localized_path: string, locale: string): CanonicalRouteMatch | null {
 	if (!state.current_maps) return null;
 
 	const maps = state.current_maps.by_locale.get(locale);
 	if (!maps) return null;
+	const normalized_path = localized_path !== "/" && localized_path.endsWith("/") ? localized_path.slice(0, -1) : localized_path;
 
 	// 1. Exact match
-	const exact = maps.localized_to_canonical.get(localized_path);
-	if (exact) return exact;
+	const exact = maps.localized_to_canonical.get(normalized_path);
+	if (exact) return { canonical: exact, params: {} };
 
 	// 2. Pattern match (for paths with actual dynamic segment values)
 	const patterns = state.current_maps.localized_patterns.get(locale);
 	if (patterns) {
 		for (const pattern of patterns) {
-			if (path_matches_pattern(pattern, localized_path)) { return maps.localized_to_canonical.get(pattern) ?? null; }
+			const params = match_pattern(pattern, normalized_path);
+			if (params) {
+				const canonical = maps.localized_to_canonical.get(pattern);
+				if (canonical) return { canonical, params };
+			}
 		}
 	}
 
@@ -223,10 +231,15 @@ export function resolve_canonical(localized_path: string, locale: string): strin
 	// Only when locale is the canonical locale (default_locale)
 	for (const [pattern, _localized] of maps.canonical_to_localized) {
 		if (!pattern.includes(":")) continue;
-		if (match_pattern(pattern, localized_path)) return pattern;
+		const params = match_pattern(pattern, normalized_path);
+		if (params) return { canonical: pattern, params };
 	}
 
 	return null;
+}
+
+export function resolve_canonical(localized_path: string, locale: string): string | null {
+	return resolve_canonical_match(localized_path, locale)?.canonical ?? null;
 }
 
 /**

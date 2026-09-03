@@ -25,6 +25,7 @@
 	"nav": "Okolje",
 	"ui": {
 		"edit_title": "Uredi okoljsko spremenljivko",
+		"index_title": "Okoljske spremenljivke",
 		"no_records": "Ni najdenih okoljskih spremenljivk."
 	}
 }

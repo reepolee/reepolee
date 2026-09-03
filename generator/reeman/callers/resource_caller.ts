@@ -75,8 +75,6 @@ export async function run_full_pipeline(table: string, options: ResourceCallOpti
 		return false;
 	}
 
-	await notify_server_reload(false, Bun.env.MAIN_APP_URL);
-	await notify_server_reload();
 	console.log(`✓ Pipeline complete: ${table} fully generated`);
 	return true;
 }
@@ -116,7 +114,7 @@ export async function run_bulk_generator(
 		const { sync_all_namespaces } = await import("../../translate_namespace");
 		await sync_all_namespaces();
 		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
-		await notify_server_reload();
+		await notify_server_reload(true, Bun.env.MAIN_APP_URL);
 	}
 
 	return { success: success_count, fail: fail_count };
@@ -156,7 +154,7 @@ export async function run_bulk_nested_generator(
 		const { sync_all_namespaces } = await import("../../translate_namespace");
 		await sync_all_namespaces();
 		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
-		await notify_server_reload();
+		await notify_server_reload(true, Bun.env.MAIN_APP_URL);
 	}
 
 	return { success: success_count, fail: fail_count };
@@ -193,7 +191,7 @@ export async function run_selected_nested_children(
 		const { sync_all_namespaces } = await import("../../translate_namespace");
 		await sync_all_namespaces();
 		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
-		await notify_server_reload();
+		await notify_server_reload(true, Bun.env.MAIN_APP_URL);
 	}
 	return { success, fail };
 }

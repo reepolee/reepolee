@@ -21,11 +21,25 @@ mock.module("$generator/ddl_cache", () => ({
 				{ name: "hashed_password" },
 			],
 			primary_key: { name: "id" },
+			foreign_keys: [],
+			inferred_foreign_keys: [],
+			view_foreign_keys: [],
+		}, {
+			name: "users",
+			columns: [{ name: "id" }],
+			primary_key: { name: "id" },
+			foreign_keys: [],
+			inferred_foreign_keys: [],
+			view_foreign_keys: [],
 		}],
 	}),
 }));
 
-const { format_sample_value, get_table_sample_records } = await import("./sql.custom");
+mock.module("$generator/reeman/utils/route_scan", () => ({
+	discover_existing_crud_tables: () => [],
+}));
+
+const { format_sample_value, get_table_sample_records, refresh_db_tables } = await import("./sql.custom");
 
 beforeEach(() => {
 	queries.length = 0;
@@ -45,4 +59,9 @@ test("loads five safe sample records from eligible table columns", async () => {
 		columns: ["name"],
 		records: [{ name: "Rain collector" }],
 	});
+});
+
+test("keeps the existing non-system filter unless all tables are requested", async () => {
+	expect((await refresh_db_tables()).map((table) => table.name)).toEqual(["metrics"]);
+	expect((await refresh_db_tables(true)).map((table) => table.name)).toEqual(["metrics", "users"]);
 });

@@ -57,7 +57,7 @@ export async function post___table.exact___index(req: BunRequest): Promise<Respo
 		return render("form", {
 			data: {
 				save_label: "Shrani zapis",
-				title: "New record",
+				page_title: ctx.translations.ui?.new_title,
 				record: data,
 				errors,
 				form_errors: error_message,

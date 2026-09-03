@@ -13,6 +13,7 @@ export interface RouteGridColumn {
 	filter: boolean;
 	localized: boolean;
 	readonly: boolean;
+	form: boolean;
 	/** Built-in template helper applied to this column's grid cell ("" = default). */
 	helper: string;
 	/** The type-based helper the CRUD generator would apply if none is selected. */
@@ -51,6 +52,7 @@ type TableColumn = {
 	grid?: boolean;
 	localized?: boolean;
 	readonly?: boolean;
+	form?: boolean;
 };
 
 type TableModule = {
@@ -75,6 +77,7 @@ export function route_settings_from_module(route: RouteSchema, table_module: Tab
 		filter: column.filter === true,
 		localized: column.localized === true,
 		readonly: column.readonly === true,
+		form: column.form !== false,
 		helper: column.helper ?? "",
 		default_helper: fields?.[name] ? default_field_helper(fields[name]!) : "",
 	}));

@@ -54,7 +54,7 @@ export async function get_system_cache(req: BunRequest): Promise<Response> {
 		}
 	}
 
-	return render("index", { data: { title: "SQL Cache", enabled, status, error }, ctx });
+	return render("index", { data: { page_title: ctx.translations.ui?.title, enabled, status, error }, ctx });
 }
 
 // ---------------------------------------------------------------------------
