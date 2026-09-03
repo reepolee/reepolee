@@ -7,6 +7,7 @@ const test_db = new SQL(":memory:");
 await test_db.unsafe(`CREATE TABLE metrics (id INTEGER PRIMARY KEY, code TEXT NOT NULL, name TEXT NOT NULL)`);
 await test_db.unsafe(`CREATE TABLE metrics_sl_si (id INTEGER PRIMARY KEY, code TEXT NOT NULL, name TEXT NOT NULL, name_src TEXT, name_hash TEXT)`);
 await test_db.unsafe(`INSERT INTO metrics (id, code, name) VALUES (1, 'metric-1', 'English name')`);
+await test_db.unsafe(`INSERT INTO metrics (id, code, name) VALUES (2, 'metric-2', 'Second English name')`);
 await test_db.unsafe(`INSERT INTO metrics_sl_si (id, code, name, name_src, name_hash) VALUES (1, 'metric-1', 'Old Slovenian name', 'en-us', 'old-hash')`);
 
 mock.module("$config/db", () => make_test_db_mock(test_db));
@@ -101,5 +102,14 @@ describe("locale writes", () => {
 		const base = await row("metrics");
 		expect(base.code).toBe("metric-1");
 		expect(base.name).toBe("Updated name");
+	});
+
+	test("creates a missing locale row before saving localized values", async () => {
+		await test_db.unsafe("DELETE FROM metrics_sl_si WHERE id = 2");
+
+		await save_locale_values("metrics", 2, { "sl-si": { name: "Drugo slovensko ime" } }, ["code"]);
+
+		const rows = await test_db.unsafe("SELECT id, code, name FROM metrics_sl_si WHERE id = 2");
+		expect(rows).toEqual([{ id: 2, code: "metric-2", name: "Drugo slovensko ime" }]);
 	});
 });

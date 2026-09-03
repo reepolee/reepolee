@@ -26,12 +26,14 @@
 import { dirname } from "node:path";
 import { patch_class_in_source, read_class_from_source } from "$lib/inspector_class_write";
 import { get_i18n_value, update_i18n_value } from "$lib/inspector_i18n_write";
+import { canonical_locale } from "$lib/locale";
 import { validate_open_request } from "$lib/open_in_editor";
 import { route_namespace_from_dir } from "$lib/route";
 
 type IncomingMessage = {
 	type: "i18n_get";
 	key: string;
+	locale?: string;
 	url?: string;
 	file?: string;
 	id?: string | number;
@@ -39,6 +41,7 @@ type IncomingMessage = {
 	type: "i18n_update";
 	key: string;
 	value: string;
+	locale?: string;
 	url?: string;
 	file?: string;
 	id?: string | number;
@@ -93,9 +96,10 @@ export async function handle_inspector_message(ws: { send(data: string): void; }
 	if (msg.type === "i18n_get" || msg.type === "i18n_update") {
 		const reply_type = msg.type === "i18n_get" ? "i18n_value" : "i18n_saved";
 		const url = msg.url ?? "";
+		const target_locale = canonical_locale(msg.locale) ?? locale;
 		const namespace_hint = resolve_namespace_hint(project_root, msg.file);
 		if (msg.type === "i18n_get") {
-			const result = await get_i18n_value(locale, msg.key, url, namespace_hint);
+			const result = await get_i18n_value(target_locale, msg.key, url, namespace_hint);
 			ws.send(JSON.stringify(result.ok ? { type: reply_type, id: msg.id, ok: true, value: result.value } : {
 				type: reply_type,
 				id: msg.id,
@@ -104,7 +108,7 @@ export async function handle_inspector_message(ws: { send(data: string): void; }
 			}));
 			return true;
 		}
-		const result = await update_i18n_value(locale, msg.key, msg.value, url, namespace_hint);
+		const result = await update_i18n_value(target_locale, msg.key, msg.value, url, namespace_hint);
 		ws.send(JSON.stringify(result.ok ? { type: reply_type, id: msg.id, ok: true } : {
 			type: reply_type,
 			id: msg.id,

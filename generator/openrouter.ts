@@ -2,6 +2,8 @@
  * Shared OpenRouter API helper for generator scripts.
  */
 
+import { retry_after_ms } from "./retry_after";
+
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 export interface OpenRouterOptions {
@@ -51,6 +53,7 @@ export async function openrouter_query(system_prompt: string, user_prompt: strin
 			const elapsed = (performance.now() - start).toFixed(0);
 			const err: any = new Error(`OpenRouter API error: ${res.status} - ${text}`);
 			err.status = res.status;
+			err.retry_after_ms = retry_after_ms(res.headers, text);
 			console.error(`❌ OpenRouter error after ${elapsed}ms: ${res.status}`);
 			throw err;
 		}

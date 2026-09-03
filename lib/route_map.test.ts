@@ -102,14 +102,18 @@ describe("route_map", () => {
 		});
 
 		test("handles dynamic segments (:param)", () => {
-			rm.build_route_maps(translations, routes, locales);
+			const dynamic_translations = {
+				en: { posts: { route_name: "posts" } },
+				sl: { posts: { route_name: "objave" } },
+			};
+			rm.build_route_maps(dynamic_translations, routes, locales);
 			const maps = rm.get_route_maps();
 
-			const en = maps.by_locale.get("en")!;
-			expect(en.canonical_to_localized.get("/posts/:id")).toBe("/posts/:id");
+			const sl = maps.by_locale.get("sl")!;
+			expect(sl.canonical_to_localized.get("/posts/:id")).toBe("/objave/:id");
 
-			// Dynamic patterns are registered
-			expect(maps.localized_patterns.get("en")).toContain("/posts/:id");
+			// Only translated dynamic paths are registered for locale detection.
+			expect(maps.localized_patterns.get("sl")).toContain("/objave/:id");
 		});
 	});
 
@@ -337,6 +341,19 @@ describe("detect_locale - locales without translations", () => {
 		rm.build_route_maps(translations, routes, ["en-us", "sl-si", "de-de"]);
 
 		expect(rm.detect_locale("/products")).toBeNull();
+		expect(rm.detect_locale("/products/1/edit")).toBeNull();
+	});
+
+	test("a locale with unrelated translations does not claim canonical dynamic paths", () => {
+		const routes: any = { "/products": {}, "/products/:id/edit": {} };
+		const translations = {
+			"en-us": {},
+			"sl-si": { products: { route_name: "izdelki" } },
+			"de-de": { examples: { route_name: "beispiele" } },
+			"it-it": { examples: { route_name: "esempi" } },
+		};
+		rm.build_route_maps(translations, routes, ["en-us", "sl-si", "de-de", "it-it"]);
+
 		expect(rm.detect_locale("/products/1/edit")).toBeNull();
 	});
 

@@ -9,87 +9,137 @@
 			</div>
 		</div>
 
-		<form method="POST" action="{~ localized_path('/crud') }" class="grid grid-cols-1 gap-4 max-w-[120ch]">
+		<section class="grid w-full gap-2 mb-4" aria-labelledby="record-sample-heading">
+			<h2 id="record-sample-heading" class="px-3 text-lg font-semibold">{_ labels.first_five_records}</h2>
+			{#if sample_columns.length === 0}
+				<p class="px-3 text-sm text-text-tertiary">{_ ui.no_sample_columns}</p>
+			{:else}
+				{#if sample_records.length === 0}
+					<p class="px-3 text-sm text-text-tertiary">{_ ui.no_sample_records}</p>
+				{:else}
+					<div class="overflow-x-auto rounded border border-border bg-surface-raised text-xs">
+						<div id="record-sample-grid" class="grid min-w-max" style="grid-template-columns: {= sample_grid_cols }">
+							{#each sample_columns as column}
+								<div class="border-b border-border bg-surface px-2 py-1.5 font-semibold">{= column }</div>
+							{/each}
+							{#each sample_records as record}
+								<div class="col-span-full grid grid-cols-subgrid border-b border-border last:border-b-0">
+									{#each sample_columns as column}
+										<div class="px-2 py-1.5">{= record[column] }</div>
+									{/each}
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
+			{/if}
+		</section>
+
+		<form method="POST" action="{~ localized_path('/crud') }" class="grid gap-4">
 			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 			<input type="hidden" name="return_to" value="/routes" />
 			<input type="hidden" name="table" value="{= table }" />
 			<input type="hidden" name="grid_localized_control" value="1" />
 
-			<field-wrapper class="grid" data-field="grid_columns">
-				<div class="grid">
-					<label class="px-3">{_ labels.index_columns}</label>
-					<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) minmax(0,35ch) auto auto auto">
-						{#if grid_columns.length === 0}
-							<p class="col-span-full p-3">{_ ui.no_selectable_columns}</p>
-						{:else}
-							<div class="col-span-full grid grid-cols-subgrid gap-2 px-3 py-2 font-semibold border-b border-border bg-surface">
-								<span class="ml-10">{_ labels.name}</span>
-								<span class="ml-3">{_ labels.width}</span>
-								<span class="ml-3">{_ labels.class}</span>
-								<span class="ml-3">{_ labels.helper}</span>
-								<span class="text-center">{_ labels.filter}</span>
-								<span class="text-center">{_ labels.localized}</span>
-								<span class="text-center">{_ labels.readonly}</span>
-							</div>
-							{#each grid_columns as col}
-								<div class="col-span-full grid grid-cols-subgrid items-center gap-2 px-3 py-2 border-b border-border last:border-b-0">
-									<input type="hidden" name="grid_column_name" value="{= col.name }" />
-									<label class="ml-3 flex cursor-pointer items-center gap-1.5">
-										<input type="checkbox" name="grid_columns" value="{= col.name }" {#if col.default_selected}checked{/if} />
-										<span>{= col.name }</span>
-									</label>
-									<input name="grid_column_width" value="{= col.width }" aria-label="{_ labels.width}: {= col.name }" />
-									<input name="grid_column_class" value="{= col.class_name }" aria-label="{_ labels.class}: {= col.name }" />
-									<select name="grid_column_helper" aria-label="{_ labels.helper}: {= col.name }">
-										<option value="" {#if !col.helper}selected{/if}>{#if col.default_helper}{= col.default_helper } {_ labels.default }{:else}{_ labels.no_helper}{/if}</option>
-										{#each helper_names as h}
-											<option value="{= h }" {#if col.helper === h}selected{/if}>{= h }</option>
-										{/each}
-									</select>
-									<input class="justify-self-center" type="checkbox" name="grid_filter_columns" value="{= col.name }" aria-label="{_ labels.filter}: {= col.name }" {#if col.filter}checked{/if} />
-									<input class="justify-self-center" type="checkbox" name="grid_localized_columns" value="{= col.name }" aria-label="{_ labels.localized}: {= col.name }" {#if col.localized}checked{/if} />
-									<input class="justify-self-center" type="checkbox" name="grid_readonly_columns" value="{= col.name }" aria-label="{_ labels.readonly}: {= col.name }" {#if col.readonly}checked{/if} />
+			<div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(22rem,1fr)] lg:gap-x-6">
+				<field-wrapper class="grid mt-2" data-field="grid_columns">
+					<div class="grid">
+						<label class="px-3">{_ labels.index_columns}</label>
+						<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) minmax(0,35ch) auto auto auto">
+							{#if grid_columns.length === 0}
+								<p class="col-span-full p-3">{_ ui.no_selectable_columns}</p>
+							{:else}
+								<div class="col-span-full grid grid-cols-subgrid gap-2 px-3 py-2 font-semibold border-b border-border bg-surface">
+									<span class="ml-10">{_ labels.name}</span>
+									<span class="ml-3">{_ labels.width}</span>
+									<span class="ml-3">{_ labels.class}</span>
+									<span class="ml-3">{_ labels.helper}</span>
+									<span class="text-center">{_ labels.filter}</span>
+									<span class="text-center">{_ labels.localized}</span>
+									<span class="text-center">{_ labels.readonly}</span>
 								</div>
-							{/each}
-						{/if}
+								{#each grid_columns as col}
+									<div class="col-span-full grid grid-cols-subgrid items-center gap-2 px-3 py-2 border-b border-border last:border-b-0">
+										<input type="hidden" name="grid_column_name" value="{= col.name }" />
+										<label class="ml-3 flex cursor-pointer items-center gap-1.5">
+											<input type="checkbox" name="grid_columns" value="{= col.name }" {#if col.default_selected}checked{/if} />
+											<span>{= col.name }</span>
+										</label>
+										<input name="grid_column_width" value="{= col.width }" aria-label="{_ labels.width}: {= col.name }" />
+										<input name="grid_column_class" value="{= col.class_name }" aria-label="{_ labels.class}: {= col.name }" />
+										<select name="grid_column_helper" aria-label="{_ labels.helper}: {= col.name }">
+											<option value="" {#if !col.helper}selected{/if}>{#if col.default_helper}{= col.default_helper } {_ labels.default }{:else}{_ labels.no_helper}{/if}</option>
+											{#each helper_names as h}
+												<option value="{= h }" {#if col.helper === h}selected{/if}>{= h }</option>
+											{/each}
+										</select>
+										<input class="justify-self-center" type="checkbox" name="grid_filter_columns" value="{= col.name }" aria-label="{_ labels.filter}: {= col.name }" {#if col.filter}checked{/if} />
+										<input class="justify-self-center" type="checkbox" name="grid_localized_columns" value="{= col.name }" aria-label="{_ labels.localized}: {= col.name }" {#if col.localized}checked{/if} />
+										<input class="justify-self-center" type="checkbox" name="grid_readonly_columns" value="{= col.name }" aria-label="{_ labels.readonly}: {= col.name }" {#if col.readonly}checked{/if} />
+									</div>
+								{/each}
+							{/if}
+						</div>
 					</div>
-				</div>
-			</field-wrapper>
+				</field-wrapper>
 
-			<field-wrapper class="grid max-w-[60ch]" data-field="prefix">
-				<div class="grid">
-					<label class="px-3" for="detail-prefix">{_ labels.prefix}</label>
-					<input id="detail-prefix" name="prefix" pattern="[a-z0-9_\-\/]*" list="reeman-modules" title="{_ hints.prefix }" />
-					<datalist id="reeman-modules">
-						{#each modules as m}
-							<option value="{= m.code }">{= m.name }</option>
-						{/each}
-					</datalist>
-				</div>
-			</field-wrapper>
+				<aside class="grid content-start gap-4 mt-2">
+					<field-wrapper class="grid max-w-none" data-field="prefix">
+						<div class="grid">
+							<label class="px-3" for="detail-prefix">{_ labels.prefix}</label>
+							<select id="detail-prefix" name="prefix" title="{_ hints.prefix }">
+								<option value=""></option>
+								{#each modules as m}
+									<option value="{= m.code }">{= m.code } - {= m.name }</option>
+								{/each}
+							</select>
+						</div>
+					</field-wrapper>
 
-			<field-wrapper class="grid max-w-[60ch]" data-field="route_name">
-				<div class="grid">
-					<label class="px-3" for="detail-route-name">{_ labels.route_name}</label>
-					<input id="detail-route-name" name="route_name" {#if new_route}required{/if} pattern="[a-z0-9_\-]*" title="{_ hints.route_name}" />
-				</div>
-			</field-wrapper>
+					<field-wrapper class="grid max-w-none" data-field="route_name">
+						<div class="grid">
+							<label class="px-3" for="detail-route-name">{_ labels.route_name}</label>
+							<input id="detail-route-name" name="route_name" {#if new_route}required{/if} pattern="[a-z0-9_\-]*" title="{_ hints.route_name}" />
+						</div>
+					</field-wrapper>
 
-			<generator-settings id-prefix="detail"></generator-settings>
+					<generator-settings id-prefix="detail"></generator-settings>
 
-			<div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-				<label class="flex cursor-pointer items-center gap-1.5"><input type="checkbox" name="force" value="1" /> {_ actions.force}</label>
-				<label class="flex cursor-pointer items-center gap-1.5"><input type="checkbox" name="translate" value="1" /> {_ actions.translate}</label>
-			</div>
+					<field-wrapper class="grid max-w-none" data-field="form_hints">
+						<div class="grid">
+							<label class="flex cursor-pointer items-center gap-1.5 px-3"><input type="checkbox" name="form_hints" value="1" /> {_ labels.form_hints}</label>
+						</div>
+					</field-wrapper>
 
-			<div class="grid gap-3">
-				{#if busy}
-					<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
-				{/if}
-				<div class="flex gap-2 items-center">
-					<button type="submit" id="detail-submit" class="as-button-primary" {#if busy}disabled{/if}>{_ actions.generate_crud}</button>
-					<button type="button" onclick="history.back()" class="as-button-secondary" {#if busy}disabled{/if}>{_ actions.cancel}</button>
-				</div>
+					<field-wrapper class="grid max-w-none" data-field="form_details">
+						<div class="grid">
+							<label class="flex cursor-pointer items-center gap-1.5 px-3"><input type="checkbox" name="form_details" value="1" /> {_ labels.form_details}</label>
+						</div>
+					</field-wrapper>
+
+
+					<field-wrapper class="grid max-w-none" data-field="force">
+						<div class="grid">
+							<label class="flex cursor-pointer items-center gap-1.5 px-3"><input type="checkbox" name="force" value="1" /> {_ actions.force}</label>
+						</div>
+					</field-wrapper>
+					<field-wrapper class="grid max-w-none" data-field="translate">
+						<div class="grid">
+							<label class="flex cursor-pointer items-center gap-1.5 px-3"><input type="checkbox" name="translate" value="1" /> {_ actions.translate}</label>
+						</div>
+					</field-wrapper>
+
+
+					<div class="grid gap-3">
+						{#if busy}
+							<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
+						{/if}
+						<div class="flex gap-2 items-center">
+							<button type="submit" id="detail-submit" class="as-button-primary" {#if busy}disabled{/if}>{_ actions.generate_crud}</button>
+							<button type="button" onclick="history.back()" class="as-button-secondary" {#if busy}disabled{/if}>{_ actions.cancel}</button>
+						</div>
+					</div>
+				</aside>
 			</div>
 		</form>
 	</div>

@@ -89,6 +89,10 @@ input[type="checkbox"] {
 	flex-shrink: 0;
 }
 
+/* Generated CRUD forms use the same Tailwind grid/subgrid utilities as the
+   handwritten forms. Child sections are emitted with `col-span-full`, so a
+   form never grows a third details column. */
+
 /* Generated validation elements carry the mt-1 utility. Keep that spacing for
    real messages, but do not let an empty row change a field's layout. This is
    intentionally unlayered so it wins over Tailwind's utilities layer. */
@@ -136,8 +140,8 @@ field-wrapper > label:has(+ input, + select, + textarea, + date-input):not([clas
    pairing can't live in this static stylesheet. No JS is required to
    switch locales. */
 
-.localized-form field-wrapper > div,
-.localized-form field-wrapper > p {
+[data-localized-form] field-wrapper > div,
+[data-localized-form] field-wrapper > p {
 	grid-column: 1 / -1;
 }
 
@@ -164,10 +168,6 @@ field-wrapper > label:has(+ input, + select, + textarea, + date-input):not([clas
    label + input + validation-error, minus the label which lives in the
    heading instead) as one child, and the stale-notice <p> as the second
    child in the same position as field-wrapper's hint <p>. */
-.localized-field-source {
-	grid-column: 1 / -1;
-}
-
 .localized-field-source field-wrapper > div > label {
 	display: none;
 }

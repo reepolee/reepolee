@@ -60,7 +60,8 @@
 	},
 	"labels": {
 		"folder": "Folder",
-		"nickname": "Nickname"
+		"nickname": "Nickname",
+		"unit": "Unit"
 	},
 	"localization": {
 		"add_language": "Add translation language",

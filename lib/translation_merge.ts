@@ -3,8 +3,6 @@
 // Extracted for shared use between the sync-translations reeman subcommand and queue workers.
 // All functions are pure (no filesystem, no AI calls) - operate only on JSON objects in memory.
 
-import { is_excluded_translation_path } from "$config/excluded_translations";
-
 export type json_obj = Record<string, any>;
 
 export function is_object(val: any): val is json_obj { return val && typeof val === "object" && !Array.isArray(val); }
@@ -51,25 +49,19 @@ export function has_new_keys(en_obj: json_obj, other_lang_obj: json_obj): boolea
 	return false;
 }
 
-// Extract keys from en that are missing or identical (untranslated) in lang.
-// key_path tracks the current dotted path so excluded keys (config/excluded_translations.ts)
-// can skip the "identical to English" check - some keys are intentionally
-// identical across locales (e.g. a language's own native name).
-export function extract_untranslated(en_obj: json_obj, lang_obj: json_obj, key_path: string = ""): json_obj | null {
+// Extract keys explicitly marked as missing from a locale file. The marker is
+// the source of truth: a value matching English may be intentional and must
+// never be sent to AI again.
+export function extract_untranslated(en_obj: json_obj, lang_obj: json_obj): json_obj | null {
 	const result: json_obj = {};
 	for (const key of Object.keys(en_obj)) {
 		const en_val = en_obj[key];
 		const lang_val = lang_obj[key];
-		const current_path = key_path ? `${key_path}.${key}` : key;
 		if (is_object(en_val)) {
-			const sub = extract_untranslated(en_val, is_object(lang_val) ? lang_val : {}, current_path);
+			const sub = extract_untranslated(en_val, is_object(lang_val) ? lang_val : {});
 			if (sub !== null) result[key] = sub;
-		} else if (is_excluded_translation_path(current_path)) {
-			// Missing or prefixed only - identical values are expected, not untranslated
-			if (lang_val === undefined || (typeof lang_val === "string" && lang_val.startsWith("::missing:: "))) { result[key] = en_val; }
 		} else {
-			// Missing, prefixed, or identical to English (never been translated)
-			if (lang_val === undefined || (typeof lang_val === "string" && lang_val.startsWith("::missing:: ")) || lang_val === en_val) { result[key] = en_val; }
+			if (typeof lang_val === "string" && lang_val.startsWith("::missing:: ")) { result[key] = en_val; }
 		}
 	}
 	return Object.keys(result).length > 0 ? result : null;

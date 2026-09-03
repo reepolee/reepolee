@@ -138,12 +138,10 @@ export async function generate_input_field(
  * field is in `localized_names`. Shared by the full generator and the
  * fields-only refresh so both produce identical per-field output.
  *
- * A localized field becomes <localized-field-tabs> slot content, which
- * compiles against the raw top-level `props` - not the {#with props} alias
- * the surrounding form is nested in (see "with scope doesn't reach into
- * component slots" in internals/REE_TEMPLATES.md). `record` is only a bare
- * identifier inside that with-block, so it must be qualified here;
- * {_ }/{- } translation lookups (labels., selectors.) are unaffected.
+ * Localized text fields are emitted as a dedicated input component. It owns
+ * every locale control and keeps them all in the submitted form payload.
+ * Other localized field types retain the legacy wrapper while they are moved
+ * one-by-one to their own localized input components.
  */
 /**
  * A readonly field's form markup: label plus the raw value as a static box,
@@ -167,6 +165,9 @@ export async function generate_field_block(
 	readonly_names: ReadonlySet<string> = new Set(),
 ): Promise<string> {
 	if (readonly_names.has(field.name)) return generate_readonly_field_block(field);
+	if (localized_names.has(field.name) && field.type === "text") {
+		return `<localized-input-text name="${field.name}" label="{_ labels.${field.name}}" localization="{= props.localization }"></localized-input-text>`;
+	}
 	const input_field = await generate_input_field(field, foreign_keys, table_name, route_prefix, is_nested, parent_info, template_tags);
 	if (!localized_names.has(field.name)) return input_field;
 	const slot_safe_input_field = input_field.replace(/\brecord\./g, "props.record.");
@@ -187,6 +188,8 @@ export interface FormReeOptions {
 	localization_enabled?: boolean;
 	localized_fields?: readonly LocalizedFieldMeta[];
 	template_tags?: "flat" | "tags";
+	form_hints?: boolean;
+	form_details?: boolean;
 	/** Fields whose value is displayed on the form without an editor. */
 	readonly_fields?: ReadonlySet<string>;
 }
@@ -236,7 +239,7 @@ function archive_form_restore_ui(has_archive: boolean, route_prefix: string, rou
 }
 
 export async function generate_form_ree(options: FormReeOptions): Promise<string> {
-	const { table_name, fields, column_names = [], foreign_keys, route_prefix = "", route_param_value = "id", is_nested = false, parent_info = null, route_name = "", localization_enabled = false, localized_fields = [], template_tags = "flat" } = options;
+	const { table_name, fields, column_names = [], foreign_keys, route_prefix = "", route_param_value = "id", is_nested = false, parent_info = null, route_name = "", localization_enabled = false, localized_fields = [], template_tags = "flat", form_hints = false, form_details = false } = options;
 	// For nested CRUD, exclude parent FK from visible form fields, but include it as hidden
 	let filtered = entry_fields(fields, false);
 	let parent_fk_field: FieldDef | null = null;
@@ -279,9 +282,12 @@ export async function generate_form_ree(options: FormReeOptions): Promise<string
 	// switcher, since different fields can have different translated locales.
 	const form_body = input_fields;
 
-	const layout_class = localization_enabled
-		? "localized-form grid gap-4 max-w-[60ch] lg:max-w-[100ch] lg:grid-cols-2 lg:gap-x-6"
-		: "grid gap-4 max-w-[60ch] lg:max-w-[100ch] lg:grid-cols-2 lg:gap-x-6";
+	// Fields and their optional hints occupy the first two tracks. Details are
+	// placed in the third track by the aside below; the layout collapses through
+	// the responsive Tailwind grid utilities on smaller screens.
+	const form_classes = "grid w-full gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(22rem,2fr)] lg:gap-x-6";
+	const localization_attribute = localization_enabled ? "data-localized-form" : "";
+	const details_classes = form_details ? "grid empty:hidden lg:col-start-3 lg:self-start" : "hidden";
 
 	// Archive UI is decided by the schema, like the SQL layer: a table without
 	// `archived_at` gets no restore markup at all.
@@ -291,7 +297,9 @@ export async function generate_form_ree(options: FormReeOptions): Promise<string
 		"table.exact": effective_route_name,
 		"form.input_fields": form_body,
 		"form.original_fields": original_fields,
-		"form.layout_class": layout_class,
+		"form.classes": form_classes,
+		"form.localization_attribute": localization_attribute,
+		"form.details_classes": details_classes,
 		"form.localization_script": localization_enabled ? `<script src="/localized-form.js?v={= version}" defer></script>` : "",
 		"archive.form_restore_button": archive_form_restore_button(has_archive),
 		"archive.form_restore_ui": archive_form_restore_ui(has_archive, route_prefix, effective_route_name, route_param_value),

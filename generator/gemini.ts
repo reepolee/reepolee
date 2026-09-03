@@ -6,6 +6,8 @@
  * disabled (thinkingBudget: 0) so short translation calls stay fast.
  */
 
+import { retry_after_ms } from "./retry_after";
+
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
 export interface GeminiOptions {
@@ -54,6 +56,7 @@ export async function gemini_query(system_prompt: string, user_prompt: string, t
 			const elapsed = (performance.now() - start).toFixed(0);
 			const err: any = new Error(`Gemini API error: ${res.status} - ${text}`);
 			err.status = res.status;
+			err.retry_after_ms = retry_after_ms(res.headers, text);
 			console.error(`❌ Gemini error after ${elapsed}ms: ${res.status}`);
 			throw err;
 		}

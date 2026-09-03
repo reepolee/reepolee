@@ -6,8 +6,8 @@ import { describe, expect, mock, test } from "bun:test";
 // resolve_localized_values treats as the base row. Pin the config here, like
 // every other test that depends on it.
 mock.module("$config/supported_locales", () => ({
-	locales: ["en-us", "sl-si"],
-	active_locales: ["en-us", "sl-si"],
+	locales: ["en-us", "sl-si", "de-de"],
+	active_locales: ["sl-si"],
 	default_locale: "en-us",
 	locale_names: { "en-us": "English", "sl-si": "Slovenian" },
 	locale_aliases: {},
@@ -15,7 +15,17 @@ mock.module("$config/supported_locales", () => ({
 
 import { z } from "$vendor/zod.min.js";
 
-import { parse_changed_localized_form, resolve_localized_values, validate_touched_localized_inputs } from "./localized_form";
+import { editor_locales, parse_changed_localized_form, parse_localized_form, resolve_localized_values, validate_touched_localized_inputs } from "./localized_form";
+
+test("edits canonical English plus active locales, never inactive locales", () => {
+	expect(editor_locales()).toEqual(["en-us", "sl-si"]);
+	expect(parse_localized_form(new URLSearchParams({
+		"_lv[name][sl-si]": "Slovenian name",
+		"_lv[name][de-de]": "German name",
+	}), [{ field_name: "name", label: "Name", input_type: "text" }])).toEqual({
+		"sl-si": { name: "Slovenian name" },
+	});
+});
 
 describe("resolve_localized_values", () => {
 	test("keeps the default locale on the base row when the UI locale is Slovenian", () => {

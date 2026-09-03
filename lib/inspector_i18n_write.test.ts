@@ -43,6 +43,16 @@ describe("inspector translation file resolution", () => {
 		if (result.ok) expect(result.current).toBe("Home");
 	});
 
+	test("creates a missing locale file from its English namespace file for an inspector save", async () => {
+		const result = await resolve_i18n_target(project_dir, "home", "sl-si", "ui.title", true);
+
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.file).toBe(join(project_dir, MAIN_APP, "home", "sl-si.json"));
+			expect(result.current).toBe("Home");
+		}
+	});
+
 	test("falls back to the root file", async () => {
 		const result = await resolve_i18n_target(project_dir, "home", "en-us", "ui.global");
 		expect(result.ok).toBe(true);

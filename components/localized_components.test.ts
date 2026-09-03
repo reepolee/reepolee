@@ -129,6 +129,16 @@ describe("localized-field-tabs", () => {
 		expect(html).toContain('.localized-tab-panel[data-locale="de-de"]');
 	});
 
+	test("scopes radio and panel ids when the same field appears in a child form", async () => {
+		const html = await render_nested(
+			`<localized-field-tabs field="title" id-scope="child-comments" localization="{= props.localization }">${children}</localized-field-tabs>`,
+			{ localization },
+		);
+		expect(html).toContain('id="loc-tab-child-comments-title-en-us"');
+		expect(html).toContain('id="loc-tab-child-comments-title-de-de"');
+		expect(html).toContain('id="child-comments-title|de-de"');
+	});
+
 	test("renders a zero-JS reset-to-default '×' in the tabbar for each non-default locale", async () => {
 		// Lives in the tabbar (fixed position, no layout reflow) rather than
 		// inside the panel body, so switching locale tabs never changes field
@@ -209,5 +219,50 @@ describe("localized-panel", () => {
 		const html = await render("components/localized-panel", { "field-name": "title", locale: "de-de", localization: hostile });
 		expect(html).not.toContain('<script>alert("x")</script>');
 		expect(html).toContain("&lt;script&gt;");
+	});
+});
+
+describe("localized-input-text", () => {
+	test("renders every locale control while showing only the preferred locale", async () => {
+		const html = await render("components/localized-input-text", {
+			name: "title",
+			label: "Title",
+			localization: { ...localization, editor_locales: ["en-us", "sl-si", "de-de"], preferred_locale: "sl-si" },
+		});
+
+		expect(html).toContain('name="title"');
+		expect(html).toContain('name="_lv[title][sl-si]"');
+		expect(html).toContain('name="_lv[title][de-de]"');
+		expect(html).toContain('name="_original__lv[title][sl-si]"');
+		expect(html).toMatch(/id="localized-title-sl-si"[\s\S]*?value="sl-si"[\s\S]*?checked/);
+		expect(html).toContain('[data-localized-input="title"]:has(#localized-title-sl-si:checked)');
+	});
+
+	test("shows the locale with a validation error instead of the remembered locale", async () => {
+		const html = await render("components/localized-input-text", {
+			name: "title",
+			label: "Title",
+			localization: {
+				...localization,
+				editor_locales: ["en-us", "sl-si", "de-de"],
+				preferred_locale: "sl-si",
+				errors: { "title|de-de": "Title is required." },
+			},
+		});
+
+		expect(html).toMatch(/id="localized-title-de-de"[\s\S]*?value="de-de"[\s\S]*?checked/);
+		expect(html).toContain('id="error-title-de-de">Title is required.</validation-error>');
+	});
+
+	test("uses id scope to prevent nested form collisions", async () => {
+		const html = await render("components/localized-input-text", {
+			name: "title",
+			label: "Title",
+			"id-scope": "child-comments",
+			localization: { ...localization, editor_locales: ["en-us", "sl-si"] },
+		});
+
+		expect(html).toContain('id="localized-child-comments-title-en-us"');
+		expect(html).toContain('id="child-comments-title-sl-si"');
 	});
 });

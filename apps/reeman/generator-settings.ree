@@ -3,7 +3,7 @@
 {{ const pagination = attrs.pagination || "offset"; }}
 {{ const render_strategy = attrs["render-strategy"] || "load"; }}
 {{ const template_tags = attrs["template-tags"] || "tags"; }}
-<div class="grid grid-cols-1 gap-4 max-w-[60ch]">
+<div class="grid grid-cols-1 gap-4">
 	<field-wrapper class="grid" data-field="pagination">
 		<div class="grid">
 			<label class="px-3" for="{= id_prefix }-pagination">{_ labels.pagination}</label>

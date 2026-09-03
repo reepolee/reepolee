@@ -38,10 +38,10 @@ Bypass with `git commit --no-verify` (or `-n`) for WIP/emergency commits.
 - Live reload SSE at `/__reload`; CSS output goes to `static/app-dev.css` (gitignored).
 - Static files in `static/` are served directly.
 - **`await prev_server.stop()`** - macOS holds the port in TIME_WAIT briefly, so the old server stop must be awaited before starting a new one across `--watch` reloads.
-- **Translation sync timing:** to prevent premature restarts before translations are committed:
+- **Translation sync timing:** to prevent premature route reloads before translations are committed:
     - The CRUD generator defers writing `apps/main/routes.ts` until AFTER `sync_all_namespaces()` completes (stored in `_deferred_routes_content`, written just before `notify_server_reload()`).
     - The reeman calls `notify_server_reload()` after `sync_all_namespaces()` so the server picks up newly translated nav labels and CRUD keys.
-    - For server restarts, `notify_server_reload()` appends a reload stamp to `apps/main/routes.ts` (not `server.ts`) so Bun `--watch` detects the change and restarts.
+    - `notify_server_reload()` requests `POST /__reload-routes`, which imports the latest registry, rebuilds the live route table, and updates Bun's native production routes without restarting the process. The reload endpoint requires `INTERNAL_ADMIN_ENDPOINTS=true` and `RELOAD_SECRET`. If it is unavailable, development falls back to stamping `apps/main/routes.ts` for Bun `--hot`.
 
 ## SQL connection-pool gotcha
 

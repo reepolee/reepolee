@@ -25,6 +25,8 @@ export interface RouteSettings {
 	pagination_strategy: "cursor" | "offset";
 	render_strategy: "stream" | "load";
 	template_tags: "flat" | "tags";
+	form_hints: boolean;
+	form_details: boolean;
 }
 
 export function route_edit_path(url: string): string {
@@ -56,6 +58,8 @@ type TableModule = {
 	pagination_strategy: "cursor" | "offset";
 	render_strategy: "stream" | "load";
 	template_tags: "flat" | "tags";
+	form_hints?: boolean;
+	form_details?: boolean;
 	/** Field metadata (type, attributes) keyed by column name, from schema.generated.ts. */
 	fields?: Record<string, DefaultHelperField>;
 };
@@ -81,6 +85,8 @@ export function route_settings_from_module(route: RouteSchema, table_module: Tab
 		pagination_strategy: table_module.pagination_strategy,
 		render_strategy: table_module.render_strategy,
 		template_tags: table_module.template_tags,
+		form_hints: table_module.form_hints === true,
+		form_details: table_module.form_details === true,
 	};
 }
 

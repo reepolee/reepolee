@@ -130,12 +130,6 @@ export async function add_locale_to_system(locale_code: string, options: AddLoca
 		return `${open}\n\t${langs.join(",\n\t")},\n${close}`;
 	});
 
-	config_content = config_content.replace(/(export const active_locales = \[)(.*?)(\] as const)/s, (_, open, middle, close) => {
-		const langs = middle.split(",").map((l: string) => l.trim()).filter(Boolean);
-		langs.push(`"${locale_code}"`);
-		return `${open}\n\t${langs.join(",\n\t")},\n${close}`;
-	});
-
 	config_content = add_locale_name_to_config(config_content, locale_code, locale_name);
 
 	writeFileSync(config_path, config_content, "utf-8");

@@ -1,9 +1,12 @@
 {
 	"actions": {
+		"abort_delete": "Prekliči",
 		"add_another_route": "Dodaj drugo pot",
 		"bulk_action": "Izbriši izbrane db tabele",
 		"bulk_action_2": "Skupna akcija 2",
 		"cancel": "Prekliči",
+		"confirm_delete": "Da, izbriši",
+		"delete": "Izbriši",
 		"do_it": "Da, naredi",
 		"fields": "Samo polja",
 		"force": "Prisili prepis",
@@ -48,7 +51,11 @@
 		"default": "(privzeto)",
 		"display": "Prikaz",
 		"filter": "Filter",
+		"first_five_records": "Prvih pet zapisov",
 		"fk_count": "Število FK",
+		"form_details": "Ta obrazec bo vključeval podrobnosti ali otroške odseke",
+		"form_hints": "Ta obrazec bo vključeval namige polj",
+		"form_layout": "Postavitev obrazca",
 		"has_crud": "Ima CRUD",
 		"helper": "Predloga pomoči",
 		"index_columns": "Stolpci za indeks",
@@ -75,7 +82,7 @@
 		"record_created": "Zapis ustvarjen",
 		"record_updated": "Zapis posodobljen"
 	},
-	"nav": "Db tabele",
+	"nav": "DB tabele",
 	"route_name": "db-tabele",
 	"search": {
 		"search_term": "Iskanje db tabel...",
@@ -89,6 +96,7 @@
 		"default": "(ohrani trenutno)",
 		"modified": "Spremenjeno",
 		"per_page": "na stran",
+		"select": "-- Izberi --",
 		"select_table": "-- Izberi tabelo ali pot --",
 		"untracked": "Brez sledenja"
 	},
@@ -100,6 +108,8 @@
 		"loading_count": "Nalagam…",
 		"modifying": "Pred uporabami spremembo",
 		"no_records": "Ni najdenih db tabel.",
+		"no_sample_columns": "Za vzorec podatkov ni varnih stolpcev.",
+		"no_sample_records": "Ta tabela nima zapisov za vzorec.",
 		"no_selectable_columns": "Ni izbirnih stolpcev za indeks - uporabljene bodo privzete nastavitve generatorja.",
 		"no_tables_selected": "Pred ustvarjanjem CRUD izberite vsaj eno tabelo.",
 		"records": "zapis(ov)",

@@ -6,6 +6,7 @@ export async function get___table.exact___edit(req: BunRequest): Promise<Respons
 	if (!record) {
 		return Response.json({ error: "Not found" }, { status: 404 });
 	}
+	__edit.load_nested_localization__
 
-	return Response.json({ record });
+	return Response.json({ record__edit.nested_localization_data__ });
 }

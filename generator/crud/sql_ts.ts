@@ -166,10 +166,7 @@ export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 		readonly_fields = new Set(),
 	} = options;
 
-	// Content localization only reaches search_records for plain (non-nested)
-	// tables - a nested child is scoped to its parent record and is localized
-	// through that parent, never independently.
-	const localized = !is_nested && localization_enabled;
+	const localized = localization_enabled;
 	const locale_param = localized ? ", locale_code: string = \"\"" : "";
 	const locale_arg = localized ? ", locale_code" : "";
 	const cache_key_locale = localized ? ", locale_code" : "";
@@ -281,10 +278,14 @@ function archive_clause(archive_filter: ArchiveFilter): string {
 \t\t\t\t\t}` : "";
 	const nested_delete_write = has_archive
 		? `const result = await db\`UPDATE ${table_name} SET ${ARCHIVE_TIMESTAMP_FIELD} = CURRENT_TIMESTAMP, ${ARCHIVE_USER_FIELD} = \${${ARCHIVE_USER_FIELD}} WHERE id = \${id} AND ${ARCHIVE_TIMESTAMP_FIELD} IS NULL\`;`
-		: `const result = await db\`DELETE FROM ${table_name} WHERE id = \${id}\`;`;
+		: localized
+			? `const result: any = { affectedRows: await fan_out_delete(TABLE_NAME, id) };\n\t\t\tawait invalidate_all_locales(TABLE_NAME);`
+			: `const result = await db\`DELETE FROM ${table_name} WHERE id = \${id}\`;`;
 	const nested_delete_parent_write = has_archive
 		? `const result = await db\`UPDATE ${table_name} SET ${ARCHIVE_TIMESTAMP_FIELD} = CURRENT_TIMESTAMP, ${ARCHIVE_USER_FIELD} = \${${ARCHIVE_USER_FIELD}} WHERE id = \${id} AND ${parent_info?.fk_column || "parent_id"} = \${parent_id} AND ${ARCHIVE_TIMESTAMP_FIELD} IS NULL\`;`
-		: `const result = await db\`DELETE FROM ${table_name} WHERE id = \${id} AND ${parent_info?.fk_column || "parent_id"} = \${parent_id}\`;`;
+		: localized
+			? `const matches = await db\`SELECT id FROM ${table_name} WHERE id = \${id} AND ${parent_info?.fk_column || "parent_id"} = \${parent_id} LIMIT 1\`;\n\t\t\tconst result: any = { affectedRows: matches.length > 0 ? await fan_out_delete(TABLE_NAME, id) : 0 };\n\t\t\tawait invalidate_all_locales(TABLE_NAME);`
+			: `const result = await db\`DELETE FROM ${table_name} WHERE id = \${id} AND ${parent_info?.fk_column || "parent_id"} = \${parent_id}\`;`;
 	const include_archived_param = has_archive ? ", include_archived: boolean = false" : "";
 	const include_archived_setup = has_archive
 		? `const archive_where = include_archived ? "" : " AND ${ARCHIVE_TIMESTAMP_FIELD} IS NULL";`

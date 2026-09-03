@@ -6,6 +6,7 @@ describe("safe_return_to", () => {
 	test("allows route detail pages after refresh", () => {
 		expect(safe_return_to("/routes/1")).toBe("/routes/1");
 		expect(safe_return_to("/routes/42/")).toBe("/routes/42");
+		expect(safe_return_to("/routes/edit?url=%2Fmetrics")).toBe("/routes/edit?url=%2Fmetrics");
 	});
 
 	test("rejects non-numeric and external return targets", () => {

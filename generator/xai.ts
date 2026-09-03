@@ -2,6 +2,8 @@
  * Shared xAI Grok API helper for generator scripts.
  */
 
+import { retry_after_ms } from "./retry_after";
+
 const XAI_URL = "https://api.x.ai/v1/chat/completions";
 
 export interface Xai_options {
@@ -37,6 +39,7 @@ export async function xai_query(system_prompt: string, user_prompt: string, titl
 			const text = await response.text();
 			const error: any = new Error(`xAI API error: ${response.status} - ${text}`);
 			error.status = response.status;
+			error.retry_after_ms = retry_after_ms(response.headers, text);
 			throw error;
 		}
 

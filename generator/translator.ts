@@ -1,6 +1,8 @@
 import { count_leaves } from "$lib/translation_merge";
 
 import { chat_query, get_active_provider, hf_translate_json } from "./ai-provider";
+import { deepl_translate_json } from "./deepl";
+import { retry_delay_ms } from "./retry_after";
 
 interface TranslateOptions {
 	max_retries?: number;
@@ -109,6 +111,15 @@ export async function translate_json(input: Record<string, any>, targetLang: str
 		log_translation_output(targetLang, restored_result);
 		return restored_result;
 	}
+	if (provider === "deepl") {
+		const t_start = performance.now();
+		const result = await deepl_translate_json(safe_input, source_lang ?? "English", targetLang, { timeout, max_retries });
+		const t_elapsed = (performance.now() - t_start).toFixed(0);
+		console.log(`✅ DeepL translation complete in ${t_elapsed}ms`);
+		const restored_result = restore_urls(result, url_entries);
+		log_translation_output(targetLang, restored_result);
+		return restored_result;
+	}
 
 	// OpenRouter path: LLM handles JSON natively
 
@@ -158,8 +169,11 @@ export async function translate_json(input: Record<string, any>, targetLang: str
 			// ❌ do not retry auth/billing errors
 			if (status === 401 || status === 402 || status === 403) { break; }
 
-			// retry backoff
-			if (attempt < max_retries) { await new Promise((r) => setTimeout(r, 800)); }
+			if (attempt < max_retries) {
+				const delay_ms = retry_delay_ms(err, 800);
+				if (status === 429) console.log(`⏳ Rate limited. Retrying in ${(delay_ms / 1000).toFixed(0)} seconds.`);
+				await Bun.sleep(delay_ms);
+			}
 		}
 	}
 
@@ -242,8 +256,11 @@ async function translate_in_chunks(
 				// ❌ do not retry auth/billing errors
 				if (status === 401 || status === 402 || status === 403) { throw last_error; }
 
-				// retry backoff
-				if (attempt < max_retries) { await new Promise((r) => setTimeout(r, 800)); }
+				if (attempt < max_retries) {
+					const delay_ms = retry_delay_ms(err, 800);
+					if (status === 429) console.log(`⏳ Rate limited. Retrying in ${(delay_ms / 1000).toFixed(0)} seconds.`);
+					await Bun.sleep(delay_ms);
+				}
 			}
 		}
 

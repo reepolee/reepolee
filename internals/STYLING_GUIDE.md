@@ -30,11 +30,11 @@ silently ran the npm shim instead of the standalone binary and broke
 
 | Command            | Runs                                                            | Output                | Use                              |
 | ------------------ | --------------------------------------------------------------- | --------------------- | -------------------------------- |
-| `bun run css:once`  | `tw -i ./css/app.css -o ./static/app-dev.css`                   | `static/app-dev.css`  | One-shot dev build               |
-| `bun run css:watch` | `tw -i ./css/app.css -o ./static/app-dev.css --watch=always`    | `static/app-dev.css`  | Watch mode (`bun dev` runs this) |
+| `bun run css:once`  | `tw -i ./css/app.css -o ./static/app.css`                   | `static/app.css`  | One-shot dev build               |
+| `bun run css:watch` | `tw -i ./css/app.css -o ./static/app.css --watch=always`    | `static/app.css`  | Watch mode (`bun dev` runs this) |
 | `bun run css:build` | `tw -i ./css/app.css -o ./static/app.css --minify`              | `static/app.css`      | Production, minified             |
 
-Pages link `/app-dev.css` in dev and `/app.css` in prod (see `apps/main/layout.ree`).
+Pages link `/app.css` in dev and `/app.css` in prod (see `apps/main/layout.ree`).
 
 ### Class scanning
 

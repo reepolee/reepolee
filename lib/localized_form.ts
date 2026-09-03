@@ -12,7 +12,7 @@
  * state, so no `present` map and no "use original" checkbox.
  */
 
-import { default_locale, locale_names, locales } from "$config/supported_locales";
+import { active_locales, default_locale, locale_names } from "$config/supported_locales";
 
 /** A localized field plus the bits the panel component needs to render it. */
 export interface LocalizedFormField {
@@ -23,7 +23,9 @@ export interface LocalizedFormField {
 }
 
 export interface LocalizationProps {
-	/** Every supported locale, including inactive locales being prepared. */
+	/** Locales the editor renders and submits: canonical source plus active locales. */
+	editor_locales: string[];
+	/** @deprecated Use editor_locales. Kept while legacy localized components remain available. */
 	active_locales: string[];
 	default_locale: string;
 	locale_names: Record<string, string>;
@@ -66,6 +68,11 @@ export function localized_input_name(field_name: string, locale_code: string): s
 	return `_lv[${field_name}][${locale_code}]`;
 }
 
+/** Canonical source content is editable even when it is not visitor-active. */
+export function editor_locales(): string[] {
+	return [default_locale, ...active_locales.filter((locale) => locale !== default_locale)];
+}
+
 /**
  * Every locale's value for every localized field, keyed for the panel.
  *
@@ -80,8 +87,9 @@ export function resolve_localized_values(
 ): Record<string, string | number | boolean> {
 	const values: Record<string, string | number | boolean> = {};
 
+	const editable_locales = editor_locales();
 	for (const field of fields) {
-		for (const locale_code of locales as readonly string[]) {
+		for (const locale_code of editable_locales) {
 			const source = locale_code === default_locale ? record : locale_rows[locale_code] ?? record;
 			const value = source?.[field.field_name];
 			if (value === null || value === undefined) continue;
@@ -109,15 +117,15 @@ export function build_localization_props(options: BuildLocalizationOptions): Loc
 		upload_folder: field.upload_folder,
 	}));
 
-	// The default locale is the "Original" tab and always leads, regardless of
-	// the order it happens to sit in locales.
-	const ordered_locales = [default_locale, ...locales.filter((locale) => locale !== default_locale)];
-	const preferred_locale = options.preferred_locale && (ordered_locales as readonly string[]).includes(options.preferred_locale)
+	// The canonical source always leads, whether or not visitors can select it.
+	const editable_locales = editor_locales();
+	const preferred_locale = options.preferred_locale && editable_locales.includes(options.preferred_locale)
 		? options.preferred_locale
 		: undefined;
 
 	return {
-		active_locales: ordered_locales,
+		editor_locales: editable_locales,
+		active_locales: editable_locales,
 		default_locale,
 		locale_names,
 		fields: panel_fields,
@@ -139,7 +147,7 @@ export function build_localization_props(options: BuildLocalizationOptions): Loc
  */
 export function parse_localized_form(params: URLSearchParams, fields: readonly LocalizedFormField[]): Record<string, Record<string, string>> {
 	const by_locale: Record<string, Record<string, string>> = {};
-	const allowed = new Set((locales as readonly string[]).filter((locale) => locale !== default_locale));
+	const allowed = new Set(editor_locales().filter((locale) => locale !== default_locale));
 
 	for (const field of fields) {
 		for (const locale_code of allowed) {
@@ -226,6 +234,7 @@ export function validate_touched_localized_inputs(
 		const field_name = match[1]!;
 		const locale = match[2]!;
 		if (!fields.some((field) => field.field_name === field_name)) continue;
+		if (!editor_locales().includes(locale)) continue;
 		(by_locale[locale] ??= {})[field_name] = String(body[name] ?? "");
 	}
 
@@ -278,7 +287,7 @@ export function parse_copy_request(params: URLSearchParams): CopyRequest | null 
 	const from_locale = params.get(`_copy_from[${to_locale}]`) ?? "";
 	if (!from_locale || !to_locale || from_locale === to_locale) return null;
 
-	const allowed = locales as readonly string[];
+	const allowed = editor_locales();
 	if (!allowed.includes(from_locale) || !allowed.includes(to_locale)) return null;
 
 	return { from_locale, to_locale, field_name };
@@ -301,7 +310,7 @@ export function parse_generate_request(params: URLSearchParams): GenerateRequest
 	const from_locale = params.get(`_copy_from[${to_locale}]`) ?? "";
 	if (!from_locale || from_locale === to_locale) return null;
 
-	const allowed = locales as readonly string[];
+	const allowed = editor_locales();
 	if (!allowed.includes(from_locale) || !allowed.includes(to_locale)) return null;
 
 	return { from_locale, to_locale };

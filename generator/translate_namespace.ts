@@ -104,7 +104,9 @@ export async function sync_single_namespace(namespace: string, translate: boolea
 		if (locale === default_locale) continue;
 
 		const lang_obj = lang_data[locale] || {};
-		let synced = sync_lang_to_en(en_obj, lang_obj, translate);
+		// Structural sync always retains the missing marker. AI mode reads that
+		// marker below and replaces only those keys after a successful response.
+		let synced = sync_lang_to_en(en_obj, lang_obj, false);
 
 		if (translate) {
 			const total_keys = count_leaves(en_obj);

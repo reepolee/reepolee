@@ -57,24 +57,41 @@ export async function install_locale_from_archive(locale_code: string, options: 
 	}
 
 	const cfg = read_supported_locales();
-	if (cfg.locales.includes(code)) {
-		console.error(`Error: Locale "${code}" is already installed (listed in supported locales).`);
-		return false;
-	}
+	const is_installed = cfg.locales.includes(code);
+	const needs_activation = activate && !cfg.active_locales.includes(code);
 
 	try {
 		const bundle = await install_archived_translation_bundle(code);
-		console.log(`Installed ${Object.keys(bundle.files).length} translation file(s) from ${code}.json.`);
+		console.log(`Restored ${Object.keys(bundle.files).length} translation file(s) from ${code}.json.`);
 	} catch (error) {
 		console.error(`Error: Could not install archived locale "${code}": ${error instanceof Error ? error.message : String(error)}`);
 		return false;
 	}
 
 	const next = { ...cfg };
-	next.locales = [...cfg.locales, code];
-	if (activate) next.active_locales = [...cfg.active_locales, code];
-	next.locale_names = { ...cfg.locale_names, [code]: display_name_for(code) };
-	write_supported_locales(next);
+	if (!is_installed) {
+		next.locales = [...cfg.locales, code];
+		next.locale_names = { ...cfg.locale_names, [code]: display_name_for(code) };
+	}
+	if (!is_installed) write_supported_locales(next);
+
+	console.log(`Synchronizing localized tables for ${code}...`);
+	try {
+		const { format_sync_actions, run_locale_table_sync } = await import("./locale_tables/run");
+		const { results } = await run_locale_table_sync();
+		for (const result of results) {
+			const descriptions = format_sync_actions(result.actions);
+			for (const description of descriptions) console.log(`   ✓ ${description}`);
+		}
+	} catch (error) {
+		console.error(`Error: Could not synchronize localized tables for "${code}": ${error instanceof Error ? error.message : String(error)}`);
+		return false;
+	}
+
+	if (needs_activation) {
+		const activated = { ...next, active_locales: [...next.active_locales, code] };
+		write_supported_locales(activated);
+	}
 
 	try {
 		await notify_server_reload();
@@ -82,7 +99,7 @@ export async function install_locale_from_archive(locale_code: string, options: 
 		// The server may not be running. Files and config are already installed.
 	}
 
-	console.log(`Locale "${code}" installed${activate ? " and activated" : " as inactive"}.`);
+	console.log(`Locale "${code}" ${is_installed ? "restored" : "installed"}${needs_activation ? " and activated" : ""}.`);
 	return true;
 }
 

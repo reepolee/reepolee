@@ -1,12 +1,16 @@
 {
 	"actions": {
+		"abort_delete": "Prekliči",
+		"add_children": "Dodaj otroke",
 		"add_condition": "Dodaj pogoj",
 		"add_page": "Dodaj preprosto stran",
 		"add_table_page": "Dodaj preprosto tabelarno stran",
 		"bulk_action": "Izbriši izbrane db poti",
 		"bulk_action_2": "Skupna akcija 2",
 		"cancel": "Prekliči",
+		"confirm_delete": "Da, izbriši",
 		"create": "Ustvari",
+		"delete": "Izbriši",
 		"do_it": "Da, naredi",
 		"fields": "Samo polja",
 		"force": "Prisili prepis",
@@ -15,7 +19,8 @@
 		"remove": "Odstrani",
 		"remove_route": "Odstrani pot",
 		"save": "Shrani",
-		"save_close": "Shrani in zapri"
+		"save_close": "Shrani in zapri",
+		"translate": "Prevedi z UI"
 	},
 	"child_ui": {
 		"actions": "Akcije",
@@ -46,13 +51,15 @@
 		"route_name": "Enolično ime poti z malimi črkami, števkami, - ali _."
 	},
 	"labels": {
+		"children": "Otroci",
 		"class": "Razred",
 		"default": "(privzeto)",
-		"delete_translations": "Izbriši prevode",
 		"display": "Prikaz",
 		"fields": "Polja",
 		"filter": "Filter",
 		"folder_name": "Ime mape",
+		"form_details": "Ta obrazec bo vključeval podrobnosti ali otroške odseke",
+		"form_hints": "Ta obrazec bo vključeval namige polj",
 		"helper": "Predloga pomoči",
 		"index_columns": "Stolpci za indeks",
 		"localized": "Lokalizirano",
@@ -72,6 +79,7 @@
 		"template_hash_status": "Predloge",
 		"template_tags": "Predloge polj",
 		"url": "URL",
+		"via_fk": "prek FK",
 		"where": "Pogoj",
 		"width": "Širina"
 	},
@@ -83,7 +91,7 @@
 		"record_created": "Zapis ustvarjen",
 		"record_updated": "Zapis posodobljen"
 	},
-	"nav": "Db poti",
+	"nav": "DB rute",
 	"route_name": "db-poti",
 	"search": {
 		"search_term": "Iskanje db poti...",
@@ -101,6 +109,7 @@
 		"untracked": "Brez sledenja"
 	},
 	"ui": {
+		"add_children_hint": "Izberite otroške poti s tujim ključem za povezavo z",
 		"add_page_hint": "Ustvari statično stran (brez baze) iz predloge simple-page.",
 		"add_page_title": "Dodaj preprosto stran",
 		"add_table_page_hint": "Ustvari samo za branje seznamsko stran, ki temelji na tabeli v bazi.",
@@ -111,6 +120,7 @@
 		"filter_not": "NI",
 		"loading_count": "Nalagam…",
 		"modifying": "Pred uporabami spremembo",
+		"no_eligible_children": "Nobena primerna otroška tabela ne kaže na to pot.",
 		"no_records": "Ni najdenih db poti.",
 		"no_tables": "V bazi ni najdenih tabel.",
 		"records": "zapis(ov)",

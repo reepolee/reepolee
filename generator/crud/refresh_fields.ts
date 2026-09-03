@@ -14,7 +14,7 @@ import { sync_single_namespace } from "../translate_namespace";
 import { entry_fields } from "../validation_generator";
 import { generate_field_block } from "./form_ree";
 import { find_v_field, log_step, replace_between_markers, route_dir_to_namespace, smart_merge_fields } from "./helpers";
-import { refresh_child_section_in_parent } from "./nested_integration";
+import { integrate_nested_child } from "./nested_integration";
 import { render_field_cell } from "./render_field_cell";
 import { stamp_generated_ree_hashes } from "./ree_hash";
 import type { ColumnDef, FieldDef, ForeignKeyMap, LocalizedFieldMeta, ParentInfo } from "./types";
@@ -31,6 +31,7 @@ export interface RefreshFieldsConfig {
 	fields: FieldDef[];
 	v_fields: FieldDef[] | null;
 	columns: Record<string, ColumnDef> | null;
+	column_names: string[];
 	foreign_keys: ForeignKeyMap;
 	route_prefix: string;
 	is_nested: boolean;
@@ -38,6 +39,7 @@ export interface RefreshFieldsConfig {
 	translate_in_args: boolean;
 	template_tags: "flat" | "tags";
 	localized_fields: LocalizedFieldMeta[];
+	form_details: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -45,7 +47,7 @@ export interface RefreshFieldsConfig {
 // ---------------------------------------------------------------------------
 
 export async function refresh_fields(config: RefreshFieldsConfig): Promise<boolean> {
-	const { table_name, route_dir, relative_dir, fields, v_fields, columns, foreign_keys, route_prefix, is_nested, parent_info, translate_in_args, template_tags, localized_fields } = config;
+	const { table_name, route_dir, relative_dir, fields, v_fields, columns, column_names, foreign_keys, route_prefix, is_nested, parent_info, translate_in_args, template_tags, localized_fields, form_details } = config;
 	log_step(`Refreshing fields only for ${table_name}`);
 
 	// Load schema from DB structure cache instead of re-introspecting
@@ -101,7 +103,8 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 			is_nested,
 			parent_info,
 			template_tags,
-			localized_fields
+			localized_fields,
+			form_details,
 		);
 		await refresh_index_ree(table_name, route_dir, fields, refreshed_v_fields, columns);
 	}
@@ -119,16 +122,6 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 	}
 	await stamp_generated_ree_hashes(route_dir);
 
-	if (translate_in_args) {
-		const namespace = route_dir_to_namespace(route_dir);
-		log_step(`Syncing translations for namespace "${namespace}"...`);
-		try {
-			await sync_single_namespace(namespace, true);
-		} catch (err) {
-			console.error("Error syncing translations:", err instanceof Error ? err.message : err);
-		}
-	}
-
 	// Refresh child section in parent form.ree if nested
 	if (is_nested && parent_info) {
 		const parent_dir = join(process.cwd(), MAIN_APP, parent_info.table);
@@ -142,27 +135,19 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 			}
 		}
 
-		await refresh_child_section_in_parent(
+		await integrate_nested_child({
 			table_name,
 			parent_info,
-			resolved_parent_dir,
+			parent_dir: resolved_parent_dir,
 			fields,
-			refreshed_v_fields,
+			v_fields: refreshed_v_fields,
+			column_names,
 			columns,
 			foreign_keys,
 			route_prefix,
-			route_dir
-		);
-
-		if (translate_in_args) {
-			const namespace = route_dir_to_namespace(route_dir);
-			log_step(`Syncing translations for namespace "${namespace}"...`);
-			try {
-				await sync_single_namespace(namespace, true);
-			} catch (err) {
-				console.error("Error syncing translations:", err instanceof Error ? err.message : err);
-			}
-		}
+			route_dir,
+			localized_fields,
+		});
 
 		const parent_routes_rel = resolved_parent_dir.replace(`${join(process.cwd())}/`, "");
 		log_step(`Formatting parent directory: ${parent_routes_rel}`);
@@ -176,6 +161,15 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 			console.error("Error formatting parent directory:", err instanceof Error ? err.message : err);
 		}
 		await stamp_generated_ree_hashes(resolved_parent_dir);
+	}
+
+	const namespace = route_dir_to_namespace(route_dir);
+	const sync_mode = translate_in_args ? "with AI" : "structure only";
+	log_step(`Syncing translations (${sync_mode}) for namespace "${namespace}"...`);
+	try {
+		await sync_single_namespace(namespace, translate_in_args);
+	} catch (err) {
+		console.error("Error syncing translations:", err instanceof Error ? err.message : err);
 	}
 
 	log_step(`Field refresh finished for ${table_name}`);
@@ -197,6 +191,7 @@ async function refresh_form_ree(
 	parent_info: ParentInfo | undefined,
 	template_tags: "flat" | "tags",
 	localized_fields: LocalizedFieldMeta[],
+	form_details: boolean,
 ): Promise<void> {
 	const form_path = join(route_dir, "form.ree");
 	const form_exists = await Bun.file(form_path).exists();
@@ -236,9 +231,19 @@ async function refresh_form_ree(
 
 	const merged = smart_merge_fields(old_section, new_field_blocks, template_tags);
 	form_content = replace_between_markers(form_content, "FIELDS", merged.trim());
+	form_content = sync_details_container(form_content, form_details);
 
 	await Bun.write(form_path, form_content);
 	console.log("✓ Refreshed form.ree fields (smart merge)");
+}
+
+/** Keep the generated details slot aligned with the persisted form setting. */
+export function sync_details_container(form_content: string, form_details: boolean): string {
+	const details_classes = form_details
+		? "col-span-full gap-4 grid empty:hidden lg:col-start-3 lg:self-start"
+		: "col-span-full gap-4 hidden";
+	const generated_details = /<aside class="col-span-full gap-4 (?:hidden|grid empty:hidden lg:col-start-3 lg:self-start)" data-form-details>/;
+	return form_content.replace(generated_details, `<aside class="${details_classes}" data-form-details>`);
 }
 
 // ---------------------------------------------------------------------------

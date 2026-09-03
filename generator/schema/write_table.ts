@@ -397,6 +397,8 @@ export interface WriteTableConfig {
 	pagination_strategy?: "cursor" | "offset";
 	render_strategy?: "stream" | "load";
 	template_tags?: "flat" | "tags";
+	form_hints?: boolean;
+	form_details?: boolean;
 	/**
 	 * Explicit index-grid column selection. Columns outside this list are written
 	 * with `grid: false`. Omit to apply the default cap of DEFAULT_GRID_COLUMN_CAP.
@@ -495,7 +497,7 @@ function inject_navigation_declaration(source: string, navigation: NavigationCon
 }
 
 export async function write_table_file(config: WriteTableConfig): Promise<void> {
-	const { dir, schema_obj, type_mapper, all_tables_columns, all_tables_indexes, pagination_strategy = "offset", render_strategy = "load", template_tags = "flat", grid_columns, grid_column_definitions, localize_content: localize_content_override } = config;
+	const { dir, schema_obj, type_mapper, all_tables_columns, all_tables_indexes, pagination_strategy = "offset", render_strategy = "load", template_tags = "flat", form_hints = false, form_details = false, grid_columns, grid_column_definitions, localize_content: localize_content_override } = config;
 	const config_ts_path = join(dir, "config.ts");
 	const exists = await Bun.file(config_ts_path).exists();
 	const navigation = await navigation_for_new_route(dir);
@@ -582,8 +584,11 @@ const render_strategy: "stream" | "load" = "${render_strategy}";
 // Use "tags" once a form's layout is stable and won't need per-field HTML customization.
 const template_tags: "flat" | "tags" = "${template_tags}";
 
+const form_hints = ${form_hints};
+const form_details = ${form_details};
+
 ${navigation_source}
-${global_scopes_block ? `\n${global_scopes_block}\n` : ""}${parent_export_block}export { columns, route_param, enable_archive, grid_filler, pagination_strategy, render_strategy, template_tags, navigation${global_scopes_block ? ", global_scopes" : ""} };
+${global_scopes_block ? `\n${global_scopes_block}\n` : ""}${parent_export_block}export { columns, route_param, enable_archive, grid_filler, pagination_strategy, render_strategy, template_tags, form_hints, form_details, navigation${global_scopes_block ? ", global_scopes" : ""} };
 `;
 
 	await Bun.write(config_ts_path, content);
@@ -751,6 +756,8 @@ export interface TableFileSettings {
 	pagination_strategy?: "cursor" | "offset";
 	render_strategy?: "stream" | "load";
 	template_tags?: "flat" | "tags";
+	form_hints?: boolean;
+	form_details?: boolean;
 	grid_columns?: string[];
 	grid_column_definitions?: GridColumnDefinition[];
 }
@@ -787,12 +794,19 @@ function set_schema_setting(source: string, setting: "pagination_strategy" | "re
 	return source.replace(setting_pattern, `$1${JSON.stringify(value)}`);
 }
 
+function set_form_setting(source: string, setting: "form_hints" | "form_details", value: boolean): string {
+	const setting_pattern = new RegExp(`(const ${setting}\\s*=\\s*)(true|false)`);
+	return source.replace(setting_pattern, `$1${value}`);
+}
+
 function apply_table_file_settings(source: string, settings: TableFileSettings): { source: string; updated_names: string[]; } {
 	const grid_result = apply_grid_settings(source, settings);
 	let working_source = grid_result.source;
 	if (settings.pagination_strategy) working_source = set_schema_setting(working_source, "pagination_strategy", settings.pagination_strategy);
 	if (settings.render_strategy) working_source = set_schema_setting(working_source, "render_strategy", settings.render_strategy);
 	if (settings.template_tags) working_source = set_schema_setting(working_source, "template_tags", settings.template_tags);
+	if (settings.form_hints !== undefined) working_source = set_form_setting(working_source, "form_hints", settings.form_hints);
+	if (settings.form_details !== undefined) working_source = set_form_setting(working_source, "form_details", settings.form_details);
 	return { source: working_source, updated_names: grid_result.updated_names };
 }
 

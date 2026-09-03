@@ -89,7 +89,7 @@ export async function close_db(): Promise<void> {
 	globalThis.__reepolee_db = undefined;
 }
 
-const db_message = `\x1b[34mUsing ${url}\x1b[0m`;
+const db_message = `\x1b[34mUsing ${prefix.toUpperCase()} database\x1b[0m`;
 if (env_switch_on("MCP_STDIO")) {
 	console.error(db_message);
 } else {

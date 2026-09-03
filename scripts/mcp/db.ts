@@ -1,5 +1,4 @@
 import { DB_CONNECTION_STRING } from "$config/db";
-import { env_available } from "$config/env_vars";
 import { SQL } from "bun";
 import {
 	BOOLEAN_PREFIXES,
@@ -84,11 +83,7 @@ function sqlite_read_only_url(connection_string: string): string {
 function get_inspection_db(): SQL {
 	if (inspection_db) { return inspection_db; }
 	if (db_type !== "sqlite") {
-		const read_only_connection = env_available("MCP_READONLY_CONNECTION_STRING") ? Bun.env.MCP_READONLY_CONNECTION_STRING : undefined;
-		if (!read_only_connection) {
-			throw new Error("MCP inspection with MySQL requires MCP_READONLY_CONNECTION_STRING for a SELECT-only database user");
-		}
-		inspection_db = new SQL(read_only_connection);
+		inspection_db = new SQL(DB_CONNECTION_STRING);
 		return inspection_db;
 	}
 

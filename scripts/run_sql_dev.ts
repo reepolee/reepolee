@@ -38,23 +38,18 @@
 // the JSON result - same mechanism scripts/mcp/start.ts uses for the MCP.Bun.env.MCP_STDIO = "true";
 
 const use_test_connection = process.argv.includes("--test");
-const selected_connection = use_test_connection
-	? Bun.env.TEST_CONNECTION_STRING
-	: Bun.env.DEV_CONNECTION_STRING;
-if (!selected_connection) {
-	console.error(`✗ Missing ${use_test_connection ? "TEST_CONNECTION_STRING" : "DEV_CONNECTION_STRING"}`);
-	process.exit(1);
-}
 
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { get_connection_string } from "$lib/env";
+import type { ReadOnlySqlRunnerResult, SqlRunnerResult } from "$lib/sql_runner";
 
 const { SQL } = await import("bun");
+const selected_connection = get_connection_string(use_test_connection ? "TEST" : "DEV");
 const sql_connection = new SQL(selected_connection);
 const db_type: "mysql" | "sqlite" = selected_connection.toLowerCase().startsWith("mysql:") ? "mysql" : "sqlite";
 const close_db = async () => { await sql_connection.close(); };
 const { normalize_query_limit, run_sql, run_sql_read_only, split_sql_statements } = await import("$lib/sql_runner");
-import type { ReadOnlySqlRunnerResult, SqlRunnerResult } from "$lib/sql_runner";
 
 const args = process.argv.slice(2);
 const allow_changes = args.includes("--allow-changes");

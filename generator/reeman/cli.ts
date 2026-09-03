@@ -203,6 +203,8 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 					render_strategy: flags.render_strategy,
 					route_name: flags.route_name,
 					template_tags: flags.template_tags,
+					form_hints: flags.form_hints,
+					form_details: flags.form_details,
 					grid_columns: flags.grid_columns,
 					grid_column_definitions: flags.grid_column_definitions,
 				});
@@ -404,17 +406,16 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 				args: rest,
 				options: {
 					force: { type: "boolean", default: false },
-					"delete-translations": { type: "boolean" },
 				},
 				allowPositionals: true,
 				strict: false,
 			});
 			const url = positionals[0] !== undefined ? String(positionals[0]) : undefined;
 			if (!url) {
-				console.error("Usage: bun reeman remove-route <url> [--force] [--delete-translations]");
+				console.error("Usage: bun reeman remove-route <url> [--force]");
 				process.exit(1);
 			}
-			await remove_route(url, Boolean(values.force), values["delete-translations"] === undefined ? undefined : Boolean(values["delete-translations"]));
+			await remove_route(url, Boolean(values.force));
 			process.exit(0);
 		}
 
@@ -423,17 +424,16 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 				args: rest,
 				options: {
 					force: { type: "boolean", default: false },
-					"delete-translations": { type: "boolean" },
 				},
 				allowPositionals: true,
 				strict: false,
 			});
 			const name = positionals[0] !== undefined ? String(positionals[0]) : undefined;
 			if (!name) {
-				console.error("Usage: bun reeman remove-prefix-folder <name> [--force] [--delete-translations]");
+				console.error("Usage: bun reeman remove-prefix-folder <name> [--force]");
 				process.exit(1);
 			}
-			await remove_prefix_folder(name, Boolean(values.force), values["delete-translations"] === undefined ? undefined : Boolean(values["delete-translations"]));
+			await remove_prefix_folder(name, Boolean(values.force));
 			process.exit(0);
 		}
 
@@ -442,12 +442,11 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 				args: rest,
 				options: {
 					force: { type: "boolean", default: false },
-					"delete-translations": { type: "boolean" },
 				},
 				allowPositionals: true,
 				strict: false,
 			});
-			await remove_examples_folder(Boolean(values.force), values["delete-translations"] === undefined ? undefined : Boolean(values["delete-translations"]));
+			await remove_examples_folder(Boolean(values.force));
 			process.exit(0);
 		}
 

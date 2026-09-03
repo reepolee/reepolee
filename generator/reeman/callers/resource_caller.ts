@@ -12,6 +12,7 @@ import type { GridColumnDefinition } from "../../schema/types";
 export interface ResourceCallOptions {
 	prefix?: string;
 	parent_table?: string;
+	parent_fk_column?: string;
 	force?: boolean;
 	/** Allow an overwrite prompt to block on stdin (CLI only). Web/MCP callers pass false. */
 	interactive?: boolean;
@@ -20,9 +21,16 @@ export interface ResourceCallOptions {
 	pagination_method?: "cursor" | "offset";
 	render_strategy?: "stream" | "load";
 	template_tags?: "flat" | "tags";
+	form_hints?: boolean;
+	form_details?: boolean;
 	/** Index-grid columns chosen interactively - see SchemaOptions.grid_columns. */
 	grid_columns?: string[];
 	grid_column_definitions?: GridColumnDefinition[];
+}
+
+export interface NestedChildSelection {
+	table: string;
+	fk_column: string;
 }
 
 /**
@@ -35,10 +43,13 @@ export async function run_full_pipeline(table: string, options: ResourceCallOpti
 	const schema_success = await generate_schema(table, {
 		prefix: options.prefix,
 		parent_table: options.parent_table,
+		parent_fk_column: options.parent_fk_column,
 		pagination_strategy: options.pagination_method,
 		route_name: options.route_name,
 		grid_columns: options.grid_columns,
 		grid_column_definitions: options.grid_column_definitions,
+		form_hints: options.form_hints,
+		form_details: options.form_details,
 	});
 
 	if (!schema_success) {
@@ -148,4 +159,40 @@ export async function run_bulk_nested_generator(
 	}
 
 	return { success: success_count, fail: fail_count };
+}
+
+/** Generate explicitly selected nested children, preserving each chosen FK. */
+export async function run_selected_nested_children(
+	children: NestedChildSelection[],
+	parent_table: string,
+	prefix: string,
+	pagination_method: "cursor" | "offset" = "offset",
+	render_strategy: "stream" | "load" = "load",
+	translate: boolean = false,
+	template_tags?: "flat" | "tags",
+): Promise<{ success: number; fail: number; }> {
+	let success = 0;
+	let fail = 0;
+	for (const child of children) {
+		console.log(`\nGenerating nested child ${child.table} through ${child.fk_column}`);
+		const generated = await run_full_pipeline(child.table, {
+			prefix,
+			parent_table,
+			parent_fk_column: child.fk_column,
+			pagination_method,
+			render_strategy,
+			translate: false,
+			template_tags,
+			interactive: false,
+		});
+		if (generated) success++;
+		else fail++;
+	}
+	if (translate) {
+		const { sync_all_namespaces } = await import("../../translate_namespace");
+		await sync_all_namespaces();
+		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
+		await notify_server_reload();
+	}
+	return { success, fail };
 }

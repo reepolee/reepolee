@@ -40,7 +40,7 @@ import { handle_inspector_message } from "$lib/inspector_ws";
 import { handle_open_request } from "$lib/open_in_editor";
 import { handle_generic_upload_endpoints } from "$lib/upload_endpoints";
 import { detect_locale, resolve_canonical } from "$lib/route_map";
-import { rebuild_routes_and_state } from "$lib/route_state";
+import { rebuild_routes_and_state, set_route_reloader } from "$lib/route_state";
 import { get_base_data, get_route_table, is_first_run, match_route, set_base_data } from "$lib/route_table";
 import { handle_s3_request } from "$lib/s3";
 import { call_route_handler, handle_fallback_requests, handle_internal_endpoints } from "$lib/server_helpers";
@@ -260,6 +260,31 @@ declare global {
 	var __reepolee_server: Bun.Server<WebSocketData> | undefined;
 }
 
+async function reload_main_routes(): Promise<void> {
+	const routes_url = new URL("./routes.ts", import.meta.url);
+	routes_url.searchParams.set("reload", String(Date.now()));
+	const routes_module = await import(routes_url.href) as typeof import("./routes");
+	const { nav_routes: reloaded_nav_routes, routes: reloaded_routes } = routes_module;
+	const { nav_groups, routed } = await rebuild_routes_and_state(reloaded_nav_routes, reloaded_routes, is_agent, { hot: true });
+
+	const existing_base = get_base_data();
+	set_base_data({ ...existing_base, nav_groups });
+
+	const engine = create_template_engine(is_dev);
+	initialize_render(engine, get_base_data());
+
+	if (!is_dev) {
+		const server = globalThis.__reepolee_server;
+		if (!server) throw new Error("Main server is not initialized.");
+		server.reload({ routes: routed, fetch: create_prod_fetch_handler(), websocket: websocket_config });
+	}
+
+	if (is_dev && !is_test) { notify_clients(); }
+	console.log(`  ✅ ${Object.keys(routed).length} routes updated`);
+}
+
+set_route_reloader(reload_main_routes);
+
 // Check: first run or --hot re-evaluation?
 // globalThis.__reepolee_route_state persists across --hot re-evaluations.
 // If it exists, the server is already running - skip server creation.
@@ -294,25 +319,15 @@ if (!hot_reload) {
 	}
 } else {
 	//
-	// HOT RELOAD - rebuild routes/translations in-place, no restart
+	// HOT RELOAD - rebuild routes/translations in-place, no restart. Load the
+	// route registry from disk instead of the static module binding: after
+	// Reeman adds an import, Bun can re-evaluate this entry before refreshing
+	// that binding, which would otherwise overwrite the generator's fresh
+	// route reload with the old table.
 	//
 
 	console.log("🔄 Hot reload - rebuilding routes in-place");
-
-	const { nav_groups, routed } = await rebuild_routes_and_state(nav_routes, routes, is_agent, { hot: true });
-
-	// Update base_data with fresh nav_groups
-	const existing_base = get_base_data();
-	set_base_data({ ...existing_base, nav_groups });
-
-	// Re-initialize render to pick up new engine (if template module changed)
-	const engine = create_template_engine(is_dev);
-	initialize_render(engine, get_base_data());
-
-	// Notify browser clients to refresh
-	if (is_dev && !is_test) { notify_clients(); }
-
-	console.log(`  ✅ ${Object.keys(routed).length} routes updated`);
+	await reload_main_routes();
 }
 
 export { sql_log } from "$lib/logger";

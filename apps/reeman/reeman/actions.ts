@@ -34,6 +34,24 @@ export interface ActionResult {
 
 type InnerResult = { ok: boolean; meta?: Record<string, any>; };
 
+export type NestedChildSelection = { table: string; fk_column: string; };
+
+export type NestedChildrenOptions = {
+	parent_table: string;
+	parent_url: string;
+	children: NestedChildSelection[];
+	pagination?: string;
+	render_strategy?: string;
+	template_tags?: string;
+	translate?: boolean;
+};
+
+type NestedGeneratorSettings = {
+	pagination: "cursor" | "offset";
+	render_strategy: "stream" | "load";
+	template_tags: "flat" | "tags";
+};
+
 // ---------------------------------------------------------------------------
 // Busy guard - generator actions write files and mutate the DB. Actions that
 // touch one table (crud, schema, refresh-crud) are keyed by that table, so
@@ -116,11 +134,19 @@ function pick<T extends string>(value: string | undefined, allowed: readonly T[]
 	return value !== undefined && (allowed as readonly string[]).includes(value) ? (value as T) : undefined;
 }
 
+function nested_generator_settings(params: NestedChildrenOptions): NestedGeneratorSettings {
+	const pagination = pick(params.pagination, ["cursor", "offset"]);
+	const render_strategy = pick(params.render_strategy, ["stream", "load"]);
+	const template_tags = pick(params.template_tags, ["flat", "tags"]);
+	if (!pagination || !render_strategy || !template_tags) throw new Error("Invalid nested generator settings.");
+	return { pagination, render_strategy, template_tags };
+}
+
 // ---------------------------------------------------------------------------
 // Actions
 // ---------------------------------------------------------------------------
 
-export async function action_crud(params: { table: string; force?: boolean; translate?: boolean; prefix?: string; route_name?: string; pagination?: string; render_strategy?: string; template_tags?: string; grid_columns?: string[]; grid_column_definitions?: GridColumnDefinition[]; }): Promise<ActionResult> {
+export async function action_crud(params: { table: string; force?: boolean; translate?: boolean; prefix?: string; route_name?: string; pagination?: string; render_strategy?: string; template_tags?: string; form_hints?: boolean; form_details?: boolean; grid_columns?: string[]; grid_column_definitions?: GridColumnDefinition[]; }): Promise<ActionResult> {
 	return run_captured_action("crud", params.table, async () => {
 		await refresh_ddl_cache();
 		const { run_full_pipeline } = await import("$generator/reeman/callers/resource_caller");
@@ -134,11 +160,52 @@ export async function action_crud(params: { table: string; force?: boolean; tran
 			pagination_method: pick(params.pagination, ["cursor", "offset"]),
 			render_strategy: pick(params.render_strategy, ["stream", "load"]),
 			template_tags: pick(params.template_tags, ["flat", "tags"]),
+			form_hints: params.form_hints === true,
+			form_details: params.form_details === true,
 			// An explicit empty list means every editable index-grid column is hidden.
 			grid_columns: params.grid_columns,
 			grid_column_definitions: params.grid_column_definitions,
 		});
 	}, params.table);
+}
+
+export async function validate_nested_children(params: Pick<NestedChildrenOptions, "parent_table" | "parent_url" | "children">): Promise<{ prefix: string; }> {
+	if (!params.parent_table || !params.parent_url) throw new Error("A parent route is required.");
+	if (params.children.length === 0) throw new Error("Select at least one child table.");
+	await refresh_ddl_cache();
+	const { discover_routes_with_schema } = await import("$generator/reeman/utils/route_scan");
+	const routes = discover_routes_with_schema();
+	const parent_route = routes.find((route) => route.url === params.parent_url && route.table === params.parent_table && !route.parent);
+	if (!parent_route) throw new Error("The selected parent route no longer exists.");
+	if (parent_route.route_name) throw new Error("Nested children require a parent route whose path matches its table name.");
+	const { get_child_tables } = await import("$generator/reeman/db");
+	const eligible = await get_child_tables(params.parent_table);
+	const nested_routes = routes.filter((route) => route.parent === params.parent_table && route.prefix === parent_route.prefix);
+	const nested_table_names = nested_routes.map((route) => route.table);
+	const nested_tables = new Set(nested_table_names);
+	const selected = new Set<string>();
+	const selected_tables = new Set<string>();
+	for (const child of params.children) {
+		const selection_key = `${child.table}:${child.fk_column}`;
+		if (selected.has(selection_key)) throw new Error(`Child relationship is selected more than once: ${selection_key}.`);
+		if (selected_tables.has(child.table)) throw new Error(`Select one relationship for child table: ${child.table}.`);
+		selected.add(selection_key);
+		selected_tables.add(child.table);
+		if (!eligible.some((candidate) => candidate.table === child.table && candidate.fk_column === child.fk_column)) throw new Error(`Invalid child relationship: ${selection_key}.`);
+		if (nested_tables.has(child.table)) throw new Error(`Child route already exists: ${child.table}.`);
+	}
+	return { prefix: parent_route.prefix };
+}
+
+/** Generate selected FK-backed children in-process for API callers. Web requests use spawn_nested_children_action instead. */
+export async function action_add_nested_children(params: NestedChildrenOptions): Promise<ActionResult> {
+	return run_captured_action("add-nested-children", params.parent_table, async () => {
+		const { prefix } = await validate_nested_children(params);
+		const settings = nested_generator_settings(params);
+		const { run_selected_nested_children } = await import("$generator/reeman/callers/resource_caller");
+		const result = await run_selected_nested_children(params.children, params.parent_table, prefix, settings.pagination, settings.render_strategy, params.translate === true, settings.template_tags);
+		return { ok: result.fail === 0, meta: result };
+	}, params.parent_table);
 }
 
 export async function action_schema(params: { table: string; prefix?: string; }): Promise<ActionResult> {
@@ -234,6 +301,8 @@ export async function action_save_route_settings(params: {
 	pagination?: string;
 	render_strategy?: string;
 	template_tags?: string;
+	form_hints?: boolean;
+	form_details?: boolean;
 	grid_columns?: string[];
 	grid_column_definitions?: GridColumnDefinition[];
 	refresh?: boolean;
@@ -254,6 +323,8 @@ export async function action_save_route_settings(params: {
 			pagination_strategy: pick(params.pagination, ["cursor", "offset"]),
 			render_strategy: pick(params.render_strategy, ["stream", "load"]),
 			template_tags: pick(params.template_tags, ["flat", "tags"]),
+			form_hints: params.form_hints,
+			form_details: params.form_details,
 			grid_columns: params.grid_columns,
 			grid_column_definitions: params.grid_column_definitions,
 		});
@@ -429,14 +500,21 @@ export async function action_spreadsheet_to_sql(params: { spreadsheet_path: stri
 	});
 }
 
-export async function action_bulk_remove_route(params: { urls: string[]; delete_translations?: boolean; }): Promise<ActionResult> {
+export async function action_bulk_remove_route(params: { urls: string[]; }): Promise<ActionResult> {
 	const target = params.urls.join(", ");
 	return run_captured_action("bulk-remove-route", target, async () => {
 		const { list_removable_routes, remove_route } = await import("$generator/reeman/remove_route");
 		const removable = await list_removable_routes();
 		const removable_urls = new Set(removable.map((r) => r.url));
+		const selected_urls = new Set(params.urls);
+		const routes_to_remove = params.urls.filter((url) => {
+			for (const selected_url of selected_urls) {
+				if (selected_url !== url && url.startsWith(`${selected_url}/`)) return false;
+			}
+			return true;
+		});
 		let fail = 0;
-		for (const url of params.urls) {
+		for (const url of routes_to_remove) {
 			if (!removable_urls.has(url)) {
 				console.error(`✗ Skipped ${url}: not removable (system route or root page)`);
 				fail++;
@@ -447,7 +525,7 @@ export async function action_bulk_remove_route(params: { urls: string[]; delete_
 				// The POST handler sends the redirect before asking the main app to
 				// reload. Reloading here can interrupt this request while Bun is
 				// rebuilding the route table, leaving the browser on /routes/:id.
-				await remove_route(url, true, params.delete_translations ?? undefined, false);
+				await remove_route(url, true, false);
 			} catch (err) {
 				console.error(`✗ Failed to remove ${url}: ${err instanceof Error ? err.message : String(err)}`);
 				fail++;
@@ -524,6 +602,8 @@ function append_spawn_options(args: string[], opts: SpawnOptions): void {
 	if (opts.pagination) args.push("--pagination", opts.pagination);
 	if (opts.render_strategy) args.push("--render-strategy", opts.render_strategy);
 	if (opts.template_tags) args.push("--template-tags", opts.template_tags);
+	if (opts.form_hints) args.push("--form-hints");
+	if (opts.form_details) args.push("--form-details");
 	if (opts.grid_columns && opts.grid_columns.length > 0) args.push("--grid-columns", opts.grid_columns.join(","));
 	if (opts.grid_column_definitions) {
 		const definitions_json = JSON.stringify(opts.grid_column_definitions);
@@ -599,11 +679,52 @@ async function spawn_one(
 }
 
 /** Spawn a single table CRUD generation as a subprocess. Returns false (no-op) if `table` is already busy. */
-export async function spawn_crud_action(table: string, opts: { force?: boolean; translate?: boolean; prefix?: string; route_name?: string; pagination?: string; render_strategy?: string; template_tags?: string; grid_columns?: string[]; grid_column_definitions?: GridColumnDefinition[]; }): Promise<boolean> {
+export async function spawn_crud_action(table: string, opts: { force?: boolean; translate?: boolean; prefix?: string; route_name?: string; pagination?: string; render_strategy?: string; template_tags?: string; form_hints?: boolean; form_details?: boolean; grid_columns?: string[]; grid_column_definitions?: GridColumnDefinition[]; }): Promise<boolean> {
 	const acquired = await set_busy(table, { action: "crud", target: table });
 	if (!acquired) return false;
 	const run_id = await record_run({ action: "crud", target: table, ok: true, output: "Generation started in background." });
 	await spawn_one(table, opts, run_id, "crud");
+	return true;
+}
+
+export async function spawn_nested_children_action(params: NestedChildrenOptions): Promise<boolean> {
+	const { prefix } = await validate_nested_children(params);
+	const settings = nested_generator_settings(params);
+	const acquired = await set_busy(params.parent_table, { action: "add-nested-children", target: params.parent_table });
+	if (!acquired) return false;
+	const run_id = await record_run({ action: "add-nested-children", target: params.parent_table, ok: true, output: "Nested child generation started in background." });
+	const payload = JSON.stringify({
+		parent_table: params.parent_table,
+		prefix,
+		children: params.children,
+		pagination: settings.pagination,
+		render_strategy: settings.render_strategy,
+		template_tags: settings.template_tags,
+		translate: params.translate === true,
+	});
+	let proc: ReturnType<typeof Bun.spawn>;
+	try {
+		proc = Bun.spawn(["bun", "apps/reeman/reeman/nested_children_runner.ts", payload], { cwd: process.cwd(), stdout: "pipe", stderr: "pipe" });
+	} catch (err) {
+		const message = err instanceof Error ? err.message : String(err);
+		await update_run(run_id, { ok: false, output: "", error: message });
+		await clear_busy(params.parent_table);
+		return false;
+	}
+	const stdout = new Response(proc.stdout).text();
+	const stderr = new Response(proc.stderr).text();
+	void Promise.all([proc.exited, stdout, stderr]).then(async ([exit_code, out, err]) => {
+		const output = clean_output([out, err]);
+		const error = exit_code === 0 ? undefined : `Nested child generation failed with exit code ${exit_code}. See the captured generator output below.`;
+		await update_run(run_id, { ok: exit_code === 0, output, error });
+		await clear_busy(params.parent_table);
+		if (exit_code !== 0) console.error(`[reeman] ${error}`);
+	}).catch(async (err) => {
+		const message = err instanceof Error ? err.message : String(err);
+		await update_run(run_id, { ok: false, output: "", error: message });
+		await clear_busy(params.parent_table);
+	});
+	proc.unref();
 	return true;
 }
 

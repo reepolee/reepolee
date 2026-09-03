@@ -19,12 +19,10 @@ const PROTECTED_PREFIXES = ["system", "home"];
  * Remove an entire prefixed route folder (all sub-routes, handlers, imports, nav translations).
  * @param name - prefix folder name to remove (e.g. "admin"). When omitted, prompts for selection.
  * @param force - skip the deletion confirmation prompt (for non-interactive CLI use).
- * @param del_translations_opt - retained for CLI compatibility. Translation files are co-located
- *   and are removed with the route folder.
  * @param as_examples - report the run as `remove-examples` in the CLI tip and replay log,
  *   so the logged line matches the verb actually invoked rather than this generic one.
  */
-export async function remove_prefix_folder(name?: string, force: boolean = false, del_translations_opt?: boolean, as_examples: boolean = false): Promise<void> {
+export async function remove_prefix_folder(name?: string, force: boolean = false, as_examples: boolean = false): Promise<void> {
 	const routes_dir = join(process.cwd(), MAIN_APP);
 
 	if (!existsSync(routes_dir)) {
@@ -190,14 +188,11 @@ export async function remove_prefix_folder(name?: string, force: boolean = false
 	// -----------------------------------------------------------------------
 	// 3. Translation files were co-located in the deleted prefix folder
 	// -----------------------------------------------------------------------
-	void del_translations_opt;
-	const del_translations = true;
 	console.log(`  ${color("✓", GREEN)} Removed co-located translation files for prefix "${selected.name}/"`);
 	await notify_server_reload();
 
 	console.log(`\n  ${color("✓ Done", GREEN)} Prefix folder "${selected.name}/" removed.`);
 	const cli_args = as_examples ? ["--force"] : [selected.name, "--force"];
-	if (del_translations) cli_args.push("--delete-translations");
 	const cli_verb = as_examples ? "remove-examples" : "remove-prefix-folder";
 	await show_cli_tip(`bun reeman ${cli_verb} ${cli_args.join(" ")}`, `Removed prefix folder: ${selected.name}/`);
 }
@@ -214,6 +209,6 @@ export const EXAMPLES_PREFIX = "examples";
  * detail. The removal itself is identical, so this delegates rather than
  * duplicating any of it.
  */
-export async function remove_examples_folder(force: boolean = false, del_translations_opt?: boolean): Promise<void> {
-	await remove_prefix_folder(EXAMPLES_PREFIX, force, del_translations_opt, true);
+export async function remove_examples_folder(force: boolean = false): Promise<void> {
+	await remove_prefix_folder(EXAMPLES_PREFIX, force, true);
 }

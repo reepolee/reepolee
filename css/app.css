@@ -66,22 +66,16 @@
 	html {
 		color-scheme: light;
 		scrollbar-gutter: stable;
-		font-size: 100%;
+		font-size: 85%;
 		font-family: var(--font-sans);
 		accent-color: var(--color-brand);
+		text-box: trim-both cap alphabetic;
 	}
 
 	/* 2K / 1440p+ displays */
-	@media (min-width: 1920px) {
+	@media (min-width: 1681px) {
 		html {
-			font-size: 112.5%; /* Bumps 16px -> 18px root (rem scales up ~12.5%) */
-		}
-	}
-
-	/* 4K / 2560px+ ultra-wide displays */
-	@media (min-width: 2560px) {
-		html {
-			font-size: 125%; /* Bumps 16px -> 20px root (rem scales up 25%) */
+			font-size: 100%; /* Bumps 16px -> 18px root (rem scales up ~12.5%) */
 		}
 	}
 

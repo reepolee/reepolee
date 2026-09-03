@@ -11,10 +11,10 @@
  * Pinned to DEV_CONNECTION_STRING: these are development tools and must never
  * open a connection to the production database, whatever flags they are given.
  */
-import { require_env } from "$lib/env";
+import { get_connection_string } from "$lib/env";
 import { SQL } from "bun";
 
-const DEV_CONNECTION_STRING = require_env("DEV_CONNECTION_STRING");
+const DEV_CONNECTION_STRING = get_connection_string("DEV");
 
 let _cached_url: string = DEV_CONNECTION_STRING;
 // Keepalive timer prevents the event loop from exiting before SQL queries
@@ -48,8 +48,7 @@ await apply_sqlite_pragmas(db_cli, DEV_CONNECTION_STRING);
  * Returns true if a new connection was created.
  */
 export async function sync_db_cli(): Promise<boolean> {
-	const raw = Bun.env.DEV_CONNECTION_STRING?.trim() || require_env("DEV_CONNECTION_STRING");
-	const new_url = raw.replace(/^["']|["']$/g, "");
+	const new_url = get_connection_string("DEV");
 
 	if (new_url === _cached_url) return false;
 

@@ -40,16 +40,20 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 
 	// Preserve parent FK before validation (required by Zod schema)
 	data.__parent.fk_column__ = String(parent_id);
+	__edit.parse_localization__
+	__edit.localization_change_check__
 
 	const [errors, valid_data] = validate(data, ctx.translations.errors);
+	__edit.validate_localization__
 
-	if (Object.keys(errors).length > 0 || !valid_data) {
+	if (Object.keys(errors).length > 0 || !valid_data__edit.localization_errors_check__) {
 		return Response.json({ success: false, errors }, { status: 422 });
 	}
 
 	let record;
 	try {
 		record = await update_record(id, valid_data);
+		__edit.save_localization__
 		await cache.invalidate(TABLE_NAME);
 		await cache.invalidate("__parent.table__");
 		sql_log({s:"Update", t:`${feature}`, r:{...record}}, ctx.user?.username)

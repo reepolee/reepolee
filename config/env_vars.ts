@@ -29,8 +29,14 @@ type EnvRecord = Record<string, string | undefined>;
 export const KNOWN_ENV_VARS: readonly string[] = [
 	// -- Core: database & server --
 	"DEV_CONNECTION_STRING",
+	"DEV_DB_USERNAME",
+	"DEV_DB_PASSWORD",
 	"PROD_CONNECTION_STRING",
+	"PROD_DB_USERNAME",
+	"PROD_DB_PASSWORD",
 	"TEST_CONNECTION_STRING",
+	"TEST_DB_USERNAME",
+	"TEST_DB_PASSWORD",
 	"TIME_ZONE",
 	"PORT",
 	"TEST_PORT",
@@ -103,6 +109,7 @@ export const KNOWN_ENV_VARS: readonly string[] = [
 	"CLAUDE_MODEL",
 	"XAI_API_KEY",
 	"XAI_MODEL",
+	"DEEPL_API_KEY",
 	"OLLAMA_URL",
 	"OLLAMA_MODEL",
 	"HF_URL",
@@ -112,7 +119,6 @@ export const KNOWN_ENV_VARS: readonly string[] = [
 	// -- MCP server (optional) --
 	"MCP_ENABLE_TEMPLATE_RENDER",
 	"MCP_ENABLE_MUTATIONS",
-	"MCP_READONLY_CONNECTION_STRING",
 	"MCP_SERVER_PORT",
 	"MCP_HTTP_PORT",
 	"MCP_HTTP_TOKEN",

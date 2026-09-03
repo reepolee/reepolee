@@ -1,12 +1,16 @@
 {
 	"actions": {
+		"abort_delete": "Cancel",
+		"add_children": "Add children",
 		"add_condition": "Add condition",
 		"add_page": "Add simple page",
 		"add_table_page": "Add simple table page",
 		"bulk_action": "Delete selected DB routes",
 		"bulk_action_2": "Bulk action 2",
 		"cancel": "Cancel",
+		"confirm_delete": "Yes, delete",
 		"create": "Create",
+		"delete": "Delete",
 		"do_it": "Yes, do it",
 		"fields": "Fields only",
 		"force": "Force overwrite",
@@ -15,7 +19,8 @@
 		"remove": "Remove",
 		"remove_route": "Remove route",
 		"save": "Save",
-		"save_close": "Save & close"
+		"save_close": "Save & close",
+		"translate": "Translate via AI"
 	},
 	"child_ui": {
 		"actions": "Actions",
@@ -46,13 +51,15 @@
 		"route_name": "A unique route name using lowercase letters, digits, - or _."
 	},
 	"labels": {
+		"children": "Children",
 		"class": "Class",
 		"default": "(default)",
-		"delete_translations": "Delete translations",
 		"display": "Display",
 		"fields": "Fields",
 		"filter": "Filter",
 		"folder_name": "Folder name",
+		"form_details": "This form will include details or child sections",
+		"form_hints": "This form will include field hints",
 		"helper": "Template helper",
 		"index_columns": "Index columns",
 		"localized": "Localized",
@@ -72,6 +79,7 @@
 		"template_hash_status": "Templates",
 		"template_tags": "Template tags",
 		"url": "Url",
+		"via_fk": "via FK",
 		"where": "Where",
 		"width": "Width"
 	},
@@ -101,6 +109,7 @@
 		"untracked": "Untracked"
 	},
 	"ui": {
+		"add_children_hint": "Select FK-backed child routes to attach to",
 		"add_page_hint": "Creates a static page route (no database) from the simple-page template.",
 		"add_page_title": "Add simple page",
 		"add_table_page_hint": "Creates a read-only listing page backed by a database table.",
@@ -111,6 +120,7 @@
 		"filter_not": "NOT",
 		"loading_count": "Loading…",
 		"modifying": "You are about to modify",
+		"no_eligible_children": "No eligible child tables reference this route.",
 		"no_records": "No DB routes found.",
 		"no_tables": "No tables found in the database.",
 		"records": "record(s)",

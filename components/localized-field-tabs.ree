@@ -1,11 +1,12 @@
 {{
 	const field_name = props.attributes.field;
+	const id_scope = props.attributes["id-scope"] ?? "";
 	const loc = props.attributes.localization ?? {};
 	const active_locales = loc.active_locales ?? [];
 	const default_locale = loc.default_locale;
 	const locale_names = loc.locale_names ?? {};
 	const other_locales = active_locales.filter((locale) => locale !== default_locale);
-	const group = "loc-tab-" + field_name;
+	const group = "loc-tab-" + (id_scope ? id_scope + "-" : "") + field_name;
 	const remembered = loc.preferred_locale && active_locales.includes(loc.preferred_locale) ? loc.preferred_locale : default_locale;
 	// Pre-rendered by form_ree.ts as label="{_ labels.<field>}" - the same
 	// translation lookup field-wrapper's own (now-hidden) label would have
@@ -19,7 +20,7 @@
 	// matches only the one visible item, never the tallest of all of them
 	// (which visibility:hidden would still count, causing height to jump
 	// with translated text of a different line count).
-	const source_selector = `[data-localized-field-source="${field_name}"]`;
+	const source_selector = `[data-localized-field-source="${field_name}"][data-localized-field-scope="${id_scope}"]`;
 	const tab_rules = active_locales.map((locale) => {
 		const radio_id = group + "-" + locale;
 		const is_default = locale === default_locale;
@@ -28,7 +29,7 @@
 			`${source_selector}:has(#${radio_id}:checked) label[for="${radio_id}"] { color: var(--color-brand); }`;
 	}).join("\n");
 }}
-<div data-localized-field-source="{= field_name }" class="localized-field-source">
+<div data-localized-field-source="{= field_name }" data-localized-field-scope="{= id_scope }" class="localized-field-source lg:col-span-2">
 	{#if other_locales.length > 0}
 		<style>{~ tab_rules }</style>
 
@@ -69,7 +70,7 @@
 
 		{#each other_locales as locale}
 			<input type="hidden" name="_original__lv[{= field_name}][{= locale}]" value="{= loc.values[field_name + '|' + locale] ?? ''}" />
-			<localized-panel field-name="{= field_name }" locale="{= locale }" localization="{= loc }" tab-group="{= group }"></localized-panel>
+			<localized-panel field-name="{= field_name }" locale="{= locale }" localization="{= loc }" tab-group="{= group }" id-scope="{= id_scope }"></localized-panel>
 		{/each}
 	</div>
 </div>

@@ -17,6 +17,7 @@ import { gemini_query } from "./gemini";
 import { openai_query } from "./openai";
 import { claude_query } from "./claude";
 import { xai_query } from "./xai";
+import { retry_after_ms, retry_delay_ms } from "./retry_after";
 
 // ---------------------------------------------------------------------------
 // Provider selection
@@ -32,6 +33,7 @@ const provider_checks = new Map<ActiveProvider, () => boolean>([
 	["openai", () => env_available("OPENAI_API_KEY")],
 	["claude", () => env_available("CLAUDE_API_KEY")],
 	["xai", () => env_available("XAI_API_KEY")],
+	["deepl", () => env_available("DEEPL_API_KEY")],
 	["huggingface", () => env_available("HF_TOKEN")],
 	["openrouter", () => env_available("OPENROUTER_KEY")],
 ]);
@@ -113,6 +115,7 @@ async function ollama_chat_query(system_prompt: string, user_prompt: string, tit
 			const elapsed = (performance.now() - start).toFixed(0);
 			const err: any = new Error(`Ollama API error: ${response.status} - ${text}`);
 			err.status = response.status;
+			err.retry_after_ms = retry_after_ms(response.headers, text);
 			console.error(`❌ Ollama error after ${elapsed}ms: ${response.status}`);
 			throw err;
 		}
@@ -254,6 +257,7 @@ async function hf_batch_translate(texts: string[], source_lang: string, target_l
 			const elapsed = (performance.now() - start).toFixed(0);
 			const err: any = new Error(`HuggingFace API error: ${response.status} - ${text}`);
 			err.status = response.status;
+			err.retry_after_ms = retry_after_ms(response.headers, text);
 			console.error(`❌ HuggingFace error after ${elapsed}ms: ${response.status}`);
 			throw err;
 		}
@@ -341,7 +345,11 @@ export async function hf_translate_json(input: Record<string, any>, source_lang:
 				// ❌ do not retry auth/billing errors
 				if (status === 401 || status === 402 || status === 403) { throw last_error; }
 
-				if (attempt < max_retries) { await new Promise((r) => setTimeout(r, 1000)); }
+				if (attempt < max_retries) {
+					const delay_ms = retry_delay_ms(err, 1000);
+					if (status === 429) console.log(`⏳ Rate limited. Retrying in ${(delay_ms / 1000).toFixed(0)} seconds.`);
+					await Bun.sleep(delay_ms);
+				}
 			}
 		}
 

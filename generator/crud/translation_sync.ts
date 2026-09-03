@@ -134,8 +134,9 @@ export async function sync_crud_translations(
  * Sync the `errors.*` keys that the generated Zod schema emits as messages.
  *
  * Unlike sync_crud_translations(), this is insert-if-absent: existing rows are left
- * untouched so translations edited via the admin UI survive a regen. Only English is
- * seeded - other languages are added via the Translations UI or `bun reeman sync-translations`.
+ * untouched so translations edited via the admin UI survive a regen. This writes
+ * the default locale only; the CRUD pipeline follows with a structural locale sync
+ * that creates missing values in every configured locale with the missing prefix.
  *
  * Empty values are never written. An empty translation is a lookup *hit*, so
  * validate_schema()'s `messages?.[err.message] ?? err.message` fallback would resolve

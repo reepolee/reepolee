@@ -29,6 +29,8 @@ export function parse_crud_flags(argv: string[]) {
 			pagination: { type: "string" },
 			"render-strategy": { type: "string" },
 			"template-tags": { type: "string" },
+			"form-hints": { type: "boolean", default: false },
+			"form-details": { type: "boolean", default: false },
 			"grid-columns": { type: "string" },
 			"grid-column-definitions": { type: "string" },
 		},
@@ -66,6 +68,8 @@ export function parse_crud_flags(argv: string[]) {
 		pagination_method,
 		render_strategy,
 		template_tags,
+		form_hints: Boolean(values["form-hints"]),
+		form_details: Boolean(values["form-details"]),
 		grid_columns,
 		grid_column_definitions,
 	};

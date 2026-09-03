@@ -11,6 +11,7 @@ import { extname } from "node:path";
 
 import { file } from "bun";
 
+import { stamp_inspector_component_output } from "$lib/inspector_stamp";
 import type { CompiledFn, ResolveResult } from "./types";
 
 // async file existence check - avoids sync fs calls in the render path
@@ -78,7 +79,8 @@ export async function include_resolved_handler(deps: IncludeHandlerDeps, current
 				const bound_include = deps.include;
 				const rt_include = (name: string, data: Record<string, any>) => include_resolved_handler(deps, include_name, name, data);
 				const escape = deps.auto_escape ? deps.escape : (s: any) => String(s ?? "");
-				return await (compiled_fn as any)(props, escape, bound_include, rt_include, include_name);
+				const rendered = await (compiled_fn as any)(props, escape, bound_include, rt_include, include_name);
+				return stamp_inspector_component_output(rendered, props);
 			}
 
 			// Fallback: read + compile (dev hot reload, or files not precompiled).
@@ -88,7 +90,8 @@ export async function include_resolved_handler(deps: IncludeHandlerDeps, current
 			const bound_include = deps.include;
 			const rt_include = (name: string, data: Record<string, any>) => include_resolved_handler(deps, include_name, name, data);
 			const escape = deps.auto_escape ? deps.escape : (s: any) => String(s ?? "");
-			return await (compiled as any)(props, escape, bound_include, rt_include, include_name);
+			const rendered = await (compiled as any)(props, escape, bound_include, rt_include, include_name);
+			return stamp_inspector_component_output(rendered, props);
 		} else {
 			// Raw file injected unescaped
 			if (!(await file_exists(p))) { throw new Error(`Included file not found: ${p}`); }

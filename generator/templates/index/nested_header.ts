@@ -1,6 +1,7 @@
 const feature = get_table_name_from_dir(import.meta.dir);
 const route_prefix: string = "__route_prefix__";
 const PARENT_FK_COLUMN = "__parent.fk_column__";
+__localization.config__
 
 function base_path(parent_id: number | string): string {
 	return `${route_prefix}/__parent.table__/${String(parent_id)}/__table.exact__`;

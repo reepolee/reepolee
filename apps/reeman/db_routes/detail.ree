@@ -57,6 +57,18 @@
 
 			{#if route_settings}
 				<generator-settings id-prefix="route" pagination="{= route_settings.pagination_strategy }" render-strategy="{= route_settings.render_strategy }" template-tags="{= route_settings.template_tags }"></generator-settings>
+
+				<field-wrapper class="grid max-w-[60ch]" data-field="form_hints">
+					<div class="grid">
+						<label class="flex cursor-pointer items-center gap-1.5 px-3"><input type="checkbox" name="form_hints" value="1" {#if route_settings.form_hints}checked{/if} /> {_ labels.form_hints}</label>
+					</div>
+				</field-wrapper>
+
+				<field-wrapper class="grid max-w-[60ch]" data-field="form_details">
+					<div class="grid">
+						<label class="flex cursor-pointer items-center gap-1.5 px-3"><input type="checkbox" name="form_details" value="1" {#if route_settings.form_details}checked{/if} /> {_ labels.form_details}</label>
+					</div>
+				</field-wrapper>
 			{/if}
 
 
@@ -103,6 +115,9 @@
 			<div class="flex gap-2 mt-8 items-center">
 				<button type="submit" onclick="document.getElementById('route-refresh').value='1'" class="as-button-primary" {#if busy || !route_settings}disabled{/if}>{_ actions.refresh_crud}</button>
 				<button type="submit" onclick="document.getElementById('route-refresh').value=''" class="as-button-secondary" {#if busy || !route_settings}disabled{/if}>{_ actions.save}</button>
+				{#if route_settings && !route_settings.route.parent && !route_settings.route.route_name}
+					<a href="{~ localized_path('/routes/children?url=' + encodeURIComponent(record.url)) }" role="button" class="as-button-secondary">{_ actions.add_children}</a>
+				{/if}
 				<button type="button" onclick="history.back()" class="as-button-secondary">{_ actions.cancel}</button>
 
 				{#if record.removable}
@@ -120,9 +135,6 @@
 					<input type="hidden" name="urls" value="{= record.url }" />
 					<h2 class="text-lg font-semibold">{_ actions.remove_route}</h2>
 					<p class="text-slate-600 mt-2">{_ ui.remove_route_hint}</p>
-					<label class="flex cursor-pointer items-center gap-1.5 text-sm mt-2">
-						<input type="checkbox" name="delete_translations" value="1" /> {_ labels.delete_translations}
-					</label>
 					<div class="mt-6 flex justify-end gap-2">
 						<button type="button" class="as-button-secondary" commandfor="remove_dialog" command="close">{_ actions.cancel}</button>
 						<button type="submit" class="as-button-danger">{_ actions.do_it}</button>

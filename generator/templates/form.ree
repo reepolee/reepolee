@@ -21,18 +21,21 @@
 			</div>
 		{/if}
 
-		<form method="POST" action="{~ localized_path(action) }" class="__form.layout_class__" id="entry-form">
+		<div class="__form.classes__">
+		<form method="POST" action="{~ localized_path(action) }" class="col-span-full grid gap-4 lg:col-span-2 lg:grid-cols-subgrid" __form.localization_attribute__ id="entry-form">
 
 			<!-- CSRF token -->
 			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 
-			<!-- GEN:FIELDS:START -->
-			__form.input_fields__
-			<!-- GEN:FIELDS:END -->
+			<div class="col-span-full grid gap-4 lg:col-span-2 lg:grid-cols-subgrid">
+				<!-- GEN:FIELDS:START -->
+				__form.input_fields__
+				<!-- GEN:FIELDS:END -->
 
-			<!-- GEN:ORIGINALS:START -->
-			__form.original_fields__
-			<!-- GEN:ORIGINALS:END -->
+				<!-- GEN:ORIGINALS:START -->
+				__form.original_fields__
+				<!-- GEN:ORIGINALS:END -->
+			</div>
 
 			<!-- Store referrer URL as hidden field -->
 			<input type="hidden" id="return_url" name="_return_url" value="" />
@@ -40,7 +43,7 @@
 			<!-- Save action: hidden field set by onclick on save buttons -->
 			<input type="hidden" name="_save_action" id="save_action" value="" />
 
-			<div class="flex gap-2 mt-8 items-center col-span-2">
+			<div class="flex gap-2 mt-8 items-center col-span-full">
 				<button id="btn-submit" type="submit" onclick="document.getElementById('save_action').value='stay'" class="as-button-primary">{_ actions.save }</button>
 				<button id="btn-save-close" type="submit" onclick="document.getElementById('save_action').value='close'" class="as-button-secondary">{_ actions.save_close }</button>
 				<button id="btn-cancel" type="button" onclick="history.back()" class="as-button-secondary">{_ actions.cancel}</button>
@@ -51,6 +54,13 @@
 				__archive.form_restore_button__
 			</div>
 		</form>
+
+			<aside class="col-span-full gap-4 __form.details_classes__" data-form-details>
+				<!-- GEN:CHILDREN:START -->
+				<!-- GEN:CHILDREN:END -->
+			</aside>
+
+		</div>
 
 		{#if (record.id) && enable_archive }
 			<form id="__archive.action_form_id__" method="POST" action="{~ localized_path('__route_prefix__/__table.exact__/' + record.__route_param__ + '/edit') }" style="display: none;">

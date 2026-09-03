@@ -49,6 +49,8 @@ export interface TableMeta {
 	pagination_strategy: "cursor" | "offset";
 	render_strategy: "stream" | "load";
 	template_tags: "flat" | "tags";
+	form_hints: boolean;
+	form_details: boolean;
 	grid_filler: string;
 	route_param: string | undefined;
 	id_type: string;
@@ -218,6 +220,8 @@ export async function load_table_schema(table_name: string, options: {
 	const pagination_strategy: "cursor" | "offset" = cli_pagination || table_module.pagination_strategy || "offset";
 	const render_strategy: "stream" | "load" = table_module.render_strategy || "load";
 	const template_tags: "flat" | "tags" = cli_template_tags || table_module.template_tags || "flat";
+	const form_hints = table_module.form_hints === true;
+	const form_details = table_module.form_details === true || is_nested;
 	// Trailing grid filler track. Absent in older config.ts files.
 	const grid_filler: string = table_module.grid_filler || "1fr";
 
@@ -269,6 +273,8 @@ export async function load_table_schema(table_name: string, options: {
 		pagination_strategy,
 		render_strategy,
 		template_tags,
+		form_hints,
+		form_details,
 		grid_filler,
 		route_param,
 		id_type,

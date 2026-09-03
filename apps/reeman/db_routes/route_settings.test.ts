@@ -17,6 +17,8 @@ describe("route_settings_from_module", () => {
 			pagination_strategy: "cursor",
 			render_strategy: "stream",
 			template_tags: "tags",
+			form_hints: true,
+			form_details: true,
 		});
 
 		expect(settings.grid_columns).toEqual([
@@ -26,6 +28,8 @@ describe("route_settings_from_module", () => {
 		expect(settings.pagination_strategy).toBe("cursor");
 		expect(settings.render_strategy).toBe("stream");
 		expect(settings.template_tags).toBe("tags");
+		expect(settings.form_hints).toBe(true);
+		expect(settings.form_details).toBe(true);
 	});
 
 	test("preselects the type-based default helper from the route's fields", () => {

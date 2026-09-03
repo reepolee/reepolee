@@ -233,9 +233,15 @@ function get_element_signature(block: string): string {
 	return match ? match[0] : "";
 }
 
-/** Whether a field block is wrapped in a <localized-field-tabs> container. */
+/** Whether a field block uses one of the localized editor containers. */
 function get_field_container_type(block: string): "localized" | "plain" {
-	return /^\s*<localized-field-tabs\b/.test(block) ? "localized" : "plain";
+	return /^\s*<localized-(?:field-tabs|input-text)\b/.test(block) ? "localized" : "plain";
+}
+
+/** Extract the field name from any supported generated field container. */
+function get_field_container_name(block: string): string | undefined {
+	const container = /(?:data-field|\bfield|\bname|\bfield-name)="([^"]*)"/.exec(block);
+	return container?.[1];
 }
 
 /**
@@ -253,18 +259,19 @@ function smart_merge_fields_flat(old_section: string, new_field_blocks: string[]
 	// <field-wrapper>). Matching the outer container (not just the inner
 	// field-wrapper) is what lets localization be added/removed on refresh
 	// without nesting wrappers or leaving stale locale-tab shells behind.
-	const field_regex = /<field-wrapper\b[^>]*data-field="([^"]*)"[^>]*>[\s\S]*?<\/field-wrapper>|<localized-field-tabs\b[^>]*field="([^"]*)"[^>]*>[\s\S]*?<\/localized-field-tabs>/g;
+	const field_regex = /<field-wrapper\b[^>]*data-field="([^"]*)"[^>]*>[\s\S]*?<\/field-wrapper>|<localized-field-tabs\b[^>]*field="([^"]*)"[^>]*>[\s\S]*?<\/localized-field-tabs>|<[a-z][\w]*-[\w-]+\b(?=[^>]*(?:\bname|\bfield-name)="[^"]*")[^>]*>[\s\S]*?<\/[a-z][\w]*-[\w-]+>/g;
 	const old_field_info = new Map<string, string>(); // name → full container text
 	let match: RegExpExecArray | null;
 	while ((match = field_regex.exec(old_section)) !== null) {
-		old_field_info.set(match[1] ?? match[2]!, match[0]);
+		const field_name = get_field_container_name(match[0]);
+		if (field_name) old_field_info.set(field_name, match[0]);
 	}
 
 	// Parse new field blocks: extract field names, build map + template IDs
 	const new_field_map = new Map<string, string>();
 	const new_template_ids = new Map<string, string>();
 	for (const block of new_field_blocks) {
-		const name_match = block.match(/(?:data-field|field)="([^"]*)"/);
+		const name_match = block.match(/(?:data-field|field|name)="([^"]*)"/);
 		if (name_match) {
 			new_field_map.set(name_match[1]!, block);
 			new_template_ids.set(name_match[1]!, get_field_template_id(block));
@@ -276,8 +283,8 @@ function smart_merge_fields_flat(old_section: string, new_field_blocks: string[]
 	// - If field still exists BUT container shape (localized↔plain), template type,
 	//   or element attributes changed -> use new block
 	// - If field removed -> delete (replace with empty)
-	let result = old_section.replace(field_regex, (_full, wrapper_name: string | undefined, tabs_name: string | undefined) => {
-		const field_name = wrapper_name ?? tabs_name;
+	let result = old_section.replace(field_regex, (_full) => {
+		const field_name = get_field_container_name(_full);
 		if (!field_name || !new_field_map.has(field_name)) return ""; // deleted
 		const new_block = new_field_map.get(field_name)!;
 
@@ -327,11 +334,15 @@ function smart_merge_fields_flat(old_section: string, new_field_blocks: string[]
  * the freshly generated block so option/value scope-variable fixes always propagate.
  */
 function smart_merge_fields_tags(old_section: string, new_field_blocks: string[]): string {
-	const field_regex = /<(input-[\w-]+)\s[^>]*name="([^"]*)"[^>]*><\/\1>/g;
+	// Recognize both tags-mode fields and flat-mode containers so changing the
+	// template mode on an existing route replaces the old representation
+	// instead of leaving it in place and appending every field a second time.
+	const field_regex = /<localized-field-tabs\b[^>]*field="([^"]*)"[^>]*>[\s\S]*?<\/localized-field-tabs>|<field-wrapper\b[^>]*data-field="([^"]*)"[^>]*>[\s\S]*?<\/field-wrapper>|<[a-z][\w]*-[\w-]+\b(?=[^>]*\bname="[^"]*")[^>]*>[\s\S]*?<\/[a-z][\w]*-[\w-]+>/g;
 	const old_field_info = new Map(); // name -> full matched block text
 	let match: RegExpExecArray | null;
 	while ((match = field_regex.exec(old_section)) !== null) {
-		old_field_info.set(match[2], match[0]);
+		const field_name = get_field_container_name(match[0]);
+		if (field_name) old_field_info.set(field_name, match[0]);
 	}
 
 	const new_field_map = new Map();
@@ -340,7 +351,9 @@ function smart_merge_fields_tags(old_section: string, new_field_blocks: string[]
 		if (name_match) { new_field_map.set(name_match[1], block); }
 	}
 
-	let result = old_section.replace(field_regex, (_full, _tag, field_name: string) => {
+	let result = old_section.replace(field_regex, (_full) => {
+		const field_name = get_field_container_name(_full);
+		if (!field_name) return "";
 		if (!new_field_map.has(field_name)) return ""; // deleted
 		return new_field_map.get(field_name)!;
 	});

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{= format_bcp47(props.locale) }" class="{= props.theme_class }">
+<html lang="{= format_bcp47(props.locale) }" class="{= props.theme_class }" >
 
 	<head>
 		<meta charset="UTF-8" />
@@ -36,7 +36,7 @@
 		{/each}
 	</head>
 
-	<body class="bg-surface grid grid-cols-[30ch_1fr] min-h-screen">
+	<body class="bg-surface grid grid-cols-[30ch_1fr] min-h-screen" >
 
 		{#if props.path_locale && props.locale_preferred && props.path_locale !== props.locale_preferred}
 			<!-- LANG MISMATCH DIALOG START -->

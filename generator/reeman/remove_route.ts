@@ -113,13 +113,13 @@ function parse_entries(raw: string): ParsedEntry[] {
 }
 
 /**
- * Delete a single already-selected route (folder, imports, nav, optionally translations).
+ * Delete a single already-selected route and its folder, imports, and nav entries.
  * Re-reads routes.ts fresh AND re-parses it so repeated calls (e.g. from a multi-select
  * batch) never splice using line_idx/end_line computed against an earlier, longer
  * version of the file - a prior removal in the same batch shifts every later entry's
  * line numbers, so the caller-supplied indices on `selected` cannot be trusted here.
  */
-async function remove_single_route(selected: ParsedEntry, del_translations_opt: boolean | undefined, force: boolean, notify_server: boolean): Promise<void> {
+async function remove_single_route(selected: ParsedEntry, force: boolean, notify_server: boolean): Promise<void> {
 	const routes_path = join(process.cwd(), MAIN_APP, "routes.ts");
 	const raw = await Bun.file(routes_path).text();
 
@@ -215,7 +215,7 @@ async function remove_single_route(selected: ParsedEntry, del_translations_opt: 
 		console.log(`  ${dim("  (folder not found on disk)")}`);
 	}
 
-	// 5. Clean up route translations from DB
+	// 5. The route folder contained all of its co-located translation files.
 	const namespace = selected.url.replace(
 		/^\//,
 		""
@@ -225,16 +225,12 @@ async function remove_single_route(selected: ParsedEntry, del_translations_opt: 
 	);
 	const child_namespace_note = child_crud_names.length > 0 ? ` (and its ${child_crud_names.length} nested child namespace${child_crud_names.length > 1 ? "s" : ""})` : "";
 	console.log(`\n  Route namespace: ${color(namespace || "(global)", CYAN)}${child_namespace_note}`);
-	void del_translations_opt;
 	void force;
-	const del_translations = true;
 	console.log(`  ${color("✓", GREEN)} Co-located translations were removed with namespace "${namespace || "(global)"}"${child_namespace_note}`);
 	if (notify_server) await notify_server_reload();
 
 	console.log(`\n  ${color("✓ Done", GREEN)} Route "${selected.url}" removed.`);
-	const cli_args = [selected.url, "--force"];
-	if (del_translations) cli_args.push("--delete-translations");
-	await show_cli_tip(`bun reeman remove-route ${cli_args.join(" ")}`, `Removed route: ${selected.url}`);
+	await show_cli_tip(`bun reeman remove-route ${selected.url} --force`, `Removed route: ${selected.url}`);
 }
 
 /**
@@ -294,16 +290,14 @@ export async function list_removable_routes(): Promise<{ url: string; module: st
 }
 
 /**
- * Remove one or more registered routes (folder, imports, nav, optionally translations).
+ * Remove one or more registered routes, their folders, imports, and nav entries.
  * @param url - route URL to remove (e.g. "/recipes"). When omitted, prompts for selection
  *   (multi-select when called with no URL and no explicit single route).
  * @param force - skip the deletion confirmation prompt (for non-interactive CLI use).
- * @param del_translations_opt - delete DB translation entries for this route's namespace.
- *   When omitted, prompts interactively; under force without this set, translations are preserved.
  * @param notify_server - trigger the app route reload after removal. Web callers
  *   defer this until after their redirect response is prepared.
  */
-export async function remove_route(url?: string, force: boolean = false, del_translations_opt?: boolean, notify_server: boolean = true): Promise<void> {
+export async function remove_route(url?: string, force: boolean = false, notify_server: boolean = true): Promise<void> {
 	const routes_path = join(process.cwd(), MAIN_APP, "routes.ts");
 	const raw = await Bun.file(routes_path).text();
 	const sys_modules = ["system"];
@@ -333,9 +327,9 @@ export async function remove_route(url?: string, force: boolean = false, del_tra
 
 		// Orphaned routes have no routes.ts entry - just delete the folder.
 		if (selected.module === "orphan") {
-			await remove_orphan_folder(selected, del_translations_opt, force, notify_server);
+			await remove_orphan_folder(selected, force, notify_server);
 		} else {
-			await remove_single_route(selected, del_translations_opt, force, notify_server);
+			await remove_single_route(selected, force, notify_server);
 		}
 		return;
 	}
@@ -376,19 +370,19 @@ export async function remove_route(url?: string, force: boolean = false, del_tra
 		console.log(`  ${color("Removing:", BOLD)} ${color(BOLD + entry.url, CYAN)}`);
 		console.log(`${color("-".repeat(50), CYAN)}`);
 		if (entry.module === "orphan") {
-			await remove_orphan_folder(entry, del_translations_opt, force, notify_server);
+			await remove_orphan_folder(entry, force, notify_server);
 		} else {
-			await remove_single_route(entry, del_translations_opt, force, notify_server);
+			await remove_single_route(entry, force, notify_server);
 		}
 	}
 }
 
 /**
  * Delete an orphaned route folder - one that exists on disk but has no entry
- * in routes.ts (half-generated CRUD). Just removes the folder and optionally
- * its translations.
+ * in routes.ts (half-generated CRUD). Removes the folder and its co-located
+ * translation files.
  */
-async function remove_orphan_folder(entry: { url: string; module: string; }, del_translations_opt: boolean | undefined, force: boolean, notify_server: boolean): Promise<void> {
+async function remove_orphan_folder(entry: { url: string; module: string; }, force: boolean, notify_server: boolean): Promise<void> {
 	const url_path = entry.url.replace(/^\//, "");
 	const route_dir = join(process.cwd(), MAIN_APP, url_path);
 
@@ -400,9 +394,8 @@ async function remove_orphan_folder(entry: { url: string; module: string; }, del
 		console.log(`  ${dim("  (folder not found on disk)")}`);
 	}
 
-	// Clean up translations
+	// The deleted folder contained its co-located translation files.
 	const namespace = url_path.replace(/\//g, ".");
-	void del_translations_opt;
 	void force;
 	console.log(`  ${color("✓", GREEN)} Co-located translations were removed with namespace "${namespace}"`);
 	if (notify_server) await notify_server_reload();

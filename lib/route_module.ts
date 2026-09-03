@@ -151,15 +151,28 @@ export async function mount_route_modules_from_dir(dir: string, namespace_prefix
 		return definitions;
 	}
 
+	const staged_mounts = new Map<string, RouteModuleMount>();
 	for (const entry of entries) {
 		if (!entry.isDirectory() || entry.name.startsWith(".") || entry.name === "node_modules") continue;
+		if (!MODULE_CODE.test(entry.name)) throw new Error(`Route module code must be snake_case and start with a letter: ${entry.name}`);
 
 		const index_path = join(dir, entry.name, "index.ts");
 		if (!existsSync(index_path)) continue;
-
-		const defs = await mount_route_module(entry.name, pathToFileURL(index_path).href, namespace_prefix);
+		const module_entry = pathToFileURL(index_path).href;
+		const imported_module = await import(module_entry);
+		const defs: unknown = imported_module.route_definitions;
+		if (!Array.isArray(defs)) throw new Error(`Route module must export route_definitions: ${module_entry}`);
+		const module_root = resolve(dirname(index_path));
+		staged_mounts.set(entry.name, {
+			module_code: entry.name,
+			module_root,
+			...(namespace_prefix ? { namespace_prefix } : {}),
+		});
 		definitions.push(...defs);
 	}
+	const state = route_module_state();
+	state.mounts = staged_mounts;
+	state.version++;
 
 	return definitions;
 }

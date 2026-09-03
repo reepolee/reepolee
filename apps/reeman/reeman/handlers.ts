@@ -42,6 +42,7 @@ import {
 	is_busy,
 	spawn_bulk_action,
 	spawn_crud_action,
+	spawn_nested_children_action,
 	type ActionResult,
 } from "./actions";
 import { clear_runs, record_run } from "./lib/state";
@@ -161,6 +162,8 @@ export async function post_crud(req: BunRequest): Promise<Response> {
 		pagination: get_param(params, "pagination"),
 		render_strategy: get_param(params, "render_strategy"),
 		template_tags: get_param(params, "template_tags"),
+		form_hints: is_checked(params, "form_hints"),
+		form_details: is_checked(params, "form_details"),
 		grid_columns: grid_settings.grid_columns,
 		grid_column_definitions: grid_settings.grid_column_definitions,
 	});
@@ -288,11 +291,48 @@ export async function post_save_route_settings(req: BunRequest): Promise<Respons
 		template_tags: get_param(params, "template_tags"),
 		pagination: get_param(params, "pagination"),
 		render_strategy: get_param(params, "render_strategy"),
+		form_hints: is_checked(params, "form_hints"),
+		form_details: is_checked(params, "form_details"),
 		grid_columns: grid_settings.grid_columns,
 		grid_column_definitions: grid_settings.grid_column_definitions,
 		refresh: is_checked(params, "refresh"),
 	});
 	return redirect_result(req, is_checked(params, "refresh") ? "refresh-crud" : "save-route-settings", url, result, return_to);
+}
+
+export async function post_add_nested_children(req: BunRequest): Promise<Response> {
+	const params = await params_of(req);
+	const return_to = get_param(params, "return_to");
+	const parent_table = get_param(params, "parent_table");
+	const parent_url = get_param(params, "parent_url");
+	const raw_child_selections = params.getAll("child_selection");
+	const raw_selections = raw_child_selections.map((value) => value.trim());
+	if (!parent_table || !parent_url) return redirect_result(req, "add-nested-children", "", { ok: false, output: "", error: "A parent route is required." }, return_to);
+	if (raw_selections.length === 0) {
+		return redirect_result(req, "add-nested-children", parent_table, { ok: false, output: "", error: "Select at least one valid child relationship." }, return_to);
+	}
+	if (await is_busy(parent_table)) return busy_response(req, return_to, parent_table);
+	try {
+		const children = raw_selections.map((selection) => {
+			const separator = selection.indexOf(":");
+			if (separator < 1 || separator === selection.length - 1) throw new Error("Invalid child relationship.");
+			return { table: selection.slice(0, separator).trim(), fk_column: selection.slice(separator + 1).trim() };
+		});
+		const started = await spawn_nested_children_action({
+			parent_table,
+			parent_url,
+			children,
+			pagination: get_param(params, "pagination"),
+			render_strategy: get_param(params, "render_strategy"),
+			template_tags: get_param(params, "template_tags"),
+			translate: is_checked(params, "translate"),
+		});
+		if (!started) return busy_response(req, return_to, parent_table);
+		return redirect_result(req, "add-nested-children", parent_table, { ok: true, output: "Nested child generation started in background." }, return_to, false);
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return redirect_result(req, "add-nested-children", parent_table, { ok: false, output: "", error: message }, return_to);
+	}
 }
 
 export async function post_bulk_remove_route(req: BunRequest): Promise<Response> {
@@ -301,7 +341,7 @@ export async function post_bulk_remove_route(req: BunRequest): Promise<Response>
 	const urls = params.getAll("urls").map((u) => u.trim()).filter(Boolean);
 	if (urls.length === 0) return redirect_result(req, "bulk-remove-route", "", { ok: false, output: "", error: "No routes selected." }, return_to);
 	if (await is_busy()) return busy_response(req, return_to);
-	const result = await action_bulk_remove_route({ urls, delete_translations: is_checked(params, "delete_translations") });
+	const result = await action_bulk_remove_route({ urls });
 	const response = await redirect_result(req, "bulk-remove-route", urls.join(", "), result, return_to);
 	// Let the 303 response leave this request before Bun rebuilds the main
 	// app's route table. Rebuilding while the POST is still unwinding can

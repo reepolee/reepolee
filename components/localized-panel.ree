@@ -3,6 +3,7 @@
 	const loc = props.attributes.localization ?? {};
 	const locale_names = loc.locale_names ?? {};
 	const tab_group = props.attributes["tab-group"];
+	const id_scope = props.attributes["id-scope"] ?? "";
 
 	// The tabs wrapper only knows the field name (it wraps arbitrary child
 	// markup for the default-locale input); this panel looks its own field
@@ -11,6 +12,7 @@
 	const field = props.attributes.field ?? (loc.fields ?? []).find((candidate) => candidate.name === field_name) ?? { name: field_name, type: "text" };
 
 	const key = field.name + "|" + panel_locale;
+	const input_id = (id_scope ? id_scope + "-" : "") + key;
 	const input_name = "_lv[" + field.name + "][" + panel_locale + "]";
 
 	// Every locale holds a real row, so every panel has a real value - a value
@@ -48,26 +50,26 @@
 >
 	<div class="grid">
 		{#if is_markdown}
-			<markdown-editor id="{= key }" name="{= input_name }" value="{= value }" data-localized-value></markdown-editor>
+			<markdown-editor id="{= input_id }" name="{= input_name }" value="{= value }" data-localized-value></markdown-editor>
 		{:else}
 			{#if is_image}
 				<image-upload name="{= input_name }" value="{= value }" folder="{= field.upload_folder || '' }" label="" localized-value="true"></image-upload>
 			{:else}
 				{#if is_long}
-					<textarea id="{= key }" name="{= input_name }" class="{= input_class }" data-localized-value>{= value }</textarea>
+					<textarea id="{= input_id }" name="{= input_name }" class="{= input_class }" data-localized-value>{= value }</textarea>
 				{:else}
 					{#if is_boolean}
-						<select id="{= key }" name="{= input_name }" class="{= input_class }" data-localized-value>
+						<select id="{= input_id }" name="{= input_name }" class="{= input_class }" data-localized-value>
 							<option value="0" {#if String(value) === "0"}selected{/if}>{= no_label }</option>
 							<option value="1" {#if String(value) === "1"}selected{/if}>{= yes_label }</option>
 						</select>
 					{:else}
-						<input type="{= input_type }" id="{= key }" name="{= input_name }" value="{= value }" class="{= input_class }" data-localized-value />
+						<input type="{= input_type }" id="{= input_id }" name="{= input_name }" value="{= value }" class="{= input_class }" data-localized-value />
 					{/if}
 				{/if}
 			{/if}
 		{/if}
-		<validation-error class="localized-error mt-1" id="error-{= key }">{= error }</validation-error>
+		<validation-error class="localized-error mt-1" id="error-{= input_id }">{= error }</validation-error>
 	</div>
 	<p class="localized-stale-notice text-xs px-3 mt-1 lg:mt-0 lg:self-center" data-localized-stale {#if !stale_from}hidden{/if}>
 		{#if stale_from}

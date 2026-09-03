@@ -2,6 +2,8 @@
  * Shared OpenAI API helper for generator scripts.
  */
 
+import { retry_after_ms } from "./retry_after";
+
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
 
 export interface OpenaiOptions {
@@ -37,6 +39,7 @@ export async function openai_query(system_prompt: string, user_prompt: string, t
 			const text = await response.text();
 			const error: any = new Error(`OpenAI API error: ${response.status} - ${text}`);
 			error.status = response.status;
+			error.retry_after_ms = retry_after_ms(response.headers, text);
 			throw error;
 		}
 

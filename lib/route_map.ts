@@ -170,7 +170,11 @@ export function build_route_maps(translations: Record<string, any>, routes: Rout
 			maps.localized_to_canonical.set(localized_path, canonical_path);
 			maps.canonical_to_localized.set(canonical_path, localized_path);
 
-			if (localized_path.includes(":")) { localized_patterns.get(locale)?.push(localized_path); }
+			// An identity dynamic route (for example `/metrics/:id/edit`) cannot
+			// identify a locale. Register only an actual localized alias so an
+			// unrelated locale with partial translations cannot override the
+			// visitor's locale cookie.
+			if (localized_path.includes(":") && localized_path !== canonical_path) { localized_patterns.get(locale)?.push(localized_path); }
 		}
 	}
 

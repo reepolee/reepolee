@@ -113,6 +113,12 @@ bun install
 bun dev                       # server with hot-reload (CSS rebuilt on change by the dev watcher)
 ```
 
+For MySQL, keep each `*_CONNECTION_STRING` to the credential-free endpoint,
+for example `mysql://localhost/reepolee_dev`, and set the matching
+`*_DB_USERNAME` and `*_DB_PASSWORD` separately. This lets a secret manager
+provide credentials without exposing them in the connection-string startup
+message.
+
 Reeman Quick Start reads the following values from `.env` as defaults for its
 admin-user prompts:
 

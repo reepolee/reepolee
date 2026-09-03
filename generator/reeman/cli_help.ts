@@ -69,13 +69,13 @@ ${color("Routes:", GREEN)}
   add-module <name>
       Add an installed routes/<name> module to the modules table and route registry.
 
-  remove-route <url> [--force] [--delete-translations]
+  remove-route <url> [--force]
       Delete a registered route (folder, imports, nav). System routes are protected.
 
-  remove-prefix-folder <name> [--force] [--delete-translations]
+  remove-prefix-folder <name> [--force]
       Delete an entire prefixed route folder and all its sub-routes.
 
-  remove-examples [--force] [--delete-translations]
+  remove-examples [--force]
       Delete the shipped demo routes (routes/examples/). Same removal as
       remove-prefix-folder, named for the step every new project takes.
 

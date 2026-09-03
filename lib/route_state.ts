@@ -15,6 +15,24 @@ import type { NavRoute } from "$lib/route_builder";
 import { build_route_maps, expand_route_aliases_from_maps } from "$lib/route_map";
 import { build_nav_groups, set_nav_groups, set_nav_routes, set_route_table } from "$lib/route_table";
 
+type RouteReloader = () => Promise<void>;
+
+declare global {
+	var __reepolee_route_reloader: RouteReloader | undefined;
+}
+
+/** Register the app-specific loader that rebuilds its route table from disk. */
+export function set_route_reloader(reloader: RouteReloader): void {
+	globalThis.__reepolee_route_reloader = reloader;
+}
+
+/** Rebuild routes through the live app's registered disk loader. */
+export async function reload_live_routes(): Promise<void> {
+	const reloader = globalThis.__reepolee_route_reloader;
+	if (!reloader) throw new Error("Route reloader is not initialized.");
+	await reloader();
+}
+
 export async function rebuild_routes_and_state(nav_routes: NavRoute[], routes: RouteTable, is_agent: boolean, opts: { hot?: boolean } = {}) {
 	// Load translations if the repository is empty (checking one locale is
 	// sufficient - all are loaded together).

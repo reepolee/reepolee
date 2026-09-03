@@ -16,7 +16,7 @@ import { type BunRequest } from "bun";
 import { columns, enable_archive, fields, grid_filler } from "./config";
 import type { RouteDefinition } from "$lib/route_builder";
 
-import { post_bulk_refresh_routes, post_bulk_remove_route, post_save_route_settings, post_simple_page, post_simple_route } from "../reeman/handlers";
+import { post_add_nested_children, post_bulk_refresh_routes, post_bulk_remove_route, post_save_route_settings, post_simple_page, post_simple_route } from "../reeman/handlers";
 import { load_reeman_data } from "../reeman/page";
 import { load_route_settings, route_edit_path } from "./route_settings";
 import type { Record as DbRouteRecord } from "./sql";
@@ -32,6 +32,7 @@ export const reeman_db_routes_crud = {
 	// CLI flows. Static paths are matched before the "/routes/:id" param route.
 	"/routes/add-page": { GET: get_add_page_form, POST: post_simple_page },
 	"/routes/add-table-page": { GET: get_add_table_page_form, POST: post_simple_route },
+	"/routes/children": { GET: get_add_nested_children_form, POST: post_add_nested_children },
 	"/routes/edit": { GET: get_db_route_edit },
 	"/routes/:id": { GET: get_db_route_detail },
 };
@@ -200,6 +201,41 @@ export async function get_add_table_page_form(req: BunRequest): Promise<Response
 			// client script reads to populate selectors when a table is picked.
 			table_columns_json: JSON.stringify(table_columns),
 			where_operators: ["=", "!=", "<", "<=", ">", ">=", "LIKE"],
+		},
+		ctx,
+	});
+}
+
+export async function get_add_nested_children_form(req: BunRequest): Promise<Response> {
+	const ctx = await create_ctx(req, import.meta.dir);
+	const request_url = new URL(req.url);
+	const raw_parent_url = request_url.searchParams.get("url");
+	const parent_url = raw_parent_url?.trim() ?? "";
+	const parent = parent_url ? await get_route_record_by_url(parent_url) : undefined;
+	if (!parent) return render("notfound", { data: { title: "404 Not Found" }, status: 404, ctx });
+	const [reeman_data, route_settings, db] = await Promise.all([
+		load_reeman_data({ tables: false }),
+		load_route_settings(parent.url),
+		import("$generator/reeman/db"),
+	]);
+	if (!route_settings || route_settings.route.parent || route_settings.route.route_name) {
+		return render("notfound", { data: { title: "404 Not Found" }, status: 404, ctx });
+	}
+	const all_children = await db.get_child_tables(parent.table_name);
+	const routes = await refresh_db_routes();
+	const nested_routes = routes.filter((route) => route.url.startsWith(`${parent.url}/`));
+	const nested_table_names = nested_routes.map((route) => route.table_name);
+	const nested_tables = new Set(nested_table_names);
+	const children = all_children.filter((child) => !nested_tables.has(child.table));
+	return render("add_children", {
+		data: {
+			busy: reeman_data.busy,
+			parent,
+			children,
+			return_to: route_edit_path(parent.url),
+			pagination: route_settings.pagination_strategy,
+			render_strategy: route_settings.render_strategy,
+			template_tags: route_settings.template_tags,
 		},
 		ctx,
 	});

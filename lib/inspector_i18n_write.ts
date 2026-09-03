@@ -8,10 +8,13 @@ import { translations } from "$lib/i18n";
 import { notify_clients } from "$lib/livereload";
 import {
 	get_dotted,
+	read_namespace_file,
 	serialize_translation_write,
 	set_dotted,
 	translation_file,
+	write_namespace_file,
 } from "$lib/translation_files";
+import { default_locale } from "$config/supported_locales";
 import type { json_obj } from "$lib/translation_merge";
 
 /** Candidate locale files for a namespace, most specific first. */
@@ -38,12 +41,19 @@ function detect_indent(raw_text: string): string {
 
 export type I18nResolveResult = { ok: true; file: string; current: string | undefined; } | { ok: false; reason: string; };
 
-export async function resolve_i18n_target(project_dir: string, namespace_hint: string | null, locale: string, key_path: string): Promise<I18nResolveResult> {
+export async function resolve_i18n_target(project_dir: string, namespace_hint: string | null, locale: string, key_path: string, create_missing_file: boolean = false): Promise<I18nResolveResult> {
 	if (!/^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*$/.test(key_path)) {
 		return { ok: false, reason: `invalid key: ${key_path}` };
 	}
 
 	const candidates = candidate_files(project_dir, namespace_hint, locale);
+	const namespace = namespace_hint?.replaceAll("/", ".") || "root";
+	const target_file = candidates[0];
+	if (create_missing_file && target_file && !existsSync(target_file)) {
+		const source = await read_namespace_file(namespace, default_locale, project_dir);
+		await write_namespace_file(namespace, locale, source, project_dir);
+	}
+
 	let first_existing: string | null = null;
 	for (const file of candidates) {
 		if (!existsSync(file)) continue;
@@ -71,7 +81,7 @@ export async function get_i18n_value(locale: string, dotted_path: string, _url: 
 export type I18nUpdateResult = { ok: true; } | { ok: false; reason: string; };
 
 export async function update_i18n_value(locale: string, dotted_path: string, value: string, _url: string, namespace_hint: string | null = null): Promise<I18nUpdateResult> {
-	const resolved = await resolve_i18n_target(process.cwd(), namespace_hint, locale, dotted_path);
+	const resolved = await resolve_i18n_target(process.cwd(), namespace_hint, locale, dotted_path, true);
 	if (!resolved.ok) return resolved;
 
 	await serialize_translation_write(async () => {

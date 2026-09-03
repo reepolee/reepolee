@@ -2,7 +2,7 @@
 
 import { join } from "node:path";
 
-import { require_env } from "$lib/env";
+import { get_connection_string } from "$lib/env";
 
 export interface StudioInstallerDatabase {
 	execute(sql: string): Promise<void>;
@@ -16,7 +16,7 @@ export interface StudioInstallerOptions {
 }
 
 export async function install_studio(options: StudioInstallerOptions = {}): Promise<void> {
-	const connection_string = options.connection_string ?? require_env("DEV_CONNECTION_STRING");
+	const connection_string = options.connection_string ?? get_connection_string("DEV");
 	const normalized_connection = connection_string.toLowerCase();
 	const dialect = normalized_connection.startsWith("mysql://") ? "mysql" : "sqlite";
 	const module_root = options.module_root ?? import.meta.dir;

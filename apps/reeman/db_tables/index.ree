@@ -183,7 +183,12 @@
 						<field-wrapper class="grid" data-field="prefix">
 							<div class="grid">
 								<label class="px-3" for="schema-bulk-prefix">{_ labels.prefix}</label>
-								<input id="schema-bulk-prefix" name="prefix" pattern="[a-z0-9_\-\/]*" title="{_ hints.prefix }" />
+								<select id="schema-bulk-prefix" name="prefix" title="{_ hints.prefix }">
+									<option value=""></option>
+									{#each modules as module}
+										<option value="{= module.code }">{= module.code } - {= module.name }</option>
+									{/each}
+								</select>
 							</div>
 						</field-wrapper>
 					</div>
@@ -202,6 +207,7 @@
 					: null;
 				const generateLink = document.getElementById("action");
 				const generatePath = "{~ localized_path('/tables/new') }";
+				const tablesPath = "{~ localized_path('/tables') }";
 
 				// Inject one hidden "tables" input per checked checkbox into a dialog's
 				// form right before submit - the reeman action handlers read
@@ -230,7 +236,12 @@
 						const selected = selectedCheckboxes.length;
 						const searchParams = new URLSearchParams();
 						for (const checkbox of selectedCheckboxes) searchParams.append("tables", checkbox.value);
-						generateLink.href = selected ? `${generatePath}?${searchParams.toString()}` : "";
+						const singleTablePath = selected === 1
+							? `${tablesPath}/${encodeURIComponent(selectedCheckboxes[0].value)}`
+							: "";
+						generateLink.href = selected === 1
+							? singleTablePath
+							: selected ? `${generatePath}?${searchParams.toString()}` : "";
 						generateLink.setAttribute("aria-disabled", selected ? "false" : "true");
 						generateLink.classList.toggle("pointer-events-none", !selected);
 						generateLink.classList.toggle("opacity-50", !selected);

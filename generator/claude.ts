@@ -2,6 +2,8 @@
  * Shared Anthropic Claude API helper for generator scripts.
  */
 
+import { retry_after_ms } from "./retry_after";
+
 const CLAUDE_URL = "https://api.anthropic.com/v1/messages";
 
 export interface ClaudeOptions {
@@ -37,6 +39,7 @@ export async function claude_query(system_prompt: string, user_prompt: string, t
 			const text = await response.text();
 			const error: any = new Error(`Claude API error: ${response.status} - ${text}`);
 			error.status = response.status;
+			error.retry_after_ms = retry_after_ms(response.headers, text);
 			throw error;
 		}
 

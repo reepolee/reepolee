@@ -1,9 +1,12 @@
 import { db } from "$config/db";
 import { timed_query } from "$lib/timed_sql";
 import { cache } from "$lib/cache";
+__sql.localized_import__
 
 export const TABLE_NAME = "__table.exact__";
 export const VIEW_DEPENDENCIES = __sql.view_dependencies__;
+__sql.localized_config__
+__sql.locale_resolver__
 
 export interface Record {
 	__interface.fields__
@@ -14,10 +17,11 @@ export interface Options {
 	option_text: string;
 }
 __sql.archive_helper__
-export async function get_children_by_parent(parent_id: __sql.id_type__): Promise<Record[]> {
+export async function get_children_by_parent(parent_id: __sql.id_type____sql.locale_param__): Promise<Record[]> {
 	try {
 		return await timed_query("__table.exact__", "get_children_by_parent", async () => {
-			const records = await db`SELECT * FROM __table.exact__ WHERE __parent.fk_column__ = ${parent_id}__sql.archive_and__ ORDER BY id ASC`;
+			const from_source = __sql.read_source__;
+			const records = await db.unsafe(`SELECT * FROM ${from_source} WHERE __parent.fk_column__ = ?__sql.archive_and__ ORDER BY id ASC`, [parent_id]);
 			return records as Record[];
 		});
 	} catch (error) {
@@ -26,10 +30,11 @@ export async function get_children_by_parent(parent_id: __sql.id_type__): Promis
 	}
 }
 
-export async function get_record_by_id_and_parent(id: __sql.id_type__, parent_id: __sql.id_type__): Promise<Record | undefined> {
+export async function get_record_by_id_and_parent(id: __sql.id_type__, parent_id: __sql.id_type____sql.locale_param__): Promise<Record | undefined> {
 	try {
 		return await timed_query("__table.exact__", "get_record_by_id_and_parent", async () => {
-			const records = await db`SELECT * FROM __table.exact__ WHERE id = ${id} AND __parent.fk_column__ = ${parent_id}__sql.archive_and__ LIMIT 1`;
+			const from_source = __sql.read_source__;
+			const records = await db.unsafe(`SELECT * FROM ${from_source} WHERE id = ? AND __parent.fk_column__ = ?__sql.archive_and__ LIMIT 1`, [id, parent_id]);
 			return records[0] as Record | undefined;
 		});
 	} catch (error) {
@@ -38,11 +43,12 @@ export async function get_record_by_id_and_parent(id: __sql.id_type__, parent_id
 	}
 }
 
-export async function get_record_by_id(id: __sql.id_type____sql.include_archived_param__): Promise<Record | undefined> {
+export async function get_record_by_id(id: __sql.id_type____sql.locale_param____sql.include_archived_param__): Promise<Record | undefined> {
 	try {
 		return await timed_query("__table.exact__", "get_record_by_id", async () => {
 			__sql.include_archived_setup__
-			const by_id_query = `SELECT * FROM __table.exact__ WHERE id = ?__sql.include_archived_sql__ LIMIT 1`;
+			const from_source = __sql.read_source__;
+			const by_id_query = `SELECT * FROM ${from_source} WHERE id = ?__sql.include_archived_sql__ LIMIT 1`;
 			const records = await db.unsafe(by_id_query, [id]) as Record[];
 			return records[0] as Record | undefined;
 		});
@@ -154,6 +160,7 @@ export async function create_record(record: __sql.create_record_arg__): Promise<
 	try {
 		return await timed_query("__table.exact__", "create_record", async () => {
 			const insert_result = await db`INSERT INTO __table.exact__ (__insert.fields__) VALUES (__insert.values__)`;
+			__sql.create_fan_out__
 			__sql.create_record_return__
 		});
 	} catch (error) {
@@ -162,10 +169,10 @@ export async function create_record(record: __sql.create_record_arg__): Promise<
 	}
 }
 
-export async function update_record(id: __sql.id_type__, record: __sql.update_record_arg__): Promise<Record | undefined> {
+export async function update_record(id: __sql.id_type__, record: __sql.update_record_arg____sql.write_locale_param__): Promise<Record | undefined> {
 	try {
 		return await timed_query("__table.exact__", "update_record", async () => {
-			await db`UPDATE __table.exact__ SET __update.set__ WHERE id = ${id}`;
+			__sql.update_fan_out__
 			const records = await db`SELECT * FROM __table.exact__ WHERE id = ${id} LIMIT 1`;
 			return records[0] as Record | undefined;
 		});

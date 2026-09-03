@@ -88,6 +88,8 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 			localization_enabled: meta.localization_enabled,
 			localized_fields: meta.localized_fields,
 			template_tags: meta.template_tags,
+			form_hints: meta.form_hints,
+			form_details: meta.form_details,
 			readonly_fields: readonly_field_names(meta.columns),
 		}));
 
@@ -282,6 +284,7 @@ export async function generate_crud(table_name: string, options: CrudOptions = {
 				fields: meta.fields,
 				v_fields: meta.v_fields,
 				columns: meta.columns,
+				column_names: meta.column_names,
 				foreign_keys: meta.foreign_keys,
 				route_prefix,
 				is_nested: meta.is_nested,
@@ -289,6 +292,7 @@ export async function generate_crud(table_name: string, options: CrudOptions = {
 				translate_in_args,
 				template_tags: meta.template_tags,
 				localized_fields: meta.localized_fields,
+				form_details: meta.form_details,
 			});
 		}
 
@@ -361,6 +365,7 @@ export async function generate_crud(table_name: string, options: CrudOptions = {
 				foreign_keys: meta.foreign_keys,
 				route_prefix,
 				route_dir: meta.route_dir,
+				localized_fields: meta.localized_fields,
 			});
 
 			const parent_routes_rel = meta.parent_dir.replace(`${join(process.cwd())}/`, "");
@@ -373,19 +378,20 @@ export async function generate_crud(table_name: string, options: CrudOptions = {
 		await stamp_generated_ree_hashes(meta.route_dir);
 		if (meta.is_nested && meta.parent_dir) await stamp_generated_ree_hashes(meta.parent_dir);
 
-		// Phase 7: Sync translations (AI translate) - scoped to the namespace(s) this CRUD touched
-		if (translate_in_args) {
-			const namespaces_to_sync = new Set<string>([route_dir_to_namespace(meta.route_dir)]);
-			if (!meta.is_nested && clean_prefix) { namespaces_to_sync.add(clean_prefix); }
+		// Phase 7: Create every configured locale file from the completed
+		// default-locale structure. AI translation is an optional second mode of
+		// this same sync, selected by the Translate with AI checkbox.
+		const namespaces_to_sync = new Set<string>([route_dir_to_namespace(meta.route_dir)]);
+		if (!meta.is_nested && clean_prefix) { namespaces_to_sync.add(clean_prefix); }
 
-			log_step(`Syncing translations for namespace(s): ${[...namespaces_to_sync].join(", ")}...`);
-			try {
-				for (const namespace of namespaces_to_sync) {
-					await sync_single_namespace(namespace, true);
-				}
-			} catch (err) {
-				console.error("Error syncing translations:", err instanceof Error ? err.message : err);
+		const sync_mode = translate_in_args ? "with AI" : "structure only";
+		log_step(`Syncing translations (${sync_mode}) for namespace(s): ${[...namespaces_to_sync].join(", ")}...`);
+		try {
+			for (const namespace of namespaces_to_sync) {
+				await sync_single_namespace(namespace, translate_in_args);
 			}
+		} catch (err) {
+			console.error("Error syncing translations:", err instanceof Error ? err.message : err);
 		}
 
 		// Phase 8: Write routes.ts - deferred to AFTER translations
@@ -416,7 +422,7 @@ export async function generate_crud(table_name: string, options: CrudOptions = {
 		// calls this same endpoint again once it finishes - but this generator
 		// must target the main app explicitly across the two-app split.
 		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
-		await notify_server_reload();
+		await notify_server_reload(true, Bun.env.MAIN_APP_URL);
 		log_step(`CRUD generation finished for ${table_name}`);
 		return true;
 	} catch (error) {

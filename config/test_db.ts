@@ -1,4 +1,4 @@
-import { require_env } from "$lib/env";
+import { get_connection_string } from "$lib/env";
 import { SQL } from "bun";
 
 export function extract_db_name(url: string): string {
@@ -44,7 +44,7 @@ export function enforce_test_db(url: string): void {
 }
 
 export async function get_test_db(): Promise<SQL> {
-	const url = require_env("TEST_CONNECTION_STRING");
+	const url = get_connection_string("TEST");
 	enforce_test_db(url);
 	const db = new SQL(url);
 

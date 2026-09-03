@@ -71,8 +71,7 @@ bun run mcp:check:exit
 ```
 
 Database inspection accepts one `SELECT` statement only. SQLite inspection uses
-a separate read-only connection. MySQL requires `MCP_READONLY_CONNECTION_STRING`
-for a separate database user with only `SELECT` privileges and no file privileges.
+a separate read-only connection; MySQL inspection uses the development connection.
 
 ## Project tools
 

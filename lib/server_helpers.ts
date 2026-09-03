@@ -8,6 +8,7 @@
 import { join } from "node:path";
 
 import { handle_rate_limits_get, handle_rate_limits_reset } from "$lib/admin/rate_limits";
+import { handle_reload_routes } from "$lib/admin/reload_routes";
 import { handle_reload_translations } from "$lib/admin/reload_translations";
 import { internal_admin_endpoints_enabled } from "$lib/admin/require_admin_auth";
 import { get_storage_mode } from "$lib/env";
@@ -34,6 +35,7 @@ export function handle_internal_endpoints(req: Request, url: URL): Response | Pr
 	if (!internal_admin_endpoints_enabled()) return null;
 
 	if (req.method === "POST" && url.pathname === "/__reload-translations") { return handle_reload_translations(req); }
+	if (req.method === "POST" && url.pathname === "/__reload-routes") { return handle_reload_routes(req); }
 
 	if (req.method === "GET" && url.pathname === "/__rate-limits") { return handle_rate_limits_get(req); }
 

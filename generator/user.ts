@@ -12,7 +12,7 @@
  */
 
 import { create_user } from "./user_lib";
-import { require_env } from "$lib/env";
+import { get_connection_string } from "$lib/env";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -102,7 +102,7 @@ function parse_args() {
 
 async function main() {
 	const { username, email, password, modules, quiet, prod } = parse_args();
-	const connection_string = prod ? require_env("PROD_CONNECTION_STRING") : undefined;
+	const connection_string = prod ? get_connection_string("PROD") : undefined;
 
 	try {
 		const result = await create_user(username, email, password, modules, connection_string);

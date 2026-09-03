@@ -117,6 +117,18 @@ export async function save_locale_values(table_name: string, id: number | string
 			if (field_names.length === 0) continue;
 
 			const table = locale_table(table_name, locale_code);
+			const existing_rows = await tx.unsafe(
+				`SELECT ${quote_identifier("id")} FROM ${quote_identifier(table)} WHERE ${quote_identifier("id")} = ? LIMIT 1`,
+				[id],
+			);
+			if (existing_rows.length === 0) {
+				const seed_columns = [...new Set(["id", ...protected_columns, ...field_names])];
+				const seed_column_list = seed_columns.map((column) => quote_identifier(column)).join(", ");
+				await tx.unsafe(
+					`INSERT INTO ${quote_identifier(table)} (${seed_column_list}) SELECT ${seed_column_list} FROM ${quote_identifier(table_name)} WHERE ${quote_identifier("id")} = ?`,
+					[id],
+				);
+			}
 			const assignments: string[] = [];
 			const params: unknown[] = [];
 

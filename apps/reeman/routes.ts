@@ -1,10 +1,8 @@
 import { build_nav_routes, build_routes, type RouteDefinition } from "$lib/route_builder";
 import { feature_enabled } from "$lib/helpers";
-import { mount_route_modules_from_dir, reset_route_module_mounts } from "$lib/route_module";
+import { mount_route_modules_from_dir } from "$lib/route_module";
 
 import { auth_crud } from "$platform/auth";
-
-reset_route_module_mounts();
 
 // Mount every top-level module folder under apps/reeman/ by default. Each
 // folder with an index.ts becomes a route module named after the folder, so

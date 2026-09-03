@@ -15,9 +15,15 @@
 
 export const ENV_VAR_DESCRIPTIONS: Record<string, string> = {
 	// -- Databases --
-	DEV_CONNECTION_STRING: "Development DB - used by `bun dev`, reeman, the generators and every script under scripts/. Development tooling only ever touches this one.",
-	PROD_CONNECTION_STRING: "Production DB - used only when the server is started with --prod (`bun start`). Required to boot in production.",
-	TEST_CONNECTION_STRING: "Test DB - used by `bun test` and `bun run db:clone-test`. Must contain \"test\" in the DB name; the safety guard refuses non-test DBs.",
+	DEV_CONNECTION_STRING: "Development DB endpoint - used by `bun dev`, reeman, the generators and every script under scripts/. For MySQL, omit credentials and set DEV_DB_USERNAME and DEV_DB_PASSWORD separately.",
+	DEV_DB_USERNAME: "Development MySQL username. Set N/A for SQLite. Keep it separate from DEV_CONNECTION_STRING so a secret manager can provide credentials without changing the endpoint.",
+	DEV_DB_PASSWORD: "Development MySQL password. Set N/A for SQLite. Keep it separate from DEV_CONNECTION_STRING so a secret manager can provide credentials without changing the endpoint.",
+	PROD_CONNECTION_STRING: "Production DB endpoint - used only when the server is started with --prod (`bun start`). For MySQL, omit credentials and set PROD_DB_USERNAME and PROD_DB_PASSWORD separately.",
+	PROD_DB_USERNAME: "Production MySQL username. Set N/A for SQLite.",
+	PROD_DB_PASSWORD: "Production MySQL password. Set N/A for SQLite.",
+	TEST_CONNECTION_STRING: "Test DB endpoint - used by `bun test` and `bun run db:clone-test`. Must contain \"test\" in the DB name. For MySQL, omit credentials and set TEST_DB_USERNAME and TEST_DB_PASSWORD separately.",
+	TEST_DB_USERNAME: "Test MySQL username. Set N/A for SQLite.",
+	TEST_DB_PASSWORD: "Test MySQL password. Set N/A for SQLite.",
 
 	// -- Core app --
 	TIME_ZONE: "IANA time zone (e.g. \"Europe/Ljubljana\") used for date, time and timestamp columns. Required.",
@@ -92,6 +98,7 @@ export const ENV_VAR_DESCRIPTIONS: Record<string, string> = {
 	CLAUDE_MODEL: "Claude model identifier to request.",
 	XAI_API_KEY: "API key for xAI, used by the AI translation tools.",
 	XAI_MODEL: "xAI model identifier to request.",
+	DEEPL_API_KEY: "DeepL API authentication key for direct translation requests.",
 	OLLAMA_URL: "Base URL of a local Ollama server for offline translation.",
 	OLLAMA_MODEL: "Ollama model name to run.",
 	HF_URL: "Base URL for Hugging Face inference. The language pair (e.g. \"en-sl\") is derived automatically and appended to HF_MODEL.",
@@ -101,7 +108,6 @@ export const ENV_VAR_DESCRIPTIONS: Record<string, string> = {
 	// -- MCP server --
 	MCP_ENABLE_TEMPLATE_RENDER: "Set to \"true\" to let the MCP server render .ree templates, which executes local code. Off by default. For Streamable HTTP, keep the server on 127.0.0.1 and require MCP_HTTP_TOKEN.",
 	MCP_ENABLE_MUTATIONS: "Set to \"true\" to allow MCP tools that write (generators, translation edits). Off by default.",
-	MCP_READONLY_CONNECTION_STRING: "MySQL only: a SELECT-only database user for MCP inspection. \"N/A\" means SQLite inspection uses its own read-only URL instead.",
 	MCP_SERVER_PORT: "Port reported to MCP clients by the `project` tool as the app's server port. Defaults to 2400.",
 	MCP_HTTP_PORT: "Loopback port for the MCP Streamable HTTP endpoint. Defaults to 2401.",
 	MCP_HTTP_TOKEN: "Bearer token required by the MCP Streamable HTTP endpoint. Must be at least 32 characters. Generate with: openssl rand -hex 32",

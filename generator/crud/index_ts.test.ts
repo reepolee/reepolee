@@ -31,6 +31,7 @@ describe("generate_index_ts localized save", () => {
 		expect(source).toContain("const current_record = await get_record_by_id(id);");
 		expect(source).toContain('id: String(current_record.id ?? ""),');
 		expect(source).toContain("await save_locale_values(TABLE_NAME, Number(id), localized_inputs, LOCALE_PROTECTED_COLUMNS);");
+		expect(source).not.toContain('LOCALE_PROTECTED_COLUMNS = ["display"');
 		expect(source).toContain("const has_localized_changes = Object.keys(localized_inputs).length > 0;");
 		expect(source).toContain("const has_base_changes = Object.keys(changed_data).length > 0;");
 		expect(source).toContain("if (has_base_changes) record = await update_record(id, changed_data);");
@@ -39,6 +40,10 @@ describe("generate_index_ts localized save", () => {
 		expect(source).toContain('const LOCALIZED_FIELDS = [{"field_name":"name"');
 		expect(source).toContain("parse_changed_localized_form");
 		expect(source).toContain("parse_localized_form");
+		expect(source).toContain("build_localization_props, editor_locales, localized_input_form_state");
+		expect(source).toContain("const localized_submitted = parse_localized_form(params, LOCALIZED_FIELDS);");
+		expect(source).toContain("get_locale_rows(TABLE_NAME, Number(record.id), editor_locales())");
+		expect(source).not.toContain('import { locales } from "$config/supported_locales";');
 
 		const new_handler = source.slice(source.indexOf("export async function get_metrics_new"));
 		expect(new_handler).toContain("localization: build_localization_props({ fields: LOCALIZED_FIELDS");

@@ -60,7 +60,8 @@
 	},
 	"labels": {
 		"folder": "Mapa",
-		"nickname": "Vzdevek"
+		"nickname": "Vzdevek",
+		"unit": "Enota"
 	},
 	"localization": {
 		"add_language": "Dodaj jezik prevoda",

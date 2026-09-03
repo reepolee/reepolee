@@ -2,6 +2,7 @@ import { describe, expect, mock, test } from "bun:test";
 
 const saved_settings: Array<{ path: string; settings: Record<string, unknown>; }> = [];
 const refreshed_routes: Array<Array<string | undefined>> = [];
+const removed_routes: string[] = [];
 
 mock.module("$config/db", () => ({ DB_CONNECTION_STRING: "" }));
 mock.module("$config/paths", () => ({ MAIN_APP: "apps/main", MAIN_APP_POSIX: "apps/main" }));
@@ -24,10 +25,30 @@ mock.module("$generator/schema/write_table", () => ({
 mock.module("$generator/reeman/refresh_crud", () => ({
 	refresh_crud_fields_only: async (...args: Array<string | undefined>) => { refreshed_routes.push(args); return true; },
 }));
+mock.module("$generator/reeman/remove_route", () => ({
+	list_removable_routes: async () => [
+		{ url: "/admin/metrics", module: "admin" },
+		{ url: "/admin/metrics/metric_enum_values", module: "admin" },
+	],
+	remove_route: async (url: string) => { removed_routes.push(url); },
+}));
 
-const { action_save_route_settings, build_bulk_command_args, spawn_bulk_action } = await import("./actions");
+const { action_add_nested_children, action_bulk_remove_route, action_save_route_settings, build_bulk_command_args, spawn_bulk_action } = await import("./actions");
 
 describe("build_bulk_command_args", () => {
+	test("rejects nested generation without a selected child", async () => {
+		const result = await action_add_nested_children({
+			parent_table: "metrics",
+			parent_url: "/metrics",
+			children: [],
+			pagination: "offset",
+			render_strategy: "load",
+			template_tags: "flat",
+		});
+		expect(result.ok).toBe(false);
+		expect(result.error).toBe("Select at least one child table.");
+	});
+
 	test("runs all selected tables through one sequential bulk command", () => {
 		const args = build_bulk_command_args(["metrics", "readings"], {
 			force: true,
@@ -121,7 +142,21 @@ describe("build_bulk_command_args", () => {
 			template_tags: "tags",
 			grid_columns: undefined,
 			grid_column_definitions: undefined,
+			form_hints: undefined,
+			form_details: undefined,
 		});
 		expect(refreshed_routes).toEqual([["metrics", "admin", undefined, undefined]]);
+	});
+
+	test("removes a selected parent once when its nested child is also selected", async () => {
+		removed_routes.length = 0;
+
+		const result = await action_bulk_remove_route({
+			urls: ["/admin/metrics", "/admin/metrics/metric_enum_values"],
+		});
+
+		expect(result.ok).toBe(true);
+		expect(removed_routes).toEqual(["/admin/metrics"]);
+		expect(result.output).not.toContain("Skipped /admin/metrics/metric_enum_values");
 	});
 });

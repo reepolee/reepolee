@@ -183,7 +183,7 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 	// Localization: which FIELDS are localizable is baked here (schema
 	// structure); which LOCALES exist is resolved per request from config, so
 	// adding a locale never requires regenerating a CRUD.
-	const localized = localization_enabled && !is_nested;
+	const localized = localization_enabled;
 
 	const [header_imports, route_export, header, validate, index_get, index_post, new_get, edit_get, edit_post, list_strategy, view_import, select_imports, index_bulk_delete, copy_locale_post, generate_locale_post] = await Promise.all([
 		read("header_imports.ts"),
@@ -301,14 +301,14 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 	const autocomplete_display_options = has_autocomplete ? "\tautocomplete_display_values," : "";
 
 	const localization_import = localized
-		? `import { enqueue } from "$queue/index";\nimport { copy_localized_values, generate_localized_values, get_locale_rows } from "$lib/localized_copy";\nimport { build_localization_props, localized_input_form_state, parse_changed_localized_form, parse_copy_request, parse_generate_request, parse_localized_form, validate_localized_inputs, validate_touched_localized_inputs } from "$lib/localized_form";\nimport { locales } from "$config/supported_locales";\nimport { invalidate_all_locales, save_locale_values } from "$lib/locale_write";\n`
+		? `import { enqueue } from "$queue/index";\nimport { copy_localized_values, generate_localized_values, get_locale_rows } from "$lib/localized_copy";\nimport { build_localization_props, editor_locales, localized_input_form_state, parse_changed_localized_form, parse_copy_request, parse_generate_request, parse_localized_form, validate_localized_inputs, validate_touched_localized_inputs } from "$lib/localized_form";\nimport { invalidate_all_locales, save_locale_values } from "$lib/locale_write";\n`
 		: "";
 	// The CSS-only tab switcher pre-selects whichever locale tab the visitor
 	// last used, read from a plain cookie - no JS is needed to restore it.
 	const preferred_locale_arg = localized ? `, preferred_locale: get_cookie(req, "preferred_locale") ?? undefined` : "";
 	const localization_config = localized
 		? `\nconst LOCALIZED_FIELDS = ${JSON.stringify(localized_fields.map((f) => ({ field_name: f.field_name, label: f.label, input_type: f.input_type, upload_folder: f.upload_folder })))} as const;\nconst LOCALIZED_FIELD_NAMES = LOCALIZED_FIELDS.map((field) => field.field_name);
-const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !localized_fields.some((localized_field) => localized_field.field_name === field.name)).map((field) => field.name))} as readonly string[];\n`
+const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => column_names.includes(field.name) && field.name !== "id" && !localized_fields.some((localized_field) => localized_field.field_name === field.name)).map((field) => field.name))} as readonly string[];\n`
 		: "";
 	// Translations are validated against the same Zod rules as the source field.
 	const validation_schema_import = localized ? ", schema" : "";
@@ -326,11 +326,11 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 	const copy_action_expr = `\`\${base_path()}/\${record.${route_param_value}}/copy-locale\``;
 
 	const load_localization = localized
-		? `const locale_rows = await get_locale_rows(TABLE_NAME, Number(record.id), locales);\n\tconst localization = build_localization_props({ fields: LOCALIZED_FIELDS, record, locale_rows, copy_action: ${copy_action_expr}${preferred_locale_arg} });`
+		? `const locale_rows = await get_locale_rows(TABLE_NAME, Number(record.id), editor_locales());\n\tconst localization = build_localization_props({ fields: LOCALIZED_FIELDS, record, locale_rows, copy_action: ${copy_action_expr}${preferred_locale_arg} });`
 		: "";
 	const localization_data = localized ? "localization," : "";
 	// New forms have no database row to load, but still need the localization
-	// metadata that makes localized-field-tabs render its labels and locale tabs.
+	// metadata that makes localized editors render their labels and locale tabs.
 	const new_localization_data = localized
 		? `localization: build_localization_props({ fields: LOCALIZED_FIELDS, record: ${generate_empty_record(fields)}, copy_action: ""${preferred_locale_arg} }),`
 		: "";
@@ -338,7 +338,7 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 		? `localization: build_localization_props({ fields: LOCALIZED_FIELDS, record: data, copy_action: ""${preferred_locale_arg} }),`
 		: "";
 	const parse_localization = localized
-		? `const localized_inputs = parse_changed_localized_form(params, LOCALIZED_FIELDS);\n\tconst localized_values = localized_input_form_state(localized_inputs);`
+		? `const localized_submitted = parse_localized_form(params, LOCALIZED_FIELDS);\n\tconst localized_inputs = parse_changed_localized_form(params, LOCALIZED_FIELDS);\n\tconst localized_values = localized_input_form_state(localized_submitted);`
 		: "";
 	const validate_localization = localized
 		? `const localized_errors = validate_localized_inputs(localized_inputs, schema, ctx.translations.errors);`
@@ -360,6 +360,9 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 	// value by hand clears its provenance - it is no longer a copy.
 	const localization_change_check = localized ? "const has_localized_changes = Object.keys(localized_inputs).length > 0;" : "const has_localized_changes = false;";
 	const save_localization = localized ? `if (has_localized_changes) await save_locale_values(TABLE_NAME, Number(id), localized_inputs, LOCALE_PROTECTED_COLUMNS);` : "";
+	const save_created_localization = localized ? `await save_locale_values(TABLE_NAME, Number(created_record.id), localized_inputs, LOCALE_PROTECTED_COLUMNS);` : "";
+	const load_nested_localization = localized ? `const locale_rows = await get_locale_rows(TABLE_NAME, Number(record.id), editor_locales());\n\tconst localized_values = build_localization_props({ fields: LOCALIZED_FIELDS, record, locale_rows, copy_action: "" }).values;` : "";
+	const nested_localization_data = localized ? ", localized_values" : "";
 	const update_log_record = localized
 		? "r:{ id: record.id, changes: changed_data, locales: localized_inputs }"
 		: "r:{ id: record.id, changes: changed_data }";
@@ -373,10 +376,10 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 	const catch_localization_data = localized
 		? `\n\t\t\t\tlocalization: build_localization_props({ fields: LOCALIZED_FIELDS, record: existing_record ? { ...existing_record, ...data } : data, values: localized_values, errors: {}, copy_action: \`\${base_path()}/\${__route_param__}/copy-locale\`${preferred_locale_arg} }),`
 		: "";
-	const copy_locale_route = localized ? `"/${effective_route_name}/:${route_param_value}/copy-locale": { POST: post_${effective_route_name}_copy_locale },\n\t` : "";
+	const copy_locale_route = localized && !is_nested ? `"/${effective_route_name}/:${route_param_value}/copy-locale": { POST: post_${effective_route_name}_copy_locale },\n\t` : "";
 	// The generate-locale route mirrors copy-locale but enqueues a translate_record
 	// job instead of copying: the AI call runs in the queue worker.
-	const generate_locale_route = localized ? `"/${effective_route_name}/:${route_param_value}/generate-locale": { POST: post_${effective_route_name}_generate_locale },\n\t` : "";
+	const generate_locale_route = localized && !is_nested ? `"/${effective_route_name}/:${route_param_value}/generate-locale": { POST: post_${effective_route_name}_generate_locale },\n\t` : "";
 
 	const autocomplete_imports = has_autocomplete ? `${autocomplete_fks.map((fk: any) => `import { search_${fk.table}_options, get_${fk.table}_option_by_${fk.column} } from "./sql";`).join(
 		"\n"
@@ -464,6 +467,9 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => !loca
 			"edit.localization_error_data": localization_error_data,
 			"edit.localization_change_check": localization_change_check,
 			"edit.save_localization": save_localization,
+			"new.save_localization": save_created_localization,
+			"edit.load_nested_localization": load_nested_localization,
+			"edit.nested_localization_data": nested_localization_data,
 			"edit.update_log_record": update_log_record,
 			"edit.catch_existing_record": catch_existing_record,
 			"edit.catch_title_data": catch_title_data,

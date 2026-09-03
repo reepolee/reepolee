@@ -35,6 +35,32 @@ export function sanitize_env_value(raw: string): string { return raw.replace(/^[
 // Database connection string (dev / prod split)
 // ---------------------------------------------------------------------------
 
+export type Connection_environment = "DEV" | "PROD" | "TEST";
+
+type Connection_env_names = {
+	connection_string: `${Connection_environment}_CONNECTION_STRING`;
+	username: `${Connection_environment}_DB_USERNAME`;
+	password: `${Connection_environment}_DB_PASSWORD`;
+};
+
+const connection_env_names: Record<Connection_environment, Connection_env_names> = {
+	DEV: {
+		connection_string: "DEV_CONNECTION_STRING",
+		username: "DEV_DB_USERNAME",
+		password: "DEV_DB_PASSWORD",
+	},
+	PROD: {
+		connection_string: "PROD_CONNECTION_STRING",
+		username: "PROD_DB_USERNAME",
+		password: "PROD_DB_PASSWORD",
+	},
+	TEST: {
+		connection_string: "TEST_CONNECTION_STRING",
+		username: "TEST_DB_USERNAME",
+		password: "TEST_DB_PASSWORD",
+	},
+};
+
 /**
  * Name of the env var holding the connection string for this process.
  *
@@ -45,10 +71,30 @@ export function sanitize_env_value(raw: string): string { return raw.replace(/^[
  * the deliberate exception: its explicit `--prod` flag reads
  * `PROD_CONNECTION_STRING` to create a production user.
  */
-export const CONNECTION_STRING_VAR: "DEV_CONNECTION_STRING" | "PROD_CONNECTION_STRING" = Bun.argv.includes("--prod") ? "PROD_CONNECTION_STRING" : "DEV_CONNECTION_STRING";
+export const CONNECTION_ENVIRONMENT: "DEV" | "PROD" = Bun.argv.includes("--prod") ? "PROD" : "DEV";
 
-/** Connection string for the current run mode. Fails loud when unset. */
-export function get_connection_string(): string { return require_env(CONNECTION_STRING_VAR); }
+export const CONNECTION_STRING_VAR = connection_env_names[CONNECTION_ENVIRONMENT].connection_string;
+
+/**
+ * Resolve a DB URL for one environment. SQLite remains a self-contained URL.
+ * MySQL endpoint URLs must omit userinfo; credentials come from separate
+ * environment variables so a secret manager can supply them independently.
+ */
+export function get_connection_string(environment: Connection_environment = CONNECTION_ENVIRONMENT): string {
+	const names = connection_env_names[environment];
+	const connection_string = require_env(names.connection_string);
+	if (!connection_string.toLowerCase().startsWith("mysql://")) return connection_string;
+
+	const connection_url = new URL(connection_string);
+	if (connection_url.username || connection_url.password) {
+		console.error(`\x1b[31m✗ ${names.connection_string} must not include a MySQL username or password. Set ${names.username} and ${names.password} separately.\x1b[0m`);
+		process.exit(1);
+	}
+
+	connection_url.username = require_env(names.username);
+	connection_url.password = require_env(names.password);
+	return connection_url.toString();
+}
 
 // ---------------------------------------------------------------------------
 // Storage mode

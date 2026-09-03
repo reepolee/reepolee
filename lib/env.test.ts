@@ -117,12 +117,24 @@ describe("require_env", () => {
 
 describe("connection string dev/prod split", () => {
 	const original_dev = Bun.env.DEV_CONNECTION_STRING;
+	const original_dev_username = Bun.env.DEV_DB_USERNAME;
+	const original_dev_password = Bun.env.DEV_DB_PASSWORD;
 
 	afterEach(() => {
 		if (original_dev === undefined) {
 			delete Bun.env.DEV_CONNECTION_STRING;
 		} else {
 			Bun.env.DEV_CONNECTION_STRING = original_dev;
+		}
+		if (original_dev_username === undefined) {
+			delete Bun.env.DEV_DB_USERNAME;
+		} else {
+			Bun.env.DEV_DB_USERNAME = original_dev_username;
+		}
+		if (original_dev_password === undefined) {
+			delete Bun.env.DEV_DB_PASSWORD;
+		} else {
+			Bun.env.DEV_DB_PASSWORD = original_dev_password;
 		}
 	});
 
@@ -131,6 +143,28 @@ describe("connection string dev/prod split", () => {
 		expect(env.CONNECTION_STRING_VAR).toBe("DEV_CONNECTION_STRING");
 		Bun.env.DEV_CONNECTION_STRING = "sqlite:dev-split.db";
 		expect(env.get_connection_string()).toBe("sqlite:dev-split.db");
+	});
+
+	test("builds a MySQL connection from endpoint and separate credentials", () => {
+		Bun.env.DEV_CONNECTION_STRING = "mysql://localhost/reepolee_dev";
+		Bun.env.DEV_DB_USERNAME = "login";
+		Bun.env.DEV_DB_PASSWORD = "password";
+		expect(env.get_connection_string()).toBe("mysql://login:password@localhost/reepolee_dev");
+	});
+
+	test("rejects MySQL credentials embedded in the endpoint", () => {
+		Bun.env.DEV_CONNECTION_STRING = "mysql://login:password@localhost/reepolee_dev";
+		const original_exit = process.exit;
+		const original_error = console.error;
+		(process as any).exit = ((code?: number) => { throw new Error(`process.exit(${code})`); }) as any;
+		console.error = show_expected_error as typeof console.error;
+
+		try {
+			expect(() => env.get_connection_string()).toThrow("process.exit(1)");
+		} finally {
+			process.exit = original_exit;
+			console.error = original_error;
+		}
 	});
 
 	// CONNECTION_STRING_VAR is resolved once from Bun.argv at module load, so
@@ -147,6 +181,8 @@ describe("connection string dev/prod split", () => {
 					...Bun.env,
 					DEV_CONNECTION_STRING: "sqlite:dev-split.db",
 					PROD_CONNECTION_STRING: "sqlite:prod-split.db",
+					PROD_DB_USERNAME: "N/A",
+					PROD_DB_PASSWORD: "N/A",
 				},
 				stdout: "pipe",
 				stderr: "pipe",

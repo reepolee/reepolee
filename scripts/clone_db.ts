@@ -19,7 +19,7 @@ import { dirname, join, resolve } from "node:path";
 
 import { extract_db_name } from "$config/test_db";
 import { dump_dialect, parse_mysql_connection, run_dump, sqlite_database_path, type DumpDialect } from "$root/scripts/dump_db";
-import { sanitize_env_value } from "$lib/env";
+import { get_connection_string, sanitize_env_value } from "$lib/env";
 
 export interface DatabaseSummary {
 	tables: number;
@@ -244,8 +244,7 @@ async function main(): Promise<void> {
 
 	const snapshot_path = option_path(args, "--snapshot");
 	const restore_path = option_path(args, "--restore");
-	const target_connection = sanitize_env_value(Bun.env.TEST_CONNECTION_STRING ?? "");
-	if (!target_connection) throw new Error("TEST_CONNECTION_STRING is not set");
+	const target_connection = get_connection_string("TEST");
 	assert_test_target(target_connection);
 
 	if (snapshot_path) {
@@ -259,8 +258,7 @@ async function main(): Promise<void> {
 		return;
 	}
 
-	const source_connection = sanitize_env_value(Bun.env.DEV_CONNECTION_STRING ?? "");
-	if (!source_connection) throw new Error("DEV_CONNECTION_STRING is not set");
+	const source_connection = get_connection_string("DEV");
 	const source_dialect = dump_dialect(source_connection);
 	const target_dialect = dump_dialect(target_connection);
 	if (source_dialect !== target_dialect) {

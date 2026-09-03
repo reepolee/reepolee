@@ -13,7 +13,7 @@
 import { mkdir } from "node:fs/promises";
 import { basename, join, resolve } from "node:path";
 
-import { sanitize_env_value } from "$lib/env";
+import { get_connection_string, sanitize_env_value } from "$lib/env";
 
 export type DumpDialect = "mysql" | "sqlite";
 
@@ -165,9 +165,7 @@ async function main(): Promise<void> {
 	}
 	const args = process.argv.slice(2);
 	const parsed = parse_options(args);
-	const env_name = parsed.use_test ? "TEST_CONNECTION_STRING" : "DEV_CONNECTION_STRING";
-	const connection = sanitize_env_value(Bun.env[env_name] ?? "");
-	if (!connection) throw new Error(`Missing ${env_name}`);
+	const connection = get_connection_string(parsed.use_test ? "TEST" : "DEV");
 	await run_dump({ connection, dialect: dump_dialect(connection), output_dir: parsed.output_dir });
 }
 

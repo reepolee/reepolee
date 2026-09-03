@@ -20,12 +20,12 @@
 			<field-wrapper class="grid" data-field="prefix">
 				<div class="grid">
 					<label class="px-3" for="add-page-prefix">{_ labels.prefix}</label>
-					<input id="add-page-prefix" name="prefix" pattern="[a-z0-9_\-\/]*" list="reeman-modules" title="{_ hints.prefix }" />
-					<datalist id="reeman-modules">
+					<select id="add-page-prefix" name="prefix" title="{_ hints.prefix }">
+						<option value=""></option>
 						{#each modules as m}
-							<option value="{= m.code }">{= m.name }</option>
+							<option value="{= m.code }">{= m.code } - {= m.name }</option>
 						{/each}
-					</datalist>
+					</select>
 				</div>
 			</field-wrapper>
 

@@ -31,8 +31,12 @@ import type { GridColumnDefinition } from "./schema/types";
 export interface SchemaOptions {
 	prefix?: string;
 	parent_table?: string;
+	/** The parent FK selected when a child table has more than one relationship. */
+	parent_fk_column?: string;
 	pagination_strategy?: "cursor" | "offset";
 	render_strategy?: "stream" | "load";
+	form_hints?: boolean;
+	form_details?: boolean;
 	route_name?: string;
 	/**
 	 * Index-grid columns chosen interactively. Anything outside the list is written
@@ -88,7 +92,10 @@ export async function generate_schema(target: string, options: SchemaOptions = {
 
 		// Detect parent FK relationship when --parent is specified
 		if (parent_table) {
-			const fk = schema_obj.foreign_keys.find((fk) => fk.referenced_table_name.toLowerCase() === parent_table.toLowerCase());
+			const fk = schema_obj.foreign_keys.find((candidate) =>
+				candidate.referenced_table_name.toLowerCase() === parent_table.toLowerCase()
+				&& (!options.parent_fk_column || candidate.column_name === options.parent_fk_column)
+			);
 			if (!fk) {
 				console.error(`✗ No foreign key found in ${schema_obj.name} referencing table "${parent_table}".`);
 				success = false;
@@ -148,6 +155,8 @@ export async function generate_schema(target: string, options: SchemaOptions = {
 				all_schemas,
 				pagination_strategy: options.pagination_strategy,
 				render_strategy: options.render_strategy,
+				form_hints: options.form_hints,
+				form_details: options.form_details,
 				grid_columns: options.grid_columns,
 				grid_column_definitions: options.grid_column_definitions,
 			});

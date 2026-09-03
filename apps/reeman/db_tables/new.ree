@@ -21,16 +21,22 @@
 				<field-wrapper class="grid max-w-[60ch]" data-field="prefix">
 					<div class="grid">
 						<label class="px-3" for="generate-prefix">{_ labels.prefix}</label>
-						<input id="generate-prefix" name="prefix" pattern="[a-z0-9_\-\/]*" list="reeman-modules" title="{_ hints.prefix }" />
-						<datalist id="reeman-modules">
+						<select id="generate-prefix" name="prefix" title="{_ hints.prefix }">
+							<option value=""></option>
 							{#each modules as module}
-								<option value="{= module.code }">{= module.name }</option>
+								<option value="{= module.code }">{= module.code } - {= module.name }</option>
 							{/each}
-						</datalist>
+						</select>
 					</div>
 				</field-wrapper>
 
 				<generator-settings id-prefix="generate"></generator-settings>
+
+				<fieldset class="grid gap-2 max-w-[60ch]">
+					<legend>{_ labels.form_layout}</legend>
+					<label class="flex cursor-pointer items-center gap-1.5"><input type="checkbox" name="form_hints" value="1" /> {_ labels.form_hints}</label>
+					<label class="flex cursor-pointer items-center gap-1.5"><input type="checkbox" name="form_details" value="1" /> {_ labels.form_details}</label>
+				</fieldset>
 
 				<div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
 					<label class="flex cursor-pointer items-center gap-1.5"><input type="checkbox" name="force" value="1" /> {_ actions.force}</label>

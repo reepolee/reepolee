@@ -7,7 +7,7 @@ import { render } from "$lib/render";
 import { create_ctx } from "$lib/request_context";
 
 import { search_records } from "./sql";
-import { get_table_row_count } from "./sql.custom";
+import { get_table_sample_records, get_table_row_count } from "./sql.custom";
 
 import { wants_json } from "$lib/wants_json";
 import { strip_api_sensitive } from "$config/api_blocklist";
@@ -94,6 +94,7 @@ export async function get_db_tables_index(req: BunRequest): Promise<Response> {
 		data: {
 			title: "Tables",
 			busy: reeman_data.busy,
+			modules: reeman_data.modules,
 			records: result.records,
 			query: query || "",
 			limit,
@@ -142,6 +143,8 @@ export async function get_db_table_detail(req: BunRequest): Promise<Response> {
 	]);
 
 	const grid_columns = await get_grid_column_choices(table);
+	const sample_data = await get_table_sample_records(table, grid_columns.map((column) => column.name));
+	const sample_grid_cols = sample_data.columns.map(() => "auto").join(" ") || "auto";
 
 	// This table's own busy state (crud/schema generation for `table`), not
 	// the generic "anything running" flag - generating another table
@@ -156,6 +159,9 @@ export async function get_db_table_detail(req: BunRequest): Promise<Response> {
 			table,
 			row_count,
 			grid_columns,
+			sample_columns: sample_data.columns,
+			sample_records: sample_data.records,
+			sample_grid_cols,
 			helper_names: DEFAULT_HELPER_NAMES,
 		},
 		ctx,

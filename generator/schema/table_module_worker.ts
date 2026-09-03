@@ -11,6 +11,8 @@ type WorkerResult = {
 const table_module_exports = [
 	"columns",
 	"fields",
+	"form_details",
+	"form_hints",
 	"global_scopes",
 	"grid_filler",
 	"indexed_columns",

@@ -117,7 +117,7 @@ describe("write_table_file", () => {
 		expect(generated).toContain("section_order: null,");
 		expect(generated).toContain("group_order: null,");
 		expect(generated).toContain("final_order: null,");
-		expect(generated).toContain("template_tags, navigation");
+		expect(generated).toContain("template_tags, form_hints, form_details, navigation");
 	});
 
 	test("preserves navigation settings when refreshing an existing route config", async () => {
@@ -171,6 +171,8 @@ describe("update_table_file_settings", () => {
 const pagination_strategy: "cursor" | "offset" = "offset";
 const render_strategy: "stream" | "load" = "load";
 const template_tags: "flat" | "tags" = "flat";
+const form_hints = false;
+const form_details = false;
 `;
 		await Bun.write(table_path, source);
 
@@ -178,6 +180,8 @@ const template_tags: "flat" | "tags" = "flat";
 			pagination_strategy: "cursor",
 			render_strategy: "stream",
 			template_tags: "tags",
+			form_hints: true,
+			form_details: true,
 			grid_columns: ["email"],
 			grid_column_definitions: [
 				{ name: "name", width: "18ch", class_name: "font-semibold", filter: true },
@@ -191,6 +195,8 @@ const template_tags: "flat" | "tags" = "flat";
 		expect(updated).toContain('const pagination_strategy: "cursor" | "offset" = "cursor";');
 		expect(updated).toContain('const render_strategy: "stream" | "load" = "stream";');
 		expect(updated).toContain('const template_tags: "flat" | "tags" = "tags";');
+		expect(updated).toContain("const form_hints = true;");
+		expect(updated).toContain("const form_details = true;");
 	});
 
 	test("updates a column's explicit localized setting", async () => {

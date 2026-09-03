@@ -7,14 +7,12 @@
  */
 
 import { SQL } from "bun";
+import { get_connection_string } from "$lib/env";
 
 const args = process.argv.slice(2);
 const skip_confirm = args.includes("--yes") || args.includes("-y");
-const raw_source = normalize_connection_string(Bun.env.DEV_CONNECTION_STRING);
-const raw_target = normalize_connection_string(Bun.env.PROD_CONNECTION_STRING);
-
-if (!raw_source) fail("DEV_CONNECTION_STRING is not set");
-if (!raw_target) fail("PROD_CONNECTION_STRING is not set");
+const raw_source = get_connection_string("DEV");
+const raw_target = get_connection_string("PROD");
 
 const source_type = connection_type(raw_source);
 const target_type = connection_type(raw_target);
@@ -156,10 +154,6 @@ async function copy_mysql_table(source_db: SQL, target_db: SQL, table_name: stri
 		const values = column_names.map((column_name) => source_row[column_name]);
 		await target_db.unsafe(insert_sql, values);
 	}
-}
-
-function normalize_connection_string(value: string | undefined): string {
-	return (value ?? "").replace(/^['\"]|['\"]$/g, "").trim();
 }
 
 function connection_type(connection_string: string): string {

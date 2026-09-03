@@ -22,6 +22,7 @@ import { write_table_file, write_table_generated_file, write_translation_files, 
 import { MySQLTypeMapper } from "../schema/mysql/mysql_type_mapper";
 import { SQLiteTypeMapper } from "../schema/sqlite/sqlite_type_mapper";
 import type { FormFieldDef, SyntheticSchema } from "../schema/types";
+import { sync_single_namespace } from "../translate_namespace";
 import { field_interface_prop } from "./helpers";
 import { create_safe_writer, format_dirs, format_file, type SafeWriter, type WriteStatus } from "./file_writer";
 import { generate_crud_files, sync_crud_translations, sync_nav_prefix_title, sync_nav_translations, sync_validation_translations, update_routes_ts } from "./main";
@@ -192,11 +193,15 @@ function strip_locale_copy_from_index_ts(content: string): string {
 	return result;
 }
 
-/** Strip `<localized-field-tabs>` wrappers, leaving the plain field markup in place. */
+/** Strip localized editor components, leaving their plain field markup in place. */
 function strip_locale_tabs_from_form_ree(content: string): string {
-	return content.replace(
+	const without_tabs = content.replace(
 		/<localized-field-tabs field="[^"]*" label="[^"]*" localization="\{= props\.localization \}">\n([\s\S]*?)\n\n\t\t\t<\/localized-field-tabs>/g,
 		(_full, inner: string) => inner
+	);
+	return without_tabs.replace(
+		/<localized-input-text\b([^>]*)\blocalization="\{= props\.localization \}"([^>]*)><\/localized-input-text>/g,
+		(_full, before: string, after: string) => `<input-text${before}${after}></input-text>`,
 	);
 }
 
@@ -294,6 +299,11 @@ async function create_bread_resource(schema: SyntheticSchema, options: CreateBre
 		if (clean_prefix) meta.changed_dirs.add(join(MAIN_APP, clean_prefix));
 		await sync_crud_translations(schema.name, meta.route_dir, meta.fields, false, undefined, meta.v_fields);
 		await sync_validation_translations(schema.name, meta.route_dir, meta.fields, meta.foreign_keys);
+		const namespaces_to_sync = new Set<string>([initial_namespace]);
+		if (clean_prefix) namespaces_to_sync.add(clean_prefix);
+		for (const namespace of namespaces_to_sync) {
+			await sync_single_namespace(namespace, false);
+		}
 		const { flatten_translation_object, read_namespace_file } = await import("$lib/translation_files");
 		const translation_obj = await read_namespace_file(initial_namespace, default_locale);
 		const translation_seeded_keys = flatten_translation_object(translation_obj).length;

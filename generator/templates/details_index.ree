@@ -1,33 +1,33 @@
 <!-- GEN:CHILDREN:START -->
 {#if record.id}
-	<div class="child-list mt-8 bg-surface-raised rounded shadow p-4 max-w-max" data-child-section="__child.table__">
-		<h2 class="text-lg font-semibold mb-4">{= props.__child.parent_label__ }</h2>
+	<div class="child-list mt-0 bg-surface-raised rounded shadow p-4 max-w-none" data-child-section="__child.table__">
+		<h2 class="text-lg font-semibold mb-4">{_ __child.translation_namespace__.parent_label}</h2>
 		{#if props.__child.records__ && props.__child.records__.length > 0}
 			<div class="grid gap-x-8 items-center font-semibold" __child.grid_cols__>
 				__child.headers__
-				<div class="child-header text-right px-2">{= props.__child.ui__.actions }</div>
+				<div class="child-header text-right px-2">{_ __child.translation_namespace__.child_ui.actions}</div>
 				{#each props.__child.records__ as child}
 					<div class="grid grid-cols-subgrid col-span-full items-center border-t border-slate-100 py-2 hover:bg-slate-200/50 font-normal">
 						__child.cells__
 
 						<div class="flex items-center justify-end gap-2 px-2">
-							<button type="button" class="as-button-tertiary p-1" data-edit-child data-child-id="{= child.id }" title="{= __child.ui__.edit }">📝</button>
-							<button type="button" class="as-button-tertiary p-1 text-text-tertiary hover:text-brand" data-delete-child data-child-id="{= child.id }" command="show-modal" commandfor="child-delete-dialog-__child.table__" title="{= __child.ui__.archive }"><!-- bare `delete` would break - `delete` is a JS keyword -->🗑️</button>
+							<button type="button" class="as-button-tertiary size-7 p-0" data-edit-child data-child-id="{= child.id }" title="{_ __child.translation_namespace__.child_ui.edit}">📝</button>
+							<button type="button" class="as-button-tertiary size-7 p-0 text-text-tertiary hover:text-brand" data-delete-child data-child-id="{= child.id }" command="show-modal" commandfor="child-delete-dialog-__child.table__" title="{_ __child.translation_namespace__.child_ui.archive}"><!-- bare `delete` would break - `delete` is a JS keyword -->🗑️</button>
 						</div>
 					</div>
 				{/each}
 			</div>
 		{:else}
-			<p class="text-slate-400 italic">__ui.empty_text__</p>
+			<p class="text-slate-400 italic">{_ __child.translation_namespace__.child_ui.empty_text}</p>
 		{/if}
-		<button type="button" class="as-button-primary mt-4 inline-flex items-center gap-1" data-new-child>{= props.__child.ui__.new_button }</button>
+		<button type="button" class="as-button-primary mt-4 inline-flex items-center gap-1" data-new-child>{_ __child.translation_namespace__.child_ui.new_button}</button>
 	</div>
 
 	<!-- Child CRUD dialog -->
 	<dialog id="child-dialog-__child.table__" class="p-0 rounded-xl shadow-2xl w-[90vw] max-w-[60ch] max-h-[90vh]">
 		<div class="p-6 overflow-y-auto max-h-[80vh]">
 			<div class="flex items-center justify-between mb-4">
-				<h2 id="child-dialog-title-__child.table__" class="text-lg font-semibold">{= props.__child.ui__.new_title }</h2>
+				<h2 id="child-dialog-title-__child.table__" class="text-lg font-semibold">{_ __child.translation_namespace__.child_ui.new_title}</h2>
 				<button type="button" class="as-button-tertiary p-1 text-2xl leading-none" commandfor="child-dialog-__child.table__" command="close">&times;</button>
 			</div>
 
@@ -45,8 +45,8 @@
 					<!-- GEN:CHILD:FIELDS:END -->
 
 					<div class="flex gap-2 mt-6 items-center">
-						<button id="child-btn-submit-__child.table__" type="submit" class="as-button-primary">{_ actions.save}</button>
-						<button type="button" class="as-button-secondary" commandfor="child-dialog-__child.table__" command="close">{_ actions.cancel}</button>
+						<button id="child-btn-submit-__child.table__" type="submit" class="as-button-primary">{_ __child.translation_namespace__.actions.save}</button>
+						<button type="button" class="as-button-secondary" commandfor="child-dialog-__child.table__" command="close">{_ __child.translation_namespace__.actions.cancel}</button>
 					</div>
 				{/with}
 			</form>
@@ -56,10 +56,10 @@
 	<!-- Child delete confirmation dialog -->
 	<dialog id="child-delete-dialog-__child.table__" class="p-0 rounded-xl shadow-2xl w-100">
 		<div class="p-6">
-			<h2 class="text-lg font-semibold">{_ actions.archive}</h2>
+			<h2 class="text-lg font-semibold">{_ __child.translation_namespace__.actions.archive}</h2>
 			<div class="mt-6 flex justify-end gap-2">
-				<button class="as-button-secondary" type="button" commandfor="child-delete-dialog-__child.table__" command="close">{_ actions.cancel}</button>
-				<button id="child-btn-confirm-delete-__child.table__" class="as-button-danger" type="button" command="--confirm" commandfor="child-delete-dialog-__child.table__">{_ actions.confirm_archive}</button>
+				<button class="as-button-secondary" type="button" commandfor="child-delete-dialog-__child.table__" command="close">{_ __child.translation_namespace__.actions.cancel}</button>
+				<button id="child-btn-confirm-delete-__child.table__" class="as-button-danger" type="button" command="--confirm" commandfor="child-delete-dialog-__child.table__">{_ __child.translation_namespace__.actions.confirm_archive}</button>
 			</div>
 		</div>
 	</dialog>
@@ -89,12 +89,26 @@
 			return form.querySelector(sel);
 		}
 	
-		function fill_form(record) {
+		function fill_form(record, localized_values) {
 			__child.form_fill_js__;
+			for (const [key, value] of Object.entries(localized_values)) {
+				const separator = key.lastIndexOf("|");
+				if (separator < 1) continue;
+				const field_name = key.slice(0, separator);
+				const locale = key.slice(separator + 1);
+				const input_name = `_lv[${field_name}][${locale}]`;
+				const input = qs(`[name="${input_name}"]`);
+				const original = qs(`[name="_original_${input_name}"]`);
+				if (input) input.value = value ?? "";
+				if (original) original.value = value ?? "";
+			}
 		}
 	
 		function clear_form() {
 			__child.form_clear_js__;
+			form.querySelectorAll('[name^="_lv["], [name^="_original__lv["]').forEach((input) => {
+				input.value = "";
+			});
 		}
 	
 		function hide_error() {
@@ -137,14 +151,14 @@
 						show_error(data.error);
 						return;
 					}
-					fill_form(data.record);
+					fill_form(data.record, data.localized_values || {});
 					parent_fk.value = parent_val;
 					form.action = `${child_base_path}/${child_id}/edit`;
-					title.textContent = "{= props.__child.ui__.edit_title }";
-					submit_btn.textContent = "{_ actions.save}";
+					title.textContent = "{_ __child.translation_namespace__.child_ui.edit_title}";
+					submit_btn.textContent = "{_ __child.translation_namespace__.actions.save}";
 					dialog.showModal();
 				} catch (e) {
-					show_error("{= props.__child.ui__.error_loading }");
+					show_error("{_ __child.translation_namespace__.child_ui.error_loading}");
 				}
 			});
 		});
@@ -158,8 +172,8 @@
 				clear_form();
 				parent_fk.value = parent_val;
 				form.action = child_base_path;
-				title.textContent = "{= props.__child.ui__.new_title }";
-				submit_btn.textContent = "{_ actions.save}";
+				title.textContent = "{_ __child.translation_namespace__.child_ui.new_title}";
+				submit_btn.textContent = "{_ __child.translation_namespace__.actions.save}";
 				dialog.showModal();
 			});
 		}
@@ -169,7 +183,7 @@
 			e.preventDefault();
 			hide_error();
 			submit_btn.disabled = true;
-			submit_btn.textContent = "{_ actions.submitted}";
+			submit_btn.textContent = "{_ __child.translation_namespace__.actions.submitted}";
 	
 			try {
 				const form_data = new FormData(form);
@@ -188,15 +202,15 @@
 					}
 					show_error(
 					data.form_errors
-					|| "{= props.__child.ui__.error_saving }",
+					|| "{_ __child.translation_namespace__.child_ui.error_saving}",
 					);
 					submit_btn.disabled = false;
-					submit_btn.textContent = "{_ actions.save}";
+					submit_btn.textContent = "{_ __child.translation_namespace__.actions.save}";
 				}
 			} catch (e) {
-				show_error("{= props.__child.ui__.error_saving }");
+				show_error("{_ __child.translation_namespace__.child_ui.error_saving}");
 				submit_btn.disabled = false;
-				submit_btn.textContent = "{_ actions.save}";
+				submit_btn.textContent = "{_ __child.translation_namespace__.actions.save}";
 			}
 		}); // Blur validation
 		form.addEventListener("focusout", async (e) => {
@@ -255,7 +269,7 @@
 				delete_dialog.close();
 				const original_text = delete_confirm_btn.textContent;
 				delete_confirm_btn.disabled = true;
-				delete_confirm_btn.textContent = "{= props.__child.ui__.archiving }";
+				delete_confirm_btn.textContent = "{_ __child.translation_namespace__.child_ui.archiving}";
 	
 				try {
 					const res = await fetch(
@@ -281,7 +295,7 @@
 						delete_confirm_btn.textContent = original_text;
 						add_toast({
 							type: "red",
-							message: data.error || "{= props.__child.ui__.error_archiving }",
+							message: data.error || "{_ __child.translation_namespace__.child_ui.error_archiving}",
 							duration: 4000,
 						});
 					}
@@ -291,7 +305,7 @@
 					delete_confirm_btn.textContent = original_text;
 					add_toast({
 						type: "red",
-						message: "{= props.__child.ui__.error_archiving }",
+						message: "{_ __child.translation_namespace__.child_ui.error_archiving}",
 						duration: 4000,
 					});
 				}

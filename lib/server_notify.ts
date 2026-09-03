@@ -4,10 +4,9 @@
  * Used by generator/*.ts and worker.ts.
  *
  * Two paths:
- * restart=true  (CRUD / route generators) - appends a reload stamp to
- * routes.ts so Bun --watch detects the change, kills the
- * old process, and starts a fresh one that reads all
- * routes/nav from disk.
+ * restart=true  (CRUD / route generators) - POST /__reload-routes to rebuild
+ * the live route table from disk. If that endpoint is unavailable, append a
+ * reload stamp to routes.ts as a development-mode fallback for bun --hot.
  * restart=false (worker)                  - POST /__reload-translations
  * reloads in-memory translations without a restart.
  *
@@ -17,7 +16,7 @@
 import { join } from "node:path";
 import { MAIN_APP } from "$config/paths";
 
-async function notify_reload_translations(target_url?: string): Promise<void> {
+async function notify_server_endpoint(pathname: string, label: string, target_url?: string): Promise<boolean> {
 	const protocol = "http";
 	const host = Bun.env.SERVER_NAME || "localhost";
 	const port = Bun.env.PORT || "2338";
@@ -25,7 +24,7 @@ async function notify_reload_translations(target_url?: string): Promise<void> {
 	// explicit base URL (e.g. the reeman app passing MAIN_APP_URL) to reload
 	// translations on a different process across the two-app split.
 	const base = target_url || `${protocol}://${host}:${port}`;
-	const url = `${base}/__reload-translations`;
+	const url = `${base}${pathname}`;
 
 	try {
 		const headers: Record<string, string> = {};
@@ -35,7 +34,8 @@ async function notify_reload_translations(target_url?: string): Promise<void> {
 		const res = await fetch(url, { method: "POST", headers });
 
 		if (res.ok) {
-			console.log(`  🔄 Translations reloaded`);
+			console.log(`  🔄 ${label} reloaded`);
+			return true;
 		} else {
 			// Keep this one line - a full error page (404 HTML) is pure noise in
 			// generation output and looks like the generator crashed.
@@ -48,6 +48,15 @@ async function notify_reload_translations(target_url?: string): Promise<void> {
 		const message = err instanceof Error ? err.message : String(err);
 		console.log(`  ℹ️  Server reload skipped (server not reachable: ${message})`);
 	}
+	return false;
+}
+
+async function notify_reload_translations(target_url?: string): Promise<void> {
+	await notify_server_endpoint("/__reload-translations", "Translations", target_url);
+}
+
+async function notify_reload_routes(target_url?: string): Promise<boolean> {
+	return await notify_server_endpoint("/__reload-routes", "Routes", target_url);
 }
 
 async function trigger_server_restart(): Promise<void> {
@@ -66,7 +75,8 @@ async function trigger_server_restart(): Promise<void> {
 
 export async function notify_server_reload(restart: boolean = true, target_url?: string): Promise<void> {
 	if (restart) {
-		await trigger_server_restart();
+		const reloaded = await notify_reload_routes(target_url);
+		if (!reloaded) await trigger_server_restart();
 	} else {
 		await notify_reload_translations(target_url);
 	}
