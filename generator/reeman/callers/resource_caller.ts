@@ -45,6 +45,7 @@ export async function run_full_pipeline(table: string, options: ResourceCallOpti
 		parent_table: options.parent_table,
 		parent_fk_column: options.parent_fk_column,
 		pagination_strategy: options.pagination_method,
+		render_strategy: options.render_strategy,
 		route_name: options.route_name,
 		grid_columns: options.grid_columns,
 		grid_column_definitions: options.grid_column_definitions,

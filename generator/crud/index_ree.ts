@@ -199,8 +199,10 @@ export async function generate_index_ree(options: IndexReeOptions): Promise<{ in
 		// because for streaming the DPU markers must always be present in the shell.
 		// The streaming handler controls what replaces the DPU area, not the template.
 		html = html.replace(/__stream\.if_norecords__[\s\S]*?__stream\.end_if_norecords__/, "");
-		// Remove the closing {/if} that ends the records conditional
-		html = html.replace(/<\/div>\s*\{\/if\}/, "</div>");
+		// Remove only the closing {/if} paired with the records block. A generic
+		// closing-tag match can instead consume an earlier toolbar condition,
+		// suppressing the grid when the table has no global scopes.
+		html = html.replace(/(__stream\.records_end__\s*<\/div>)\s*\{\/if\}/, "$1");
 
 		// Wrap records area in DPU markers
 		html = apply_template(html, {
