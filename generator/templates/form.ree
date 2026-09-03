@@ -1,0 +1,117 @@
+{#layout("layout") }
+
+{#with props}
+	<div class="p-4" data-updates-route="__route_prefix__/__table.exact__">
+
+		<div class="flex items-center justify-between">
+			<h1 class="mb-4">{_ ui.title }</h1>
+			<div class="text-sm">
+				<!-- ws "updated record" bullet - filled by updates-client.js, just in front of the timestamps -->
+				<span class="updates-marker-cell" data-record-id="{= record.id }"></span>
+				{~ js_timestamp_to_locale_string(record.updated_at ?? record.created_at)}
+				{#if record.archived_by_user_display}
+					<span class="ml-2 text-xs opacity-70">({= record.archived_by_user_display })</span>
+				{/if}
+			</div>
+		</div>
+
+		{#if form_errors}
+			<div class="py-4">
+				<app-banner type="red">{= props.form_errors }</app-banner>
+			</div>
+		{/if}
+
+		<div class="__form.classes__">
+		<form method="POST" action="{~ localized_path(action) }" class="col-span-full grid gap-4 lg:col-span-2 lg:grid-cols-subgrid" __form.localization_attribute__ id="entry-form">
+
+			<!-- CSRF token -->
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+			<div class="col-span-full grid gap-4 lg:col-span-2 lg:grid-cols-subgrid">
+				<!-- GEN:FIELDS:START -->
+				__form.input_fields__
+				<!-- GEN:FIELDS:END -->
+
+				<!-- GEN:ORIGINALS:START -->
+				__form.original_fields__
+				<!-- GEN:ORIGINALS:END -->
+			</div>
+
+			<!-- Store referrer URL as hidden field -->
+			<input type="hidden" id="return_url" name="_return_url" value="" />
+
+			<!-- Save action: hidden field set by onclick on save buttons -->
+			<input type="hidden" name="_save_action" id="save_action" value="" />
+
+			<div class="flex gap-2 mt-8 items-center col-span-full">
+				<button id="btn-submit" type="submit" onclick="document.getElementById('save_action').value='stay'" class="as-button-primary">{_ actions.save }</button>
+				<button id="btn-save-close" type="submit" onclick="document.getElementById('save_action').value='close'" class="as-button-secondary">{_ actions.save_close }</button>
+				<button id="btn-cancel" type="button" onclick="history.back()" class="as-button-secondary">{_ actions.cancel}</button>
+
+				{#if (record.id) && enable_archive }
+					<button id="__archive.action_id__" type="button" command="show-modal" commandfor="__archive.action_dialog_id__" class="ml-auto as-button-tertiary">__archive.action_label__</button>
+				{/if}
+				__archive.form_restore_button__
+			</div>
+		</form>
+
+			<aside class="col-span-full gap-4 __form.details_classes__" data-form-details>
+				<!-- GEN:CHILDREN:START -->
+				<!-- GEN:CHILDREN:END -->
+			</aside>
+
+		</div>
+
+		{#if (record.id) && enable_archive }
+			<form id="__archive.action_form_id__" method="POST" action="{~ localized_path('__route_prefix__/__table.exact__/' + record.__route_param__ + '/edit') }" style="display: none;">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="_action" value="__archive.action_value__" />
+			</form>
+		{/if}
+
+		__archive.form_restore_ui__
+
+	</div>
+
+	{#if enable_archive }
+		<dialog id="__archive.action_dialog_id__" class="p-0 rounded-xl shadow-2xl w-100">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">__archive.action_label__</h2>
+				<div class="mt-6 flex justify-end gap-2">
+					<button class="as-button-secondary" type="button" commandfor="__archive.action_dialog_id__" command="close">__archive.action_abort__</button>
+					<button class="as-button-danger" type="button" command="--confirm" commandfor="__archive.action_dialog_id__">__archive.action_confirm__</button>
+				</div>
+			</div>
+		</dialog>
+	{/if}
+	<script src="/updates-client.js?v={= version}"></script>
+	<script src="/dialog-confirm.js?v={= version}"></script>
+	<script src="/form-controller.js?v={= version}" defer></script>
+	__form.localization_script__
+
+	<script>
+		const return_url_field = $("#return_url");
+		if (return_url_field && document.referrer) {
+			try {
+				const referer_url = new URL(document.referrer);
+				return_url_field.value = referer_url.pathname + referer_url.search;
+			} catch (e) {}
+		}
+		
+		{#if enable_archive }
+		$("#__archive.action_dialog_id__").addEventListener("command", (e) => {
+			if (e.command !== "--confirm") return;
+			e.currentTarget.close();
+			$("#__archive.action_form_id__").submit();
+		});
+		{/if}
+		document.addEventListener("DOMContentLoaded", () =>{
+			new FormController({
+				form: "#entry-form",
+				validate_url:
+				"{~ localized_path('__route_prefix__/__table.exact__/validate') }",
+				submitted_text: "{- actions.submitted }",
+			});
+		});
+	</script>
+{/with}

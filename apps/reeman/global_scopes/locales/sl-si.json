@@ -1,0 +1,91 @@
+{
+	"actions": {
+		"abort_archive": "Prekliči",
+		"abort_restore": "Prekliči",
+		"archive": "Arhiviraj",
+		"bulk_action": "Arhiviraj izbrane obsege",
+		"bulk_action_2": "Skupna akcija 2",
+		"confirm_archive": "Da, arhiviraj",
+		"confirm_restore": "Da, obnovi",
+		"new_global_scope": "Nov globalni filter",
+		"restore": "Obnovi",
+		"scope_translations": "Ustvari prevode filtrov",
+		"scope_translations_view": "Poglej prevode filtrov"
+	},
+	"child_ui": {
+		"actions": "Akcije",
+		"archive": "Arhiviraj",
+		"archiving": "Arhiviranje…",
+		"edit": "Uredi",
+		"edit_title": "Uredi globalni filter",
+		"empty_text": "Ni najdenih globalnih filtrov.",
+		"error_archiving": "Napaka pri arhiviranju zapisa.",
+		"error_loading": "Napaka pri nalaganju zapisa.",
+		"error_saving": "Napaka pri shranjevanju zapisa.",
+		"new_button": "+ Nov globalni filter",
+		"new_title": "Nov globalni filter",
+		"restore": "Obnovi"
+	},
+	"counts": {
+		"archived": "Arhivirani",
+		"live": "Aktivni",
+		"total": "Skupaj"
+	},
+	"errors": {
+		"duplicate_key": "Zapis s to vrednostjo že obstaja.",
+		"error_creating_record": "Med shranjevanjem zapisa je prišlo do napake.",
+		"must_be_selected": "To polje je obvezno.",
+		"title_required": "Naslov je obvezen."
+	},
+	"hints": {
+		"display_name": "Oznaka, ki jo uporabniki vidijo v spustnem seznamu filtrov na seznamu zapisov.",
+		"feature_name": "Ime poti (npr. route_name poimenovane poti), ne tabele. Omeji filter na eno samo pot, kadar si več poti deli isto tabelo.",
+		"is_default": "Če je nastavljeno, se ta filter samodejno uporabi na seznamu, dokler uporabnik ne izbere drugega.",
+		"module_code": "Omeji ta filter na poti izbranega modula. Če pustite prazno, je filter na voljo za ves modul.",
+		"scope_key": "Ključ za prevod. Ni viden uporabnikom - naj bo kratek in stabilen, ko je enkrat v uporabi.",
+		"sort_order": "Položaj v spustnem seznamu filtrov, najmanjši najprej. Filtri z isto tabelo/potjo so razvrščeni po tej vrednosti naraščajoče.",
+		"table": "Tabela v bazi, na katero se filter nanaša. Določa, na katerih seznamih/urejanjih se filter pojavi v spustnem seznamu.",
+		"where_clause": "Surov SQL pogoj, dodan za WHERE, ko je ta filter aktiven (npr. status = 'active'). Uporabite žetone ::session.* spodaj za sklic na prijavljenega uporabnika. Dostop brez prijave pri pogoju, ki jih uporablja, vrne 1=0."
+	},
+	"labels": {
+		"display_name": "Prikazano ime",
+		"feature_name": "Ime funkcije",
+		"is_default": "Je privzeto",
+		"module_code": "Koda modula",
+		"scope_key": "Ključ filtra",
+		"sort_order": "Vrstni red",
+		"table": "Tabela",
+		"table_name": "Ime tabele",
+		"where_clause": "Pogoj WHERE"
+	},
+	"messages": {
+		"bulk_archive_no_ids": "Ni izbranih globalnih filtrov.",
+		"bulk_archived": "Ni arhiviranih obsegov|{count} obseg arhiviran|{count} obsega arhivirana|{count} obsegi arhivirani|{count} obsegov arhiviranih",
+		"bulk_errors": "|{count} globalni filter ni uspel|{count} globalna filtra nista uspela|{count} globalni filtri niso uspeli|{count} globalnim filtrom ni uspelo",
+		"record_archived": "Zapis arhiviran",
+		"record_restored": "Zapis obnovljen",
+		"record_updated": "Zapis posodobljen"
+	},
+	"nav": "Globalni filtri",
+	"parent_label": "Globalni filtri",
+	"route_name": "globalni_filtri",
+	"scopes": {
+		"__all": "Vsi",
+		"__archived": "Arhivirani"
+	},
+	"search": {
+		"search_term": "Išči globalne filtre...",
+		"submit": "Išči"
+	},
+	"selectors": {
+		"all": "Vsi",
+		"all_filters": "Vsi filtri",
+		"no_module": "-- Brez modula (koren) --",
+		"select_table": "-- Izberite tabelo --",
+		"user_filters": "Uporabniški filtri"
+	},
+	"ui": {
+		"no_records": "Ni najdenih globalnih filtrov.",
+		"title": "Globalni filtri"
+	}
+}
