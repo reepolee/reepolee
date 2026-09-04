@@ -33,7 +33,7 @@ mock.module("$generator/reeman/remove_route", () => ({
 	remove_route: async (url: string) => { removed_routes.push(url); },
 }));
 
-const { action_add_nested_children, action_bulk_remove_route, action_save_route_settings, build_bulk_command_args, spawn_bulk_action } = await import("./actions");
+const { action_add_nested_children, action_bulk_remove_route, action_save_route_settings, build_bulk_command_args, spawn_add_locale_action, spawn_bulk_action } = await import("./actions");
 
 describe("build_bulk_command_args", () => {
 	test("rejects nested generation without a selected child", async () => {
@@ -113,6 +113,33 @@ describe("build_bulk_command_args", () => {
 				"readings",
 				"--prefix",
 				"admin",
+			]]);
+		} finally {
+			(Bun as { spawn: typeof Bun.spawn; }).spawn = original_spawn;
+		}
+	});
+
+	test("spawns add-locale as one subprocess so it survives reloads", async () => {
+		const original_spawn = Bun.spawn;
+		const spawned_commands: string[][] = [];
+		const empty_stream = () => new ReadableStream<Uint8Array>({ start(controller) { controller.close(); } });
+		(Bun as { spawn: typeof Bun.spawn; }).spawn = ((command: string[]) => {
+			spawned_commands.push(command);
+			return {
+				stdout: empty_stream(),
+				stderr: empty_stream(),
+				exited: Promise.resolve(0),
+				unref: () => {},
+			} as ReturnType<typeof Bun.spawn>;
+		}) as typeof Bun.spawn;
+
+		try {
+			const started = await spawn_add_locale_action({ locale_code: "pt-br", translate: true });
+			expect(started).toBe(true);
+			expect(spawned_commands).toEqual([[
+				"bun",
+				"apps/reeman/reeman/add_locale_runner.ts",
+				JSON.stringify({ locale_code: "pt-br", translate: true }),
 			]]);
 		} finally {
 			(Bun as { spawn: typeof Bun.spawn; }).spawn = original_spawn;

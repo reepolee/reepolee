@@ -83,6 +83,7 @@ export async function get_busy_status(req: BunRequest): Promise<Response> {
 			action: latest_run.action,
 			target: latest_run.target,
 			message: latest_run.error || "The action failed. See the run log for details.",
+			output: latest_run.output,
 		}
 		: null;
 	const payload: Record<string, unknown> = { busy, error };

@@ -31,14 +31,31 @@ function app_port(definition: Dev_app_definition, env: App_env): number {
 	throw new Error(`Required environment variable ${definition.port_env} must be a valid TCP port`);
 }
 
-/** Build localhost links for the app switcher without coupling apps to one port. */
+/** Resolve the public origin used when separate development apps are exposed. */
+function app_origin(env: App_env): string {
+	for (const name of ["SITE_URL", "MAIN_APP_URL"]) {
+		const raw = env[name]?.trim();
+		if (!raw || raw === "N/A") continue;
+		try {
+			const url = new URL(raw);
+			if (url.protocol !== "http:" && url.protocol !== "https:") continue;
+			return `${url.protocol}//${url.hostname}`;
+		} catch {
+			// Ignore malformed optional origins and use the local fallback.
+		}
+	}
+	return "http://localhost";
+}
+
+/** Build app-switcher links from the configured public origin and app ports. */
 export function dev_app_links(current_app: Dev_app_name, env: App_env = Bun.env): Dev_app_link[] {
+	const origin = app_origin(env);
 	return DEV_APP_DEFINITIONS.map((definition) => {
 		const port = app_port(definition, env);
 		return {
 			...definition,
 			port,
-			url: `http://localhost:${port}/`,
+			url: `${origin}:${port}/`,
 			current: definition.name === current_app,
 		};
 	});

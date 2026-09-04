@@ -36,21 +36,8 @@ export function clean_for_translation(obj: json_obj): json_obj {
 
 // -------------------- COMPARISON --------------------
 
-// Whether other_lang has keys not present in en - used to decide if we need to translate lang->en.
-export function has_new_keys(en_obj: json_obj, other_lang_obj: json_obj): boolean {
-	for (const key of Object.keys(other_lang_obj)) {
-		const other_val = other_lang_obj[key];
-		if (is_object(other_val)) {
-			if (!is_object(en_obj[key]) || has_new_keys(en_obj[key], other_val)) return true;
-		} else {
-			if (en_obj[key] === undefined) return true;
-		}
-	}
-	return false;
-}
-
 // Extract keys explicitly marked as missing from a locale file. The marker is
-// the source of truth: a value matching English may be intentional and must
+// the source of truth: a value matching the default locale may be intentional and must
 // never be sent to AI again.
 export function extract_untranslated(en_obj: json_obj, lang_obj: json_obj): json_obj | null {
 	const result: json_obj = {};
@@ -83,71 +70,28 @@ export function apply_translations(lang_obj: json_obj, translated_obj: json_obj)
 	return result;
 }
 
-// Merge foreign-language keys into English, optionally tracking newly-added keys.
-export function merge_into_english(en_obj: json_obj, other_lang_obj: json_obj, on_new_key?: (key: string, path: string) => void, current_path: string[] = []) {
-	const prefix = "::missing:: ";
-	for (const key of Object.keys(other_lang_obj)) {
-		const other_val = other_lang_obj[key];
-		if (is_object(other_val)) {
-			if (!is_object(en_obj[key])) { en_obj[key] = {}; }
-			merge_into_english(en_obj[key], other_val, on_new_key, [...current_path, key]);
-		} else {
-			const en_val = en_obj[key];
-			if (en_val === undefined) {
-				en_obj[key] = other_val;
-				if (on_new_key) { on_new_key(key, [...current_path, key].join(".")); }
-			} else if (typeof en_val === "string" && en_val.startsWith(prefix)) {
-				en_obj[key] = other_val;
-			}
-		}
-	}
-}
-
-// Merge foreign-language keys into English, prefixing new values with "::missing:: ".
-export function merge_with_missing_prefix(en_obj: json_obj, other_lang_obj: json_obj) {
-	const prefix = "::missing:: ";
-	for (const key of Object.keys(other_lang_obj)) {
-		const other_val = other_lang_obj[key];
-		if (is_object(other_val)) {
-			if (!is_object(en_obj[key])) { en_obj[key] = {}; }
-			merge_with_missing_prefix(en_obj[key], other_val);
-		} else {
-			const en_val = en_obj[key];
-			if (en_val === undefined) {
-				if (typeof other_val === "string" && other_val.startsWith(prefix)) {
-					en_obj[key] = other_val;
-				} else {
-					en_obj[key] = `${prefix}${other_val}`;
-				}
-			} else if (typeof en_val === "string" && en_val.startsWith(prefix)) {
-				en_obj[key] = other_val;
-			}
-		}
-	}
-}
-
-// Sync a language file to match English structure, optionally using translate-mode.
-export function sync_lang_to_en(en_obj: json_obj, lang_obj: json_obj, translate: boolean = false): json_obj {
+// Sync a target language file to match the default-locale source structure.
+export function sync_target_to_source(source_obj: json_obj, target_obj: json_obj, translate: boolean = false): json_obj {
 	const result: json_obj = {};
 	const prefix = "::missing:: ";
 
-	for (const key of Object.keys(en_obj)) {
-		const en_val = en_obj[key];
-		const lang_val = lang_obj[key];
+	for (const key of Object.keys(source_obj)) {
+		const source_val = source_obj[key];
+		const target_val = target_obj[key];
 
-		if (is_object(en_val)) {
-			result[key] = sync_lang_to_en(en_val, is_object(lang_val) ? lang_val : {}, translate);
+		if (is_object(source_val)) {
+			result[key] = sync_target_to_source(source_val, is_object(target_val) ? target_val : {}, translate);
 		} else {
-			if (lang_val === undefined || (typeof lang_val === "string" && lang_val.startsWith(prefix))) {
-				if (typeof en_val === "string" && en_val.startsWith(prefix)) {
-					result[key] = en_val;
+			if (target_val === undefined || (typeof target_val === "string" && target_val.startsWith(prefix))) {
+				if (typeof source_val === "string" && source_val.startsWith(prefix)) {
+					result[key] = source_val;
 				} else if (translate) {
-					result[key] = en_val;
+					result[key] = source_val;
 				} else {
-					result[key] = `${prefix}${en_val}`;
+					result[key] = `${prefix}${source_val}`;
 				}
 			} else {
-				result[key] = lang_val;
+				result[key] = target_val;
 			}
 		}
 	}

@@ -137,16 +137,17 @@ ${color("Languages:", GREEN)}
 
 ${color("Translations:", GREEN)}
   export-translation-bundle [output.json] [--target-locale <locale_code>]
-      Export every active en-us.json file into one versioned translation bundle.
-      File paths are top-level keys and only leaf values should be translated.
+      Export every active en-us.json file into one versioned v2 translation archive.
+      Route translations are source-validated leaves under the routes map.
 
   import-translation-bundle <file.json> [--install] [--activate]
-      Validate a translated bundle against current English files and archive it
-      as locales-archive/<locale>.json. --install also restores its translations
+      Validate and merge a translated v2 archive as locales-archive/<locale>.json.
+      --install also restores its compatible route translations
       to the co-located live files; --activate serves the locale immediately.
 
-  migrate-translation-archive
-      Convert the legacy locales-archive directory tree into one bundle per locale.
+  archive-live-translations
+      Snapshot every current co-located non-English translation into its
+      locales-archive/<locale>.json routes and generated CRUD tables maps.
 
   sync-translations [namespace...] [--translate]
       Sync translation structure across languages. With --translate, scans every

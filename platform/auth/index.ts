@@ -13,6 +13,7 @@ import { login_crud } from "./login/index";
 import { password_crud } from "./password/index";
 import { profile_crud } from "./profile/index";
 import { register_crud } from "./register/index";
+import { web_push_crud } from "../web_push/index";
 
 export const auth_crud = {
 	...login_crud,
@@ -20,4 +21,5 @@ export const auth_crud = {
 	...profile_crud,
 	...password_crud,
 	...invite_crud,
+	...web_push_crud,
 };

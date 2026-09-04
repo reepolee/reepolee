@@ -13,7 +13,7 @@ import { bootstrap } from "$lib/bootstrap";
 import { handle_inspector_message } from "$lib/inspector_ws";
 import { handle_create_issue, handle_issue_repos } from "$lib/issue_reporter";
 import { canonical_locale } from "$lib/locale";
-import { clients, handle_dev_client_request, is_same_origin_upgrade, notify_clients, notify_evidence_ready, notify_recording_ready } from "$lib/livereload";
+import { clients, handle_dev_client_request, is_same_origin_upgrade, notify_clients, notify_evidence_ready, notify_recording_ready, set_reload_broadcast } from "$lib/livereload";
 import type { WebSocketData } from "$lib/livereload";
 import { log_error } from "$lib/logger";
 import { handle_open_request } from "$lib/open_in_editor";
@@ -74,6 +74,14 @@ if (is_agent && !env_available("AGENT_REEQA_SERVER_PORT")) {
 	console.error("ReeQA --agent mode requires AGENT_REEQA_SERVER_PORT.");
 	process.exit(1);
 }
+
+// Only the main app broadcasts browser reloads over the dev WebSocket. QA
+// runs and evidence/recording jobs are long-running spawned processes whose
+// open dashboard/report pages must not be auto-reloaded while generators or
+// translation syncs churn files across the repo (lib/livereload.ts
+// set_reload_broadcast). In-memory translations still refresh; pages update on
+// manual reload.
+set_reload_broadcast(false);
 
 const reeqa_port = require_reeqa_port();
 const server_port = is_agent ? Number(Bun.env.AGENT_REEQA_SERVER_PORT) : reeqa_port;

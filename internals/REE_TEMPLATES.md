@@ -372,6 +372,24 @@ When the current locale is Slovenian (`sl-si`), `/auth/login` becomes `/avtentik
 
 See [CONTEXT.md](CONTEXT.md#route-alias) for documentation on URL localization via `route_name` keys in locale files.
 
+#### `cn(...inputs)`
+
+Joins conditional class values and resolves conflicting Tailwind utility classes during server-side rendering. It accepts strings, falsey conditional values, nested arrays, and object maps. The final class string is emitted into the HTML; `cn()` does not add client-side JavaScript.
+
+```ts
+cn(...inputs: (string | number | boolean | null | undefined | unknown[] | Record<string, unknown>)[]): string
+```
+
+**Template examples:**
+
+```ree
+<div class="{= cn('rounded px-2', props.compact && 'py-1', props.class_name) }">Content</div>
+<div class="{= cn('px-2', 'px-4') }">Uses px-4</div>
+<div class="{= cn({ 'text-white': props.active, 'text-slate-500': !props.active }) }">Status</div>
+```
+
+Use `helpers.cn(...)` when a helper must be passed through an object expression. The same helper is available as both `cn(...)` and `helpers.cn(...)`.
+
 #### `is_current(page_url)`
 
 Returns CSS classes to highlight current page in navigation.
@@ -408,6 +426,7 @@ These helpers are also available in every template without passing them:
 | `file_link(src)` | `(string) => string` | Renders a filename/download `<a>` link for a stored file path, or an em-dash when empty |
 | `file_icon_name(filename)` | `(string) => string` | Resolves a `<ree-icon>` name from a filename's extension (PDF, Word, Excel, CSV, PowerPoint, Zip), falling back to a generic file icon |
 | `key_values(obj)` | `(Record<string,any>) => string` | Renders object as HTML attribute key=value pairs |
+| `cn(...inputs)` | `(string\|number\|boolean\|null\|undefined\|array\|object)[] => string` | Joins classes conditionally and resolves Tailwind conflicts during SSR |
 | `nav_label(key, nav?)` | `(string, Record<string,any>?) => string` | Looks up a navigation label by dot-separated key |
 
 ### Custom Ad-hoc Helpers

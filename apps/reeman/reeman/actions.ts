@@ -355,6 +355,15 @@ export async function action_sync_translations(params: { translate?: boolean; })
 	});
 }
 
+export async function action_archive_live_translations(): Promise<ActionResult> {
+	return run_captured_action("archive-live-translations", "", async () => {
+		const { archive_live_translation_memory } = await import("$generator/translation_memory");
+		const result = await archive_live_translation_memory();
+		console.log(`Archived ${result.routes} localized route file(s) and ${result.tables} generated table namespace(s).`);
+		return true;
+	});
+}
+
 export async function action_sync_locale_tables(): Promise<ActionResult> {
 	return run_captured_action("sync-locale-tables", "", async () => {
 		const { sync_locale_tables_command } = await import("$generator/reeman/sync_locale_tables");
@@ -415,13 +424,6 @@ export async function action_check_compliance(): Promise<ActionResult> {
 				unknown: checker.last_unknown,
 			},
 		};
-	});
-}
-
-export async function action_add_locale(params: { locale_code: string; translate?: boolean; }): Promise<ActionResult> {
-	return run_captured_action("add-locale", params.locale_code, async () => {
-		const { add_locale_to_system } = await import("$generator/add_locale");
-		return await add_locale_to_system(params.locale_code, { translate: params.translate ?? false });
 	});
 }
 
@@ -516,7 +518,7 @@ export async function action_bulk_remove_route(params: { urls: string[]; }): Pro
 		let fail = 0;
 		for (const url of routes_to_remove) {
 			if (!removable_urls.has(url)) {
-				console.error(`✗ Skipped ${url}: not removable (system route or root page)`);
+				console.error(`✗ Skipped ${url}: not removable (root page)`);
 				fail++;
 				continue;
 			}
@@ -590,6 +592,8 @@ type SpawnOptions = {
 	pagination?: string;
 	render_strategy?: string;
 	template_tags?: string;
+	form_hints?: boolean;
+	form_details?: boolean;
 	grid_columns?: string[];
 	grid_column_definitions?: GridColumnDefinition[];
 };
@@ -687,6 +691,58 @@ export async function spawn_crud_action(table: string, opts: { force?: boolean; 
 	return true;
 }
 
+/**
+ * Spawn the add-locale workflow as a subprocess so it survives bun --hot
+ * reloads of this server. With AI translate, add-locale runs over every
+ * namespace for minutes and its own file writes (config/supported_locales.ts
+ * plus dozens of translation JSONs) trigger the very reloads that could tear
+ * down an in-process action; a child process is untouched by them. Uses the
+ * global busy key - locale changes touch shared state and stay exclusive
+ * against every other action. Returns false (no-op) if anything is already
+ * busy.
+ */
+export async function spawn_add_locale_action(params: { locale_code: string; translate?: boolean; }): Promise<boolean> {
+	const locale_code = params.locale_code.trim().toLowerCase();
+	if (!locale_code) return false;
+	const acquired = await set_busy(GLOBAL_BUSY_KEY, { action: "add-locale", target: locale_code });
+	if (!acquired) return false;
+	const run_id = await record_run({ action: "add-locale", target: locale_code, ok: true, output: "Add locale started in background." });
+	const payload = JSON.stringify({ locale_code, translate: params.translate === true });
+	let proc: ReturnType<typeof Bun.spawn>;
+	try {
+		proc = Bun.spawn(["bun", "apps/reeman/reeman/add_locale_runner.ts", payload], { cwd: process.cwd(), stdout: "pipe", stderr: "pipe" });
+	} catch (err) {
+		const message = err instanceof Error ? err.message : String(err);
+		await update_run(run_id, { ok: false, output: "", error: message });
+		await clear_busy(GLOBAL_BUSY_KEY);
+		return false;
+	}
+
+	const stdout_stream = proc.stdout;
+	const stderr_stream = proc.stderr;
+	const stdout = typeof stdout_stream === "object" && stdout_stream !== null
+		? new Response(stdout_stream).text()
+		: Promise.resolve("");
+	const stderr = typeof stderr_stream === "object" && stderr_stream !== null
+		? new Response(stderr_stream).text()
+		: Promise.resolve("");
+	void Promise.all([proc.exited, stdout, stderr]).then(async ([exit_code, out, err]) => {
+		const output = clean_output([out, err]);
+		const error = exit_code === 0 ? undefined : `Add locale failed with exit code ${exit_code}. See the captured generator output below.`;
+		await update_run(run_id, { ok: exit_code === 0, output, error });
+		await clear_busy(GLOBAL_BUSY_KEY);
+		if (exit_code !== 0) console.error(`[reeman] ${error}`);
+	}).catch(async (err) => {
+		const message = err instanceof Error ? err.message : String(err);
+		await update_run(run_id, { ok: false, output: "", error: `Failed to collect add-locale output: ${message}` });
+		await clear_busy(GLOBAL_BUSY_KEY);
+		console.error(`[reeman] Failed to collect add-locale output: ${message}`);
+	});
+
+	proc.unref();
+	return true;
+}
+
 export async function spawn_nested_children_action(params: NestedChildrenOptions): Promise<boolean> {
 	const { prefix } = await validate_nested_children(params);
 	const settings = nested_generator_settings(params);
@@ -711,8 +767,14 @@ export async function spawn_nested_children_action(params: NestedChildrenOptions
 		await clear_busy(params.parent_table);
 		return false;
 	}
-	const stdout = new Response(proc.stdout).text();
-	const stderr = new Response(proc.stderr).text();
+	const stdout_stream = proc.stdout;
+	const stderr_stream = proc.stderr;
+	const stdout = typeof stdout_stream === "object" && stdout_stream !== null
+		? new Response(stdout_stream).text()
+		: Promise.resolve("");
+	const stderr = typeof stderr_stream === "object" && stderr_stream !== null
+		? new Response(stderr_stream).text()
+		: Promise.resolve("");
 	void Promise.all([proc.exited, stdout, stderr]).then(async ([exit_code, out, err]) => {
 		const output = clean_output([out, err]);
 		const error = exit_code === 0 ? undefined : `Nested child generation failed with exit code ${exit_code}. See the captured generator output below.`;

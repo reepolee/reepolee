@@ -342,6 +342,18 @@ describe("template_helpers", () => {
 		test("passes through YYYY-MM-DD strings", () => expect(th.format_datetime("2026-05-15", "date", "iso")).toBe("2026-05-15"));
 	});
 
+	describe("cn", () => {
+		test("joins classes and resolves Tailwind conflicts", () => {
+			expect(th.cn("px-2", "px-4")).toBe("px-4");
+			expect(th.cn("text-sm", "text-lg", "font-bold")).toBe("text-lg font-bold");
+		});
+
+		test("supports conditional, array, and object-map inputs", () => {
+			expect(th.cn("base", false, null, ["array", undefined], { active: true, disabled: false })).toBe("base array active");
+			expect(th.cn({ "text-white": true, "text-black": false })).toBe("text-white");
+		});
+	});
+
 	describe("create_default_helpers", () => test("returns an object with all expected helper keys", () => {
 		const helpers = th.create_default_helpers({ locale: "en-us" });
 		expect(helpers).toHaveProperty("url");
@@ -365,6 +377,7 @@ describe("template_helpers", () => {
 		expect(helpers).toHaveProperty("yes_no");
 		expect(helpers).toHaveProperty("human_bytes");
 		expect(helpers).toHaveProperty("key_values");
+		expect(helpers).toHaveProperty("cn");
 	}));
 
 	describe("create_template_helpers", () => test("merges custom helpers over defaults", () => {

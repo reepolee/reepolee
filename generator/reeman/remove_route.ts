@@ -7,6 +7,7 @@ import { existsSync, readdirSync, rmSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { notify_server_reload } from "$lib/server_notify";
+import { snapshot_route_translation_memory } from "$generator/translation_memory";
 
 import { BOLD, color, confirm, CYAN, dim, GREEN, header, multi_select, RED, show_cli_tip, YELLOW } from "./ui";
 import { MAIN_APP } from "$config/paths";
@@ -19,12 +20,12 @@ interface ParsedEntry {
 	module: string;
 }
 
-// System prefixes that should not be deletable
-const PROTECTED_PREFIXES = ["system", "home"];
+// The main app's home page is the only protected route tree. Reeman and ReeQA
+// are separate apps; main-app `/system/*` CRUD routes remain removable.
+const PROTECTED_PREFIXES = ["home"];
 
 function parse_entries(raw: string): ParsedEntry[] {
 	const entries: ParsedEntry[] = [];
-	const sys_modules = ["system"];
 	const lines = raw.split("\n");
 
 	let i = 0;
@@ -197,6 +198,7 @@ async function remove_single_route(selected: ParsedEntry, force: boolean, notify
 	const route_dir = join(process.cwd(), MAIN_APP, url_path);
 
 	if (existsSync(route_dir)) {
+		await snapshot_route_translation_memory(route_dir);
 		// force:true only suppresses "path does not exist" - a locked file (e.g.
 		// EPERM from a live watcher/import holding a handle, common on Windows)
 		// still throws, but can also leave the directory partially deleted
@@ -270,17 +272,16 @@ async function find_orphaned_route_folders(registered_urls: Set<string>): Promis
 }
 
 /**
- * List the routes that can be removed (non-system, non-root), with the module they belong to.
+ * List the routes that can be removed (non-root), with the module they belong to.
  * Includes orphaned route folders on disk that have no entry in routes.ts.
  * Exported for the reeman web UI so its route picker matches the CLI exactly.
  */
 export async function list_removable_routes(): Promise<{ url: string; module: string; }[]> {
 	const routes_path = join(process.cwd(), MAIN_APP, "routes.ts");
 	const raw = await Bun.file(routes_path).text();
-	const sys_modules = ["system"];
 	const entries = parse_entries(raw);
 	const registered = entries
-		.filter((e) => !sys_modules.includes(e.module) && e.url !== "/")
+		.filter((e) => e.url !== "/")
 		.map((e) => ({ url: e.url, module: e.module }));
 
 	const registered_urls = new Set(registered.map((r) => r.url));
@@ -300,20 +301,18 @@ export async function list_removable_routes(): Promise<{ url: string; module: st
 export async function remove_route(url?: string, force: boolean = false, notify_server: boolean = true): Promise<void> {
 	const routes_path = join(process.cwd(), MAIN_APP, "routes.ts");
 	const raw = await Bun.file(routes_path).text();
-	const sys_modules = ["system"];
-
 	const entries = parse_entries(raw);
-	const removable = entries.filter((e) => !sys_modules.includes(e.module) && e.url !== "/");
+	const removable = entries.filter((e) => e.url !== "/");
 
 	if (removable.length === 0) {
-		console.log(`  ${color("No removable routes found (all routes are system routes).", YELLOW)}`);
+		console.log(`  ${color("No removable routes found (the root page is protected).", YELLOW)}`);
 		return;
 	}
 
 	if (url) {
 		const selected = removable.find((e) => e.url === url);
 		if (!selected) {
-			console.log(`  ${color(`Route "${url}" not found or not removable (system routes cannot be removed).`, RED)}`);
+			console.log(`  ${color(`Route "${url}" not found or not removable (the root page cannot be removed).`, RED)}`);
 			return;
 		}
 
@@ -388,6 +387,7 @@ async function remove_orphan_folder(entry: { url: string; module: string; }, for
 
 	// Delete the folder
 	if (existsSync(route_dir)) {
+		await snapshot_route_translation_memory(route_dir);
 		rmSync(route_dir, { recursive: true, force: true });
 		console.log(`  ${color("✓", GREEN)} Deleted orphaned folder: ${route_dir}`);
 	} else {

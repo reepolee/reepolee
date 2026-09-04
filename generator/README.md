@@ -80,6 +80,8 @@ Co-located `{locale}.json` files are the source of truth. To add or change trans
 - `bun reeman sync-translations --translate` - AI-powered sync across namespace files
 - `/translations` admin UI in the reeman app - manual editing through the app
 
+`locales-archive/{locale}.json` is the committed translation archive. Its `routes` map stores reusable translations for every route in Main, Reeman, ReeQA, Platform, and the root namespace. Its `tables` map stores generated CRUD translations by database table, so they survive regeneration under another route path. During an AI sync, compatible missing leaves are restored before the provider is called. A leaf is reused only when its key, English source text, and placeholders match. Route removal snapshots co-located values into `routes` and generated CRUD values into `tables`; the archive is an optimization and never replaces live locale JSON files at runtime.
+
 ```bash
 bun reeman sync-translations --translate   # translate missing keys via the configured AI provider
 ```

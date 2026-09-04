@@ -36,4 +36,32 @@ describe("development app links", () => {
 			"http://localhost:2502/",
 		]);
 	});
+
+	test("uses the configured public HTTPS origin for separate app links", () => {
+		const apps = dev_app_links("main", {
+			PORT: "2338",
+			REEMAN_PORT: "2339",
+			REEQA_PORT: "2340",
+			SITE_URL: "https://comet.reepolee.com",
+			MAIN_APP_URL: "http://localhost:2338",
+		});
+
+		expect(apps.map((app) => app.url)).toEqual([
+			"https://comet.reepolee.com:2338/",
+			"https://comet.reepolee.com:2339/",
+			"https://comet.reepolee.com:2340/",
+		]);
+	});
+
+	test("falls back to MAIN_APP_URL when SITE_URL is unavailable", () => {
+		const apps = dev_app_links("main", {
+			PORT: "2338",
+			REEMAN_PORT: "2339",
+			REEQA_PORT: "2340",
+			SITE_URL: "N/A",
+			MAIN_APP_URL: "https://comet.reepolee.com:2338/",
+		});
+
+		expect(apps[1]?.url).toBe("https://comet.reepolee.com:2339/");
+	});
 });

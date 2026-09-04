@@ -126,10 +126,10 @@ export async function post___table.exact___edit(req: BunRequest): Promise<Respon
 	let record = current_record;
 	let has_changes = false;
 	try {
-		const changed_data = Object.fromEntries(Object.entries(valid_data).filter(([field_name, value]) => UPDATE_COLUMNS.includes(field_name) && String(value) !== original_data[field_name]));
+		const changed_data = Object.fromEntries(Object.entries(valid_data).filter(([field_name, value]) => (UPDATE_COLUMNS as readonly string[]).includes(field_name) && String(value) !== original_data[field_name as keyof typeof original_data]));
 		const has_base_changes = Object.keys(changed_data).length > 0;
 		has_changes = has_base_changes || has_localized_changes;
-		if (has_base_changes) record = await update_record(id, changed_data__sql.edit_locale_arg__);
+		if (has_base_changes) record = (await update_record(id, changed_data__sql.edit_locale_arg__))!;
 		__edit.save_localization__
 		if (has_changes) {
 			await cache.invalidate(TABLE_NAME);

@@ -6,21 +6,15 @@ const DEEPL_DEFAULT_TIMEOUT = 300000;
 
 type TranslationEntry = { path: string[]; text: string; };
 
-export function deepl_language_code(language: string, target: boolean): string {
-	const normalized = language.trim().toLowerCase();
-	const named_codes: Record<string, string> = {
-		english: "en",
-		"slovenščina": "sl",
-		slovenian: "sl",
-		german: "de",
-		deutsch: "de",
-		italian: "it",
-		italiano: "it",
-	};
-	const locale_code = named_codes[normalized] ?? normalized;
-	const locale_parts = locale_code.split("-");
+export function deepl_language_code(locale_code: string, target: boolean): string {
+	// `locale_code` must be a BCP 47 code ("de-de", "en-us") - callers pass the
+	// codes from config/supported_locales.ts straight through. Display names
+	// ("German (Germany)") fail the strict 2-3 letter language check below;
+	// DeepL only accepts codes.
+	const normalized = locale_code.trim().toLowerCase();
+	const locale_parts = normalized.split("-");
 	const language_code = locale_parts[0]?.toUpperCase();
-	if (!language_code || !/^[A-Z]{2,3}$/.test(language_code)) throw new Error(`DeepL does not recognize language or locale: ${language}`);
+	if (!language_code || !/^[A-Z]{2,3}$/.test(language_code)) throw new Error(`DeepL does not recognize language or locale: ${locale_code}`);
 
 	if (target && language_code === "EN" && locale_parts[1]) return `EN-${locale_parts[1].toUpperCase()}`;
 	return language_code;

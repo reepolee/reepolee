@@ -218,8 +218,10 @@ describe("layout presentation-boundary metadata", () => {
 		expect(html).toContain("new AbortController()");
 		expect(html).toContain('mode: "no-cors"');
 		// LAN access: localhost links are rewritten to the host the page was served from
-		expect(html).toContain('app_link.href.startsWith("http://localhost:")');
-		expect(html).toContain('app_link.href.replace("http://localhost:", `http://${server_host}:`)');
+		expect(html).toContain('const server_origin = `${location.protocol}//${location.hostname}`');
+		expect(html).toContain('const parsed_url = new URL(app_link.href, location.href)');
+		expect(html).toContain('parsed_url.hostname = location.hostname');
+		expect(html).toContain('if (location.protocol === "https:") parsed_url.protocol = "https:"');
 		expect(html).toContain('class="flex items-center justify-between gap-2 px-4 py-4"');
 		expect(html).toContain('class="w-24"');
 		expect(html).toContain('class="flex items-center gap-2 font-semibold pl-2"');

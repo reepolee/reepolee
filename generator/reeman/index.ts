@@ -191,7 +191,7 @@ export async function main() {
 					{
 						cmd: "remove_route",
 						label: "Remove route",
-						description: "Delete a registered route (folder, imports, nav) - skips system routes",
+						description: "Delete a registered main-app route (folder, imports, nav) - keeps the root page",
 					},
 					{
 						cmd: "remove_prefix_folder",

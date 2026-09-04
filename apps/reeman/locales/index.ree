@@ -73,8 +73,6 @@
 			</div>
 
 			<div class="flex items-center gap-2">
-				<a href="{~ localized_path('/locales/export-bundle') }" class="as-button-secondary" download>{_ actions.export_english}</a>
-				<button commandfor="upload_translation_dialog" command="show-modal" class="as-button-secondary">{_ actions.upload_translation}</button>
 				<button id="action" commandfor="add_locale_dialog" command="show-modal" class="as-button-primary">{_ actions.add_locale}</button>
 			</div>
 
@@ -229,7 +227,12 @@
 						<field-wrapper class="grid" data-field="locale_code">
 							<div class="grid">
 								<label class="px-3" for="add-locale-code">{_ labels.locale_code}</label>
-								<input id="add-locale-code" name="locale_code" required pattern="[a-z]{2,3}(-[a-z0-9]{2,8})?" title="{_ hints.locale_code }" />
+								<select id="add-locale-code" name="locale_code" required title="{_ hints.locale_code }">
+									<option value="" selected disabled>{_ labels.locale_code}</option>
+									{#each locale_suggestions as locale }
+										<option value="{= locale.code }">{= locale.name } ({= locale.code })</option>
+									{/each}
+								</select>
 							</div>
 						</field-wrapper>
 						<label class="flex cursor-pointer items-center gap-1.5 text-sm">
@@ -242,19 +245,6 @@
 					</div>
 				</form>
 			</div>
-		</dialog>
-
-		<dialog id="upload_translation_dialog" class="p-0 rounded-xl shadow-2xl w-120">
-			<form method="POST" action="{~ localized_path('/locales/upload-bundle') }" enctype="multipart/form-data" class="p-6 grid gap-4">
-				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
-				<h2 class="text-lg font-semibold">{_ actions.upload_translation}</h2>
-				<p class="text-sm text-text-secondary">{_ ui.upload_translation_hint}</p>
-				<input type="file" name="translation_bundle" accept=".json,application/json" required />
-				<div class="flex justify-end gap-2">
-					<button type="button" class="as-button-secondary" commandfor="upload_translation_dialog" command="close">{_ actions.cancel}</button>
-					<button type="submit" class="as-button-primary">{_ actions.upload}</button>
-				</div>
-			</form>
 		</dialog>
 
 		<script src="/dialog-confirm.js?v={= version}"></script>

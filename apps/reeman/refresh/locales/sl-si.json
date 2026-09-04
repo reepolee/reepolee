@@ -1,17 +1,13 @@
 {
 	"actions": {
-		"add_locale": "Dodaj jezik",
+		"archive_live_translations": "Arhiviraj trenutne prevode",
 		"fields": "Samo polja",
 		"refresh_crud": "Osveži CRUD",
 		"sync_locale_tables": "Sinhroniziraj jezikovne tabele",
 		"sync_translations": "Sinhroniziraj prevode",
 		"translate": "Prevedi z AI"
 	},
-	"hints": {
-		"locale_code": "Koda jezika po BCP 47 za dodajanje (npr. de-at)"
-	},
 	"labels": {
-		"locale_code": "Koda jezika",
 		"route": "Pot",
 		"template_tags": "Predloge polj"
 	},
@@ -20,8 +16,10 @@
 		"default": "(privzeto)"
 	},
 	"ui": {
+		"archive_live_translations_hint": "Shrani trenutne prevode v pomnilnik po jezikih v locales-archive (ponovno uporabljeni pred AI) in zapiši locales-archive/en-us.json - celotno angleško datoteko za zunanje prevajanje.",
 		"busy": "Obdelava v teku — stran se bo osvežila, ko bo končano.",
 		"refresh_description": "Sinhroniziraj prevode, upravljaj jezike in osveži jezikovne tabele.",
-		"refresh_title": "Osvežitev in jeziki"
+		"refresh_title": "Osvežitev in jeziki",
+		"sync_locale_tables_hint": "Uskladi vsebinske tabele posameznih jezikov s konfiguriranimi jeziki in shemo: ustvari manjkajoče klonske tabele, posodobi spremenjene stolpce in odstrani tabele izbrisanih jezikov."
 	}
 }

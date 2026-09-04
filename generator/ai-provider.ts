@@ -23,7 +23,7 @@ import { retry_after_ms, retry_delay_ms } from "./retry_after";
 // Provider selection
 // ---------------------------------------------------------------------------
 
-export type ActiveProvider = "openrouter" | "huggingface" | "ollama" | "gemini" | "openai" | "claude" | "xai";
+export type ActiveProvider = "openrouter" | "huggingface" | "ollama" | "gemini" | "openai" | "claude" | "xai" | "deepl";
 
 type Chat_options = { model?: string; timeout?: number; temperature?: number; };
 
@@ -210,19 +210,16 @@ function reconstruct_object(original: any, translated: Map<string, string>): any
 	return original;
 }
 
-// Build the model ID for a language pair
+// Build the model ID for a language pair. Helsinki-NLP models are trained per
+// language pair (opus-mt-en-de), so each BCP 47 locale code ("en-us", "de-de")
+// is reduced to its language part - the region is dropped. Display names
+// ("German (Germany)") are rejected; callers pass locale codes straight
+// through, matching the DeepL resolver.
 function hf_model_id(source_lang: string, target_lang: string): string {
 	const code = (s: string) => {
-		const lower = s.trim().toLowerCase();
-		if (lower.startsWith("slovenian") || lower === "slovenščina") return "sl";
-		if (lower.startsWith("english") || lower === "english") return "en";
-		if (lower.startsWith("french") || lower === "french" || lower === "français") return "fr";
-		if (lower.startsWith("german") || lower === "german" || lower === "deutsch") return "de";
-		if (lower.startsWith("spanish") || lower === "spanish" || lower === "español") return "es";
-		if (lower.startsWith("italian") || lower === "italian" || lower === "italiano") return "it";
-		if (lower.startsWith("croatian") || lower === "croatian" || lower === "hrvatski") return "hr";
-		if (lower === "sl" || lower === "en" || lower === "fr" || lower === "de" || lower === "es" || lower === "it" || lower === "hr") { return lower; }
-		throw new Error(`unknown language: ${s}`);
+		const language = s.trim().toLowerCase().split("-")[0] ?? "";
+		if (!/^[a-z]{2,3}$/.test(language)) throw new Error(`unknown language code: ${s}`);
+		return language;
 	};
 	return `${code(source_lang)}-${code(target_lang)}`;
 }

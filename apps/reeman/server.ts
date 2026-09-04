@@ -21,7 +21,7 @@
 import { join } from "node:path";
 import { bootstrap } from "$lib/bootstrap";
 import { env_available } from "$config/env_vars";
-import { clients, handle_dev_client_request, is_same_origin_upgrade, notify_clients } from "$lib/livereload";
+import { clients, handle_dev_client_request, is_same_origin_upgrade, notify_clients, set_reload_broadcast } from "$lib/livereload";
 import type { WebSocketData } from "$lib/livereload";
 import { log_error } from "$lib/logger";
 import { initialize_render } from "$lib/render";
@@ -61,6 +61,14 @@ const static_dirs = discover_static_dirs(project_root, REEMAN_APP);
 // is_dev is the single source of truth for the mode (--dev passed = dev).
 const is_dev = Bun.argv.includes("--dev");
 const is_agent = Bun.argv.includes("--agent");
+
+// Only the main app broadcasts browser reloads over the dev WebSocket. This
+// server hosts long-running generator flows (add-locale, sync-translations,
+// spawned CRUD); auto-reloading its pages while a generator writes
+// config/translation files across the repo discards in-progress form state
+// mid-run. In-memory translations still refresh via lib/watcher.ts; pages
+// update on manual reload (lib/livereload.ts set_reload_broadcast).
+set_reload_broadcast(false);
 
 // --dev and --prod are mutually exclusive - fail loudly instead of silently
 // picking a mode (the reeman app must never serve dev mode in production).

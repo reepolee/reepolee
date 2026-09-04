@@ -414,7 +414,7 @@ export async function ${archive_record_by_route_param_fn}(value: string${archive
 	const create_omit_union = create_omit_fields.map((field_name) => `"${field_name}"`).join(" | ");
 	const update_omit_union = update_omit_fields.map((field_name) => `"${field_name}"`).join(" | ");
 	const create_record_arg = create_omit_union ? `Omit<Record, ${create_omit_union}>` : "Record";
-	const update_record_arg = `Omit<Record, ${update_omit_union}>`;
+	const update_record_arg = `Partial<Omit<Record, ${update_omit_union}>>`;
 	const create_record_return = is_auto_increment_pk ? `const get_result = await db\`SELECT * FROM ${table_name} WHERE id = \${insert_result.lastInsertRowid} LIMIT 1\`;
 \t\treturn get_result[0] as Record;` : `const get_result = await db\`SELECT * FROM ${table_name} WHERE id = \${record.id} LIMIT 1\`;
 \t\treturn get_result[0] as Record;`;

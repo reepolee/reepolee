@@ -10,12 +10,16 @@
 import { DATE_TZ, DATETIME_TZ, TIME_TZ, TIMESTAMP_TZ } from "$config/db";
 import { default_locale } from "$config/supported_locales";
 
+import { cn as _cn, type Cn_input } from "./cn";
+
 import { display_currency as _display_currency, display_percent as _display_percent } from "./format";
 import { format_bcp47, format_og_locale, locale_short_code } from "./locale";
 import { resolve_localized, resolve_localized_path } from "./route_map";
 import { now_today, to_instant } from "./temporal";
 
 export type TemplateHelpers = Record<string, any>;
+
+export function cn(...inputs: Cn_input[]): string { return _cn(...inputs); }
 
 // ---------------------------------------------------------------------------
 // Consolidated datetime formatting
@@ -395,6 +399,7 @@ export function create_default_helpers(data: any = {}): TemplateHelpers {
 		image_thumbnail,
 		file_link,
 		file_icon_name,
+		cn,
 	};
 }
 

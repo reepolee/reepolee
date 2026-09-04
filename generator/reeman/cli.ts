@@ -21,7 +21,7 @@ import { add_locale_to_system } from "../add_locale";
 import { add_locale_alias_to_system } from "../add_locale_alias";
 import { activate_locales_in_system } from "../activate_locale";
 import { install_locale_from_archive, list_archived_locales } from "../install_locale";
-import { archive_translation_bundle, export_translation_bundle, migrate_legacy_translation_archive } from "../translation_bundle";
+import { archive_translation_bundle, export_translation_bundle } from "../translation_bundle";
 import { remove_locale_from_system } from "../remove_locale";
 import { add_module } from "./add_module";
 import { find_missing_keys, write_missing_translations } from "./insert_translations";
@@ -65,7 +65,7 @@ const KNOWN_SUBCOMMANDS = new Set([
 	"install-locale",
 	"export-translation-bundle",
 	"import-translation-bundle",
-	"migrate-translation-archive",
+	"archive-live-translations",
 	"add-locale",
 	"add-locale-alias",
 	"activate-locales",
@@ -294,7 +294,7 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 			const output_file = positionals[0] !== undefined ? String(positionals[0]) : "translation-bundle-en-us.json";
 			const target_locale = values["target-locale"] ? String(values["target-locale"]) : null;
 			const bundle = await export_translation_bundle(output_file, target_locale);
-			console.log(`${color("✓", GREEN)} Exported ${Object.keys(bundle.files).length} English translation file(s) to ${output_file}.`);
+			console.log(`${color("✓", GREEN)} Exported ${Object.keys(bundle.routes).length} translation route(s) to ${output_file}.`);
 			process.exit(0);
 		}
 
@@ -322,9 +322,10 @@ export async function run_cli(argv: string[]): Promise<boolean> {
 			process.exit(0);
 		}
 
-		case "migrate-translation-archive": {
-			const written = await migrate_legacy_translation_archive();
-			console.log(`${color("✓", GREEN)} Migrated ${written.length} archived locale bundle(s).`);
+		case "archive-live-translations": {
+			const { archive_live_translation_memory } = await import("../translation_memory");
+			const result = await archive_live_translation_memory();
+			console.log(`${color("✓", GREEN)} Archived ${result.routes} localized route file(s) and ${result.tables} generated table namespace(s).`);
 			process.exit(0);
 		}
 

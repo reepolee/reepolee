@@ -3,6 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
+import { cn } from "$lib/cn";
 import type { RouteModuleMount } from "$lib/route_module";
 import { DEFAULT_HELPER_NAMES } from "$lib/helper_names";
 
@@ -1016,6 +1017,15 @@ describe("TemplateEngine", () => {
 	});
 
 	describe("helpers - static injection", () => {
+		test("cn is available as a bare helper and through helpers", async () => {
+			const engine = make_engine("/tmp");
+			const helpers = { cn };
+			const bare = await engine.render_string("{= cn(\"px-2\", \"px-4\") }", { helpers });
+			const via_object = await engine.render_string("{= helpers.cn(\"base\", \"active\") }", { helpers });
+			expect(bare).toBe("px-4");
+			expect(via_object).toBe("base active");
+		});
+
 		test("built-in helper names are bound as bare identifiers", async () => {
 			const engine = make_engine("/tmp");
 			const helpers = { url: (p: string) => (p.startsWith("/") ? p : `/${p}`) };

@@ -45,6 +45,7 @@ const SQL_FILES = [
 	"sql/sqlite/init/01-init-sqlite.sql",
 	"sql/sqlite/init/05-init-feature-flags.sql",
 	"sql/sqlite/init/06-init-queue.sql",
+	"sql/sqlite/init/07-init-web-push.sql",
 ];
 
 const keepalive = setInterval(() => {}, 2_147_483_647);

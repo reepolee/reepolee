@@ -20,6 +20,8 @@
 			<!-- {#include('speculationrules.partial')} -->
 		{/if}
 		<meta http-equiv="Content-Language" content="{= format_bcp47(props.locale) }" />
+		<meta name="csrf-token" content="{= csrf_token }" />
+		<script src="/web-push.js?v={= props.version }" defer></script>
 
 		<!-- Presentation boundaries: conventional BCP 47 casing for search/OG metadata.
 		     hreflang hrefs are absolute when a request origin is available, relative otherwise. -->
@@ -67,7 +69,16 @@
 			<sidebar-footer></sidebar-footer>
 		</aside>
 
-		<main id="main" class="max-xl:min-w-screen">{~ props.body}</main>
+		{#if props.user && props.web_push_enabled}
+			<button id="web-push-toggle" type="button" class="fixed bottom-4 right-4 z-10 cursor-pointer rounded border border-neutral-300 bg-neutral-100 px-3 py-2 text-xs shadow hover:bg-neutral-200" data-enabled-label="{_ ui.notifications_disable}" data-disabled-label="{_ ui.notifications_enable}" data-error-label="{_ ui.notifications_unavailable}">{_ ui.notifications_enable}</button>
+		{/if}
+
+		<main id="main" class="max-xl:min-w-screen">
+			{#if props.busy_poller}
+				<busy-poller></busy-poller>
+			{/if}
+			{~ props.body}
+		</main>
 
 		<toasts-area id="toasts-area">
 			<!-- TOASTS (server-rendered, no JS required) -->
@@ -117,12 +128,6 @@
 			</script>
 		{/if}
 
-		<!-- Auto-refresh busy pages once the in-flight reeman action completes. Only
-		     apps that serve /__busy (reeman, reeqa) render this - the main app's
-		     generated/public pages have no such route, so polling it would 404. -->
-		{#if props.busy_poller}
-			<busy-poller></busy-poller>
-		{/if}
 	</body>
 
 </html>

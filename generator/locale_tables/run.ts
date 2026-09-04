@@ -74,6 +74,8 @@ export async function discover_localized_tables(): Promise<LocalizedTableInfo[]>
 export interface RunSyncOptions {
 	/** Limit to one base table; omit to sync every localized table. */
 	table?: string;
+	/** Override configured locales for the current operation before config reload. */
+	locale_codes?: readonly string[];
 	dry_run?: boolean;
 }
 
@@ -87,7 +89,7 @@ export interface RunSyncReport {
  * locales. Idempotent - a converged schema produces no actions.
  */
 export async function run_locale_table_sync(options: RunSyncOptions = {}): Promise<RunSyncReport> {
-	const { table, dry_run = false } = options;
+	const { table, locale_codes = locales, dry_run = false } = options;
 
 	const localized_tables = await discover_localized_tables();
 	const selected = table ? localized_tables.filter((info) => info.table_name === table) : localized_tables;
@@ -115,7 +117,7 @@ export async function run_locale_table_sync(options: RunSyncOptions = {}): Promi
 			dialect,
 			base_schema,
 			localized_field_names: info.localized_field_names,
-			locale_codes: locales as readonly string[],
+			locale_codes,
 			default_locale_code: default_locale,
 			localized_tables: localized_table_names,
 			dry_run,

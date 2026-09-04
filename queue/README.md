@@ -307,6 +307,24 @@ start_worker(
 await start_workers();
 ```
 
+### Sending Web Push notifications
+
+After a browser has subscribed, application code can enqueue one notification for every
+subscription belonging to a user:
+
+```ts
+import { queue_web_push_notification } from "$lib/web_push";
+
+await queue_web_push_notification(user_id, {
+	title: "Build complete",
+	message: "Your report is ready.",
+	link: "/reports/42",
+});
+```
+
+The function does nothing when VAPID is not configured, and the `web_push` worker handles
+payload encryption and delivery asynchronously.
+
 ### Registered job types
 
 | Type | Producer | Handler |
@@ -315,6 +333,7 @@ await start_workers();
 | `translate_batch` | `bun reeman sync-translations --translate` | `core_workers` |
 | `translate_record` | generated CRUD `.../generate-locale` routes | `core_workers` |
 | `image_variants` | image upload pipeline | `core_workers` |
+| `web_push` | `POST /web-push/test` or application notification producers | `core_workers` |
 | `reeqa_suite_run` | ReeQA suite / video-E2E start | `apps/reeqa/workers.ts` |
 | `reeqa_visual_run` | ReeQA visual start | `apps/reeqa/workers.ts` |
 | `reeqa_cancel` | ReeQA cancel | `apps/reeqa/workers.ts` |

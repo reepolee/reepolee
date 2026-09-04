@@ -17,6 +17,7 @@ import { join } from "node:path";
 
 import { dev_app_links, type Dev_app_name } from "$config/apps";
 import { verify_db_schema } from "$config/db";
+import { get_web_push_config } from "$config/web_push";
 import { check_env_vars, N_A, redis_available } from "$config/env_vars";
 import { translations } from "$lib/i18n";
 import { notify_clients } from "$lib/livereload";
@@ -184,6 +185,7 @@ export async function bootstrap(opts: BootstrapOptions): Promise<void> {
 		nav_final_links: [...nav_final_links].sort((a, b) => a.nav_final_order - b.nav_final_order),
 		version,
 		busy_poller: opts.busy_poller === true,
+		web_push_enabled: get_web_push_config() !== null,
 	};
 
 	set_base_data(base_data);

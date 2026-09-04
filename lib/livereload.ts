@@ -76,6 +76,32 @@ declare global {
 globalThis.__reepolee_livereload_clients ??= new Set<Bun.ServerWebSocket<WebSocketData>>();
 export const clients = globalThis.__reepolee_livereload_clients;
 
+// Dev "reload" broadcasts are served by the main app only (PORT 2338). The
+// reeman (2339) and ReeQA (2340) dev servers host long-running workflows
+// (generator actions, QA runs) whose open pages must not be auto-reloaded
+// while generator churn - e.g. an add-locale run writing config/ and dozens of
+// translation files across the repo - fires every server's shared watcher.
+// Those reload storms discard in-progress browser state mid-run and interrupt
+// spawned long-running processes. The reeman/ReeQA servers still reload their
+// in-memory translations on the same events (lib/watcher.ts); their pages just
+// never auto-reload, so a manual refresh always shows current data. Kept on
+// globalThis so the flag survives `bun --hot` module re-evaluation (same
+// rationale as the clients Set above).
+declare global {
+	var __reepolee_reload_broadcast_enabled: boolean | undefined;
+}
+
+globalThis.__reepolee_reload_broadcast_enabled ??= true;
+
+/** Enable/disable this process's browser "reload" broadcasts (see above). */
+export function set_reload_broadcast(enabled: boolean): void {
+	globalThis.__reepolee_reload_broadcast_enabled = enabled;
+}
+
+function reload_broadcast_enabled(): boolean {
+	return globalThis.__reepolee_reload_broadcast_enabled !== false;
+}
+
 /**
  * Same-origin gate for WebSocket upgrade requests. Browsers always send an
  * Origin header on the handshake, so a cross-site page cannot open a
@@ -169,6 +195,7 @@ export async function handle_dev_client_request(url: URL): Promise<Response | nu
 }
 
 export function notify_clients() {
+	if (!reload_broadcast_enabled()) return;
 	for (const ws of clients) {
 		if (ws.readyState === WebSocket.OPEN) { ws.send(JSON.stringify({ type: "reload" })); }
 	}

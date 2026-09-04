@@ -19,16 +19,18 @@
 			const switcher = document.querySelector("[data-dev-app-switcher]");
 			if (switcher) {
 				const app_links = Array.from(switcher.querySelectorAll("a"));
-				// Dev app links are built against localhost (config/apps.ts), but the
-				// page may be reached over the LAN (e.g. http://m4mini:2338) where
-				// localhost resolves to the visitor's own machine. Rewrite each link
-				// to the host the page was served from, so both the reachability
-				// probe below and navigation work from other machines.
-				const server_host = location.hostname;
+				// Dev app links fall back to localhost when no public origin is
+				// configured. On a LAN or HTTPS deployment, use the host and
+				// protocol the page was served from instead of creating a
+				// localhost or mixed-content request.
+				const server_origin = `${location.protocol}//${location.hostname}`;
 				for (const app_link of app_links) {
-					if (app_link.href.startsWith("http://localhost:")) {
-						app_link.href = app_link.href.replace("http://localhost:", `http://${server_host}:`);
+					const parsed_url = new URL(app_link.href, location.href);
+					if (parsed_url.hostname === "localhost" && location.hostname !== "localhost") {
+						parsed_url.hostname = location.hostname;
 					}
+					if (location.protocol === "https:") parsed_url.protocol = "https:";
+					app_link.href = parsed_url.href;
 				}
 				const active_apps = await Promise.all(app_links.map(async (app_link) => {
 					if (app_link.getAttribute("aria-current") === "page") return true;

@@ -32,6 +32,7 @@ export const ENV_VAR_DESCRIPTIONS: Record<string, string> = {
 	REEMAN_PORT: "Port for the reeman app (apps/reeman/server.ts), a second process serving the generator UI and sysadmin pages from this checkout. Defaults to 2339.",
 	REEQA_PORT: "Port for the ReeQA app (apps/reeqa/server.ts). Required; set an explicit valid TCP port.",
 	MAIN_APP_URL: "Base URL of the main app, used by the reeman process to reload the main app's translations across the two-app split.",
+	SITE_URL: "Public base URL used when separate development apps build links for the app switcher (for example, https://example.com).",
 	SERVER_NAME: "Hostname used when building self-referencing URLs (reload notifications, agent mode). Defaults to localhost.",
 
 	// -- Seeded admin account --
@@ -127,6 +128,11 @@ export const ENV_VAR_DESCRIPTIONS: Record<string, string> = {
 	CF_API_TOKEN: "Cloudflare API token with D1 read access. \"N/A\" disables the D1 client.",
 	CF_ACCOUNT_ID: "Cloudflare account id hosting the D1 database. \"N/A\" disables the D1 client.",
 	CF_D1_DATABASE_ID: "D1 database id to query (the edge registration database). \"N/A\" disables the D1 client.",
+
+	// -- Web Push (optional) --
+	WEB_PUSH_PUBLIC_KEY: "VAPID P-256 public key in base64url form. \"N/A\" disables Web Push.",
+	WEB_PUSH_PRIVATE_KEY: "VAPID P-256 private key in base64url form. Keep secret. \"N/A\" disables Web Push.",
+	WEB_PUSH_SUBJECT: "VAPID contact URL, usually a mailto: or https:// address. http:// is accepted for local hosts (localhost, 127.0.0.1, or a bare hostname). \"N/A\" disables Web Push.",
 };
 
 /** Description for `name`, or an empty string when the variable has none. */

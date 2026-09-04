@@ -13,7 +13,7 @@
  */
 
 import { db } from "$config/db";
-import { default_locale, locale_names } from "$config/supported_locales";
+import { default_locale } from "$config/supported_locales";
 import { locale_table } from "$lib/locale_tables";
 import { quote_identifier } from "$lib/sql_dialect";
 import { translate_json } from "$generator/translator";
@@ -110,10 +110,10 @@ export async function generate_localized_values(
 		if (typeof value === "string" && value.trim() !== "") to_translate[field_name] = value;
 	}
 
-	const target_lang = locale_names[to_locale] || to_locale;
-	const source_lang = locale_names[from_locale] || from_locale;
+	// The AI receives locale *codes*, not display labels - DeepL rejects names
+	// like "German (Germany)" (generator/deepl.ts deepl_language_code).
 	const translated: Record<string, string> = Object.keys(to_translate).length > 0
-		? await translate_json(to_translate, target_lang, { source_lang })
+		? await translate_json(to_translate, to_locale, { source_lang: from_locale })
 		: {};
 
 	const target_table = locale_table(table_name, to_locale);

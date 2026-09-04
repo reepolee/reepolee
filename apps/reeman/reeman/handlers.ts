@@ -20,7 +20,7 @@ import type { BunRequest } from "bun";
 import type { GridColumnDefinition } from "$generator/schema/types";
 
 import {
-	action_add_locale,
+	action_archive_live_translations,
 	action_backup_database,
 	action_bulk,
 	action_bulk_refresh,
@@ -73,7 +73,10 @@ async function redirect_result(req: BunRequest, action: string, target: string, 
 	const message = result.ok
 		? `Reeman: ${action} succeeded${target ? ` (${target})` : ""}`
 		: `Reeman: ${action} failed${target ? ` (${target})` : ""}${result.error ? ` — ${result.error}` : ""}`;
-	headers.append("Set-Cookie", make_toast("toast-reeman", { message, type: result.ok ? "green" : "red", duration: 6000 }).toString());
+	// Failed actions are reported by the persistent system banner, which also
+	// exposes the captured run output. Keep the toast for success only so one
+	// failure does not produce two competing notifications.
+	if (result.ok) headers.append("Set-Cookie", make_toast("toast-reeman", { message, type: "green", duration: 6000 }).toString());
 	return new Response(null, { status: 303, headers });
 }
 
@@ -376,22 +379,20 @@ export async function post_sync_translations(req: BunRequest): Promise<Response>
 	return redirect_result(req, "sync-translations", "", result, return_to);
 }
 
+export async function post_archive_live_translations(req: BunRequest): Promise<Response> {
+	const params = await params_of(req);
+	const return_to = get_param(params, "return_to");
+	if (await is_busy()) return busy_response(req, return_to);
+	const result = await action_archive_live_translations();
+	return redirect_result(req, "archive-live-translations", "", result, return_to);
+}
+
 export async function post_sync_locale_tables(req: BunRequest): Promise<Response> {
 	const params = await params_of(req);
 	const return_to = get_param(params, "return_to");
 	if (await is_busy()) return busy_response(req, return_to);
 	const result = await action_sync_locale_tables();
 	return redirect_result(req, "sync-locale-tables", "", result, return_to);
-}
-
-export async function post_add_locale(req: BunRequest): Promise<Response> {
-	const params = await params_of(req);
-	const return_to = get_param(params, "return_to");
-	const locale_code = get_param(params, "locale_code");
-	if (!locale_code) return redirect_result(req, "add-locale", "", { ok: false, output: "", error: "No locale code provided." }, return_to);
-	if (await is_busy()) return busy_response(req, return_to);
-	const result = await action_add_locale({ locale_code, translate: is_checked(params, "translate") });
-	return redirect_result(req, "add-locale", locale_code, result, return_to);
 }
 
 // ---------------------------------------------------------------------------

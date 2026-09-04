@@ -8,12 +8,13 @@ import { existsSync, readdirSync, rmSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { notify_server_reload } from "$lib/server_notify";
+import { snapshot_route_translation_memory } from "$generator/translation_memory";
 
 import { BOLD, color, confirm, CYAN, dim, GREEN, header, RED, select_from_list, show_cli_tip, YELLOW } from "./ui";
 import { MAIN_APP } from "$config/paths";
 
-// System prefixes that should not be deletable through this tool
-const PROTECTED_PREFIXES = ["system", "home"];
+// Reeman and ReeQA are separate apps. In the main app, only home is protected.
+const PROTECTED_PREFIXES = ["home"];
 
 /**
  * Remove an entire prefixed route folder (all sub-routes, handlers, imports, nav translations).
@@ -179,6 +180,7 @@ export async function remove_prefix_folder(name?: string, force: boolean = false
 	// -----------------------------------------------------------------------
 	const prefix_path = join(routes_dir, selected.name);
 	if (existsSync(prefix_path)) {
+		await snapshot_route_translation_memory(prefix_path);
 		rmSync(prefix_path, { recursive: true, force: true });
 		console.log(`  ${color("✓", GREEN)} Deleted folder: ${prefix_path}`);
 	} else {

@@ -79,6 +79,7 @@ async function main() {
 
 	const scripts = await read_scripts();
 
+	const cn_version = extract_version(scripts["get:cn"] ?? "", "cn");
 	const zod_version = extract_version(scripts["get:zod"] ?? "", "zod");
 	const hljs_version = extract_version(scripts["get:hljs"] ?? "", "highlight.js");
 	const temporal_version = extract_version(scripts["get:temporal"] ?? "", "@js-temporal/polyfill");
@@ -93,6 +94,13 @@ async function main() {
 	]);
 
 	const downloads: download[] = [
+		{
+			label: "cn",
+			version: cn_version,
+			url: `https://esm.sh/cn@${cn_version}/es2022/cn.bundle.mjs`,
+			out: join("vendor", "cn.min.js"),
+			license_url: `https://cdn.jsdelivr.net/npm/cn@${cn_version}/LICENSE`,
+		},
 		{
 			label: "zod",
 			version: zod_version,

@@ -43,6 +43,7 @@ export const KNOWN_ENV_VARS: readonly string[] = [
 	"REEMAN_PORT",
 	"REEQA_PORT",
 	"MAIN_APP_URL",
+	"SITE_URL",
 	"SERVER_NAME",
 
 	// -- Quick Start admin defaults --
@@ -138,6 +139,11 @@ export const KNOWN_ENV_VARS: readonly string[] = [
 	"CF_API_TOKEN",
 	"CF_ACCOUNT_ID",
 	"CF_D1_DATABASE_ID",
+
+	// -- Web Push (optional) --
+	"WEB_PUSH_PUBLIC_KEY",
+	"WEB_PUSH_PRIVATE_KEY",
+	"WEB_PUSH_SUBJECT",
 ];
 
 /**

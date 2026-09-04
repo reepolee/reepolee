@@ -53,8 +53,8 @@
 	"ui": {
 		"edit_title": "Uredi sliko",
 		"index_title": "Slike",
-		"no_records": "Ni najdenih slik.",
 		"new_title": "Nova slika",
+		"no_records": "Ni najdenih slik.",
 		"title": "Slike"
 	},
 	"v_labels": {

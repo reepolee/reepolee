@@ -218,6 +218,137 @@ For local headless automation, use the dedicated agent-mode commands and ports d
 in [Agent Mode](internals/AGENT_MODE.md). It is development-only and intentionally does
 not use the normal login, session, or CSRF flow.
 
+## Web Push (optional)
+
+Web Push is disabled unless all three `WEB_PUSH_*` variables contain real values. The
+private VAPID key stays server-side; only the public key is sent to the browser.
+
+### 1. Generate a VAPID key pair
+
+Run this locally from the project root. It generates a P-256 key pair in the base64url
+format expected by Reepolee:
+
+```bash
+bun -e '
+const encode = (bytes) => btoa(String.fromCharCode(...bytes)).replace(/\\+/g, "-").replace(/\\//g, "_").replace(/=+$/, "");
+const decode = (value) => Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - value.length % 4) % 4)), (char) => char.charCodeAt(0));
+const pair = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"]);
+const public_key = new Uint8Array(await crypto.subtle.exportKey("raw", pair.publicKey));
+const private_jwk = await crypto.subtle.exportKey("jwk", pair.privateKey);
+console.log("WEB_PUSH_PUBLIC_KEY=" + encode(public_key));
+console.log("WEB_PUSH_PRIVATE_KEY=" + encode(decode(private_jwk.d)));
+console.log("WEB_PUSH_SUBJECT=mailto:admin@example.com");
+'
+```
+
+Copy the three output lines into `.env` and replace the subject with a real monitored
+address or an `https://` application URL (an `http://` host such as `http://localhost:2338`
+or `http://comet:2338` is also accepted for local development):
+
+```dotenv
+WEB_PUSH_PUBLIC_KEY=<generated public key>
+WEB_PUSH_PRIVATE_KEY=<generated private key>
+WEB_PUSH_SUBJECT=mailto:admin@example.com
+```
+
+Do not commit `.env`, paste the private key into browser code, or share
+`WEB_PUSH_PRIVATE_KEY`. Keep the same key pair across restarts and deployments; rotating
+it requires users to subscribe again.
+
+### 2. Initialize the subscription table
+
+For a new SQLite installation, `bun reepolee:install` runs
+`sql/sqlite/init/07-init-web-push.sql` automatically. For an existing database, run the
+matching migration once:
+
+```bash
+# SQLite development database
+bun reeman run-sql-file sql/sqlite/init/07-init-web-push.sql
+
+# MySQL development database
+bun reeman run-sql-file sql/mysql/init/07-init-web-push.sql
+```
+
+Run the migration against the appropriate production database as part of the deployment
+before enabling the feature. The migration creates `web_push_subscriptions`; it is safe
+to run through the project's SQL initializer, which uses `CREATE TABLE IF NOT EXISTS`.
+
+### 3. Start the app and queue worker
+
+After changing `.env`, restart both processes so they load the VAPID configuration:
+
+```bash
+bun dev:worker
+```
+
+For the full local stack, use `bun dev:all`, which also starts Reeman and ReeQA. The
+worker is required: HTTP requests only enqueue notifications, while `worker.ts` encrypts
+and sends them to the browser's push service.
+
+### 4. Subscribe a browser
+
+1. Open the main app in a secure context: `https://your-host/`, or `http://localhost:2338`
+   during local development.
+2. Log in as a user.
+3. Click **Enable notifications** in the bottom-right corner.
+4. Accept the browser permission prompt.
+5. Confirm the button changes to **Disable notifications**.
+
+The subscription is stored per user and per push endpoint. Each browser/device must be
+subscribed separately.
+
+### 5. Send a test notification
+
+The test route is admin-only and sends to the currently authenticated admin's registered
+subscriptions. It queues a fixed test notification; it does not call the push provider
+inside the HTTP request.
+
+From the logged-in browser's DevTools console, run:
+
+```js
+fetch("/web-push/test", {
+  method: "POST",
+  headers: {
+    "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
+  },
+}).then(async (response) => ({ status: response.status, body: await response.json() }))
+```
+
+A successful response looks like:
+
+```json
+{"ok":true,"queued":1}
+```
+
+`queued: 0` means the admin account has no saved browser subscriptions. A `401`/`303`
+means you are not logged in, `403` means the account does not have the `admin` module,
+and `404` means the VAPID variables are incomplete or invalid. Watch the worker terminal
+for the delivery attempt. The worker retries transient failures and removes subscriptions
+when a push provider returns `404` or `410`.
+
+Application code can enqueue its own notification with:
+
+```ts
+import { queue_web_push_notification } from "$lib/web_push";
+
+await queue_web_push_notification(user_id, {
+  title: "Invoice ready",
+  message: "Your invoice is ready to review.",
+  link: "/invoices/",
+});
+```
+
+The `link` must be a local path or an `https://` URL. Use the existing worker process for
+delivery; do not send the private VAPID key to client code.
+
+### Production requirements
+
+Production browsers require HTTPS (normally TLS is terminated by a reverse proxy). Keep
+`WEB_PUSH_PRIVATE_KEY` and `WEB_PUSH_SUBJECT` in the deployment secret store, apply the
+matching SQL migration before rollout, and run a long-lived `bun run worker` process next
+to the HTTP server. Push providers may reject delivery if the endpoint cannot be reached
+or if the VAPID subject is not a valid `mailto:`, `https://`, or local `http://` URL.
+
 ## Testing
 
 ```bash

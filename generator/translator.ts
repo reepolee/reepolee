@@ -1,3 +1,4 @@
+import { default_locale } from "$config/supported_locales";
 import { count_leaves } from "$lib/translation_merge";
 
 import { chat_query, get_active_provider, hf_translate_json } from "./ai-provider";
@@ -71,6 +72,13 @@ function restore_urls(obj: any, entries: { keys: string[]; url: string; }[]): an
 export async function translate_json(input: Record<string, any>, targetLang: string, options: TranslateOptions = {}): Promise<any> {
 	const { max_retries = 2, timeout = 300000, model, source_lang } = options;
 
+	// Providers receive locale *codes*, never display names: DeepL's resolver
+	// and the HF model resolver both reject "German (Germany)" and the like
+	// (generator/deepl.ts, generator/ai-provider.ts). Callers pass codes from
+	// config/supported_locales.ts; when no source is given, the default
+	// locale's code is used.
+	const source_code = source_lang ?? default_locale;
+
 	const source_label = source_lang ? `${source_lang} → ` : "";
 	console.log(`🌍 translateJSON: ${source_label}${targetLang}`);
 
@@ -104,7 +112,7 @@ export async function translate_json(input: Record<string, any>, targetLang: str
 	// HuggingFace path: flatten -> Helsinki-NLP batch translate -> reconstruct
 	if (provider === "huggingface") {
 		const t_start = performance.now();
-		const result = await hf_translate_json(safe_input, source_lang ?? "English", targetLang, { timeout, max_retries });
+		const result = await hf_translate_json(safe_input, source_code, targetLang, { timeout, max_retries });
 		const t_elapsed = (performance.now() - t_start).toFixed(0);
 		console.log(`✅ HF translation complete in ${t_elapsed}ms`);
 		const restored_result = restore_urls(result, url_entries);
@@ -113,7 +121,7 @@ export async function translate_json(input: Record<string, any>, targetLang: str
 	}
 	if (provider === "deepl") {
 		const t_start = performance.now();
-		const result = await deepl_translate_json(safe_input, source_lang ?? "English", targetLang, { timeout, max_retries });
+		const result = await deepl_translate_json(safe_input, source_code, targetLang, { timeout, max_retries });
 		const t_elapsed = (performance.now() - t_start).toFixed(0);
 		console.log(`✅ DeepL translation complete in ${t_elapsed}ms`);
 		const restored_result = restore_urls(result, url_entries);
@@ -133,7 +141,7 @@ export async function translate_json(input: Record<string, any>, targetLang: str
 		const result = await translate_in_chunks(
 			safe_input,
 			targetLang,
-			source_lang,
+			source_code,
 			model,
 			timeout,
 			max_retries
@@ -150,7 +158,7 @@ export async function translate_json(input: Record<string, any>, targetLang: str
 			if (attempt > 0) { console.log(`🔄 Retry attempt ${attempt}/${max_retries}`); }
 
 			const t_start = performance.now();
-			const result = await translate_attempt(safe_input, targetLang, source_lang, model, timeout);
+			const result = await translate_attempt(safe_input, targetLang, source_code, model, timeout);
 			const t_elapsed = (performance.now() - t_start).toFixed(0);
 
 			const result_leaves = count_leaves(result);

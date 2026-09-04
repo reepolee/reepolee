@@ -26,7 +26,7 @@
 			"reepolee/ree-templates"
 		]
 	},
-	"version": "26.09.12",
+	"version": "26.09.13",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",
@@ -66,6 +66,7 @@
 		"service:remove": "sudo systemctl stop reepolee && sudo systemctl disable reepolee && sudo rm /etc/systemd/system/reepolee.service && sudo systemctl daemon-reload",
 		"service:reload": "sudo systemctl daemon-reload",
 		"service:logs": "journalctl -u reepolee -f",
+		"get:cn": "mkdir -p vendor && curl -fsSL 'https://esm.sh/cn@0.2.5/es2022/cn.bundle.mjs' -o vendor/cn.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/cn@0.2.5/LICENSE -o vendor/cn.min.js.LICENSE.txt",
 		"get:zod": "mkdir -p vendor && curl -fsSL https://cdn.jsdelivr.net/npm/zod@4.5.4/+esm -o vendor/zod.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/zod@4.5.4/LICENSE -o vendor/zod.min.js.LICENSE.txt",
 		"get:zod-types": "bun scripts/cli.ts zod-types",
 		"get:hljs": "mkdir -p vendor && curl -fsSL https://cdn.jsdelivr.net/npm/highlight.js@11.12.0/+esm -o vendor/highlight.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/highlight.js@11.12.0/LICENSE -o vendor/highlight.min.js.LICENSE.txt",

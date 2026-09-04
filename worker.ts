@@ -9,12 +9,13 @@
 // bun run worker.ts              # production
 // bun --hot worker.ts            # development (auto-restart on file changes)
 
-import { locale_names } from "$config/supported_locales";
+import { default_locale, locale_names } from "$config/supported_locales";
 import { derive_image_variants } from "$lib/image_processor/variants";
 import { generate_localized_values } from "$lib/localized_copy";
 import { invalidate_all_locales } from "$lib/locale_write";
 import { notify_server_reload } from "$lib/server_notify";
 import { send_mail } from "$lib/smtp";
+import { send_web_push, web_push_subscription_from_job } from "$lib/web_push";
 import { read_namespace_file, write_namespace_file } from "$lib/translation_files";
 import { apply_translations, count_leaves, log_translation_result, sort_object } from "$lib/translation_merge";
 import {
@@ -143,7 +144,7 @@ if (reaped > 0) { console.log(`[worker] Re-enqueued ${reaped} orphaned job(s) fr
 
 // Show pending jobs in each queue (BEFORE starting worker loops)
 
-const known_queues = ["send_email", "translate_batch"];
+const known_queues = ["send_email", "translate_batch", "web_push"];
 const queue_stats = await Promise.all(known_queues.map(async (queue) => {
 	const [pending, failed_ids] = await Promise.all([queue_length(queue), get_failed_job_ids(queue, 1)]);
 	return { queue, pending, failed_ids };
@@ -186,6 +187,14 @@ const core_workers: WorkerRegistration[] = [
 		},
 	},
 	{
+		type: "web_push",
+		concurrency: 2,
+		handler: async (job) => {
+			const { notification, ...subscription_payload } = job.payload;
+			await send_web_push(web_push_subscription_from_job(subscription_payload), notification);
+		},
+	},
+	{
 		// AI-generates first-draft translations of one record's localized fields.
 		// Enqueued by generated CRUD routes (`.../generate-locale`). The result
 		// carries copy provenance, so stale-copy notices work exactly as for a
@@ -218,20 +227,26 @@ const core_workers: WorkerRegistration[] = [
 		type: "translate_batch",
 		concurrency: 2,
 		handler: async (job) => {
-			const { namespace, locale, untranslated } = job.payload;
+			const { namespace, locale, untranslated, table_name } = job.payload;
 
 			const display = namespace || "(global)";
 			console.log(`📄 Translating: ${display} / ${locale}`);
 
-			// Read current translations + call AI translation in parallel
+			// Read current translations + call AI translation in parallel. The AI
+			// always receives locale *codes*, never display names - DeepL rejects
+			// names like "German (Germany)" (generator/deepl.ts
+			// deepl_language_code); names are for the console only.
 			const target_lang_name = locale_names[locale] ?? locale;
 			const num_keys = count_leaves(untranslated);
 			console.log(`🌍 Translating English → ${target_lang_name} (${num_keys} keys)...`);
 
 			const read_current = read_namespace_file(namespace, locale);
 
-			const [current, translated] = await Promise.all([read_current, translate_json(untranslated, target_lang_name, { source_lang: "English" })]);
-			log_translation_result("English", target_lang_name, translated, untranslated);
+			const [current, translated] = await Promise.all([
+				read_current,
+				translate_json(untranslated, locale, { source_lang: default_locale }),
+			]);
+			log_translation_result(default_locale, target_lang_name, translated, untranslated);
 
 			// Apply AI translations to current state, preserving already-translated keys
 			const merged = apply_translations(current, translated);
@@ -239,6 +254,10 @@ const core_workers: WorkerRegistration[] = [
 			// Write back to the locale file with consistent key ordering
 			const final_obj = sort_object(merged);
 			await write_namespace_file(namespace, locale, final_obj);
+			if (typeof table_name === "string") {
+				const { save_translation_memory } = await import("$generator/translation_memory");
+				await save_translation_memory(table_name, locale, untranslated, translated);
+			}
 
 			// Notify the main app after the file write completes. The worker shares a
 			// checkout with the main app in dev, but across a split deployment it is

@@ -19,12 +19,13 @@ export interface AvailableSeedLocale {
 	name: string;
 }
 
-/** Human-readable name for a BCP-47 code via Intl, falling back to the bare code. */
-function display_name_for(code: string): string {
+/** Human-readable name for a BCP-47 code via Intl, falling back to the bare code.
+ * Display-only - never persisted (the config write uses its own English name). */
+function display_name_for(code: string, display_locale: string = "en"): string {
 	try {
 		const [lang, region] = code.split("-");
 		const tag = region ? `${lang}-${region.toUpperCase()}` : lang!;
-		return new Intl.DisplayNames(["en"], { type: "language" }).of(tag) || code;
+		return new Intl.DisplayNames([display_locale], { type: "language" }).of(tag) || code;
 	} catch {
 		return code;
 	}
@@ -32,15 +33,16 @@ function display_name_for(code: string): string {
 
 /**
  * Curated JSON locale files whose code is not yet in `locales`.
+ * `display_locale` localizes the names for the requesting session (default "en").
  */
-export async function list_available_seed_locales(): Promise<AvailableSeedLocale[]> {
+export async function list_available_seed_locales(display_locale: string = "en"): Promise<AvailableSeedLocale[]> {
 	const cfg = read_supported_locales();
 	const files = await list_translation_files();
 	const locale_codes = [...new Set(files.map((item) => item.locale))];
 	const found: AvailableSeedLocale[] = [];
 	for (const code of locale_codes) {
 		if (cfg.locales.includes(code)) continue;
-		found.push({ code, name: display_name_for(code) });
+		found.push({ code, name: display_name_for(code, display_locale) });
 	}
 	found.sort((a, b) => a.code.localeCompare(b.code));
 	return found;
@@ -74,6 +76,14 @@ export async function activate_locales_in_system(locale_codes: string[]): Promis
 		}
 		cfg.active_locales = [...new Set([...cfg.active_locales, code])];
 		activated.push(code);
+	}
+
+	try {
+		const { format_sync_actions, run_locale_table_sync } = await import("./locale_tables/run");
+		const { results } = await run_locale_table_sync();
+		for (const result of results) for (const action of format_sync_actions(result.actions)) console.log(`   ✓ ${action}`);
+	} catch (error) {
+		return { ok: false, activated: [], error: `Could not synchronize locale tables: ${error instanceof Error ? error.message : String(error)}` };
 	}
 
 	write_supported_locales(cfg);

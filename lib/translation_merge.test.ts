@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 
-import { extract_untranslated, sync_lang_to_en } from "./translation_merge";
+import { extract_untranslated, sync_target_to_source } from "./translation_merge";
 
 test("extract_untranslated sends only values marked missing", () => {
 	const english = {
@@ -10,7 +10,7 @@ test("extract_untranslated sends only values marked missing", () => {
 			translated: "Save",
 		},
 	};
-	const locale = sync_lang_to_en(english, {
+	const locale = sync_target_to_source(english, {
 		labels: {
 			missing: "::missing:: Missing value",
 			intentionally_english: "Serial number",
@@ -20,5 +20,13 @@ test("extract_untranslated sends only values marked missing", () => {
 
 	expect(extract_untranslated(english, locale)).toEqual({
 		labels: { missing: "Missing value" },
+	});
+});
+
+test("a fresh locale marks every English leaf as missing", () => {
+	const english = { actions: { save: "Save", cancel: "Cancel {count}" } };
+
+	expect(sync_target_to_source(english, {}, false)).toEqual({
+		actions: { save: "::missing:: Save", cancel: "::missing:: Cancel {count}" },
 	});
 });

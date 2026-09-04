@@ -1,15 +1,17 @@
 #!/usr/bin/env bun
 /** Install a locale from a single validated locales-archive/{locale}.json bundle. */
 
+import { default_locale } from "$config/supported_locales";
 import { read_supported_locales, write_supported_locales } from "$reeman/locales/config";
 import { normalize_locale } from "$lib/locale";
 import { notify_server_reload } from "$lib/server_notify";
 
 import { install_archived_translation_bundle, list_archived_translation_bundles } from "./translation_bundle";
 
+/** Archived locales installable from disk. The default locale's archive (if any) is the current English snapshot, never something to install. */
 export async function list_archived_locales(project_dir: string = process.cwd()): Promise<string[]> {
 	const bundles = await list_archived_translation_bundles(project_dir);
-	return bundles.map((bundle) => bundle.code);
+	return bundles.filter((bundle) => bundle.code !== default_locale).map((bundle) => bundle.code);
 }
 
 export interface ArchivedLocaleOption {
@@ -19,24 +21,26 @@ export interface ArchivedLocaleOption {
 	is_current: boolean;
 }
 
-function display_name_for(code: string): string {
+/** Display-only name for a BCP-47 code via Intl, falling back to the bare code.
+ * Not persisted - the install write uses this same helper with its default "en". */
+function display_name_for(code: string, display_locale: string = "en"): string {
 	try {
 		const [language, region] = code.split("-");
 		const tag = region ? `${language}-${region.toUpperCase()}` : language!;
-		return new Intl.DisplayNames(["en"], { type: "language" }).of(tag) || code;
+		return new Intl.DisplayNames([display_locale], { type: "language" }).of(tag) || code;
 	} catch {
 		return code;
 	}
 }
 
-export async function list_installable_archived_locales(project_dir: string = process.cwd()): Promise<ArchivedLocaleOption[]> {
+export async function list_installable_archived_locales(project_dir: string = process.cwd(), display_locale: string = "en"): Promise<ArchivedLocaleOption[]> {
 	const cfg = read_supported_locales();
 	const bundles = await list_archived_translation_bundles(project_dir);
 	return bundles
 		.filter((bundle) => !cfg.locales.includes(bundle.code))
 		.map((bundle) => ({
 			code: bundle.code,
-			name: display_name_for(bundle.code),
+			name: display_name_for(bundle.code, display_locale),
 			file_count: bundle.file_count,
 			is_current: bundle.is_current,
 		}));
@@ -62,7 +66,7 @@ export async function install_locale_from_archive(locale_code: string, options: 
 
 	try {
 		const bundle = await install_archived_translation_bundle(code);
-		console.log(`Restored ${Object.keys(bundle.files).length} translation file(s) from ${code}.json.`);
+		console.log(`Restored ${Object.keys(bundle.routes).length} translation route(s) from ${code}.json.`);
 	} catch (error) {
 		console.error(`Error: Could not install archived locale "${code}": ${error instanceof Error ? error.message : String(error)}`);
 		return false;

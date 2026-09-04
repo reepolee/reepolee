@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
-import { DEV_CLIENT_ROUTES, handle_dev_client_request, inject_inspector, inject_issue_reporter, inject_live_reload, __set_client_script, __set_inspector_script, __set_issue_reporter_script } from "./livereload";
+import type { WebSocketData } from "./livereload";
+import { clients, DEV_CLIENT_ROUTES, handle_dev_client_request, inject_inspector, inject_issue_reporter, inject_live_reload, notify_clients, set_reload_broadcast, __set_client_script, __set_inspector_script, __set_issue_reporter_script } from "./livereload";
 
 describe("dev client script endpoint", () => {
 	test("serves the livereload client with a JS content type and no-store", async () => {
@@ -33,6 +34,31 @@ describe("dev client script endpoint", () => {
 	test("returns null for non-endpoint paths", async () => {
 		expect(await handle_dev_client_request(new URL("/", "http://localhost"))).toBeNull();
 		expect(await handle_dev_client_request(new URL("/static/app.js", "http://localhost"))).toBeNull();
+	});
+});
+
+describe("reload broadcast gate", () => {
+	test("notify_clients sends nothing while the broadcast is disabled for this process", async () => {
+		const sent: string[] = [];
+		const fake_ws = {
+			readyState: WebSocket.OPEN,
+			send: (message: string) => { sent.push(message); },
+		} as unknown as Bun.ServerWebSocket<WebSocketData>;
+		clients.add(fake_ws);
+		set_reload_broadcast(true);
+		try {
+			notify_clients();
+			expect(sent).toHaveLength(1);
+			expect(JSON.parse(sent[0]!)).toEqual({ type: "reload" });
+
+			sent.length = 0;
+			set_reload_broadcast(false);
+			notify_clients();
+			expect(sent).toHaveLength(0);
+		} finally {
+			set_reload_broadcast(true);
+			clients.delete(fake_ws);
+		}
 	});
 });
 

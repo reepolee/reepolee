@@ -5,9 +5,13 @@
 	the busy banner so a finished generation with pending translations is visible
 	rather than looking complete.
 -->
-<div id="reeman-error-banner" hidden role="alert" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-[min(90vw,70ch)] rounded-md border border-brand bg-brand/10 px-4 py-3 text-sm shadow-lg">
+<div id="reeman-error-banner" hidden role="alert" class="mx-4 mt-4 rounded-md border border-brand bg-brand/10 px-4 py-3 text-sm shadow-lg">
 	<div class="font-semibold text-brand">Reeman action failed</div>
 	<div id="reeman-error-text" class="mt-1 whitespace-pre-wrap break-words"></div>
+	<details id="reeman-error-details" class="mt-2" hidden>
+		<summary class="cursor-pointer text-xs font-semibold text-brand">Details</summary>
+		<pre id="reeman-error-output" class="mt-2 max-h-64 overflow-auto whitespace-pre-wrap break-words rounded bg-surface-raised p-2 text-xs text-text-primary"></pre>
+	</details>
 	<div class="mt-2 flex items-center gap-3 text-xs">
 		<a href="/logs" class="font-semibold text-brand underline">View run log</a>
 		<button id="reeman-error-dismiss" type="button" class="text-text-secondary underline">Dismiss</button>
@@ -24,8 +28,10 @@
 		const text = document.getElementById("translating-text");
 		const error_banner = document.getElementById("reeman-error-banner");
 		const error_text = document.getElementById("reeman-error-text");
+		const error_details = document.getElementById("reeman-error-details");
+		const error_output = document.getElementById("reeman-error-output");
 		const error_dismiss = document.getElementById("reeman-error-dismiss");
-		if (!strip || !text || !error_banner || !error_text || !error_dismiss) return;
+		if (!strip || !text || !error_banner || !error_text || !error_details || !error_output || !error_dismiss) return;
 
 		let dismissed_error_id = "";
 		let current_error_id = "";
@@ -39,6 +45,9 @@
 			if (!error || !error.id || error.id === dismissed_error_id) return;
 			current_error_id = error.id;
 			error_text.textContent = `${error.action}${error.target ? ` (${error.target})` : ""}: ${error.message}`;
+			const output = typeof error.output === "string" ? error.output.trim() : "";
+			error_output.textContent = output;
+			error_details.hidden = output.length === 0;
 			error_banner.hidden = false;
 		};
 		let last_count = 0;

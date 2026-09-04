@@ -7,9 +7,9 @@ import { default_locale, locales } from "$config/supported_locales";
 import { format_bcp47, normalize_locale } from "$lib/locale";
 import { notify_server_reload } from "$lib/server_notify";
 import { get_dotted, read_all_translation_rows, read_namespace_file, upsert_file_translation, write_namespace_file } from "$lib/translation_files";
+import { apply_translations, extract_untranslated, sync_target_to_source } from "$lib/translation_merge";
 
-import { chat_query } from "./ai-provider";
-import { sync_all_namespaces } from "./translate_namespace";
+import { apply_route_memory, apply_translation_memory, table_for_translation_namespace } from "./translation_memory";
 import { translate_json } from "./translator";
 
 // ---------------------------------------------------------------------------
@@ -73,7 +73,9 @@ export async function add_seeded_locale(locale_code: string): Promise<boolean> {
 	console.log(`📝 Step 3: Creating locale tables for ${code}...`);
 	try {
 		const { format_sync_actions, run_locale_table_sync } = await import("./locale_tables/run");
-		const { results } = await run_locale_table_sync();
+		// This process imported supported_locales before writing the new code.
+		// Pass the pending list explicitly so the new clone tables are included.
+		const { results } = await run_locale_table_sync({ locale_codes: [...locales, locale_code] });
 		let changes = 0;
 		for (const result of results) {
 			const descriptions = format_sync_actions(result.actions);
@@ -113,7 +115,7 @@ export async function add_locale_to_system(locale_code: string, options: AddLoca
 		return false;
 	}
 
-	const locale_name = await get_language_name_ai(locale_code);
+	const locale_name = get_locale_display_name(locale_code);
 
 	console.log(`🚀 Adding new language: ${locale_code} (${locale_name})`);
 	console.log(`   Translate: ${translate ? "YES (AI)" : "NO"}\n`);
@@ -135,35 +137,38 @@ export async function add_locale_to_system(locale_code: string, options: AddLoca
 	writeFileSync(config_path, config_content, "utf-8");
 	console.log(`   ✓ Updated supported_locales.ts\n`);
 
-	// Step 2: Create translation files for the new language
-	console.log("📝 Step 2: Reading English translation files for the new language...");
+	// Step 2: Create translation files from default-locale source plus archive memory.
+	console.log("📝 Step 2: Reading default-locale translation files for the new language...");
 
 	const translation_rows = await read_all_translation_rows();
 	const english_rows = translation_rows.filter((row) => row.locale === default_locale);
 	const namespaces = [...new Set(english_rows.map((row) => row.namespace))].sort();
 
-	console.log(`   Found ${namespaces.length} namespace(s) with English translations`);
+	console.log(`   Found ${namespaces.length} namespace(s) with default-locale translations`);
 
 	for (const namespace of namespaces) {
 		try {
-			const en_content = await read_namespace_file(namespace, default_locale);
-			if (Object.keys(en_content).length === 0) continue;
+			const source_content = await read_namespace_file(namespace, default_locale);
+			if (Object.keys(source_content).length === 0) continue;
 
-			let translated_content: Record<string, any>;
+			let translated_content = sync_target_to_source(source_content, {}, false);
+			translated_content = await apply_route_memory(namespace, locale_code, source_content, translated_content);
+			const table_name = await table_for_translation_namespace(namespace);
+			if (table_name) translated_content = await apply_translation_memory(table_name, locale_code, source_content, translated_content);
 
-			if (translate) {
+			const untranslated = extract_untranslated(source_content, translated_content);
+			if (translate && untranslated !== null) {
 				try {
 					console.log(`   🌍 Translating ${namespace || "(global)"} to ${locale_name}...`);
-					translated_content = await translate_json(en_content, locale_name, { source_lang: "English" });
+					const translated = await translate_json(untranslated, locale_code, { source_lang: default_locale });
+					translated_content = apply_translations(translated_content, translated);
 					console.log(`   ✓ Translated ${namespace || "(global)"}`);
 				} catch (err) {
 					console.error(`   ❌ Translation failed for ${namespace}:`, err);
-					console.log(`   ⚠ Using English as fallback`);
-					translated_content = en_content;
+					console.log(`   ⚠ Marked as missing for a later translation attempt`);
 				}
-			} else {
-				translated_content = en_content;
-				console.log(`   ✓ Copied English for ${namespace || "(global)"}`);
+			} else if (!translate) {
+				console.log(`   ✓ Marked translations as missing for ${namespace || "(global)"}`);
 			}
 
 			await write_namespace_file(namespace, locale_code, translated_content);
@@ -207,13 +212,14 @@ export async function add_locale_to_system(locale_code: string, options: AddLoca
 		console.error(`   ❌ Failed to update locale_names:`, err);
 	}
 
-	// Step 4: Sync translations
-	console.log(`\n📝 Step 4: Syncing translations to ${locale_code}...`);
+	// Step 4: Reload routes after all new locale files have been written. The
+	// target locale has already consumed its archive memory above, so do not
+	// run a global sync that could translate unrelated locales.
+	console.log(`\n📝 Step 4: Reloading routes for ${locale_code}...`);
 	try {
-		await sync_all_namespaces();
 		await notify_server_reload();
 	} catch (err) {
-		console.error("Error syncing translations:", err instanceof Error ? err.message : err);
+		console.error("Error reloading routes:", err instanceof Error ? err.message : err);
 		return false;
 	}
 
@@ -223,7 +229,7 @@ export async function add_locale_to_system(locale_code: string, options: AddLoca
 	console.log(`\n📝 Step 5: Creating locale tables for ${locale_code}...`);
 	try {
 		const { format_sync_actions, run_locale_table_sync } = await import("./locale_tables/run");
-		const { results } = await run_locale_table_sync();
+		const { results } = await run_locale_table_sync({ locale_codes: [...locales, locale_code] });
 		let changes = 0;
 		for (const result of results) {
 			const descriptions = format_sync_actions(result.actions);
@@ -242,31 +248,27 @@ export async function add_locale_to_system(locale_code: string, options: AddLoca
 // AI helpers
 // ---------------------------------------------------------------------------
 
-async function get_language_name_ai(code: string): Promise<string> {
-	const system_prompt = "You are a language expert. Return ONLY the English display name for the given BCP 47 locale code, including the region when it disambiguates (e.g. 'German (Austria)' for de-at, 'English' for en-us). No explanation, no quotes, just the name.";
-	const user_prompt = `What is the English display name of the locale with code "${code}"?`;
-
-	const content = await chat_query(system_prompt, user_prompt, "Language Name Resolver");
-	const sanitized = content.trim().replace(/^"|"$/g, "").replace(/^'|'$/g, "");
-	return sanitized || format_bcp47(code);
+export function get_locale_display_name(code: string): string {
+	try {
+		return new Intl.DisplayNames(["en"], { type: "language" }).of(format_bcp47(code)) || format_bcp47(code);
+	} catch {
+		return format_bcp47(code);
+	}
 }
 
 async function get_language_name_in_language(target_code: string, translate_to_lang: string): Promise<string> {
-	const target_name = await get_language_name_ai(target_code);
-	const system_prompt = `You are a translator. Translate the given language name to ${translate_to_lang}. Return ONLY the translation, no quotes, no explanation.`;
-	const user_prompt = `Translate "${target_name}" to ${translate_to_lang}`;
-
-	const content = await chat_query(system_prompt, user_prompt, "Language Name Translator");
-	return content || target_name;
+	const target_name = get_locale_display_name(target_code);
+	return await translate_language_label(target_name, translate_to_lang);
 }
 
 async function get_language_name_to_in_language(target_code: string, translate_to_lang: string): Promise<string> {
-	const target_name = await get_language_name_ai(target_code);
-	const system_prompt = `You are a translator. Translate the phrase "to ${target_name}" (meaning: switch TO this language) to ${translate_to_lang}. Return ONLY the translation of the phrase, no quotes, no explanation. Use appropriate grammatical case for "to" in your language.`;
-	const user_prompt = `Translate "to ${target_name}" to ${translate_to_lang} (use appropriate grammatical case)`;
+	const label = `to ${get_locale_display_name(target_code)}`;
+	return await translate_language_label(label, translate_to_lang);
+}
 
-	const content = await chat_query(system_prompt, user_prompt, "Language Name Translator");
-	return content || target_name;
+async function translate_language_label(label: string, locale: string): Promise<string> {
+	const translated = await translate_json({ label }, locale, { source_lang: default_locale });
+	return typeof translated?.label === "string" && translated.label ? translated.label : label;
 }
 
 export function add_locale_name_to_config(config_content: string, locale_code: string, locale_name: string): string {
