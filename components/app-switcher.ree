@@ -1,0 +1,52 @@
+{#if props.is_dev && props.dev_apps && props.dev_apps.length > 0}
+	<div data-dev-app-switcher hidden class="ml-auto flex items-center gap-1" aria-label="{_ ui.app_switcher }">
+		{#each props.dev_apps as app}
+			{#if user_has_module(props.user, app.module)}
+				<a
+					href="{= app.url }"
+					class="cursor-pointer px-2 py-1 text-xs rounded border border-transparent no-underline hover:border-neutral-300 hover:bg-neutral-100 {= app.current ? 'bg-neutral-100 ring-1 ring-brand' : '' }"
+					aria-label="{= props.translations?.ui?.apps?.[app.name] ?? `{${app.name}}` }"
+					title="{= props.translations?.ui?.apps?.[app.name] ?? `{${app.name}}` }"
+					{#if app.current}aria-current="page"{/if}
+				>
+					<ree-icon name="{= app.icon }" class="size-4 text-brand"></ree-icon>
+				</a>
+			{/if}
+		{/each}
+	</div>
+	<script>
+		void (async () => {
+			const switcher = document.querySelector("[data-dev-app-switcher]");
+			if (switcher) {
+				const app_links = Array.from(switcher.querySelectorAll("a"));
+				// Dev app links fall back to localhost when no public origin is
+				// configured. On a LAN or HTTPS deployment, use the host and
+				// protocol the page was served from instead of creating a
+				// localhost or mixed-content request.
+				const server_origin = `${location.protocol}//${location.hostname}`;
+				for (const app_link of app_links) {
+					const parsed_url = new URL(app_link.href, location.href);
+					if (parsed_url.hostname === "localhost" && location.hostname !== "localhost") {
+						parsed_url.hostname = location.hostname;
+					}
+					if (location.protocol === "https:") parsed_url.protocol = "https:";
+					app_link.href = parsed_url.href;
+				}
+				const active_apps = await Promise.all(app_links.map(async (app_link) => {
+					if (app_link.getAttribute("aria-current") === "page") return true;
+					const controller = new AbortController();
+					const timeout = setTimeout(() => controller.abort(), 500);
+					try {
+						await fetch(app_link.href, { mode: "no-cors", cache: "no-store", signal: controller.signal });
+						return true;
+					} catch {
+						return false;
+					} finally {
+						clearTimeout(timeout);
+					}
+				}));
+				if (active_apps.filter(Boolean).length > 1) switcher.hidden = false;
+			}
+		})();
+	</script>
+{/if}

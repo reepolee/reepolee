@@ -1,0 +1,63 @@
+{
+	"actions": {
+		"activate_selected": "Activate selected",
+		"add": "Add",
+		"add_locale": "Add locale",
+		"back_to_locales": "Back to locales",
+		"cancel": "Cancel",
+		"do_it": "Do it",
+		"export_english": "Export English JSON",
+		"import": "Import",
+		"remove": "Remove",
+		"remove_selected": "Remove selected",
+		"save": "Save changes",
+		"set_active": "Set active",
+		"set_inactive": "Set inactive",
+		"translate": "Translate via AI",
+		"upload": "Upload",
+		"upload_translation": "Upload translated JSON"
+	},
+	"confirm": {
+		"remove_locale": "Remove this locale? Its translations and content tables will be deleted."
+	},
+	"hints": {
+		"alias": "UI-string serving alias - requests for this locale render the target locale's strings",
+		"locale_code": "BCP 47 locale code to add (e.g. de-at)"
+	},
+	"labels": {
+		"active": "Active",
+		"alias": "Alias",
+		"alias_placeholder": "e.g. de-at",
+		"archived_locales": "Archived locales",
+		"available_locales": "Available seed locales",
+		"code": "Code",
+		"default": "Default",
+		"locale_code": "Locale code",
+		"locales": "Locales",
+		"name": "Name",
+		"name_placeholder": "Display name",
+		"remove": "Remove"
+	},
+	"nav": "Locales",
+	"route_name": "locales",
+	"ui": {
+		"activate_locale_hint": "Already-supported locales - runs their prepared translations and marks them active.",
+		"add_locale_hint": "Adds the locale to config, seeds its translations and clones content tables (generator add-locale).",
+		"archived_locales_hint": "Curated archived translations can be imported into their matching live folders. Imported locales are supported but remain inactive.",
+		"available_locales_hint": "Curated translations already exist on disk for these locales - add one with a single click (added to config only, not made active).",
+		"busy": "Processing — the page will refresh when complete.",
+		"edit_title": "Edit locale",
+		"index_title": "Locales",
+		"locales_description": "Manage config/supported_locales.ts - locale codes, display names, aliases, active list and default.",
+		"locales_manage_hint": "Add a locale to create its translations + content tables, or edit the config below directly.",
+		"locales_title": "Locales",
+		"modifying": "You are about to remove",
+		"no_records": "No locales found in config/supported_locales.ts.",
+		"new_title": "New locale",
+		"records": "locale(s)",
+		"remove_selected_hint": "Removes the selected locales - their translations and content tables are deleted.",
+		"save_hint": "Saves straight to config/supported_locales.ts. Reload routes to apply.",
+		"title": "Locale",
+		"upload_translation_hint": "Upload a translated export bundle. It is validated and added to Archived locales; use Import there to install it."
+	}
+}
