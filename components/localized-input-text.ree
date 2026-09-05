@@ -1,0 +1,92 @@
+{{
+	const field_name = props.attributes.name;
+	const field_label = props.attributes.label ?? field_name;
+	const id_scope = props.attributes["id-scope"] ?? "";
+	const localization = props.attributes.localization ?? {};
+	const default_locale = localization.default_locale;
+	const editor_locales = localization.editor_locales ?? [default_locale];
+	const locale_names = localization.locale_names ?? {};
+	const values = localization.values ?? {};
+	const errors = localization.errors ?? {};
+	const copy_action = localization.copy_action ?? "";
+	const group_id = "localized-" + (id_scope ? id_scope + "-" : "") + field_name;
+	const field_id = (id_scope ? id_scope + "-" : "") + field_name;
+	const preferred_locale = localization.preferred_locale;
+	const error_locale = editor_locales.find((locale) => errors[field_name + "|" + locale]);
+	const selected_locale = error_locale ?? (editor_locales.includes(preferred_locale) ? preferred_locale : default_locale);
+	const tab_rules = editor_locales.map((locale) => {
+		const radio_id = group_id + "-" + locale;
+		return `[data-localized-input="${field_id}"]:has(#${radio_id}:checked) [data-localized-panel][data-locale="${locale}"] { display: grid; }\n` +
+			`[data-localized-input="${field_id}"]:has(#${radio_id}:checked) label[for="${radio_id}"] { color: var(--color-brand); }`;
+	}).join("\n");
+}}
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= field_name }" data-localized-input="{= field_id }">
+	<style>{~ tab_rules }</style>
+
+	{#each editor_locales as locale}
+		<input
+			type="radio"
+			name="{= group_id }"
+			id="{= group_id }-{= locale }"
+			value="{= locale }"
+			{#if selected_locale === locale}checked{/if}
+			class="absolute opacity-0 pointer-events-none"
+		/>
+	{/each}
+
+	<div class="grid">
+		<div class="flex items-center justify-between gap-2">
+			<label class="px-3" for="{= field_id }">{= field_label }</label>
+			{#if editor_locales.length > 1}
+				<div class="inline-flex items-center gap-1" role="tablist">
+					{#each editor_locales as locale}
+						<span class="inline-flex items-center">
+							<label
+								for="{= group_id }-{= locale }"
+								class="cursor-pointer px-2 text-xs leading-none font-semibold text-neutral-500"
+								title="{= locale_names[locale] || format_bcp47(locale) }"
+							>
+								{= format_bcp47(locale) }
+							</label>
+							{#if locale !== default_locale && copy_action}
+								<input
+									type="hidden"
+									name="_copy_from[{= locale }]"
+									value="{= default_locale }"
+								/>
+								<button
+									type="submit"
+									name="_copy_field"
+									value="{= field_name }|{= locale }"
+									formaction="{= copy_action }"
+									formnovalidate
+									title="{_ localization.reset_to_default }"
+									class="as-icon h-auto border-0 bg-transparent px-1 py-0 text-sm leading-none text-neutral-400 hover:text-brand"
+								>
+									×
+								</button>
+							{/if}
+						</span>
+					{/each}
+				</div>
+			{/if}
+		</div>
+
+		{#each editor_locales as locale}
+			{{
+				const is_default = locale === default_locale;
+				const value_key = field_name + "|" + locale;
+				const input_name = is_default ? field_name : "_lv[" + field_name + "][" + locale + "]";
+				const input_id = is_default ? field_id : field_id + "-" + locale;
+			}}
+			<div class="hidden" data-localized-panel data-locale="{= locale }">
+				<input class="w-full max-w-none" type="text" id="{= input_id }" name="{= input_name }" value="{= values[value_key] ?? '' }" />
+				<validation-error class="mt-1" id="error-{= input_id }">{= errors[value_key] ?? '' }</validation-error>
+				{#if !is_default}
+					<input type="hidden" name="_original_{= input_name }" value="{= values[value_key] ?? '' }" />
+				{/if}
+			</div>
+		{/each}
+	</div>
+	<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"><!-- hints.{~ field_name } --></p>
+</field-wrapper>

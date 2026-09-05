@@ -1,0 +1,192 @@
+{#layout("layout")}
+{#with props}
+	<!--
+		This is intentionally a clone of apps/main/examples/index_template/index.ree,
+		not a modification of the original database template. Keep the grid/table
+		shape here when adding database actions so the page remains consistent with
+		the non-DB index example.
+	-->
+	<div class="py-4">
+		<!-- Match the generated index-template toolbar: pagination controls on the
+		     left, page-size and sort in the middle, then database actions and the
+		     shared search/filter control on the right. Unlike the old static count,
+		     these controls are backed by the SQL-file array in index.ts. -->
+		<div class="flex items-center gap-1 justify-between w-full flex-wrap px-4">
+			<div class="pagination-info">
+				{#if first_url}
+					<a href="{~ localized_path(first_url) }" role="button" aria-label="First page" class="as-icon"><ree-icon name="chevrons_left"></ree-icon></a>
+				{:else}
+					<ree-icon name="chevrons_left"></ree-icon>
+				{/if}
+				{#if prev_url}
+					<a href="{~ localized_path(prev_url) }" role="button" aria-label="Previous page" class="as-icon"><ree-icon name="chevron_left"></ree-icon></a>
+				{:else}
+					<ree-icon name="chevron_left"></ree-icon>
+				{/if}
+				{#if total > 0}
+					<div style="width: {= total.toString().length * 3 + 4 }ch; text-align: center">{= offset + 1}-{= Math.min(offset + (limit === 'all' ? total : limit), total) } / {= total }</div>
+				{:else}
+					<div style="width: 9ch; text-align: center">0 / 0</div>
+				{/if}
+				{#if next_url}
+					<a href="{~ localized_path(next_url) }" role="button" aria-label="Next page" class="as-icon"><ree-icon name="chevron_right"></ree-icon></a>
+				{:else}
+					<ree-icon name="chevron_right"></ree-icon>
+				{/if}
+				{#if last_url}
+					<a href="{~ localized_path(last_url) }" role="button" aria-label="Last page" class="as-icon"><ree-icon name="chevrons_right"></ree-icon></a>
+				{:else}
+					<ree-icon name="chevrons_right"></ree-icon>
+				{/if}
+			</div>
+
+			<div class="flex items-center gap-2">
+				<select id="limit" class="w-[20ch]" onchange="navigate_to('limit', this.value)">
+					{#each limit_options as option}
+						<option value="{= option }" {#if option === limit} selected{/if}>
+							{#if option === "all"}{_ selectors.all}{:else}{= option} {_ selectors.per_page}{/if}
+						</option>
+					{/each}
+				</select>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<select id="order_by" class="w-[32ch]" onchange="navigate_to('order_by', this.value)">
+					{#each sort_options as option}
+						<option value="{= option.value }" {#if option.value === order_by} selected{/if}>{= option.field } ({= option.direction })</option>
+					{/each}
+				</select>
+			</div>
+
+			<div class="flex items-center gap-2 flex-wrap">
+				<form method="POST" action="{~ localized_path('/check-compliance') }">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<input type="hidden" name="return_to" value="/logs" />
+					<button type="submit" class="as-button-primary" {#if busy}disabled{/if}>+ {_ actions.check_compliance }</button>
+				</form>
+				<button type="button" command="show-modal" commandfor="data-to-sql-dialog" class="as-button-primary" {#if busy}disabled{/if}>+ {_ actions.data_to_sql }</button>
+				<form method="POST" action="{~ localized_path('/backup-database') }">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<button type="submit" class="as-button-secondary" {#if busy}disabled{/if}>{_ actions.backup_sql}</button>
+				</form>
+			</div>
+
+			<!-- Search is intentionally provided by the shared control. SQL files do
+			     not have meaningful table filters, so no fake filter definitions are
+			     passed here. -->
+			<ree-filters action-url="/database" query="{= query }" limit="{= limit }" order_by="{= order_by }"></ree-filters>
+		</div>
+
+		{#if form_error}
+			<app-banner type="red">{= form_error}</app-banner>
+		{/if}
+		{#if busy}
+			<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
+		{/if}
+		{#if props.broken_views.length > 0}
+			<app-banner type="yellow">
+				<div class="flex flex-col gap-1.5">
+					<div class="flex flex-wrap items-center gap-2">
+						<span class="font-semibold">{_ ui.broken_views_title}</span>
+						<span class="rounded-full bg-black/10 px-2 py-0.5 text-xs font-bold">{= props.broken_views.length }</span>
+					</div>
+					<p class="text-sm font-normal">{_ ui.broken_views_hint}</p>
+				</div>
+			</app-banner>
+		{/if}
+
+		<!-- This is the examples/index_template grid pattern: one header row,
+		     subgrid rows, consistent columns, hover feedback, and row actions. -->
+		{#if sql_files.length === 0}
+			<p class="p-4">{_ ui.no_sql_files}</p>
+		{:else}
+			<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-4 overflow-x-auto" style="grid-template-columns: minmax(20ch, 1fr) minmax(20ch, 1fr) 12ch 16ch 18ch max-content">
+				<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+					<div>{_ labels.folder }</div>
+					<div>{_ labels.sql_file }</div>
+					<div>{_ labels.file_type }</div>
+					<div>{_ labels.last_updated }</div>
+					<div>{_ actions.open_in_studio }</div>
+					<div>{_ actions.run_sql }</div>
+				</div>
+
+				{#each sql_files as file, index}
+					<div class="col-span-full *:py-2 grid grid-cols-subgrid border-b border-b-neutral-200 *:px-2 hover:bg-primary hover:text-white transition-colors">
+						<div class="font-mono text-sm">{= file.folder }</div>
+						<div class="font-mono text-sm">
+							{#if file.can_open_in_studio}
+								<a href="{~ localized_path(file.studio_url) }" class="hover:underline" title="{_ actions.open_in_studio }">{= file.name }</a>
+							{:else}
+								{= file.name }
+							{/if}
+						</div>
+						<div><span class="rounded bg-slate-200 px-2 py-1 text-xs font-semibold text-slate-700">SQL</span></div>
+						<div class="text-sm">{~ js_datetime_to_locale_string(file.last_updated) }</div>
+						<div>
+							{#if file.can_open_in_studio}
+								<a href="{~ localized_path(file.studio_url) }" class="as-button-secondary py-1" title="{_ actions.open_in_studio }">{_ actions.open_in_studio }</a>
+							{/if}
+						</div>
+						<div><button type="button" command="show-modal" commandfor="run-sql-dialog-{= index }" class="as-button-secondary py-1" {#if busy}disabled{/if}>{_ actions.run_sql }</button></div>
+					</div>
+
+					{#if file.show_folder_summary}
+						<div class="col-span-full grid grid-cols-subgrid bg-surface-sunken text-text-secondary *:px-2 *:py-1.5 border-b border-b-neutral-200">
+							<div class="col-span-full">{_ labels.folder_summary }: {= file.folder || "/" } - {= file.folder_count } {_ labels.file_count }</div>
+						</div>
+					{/if}
+
+					<dialog id="run-sql-dialog-{= index }" class="p-0 rounded-xl shadow-2xl w-100">
+						<form method="POST" action="{~ localized_path('/run-sql') }" class="p-6">
+							<h2 class="text-lg font-semibold">{_ actions.run_sql}</h2>
+							<p class="text-slate-600 mt-2">{_ confirm.run_sql}</p>
+							<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+							<input type="hidden" name="return_to" value="/database" />
+							<input type="hidden" name="path" value="{= file.path }" />
+							<div class="mt-6 flex justify-end gap-2">
+								<button type="button" class="as-button-secondary" commandfor="run-sql-dialog-{= index }" command="close">{_ actions.cancel}</button>
+								<button type="submit" class="as-button-danger">{_ actions.do_it}</button>
+							</div>
+						</form>
+					</dialog>
+				{/each}
+			</div>
+		{/if}
+
+		<dialog id="data-to-sql-dialog" class="p-0 rounded-xl shadow-2xl w-[min(95vw,42rem)]">
+			<form id="import-to-sql-form" method="POST" action="{~ localized_path('/data-to-sql') }" enctype="multipart/form-data" class="p-6 grid gap-4" data-inspect-url="{~ localized_path('/inspect-import') }" data-inspecting-label="{_ ui.inspecting_file}" data-rows-label="{_ labels.rows}" data-columns-label="{_ labels.columns}" data-empty-label="{_ ui.empty_sheet}" data-inspection-error="{_ ui.inspection_error}">
+				<h2 class="text-lg font-semibold">{_ actions.data_to_sql}</h2>
+				<p class="text-sm text-text-secondary">{_ ui.json_upload_hint}</p>
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="return_to" value="/database" />
+				<label class="grid gap-1">
+					<span class="font-medium">{_ labels.import_file}</span>
+					<input type="file" name="json_file" accept=".json,.xls,.xlsx,application/json,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required />
+				</label>
+				<p id="import-inspection-status" class="text-sm text-text-secondary" aria-live="polite"></p>
+				<div id="json-import-options" class="grid grid-cols-2 gap-3" hidden>
+					<label class="grid gap-1">
+						<span class="font-medium">{_ labels.table_name}</span>
+						<input name="table_name" pattern="[a-z][a-z0-9_]*" title="{_ hints.slug_safe_table }" />
+					</label>
+					<label class="grid gap-1">
+						<span class="font-medium">{_ labels.slug}</span>
+						<input name="slug" pattern="[a-z][a-z0-9\-]*" title="{_ hints.slug }" />
+					</label>
+				</div>
+				<fieldset id="spreadsheet-import-options" class="grid gap-3" hidden>
+					<legend class="font-medium mb-1">{_ labels.sheets}</legend>
+					<p class="text-sm text-text-secondary">{_ ui.sheet_selection_hint}</p>
+					<div id="spreadsheet-sheet-list" class="grid gap-2"></div>
+				</fieldset>
+				<input type="hidden" name="sheet_selections" value="[]" />
+				<div class="flex justify-end gap-2 mt-2">
+					<button type="button" class="as-button-secondary" commandfor="data-to-sql-dialog" command="close">{_ actions.cancel}</button>
+					<button type="submit" class="as-button-primary" disabled>{_ actions.data_to_sql}</button>
+				</div>
+			</form>
+		</dialog>
+		<script src="/dialog-confirm.js?v={= version}"></script>
+		<script src="/import-to-sql.js?v={= version}" defer></script>
+	</div>
+{/with}
