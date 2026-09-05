@@ -42,6 +42,9 @@ const other_ips_flag = Bun.argv.includes("--other-ips");
 // Default: --app when no flags given (backward compat)
 const no_flags = !run_app_flag && !run_reeman && !run_reeqa && !run_worker_flag;
 const should_run_app = run_app_flag || no_flags;
+const app_process_count = [should_run_app, run_reeman, run_reeqa].filter(Boolean).length;
+const dev_app_switcher_enabled = app_process_count > 1;
+const child_env = { ...Bun.env, REEPOLEE_DEV_APP_SWITCHER: dev_app_switcher_enabled ? "true" : "false" };
 
 // The worker is opt-in: it runs only when --worker is passed, never implicitly
 // alongside --app.
@@ -80,20 +83,20 @@ function spawn_app(): Bun.Subprocess<"ignore", "pipe", "pipe"> {
 	const args = ["bun", "--hot", "--no-clear-screen", join(APPS_DIR, "main", "server.ts"), "--dev"];
 	if (is_agent_mode) args.push("--agent");
 	if (other_ips_flag) args.push("--other-ips");
-	return Bun.spawn(args, { stdout: "pipe", stderr: "pipe" });
+	return Bun.spawn(args, { stdout: "pipe", stderr: "pipe", env: child_env });
 }
 
 function spawn_reeman(): Bun.Subprocess<"ignore", "pipe", "pipe"> {
 	const args = ["bun", "--hot", "--no-clear-screen", join(APPS_DIR, "reeman", "server.ts"), "--dev"];
 	if (is_agent_mode) args.push("--agent");
 	if (other_ips_flag) args.push("--other-ips");
-	return Bun.spawn(args, { stdout: "pipe", stderr: "pipe" });
+	return Bun.spawn(args, { stdout: "pipe", stderr: "pipe", env: child_env });
 }
 
 function spawn_reeqa(): Bun.Subprocess<"ignore", "pipe", "pipe"> {
 	const args = ["bun", "--no-clear-screen", join(APPS_DIR, "reeqa", "server.ts"), "--dev"];
 	if (other_ips_flag) args.push("--other-ips");
-	return Bun.spawn(args, { stdout: "pipe", stderr: "pipe" });
+	return Bun.spawn(args, { stdout: "pipe", stderr: "pipe", env: child_env });
 }
 
 function spawn_worker(): Bun.Subprocess<"ignore", "pipe", "pipe"> {

@@ -492,7 +492,8 @@
 					popovertarget="studio-domain-help"
 					popovertargetaction="hide"
 					aria-label="Close"
-				 class="as-icon">
+					class="as-icon"
+				>
 					×
 				</button>
 			</div>

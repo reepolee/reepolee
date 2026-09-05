@@ -200,6 +200,7 @@ describe("layout presentation-boundary metadata", () => {
 		const switcher_data = {
 			...render_data,
 			is_dev: true,
+			show_app_switcher: true,
 			app_name: "main",
 			dev_apps: dev_app_links("main", { REEQA_PORT: "2340" }),
 			user: { modules_tags: "system" },
@@ -235,6 +236,7 @@ describe("layout presentation-boundary metadata", () => {
 		const switcher_data = {
 			...render_data,
 			is_dev: true,
+			show_app_switcher: true,
 			app_name: "main",
 			dev_apps: dev_app_links("main", { REEQA_PORT: "2340" }),
 			translations: {
@@ -247,6 +249,23 @@ describe("layout presentation-boundary metadata", () => {
 		expect(html).toContain('aria-label="Apps"');
 		expect(html).not.toContain('href="http://localhost:2339/"');
 		expect(html).not.toContain('href="http://localhost:2340/"');
+	});
+
+	test("does not render the app switcher for a single development app", async () => {
+		const switcher_data = {
+			...render_data,
+			is_dev: true,
+			show_app_switcher: false,
+			dev_apps: dev_app_links("main", { REEQA_PORT: "2340" }),
+			user: { modules_tags: "system" },
+			translations: {
+				ui: { title: "Izdelki", app_switcher: "Apps", apps: { main: "Main", reeman: "Reeman", reeqa: "ReeQA" } },
+				nav: {},
+			},
+		};
+		const html = await engine.render(shared_layout_template, { ...switcher_data, helpers: create_template_helpers(switcher_data) });
+
+		expect(html).not.toContain('aria-label="Apps"');
 	});
 
 	test("does not render the app switcher in production", async () => {

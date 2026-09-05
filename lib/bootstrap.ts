@@ -179,6 +179,7 @@ export async function bootstrap(opts: BootstrapOptions): Promise<void> {
 		site_name: `reepolee App v${version}`,
 		year: Temporal.Now.zonedDateTimeISO().year,
 		is_dev,
+		show_app_switcher: is_dev && Bun.env.REEPOLEE_DEV_APP_SWITCHER === "true",
 		app_name: opts.app_name,
 		dev_apps: is_dev ? dev_app_links(opts.app_name) : [],
 		nav_groups,

@@ -1,4 +1,4 @@
-{#if props.is_dev && props.dev_apps && props.dev_apps.length > 0}
+{#if props.show_app_switcher && props.dev_apps && props.dev_apps.length > 0}
 	<div class="ml-auto flex items-center gap-1" aria-label="{_ ui.app_switcher }">
 		{#each props.dev_apps as app}
 			{#if user_has_module(props.user, app.module)}
