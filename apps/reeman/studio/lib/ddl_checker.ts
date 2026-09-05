@@ -49,7 +49,7 @@ export interface DdlIssue {
 export interface DdlCheckReport {
 	ok: boolean;
 	skipped: boolean;
-	/** Views that loaded, were queried successfully, and expose a string-typed `display`. */
+	/** Views that loaded and were queried successfully. */
 	views_checked: string[];
 	issues: DdlIssue[];
 }
@@ -312,7 +312,7 @@ export function format_check_report(report: DdlCheckReport): string {
 	if (report.skipped) return report.issues[0]?.message ?? "Check skipped.";
 	if (report.ok) {
 		const view_count = report.views_checked.length;
-		return view_count > 0 ? `DDL valid. ${view_count} view(s) queried, all expose display.` : "DDL valid.";
+		return view_count > 0 ? `DDL valid. ${view_count} view(s) queried.` : "DDL valid.";
 	}
 	const lines = report.issues.map((issue) => (issue.object_name ? `${issue.object_name}: ${issue.message}` : issue.message));
 	return lines.join(" | ");

@@ -22,7 +22,12 @@ function init_theme_toggle() {
 	if (!toggle) return;
 
 	// Correct icon and logo on page load (handles auto-detect case)
-	toggle.textContent = is_dark() ? "☀️" : "🌙";
+	var theme_icon = toggle.querySelector("[data-theme-icon]");
+	var theme_label = toggle.querySelector("[data-theme-label]");
+	var dark_label = toggle.dataset.darkLabel || "Dark mode";
+	var light_label = toggle.dataset.lightLabel || "Light mode";
+	if (theme_icon) theme_icon.textContent = is_dark() ? "🌙" : "☀️";
+	if (theme_label) theme_label.textContent = is_dark() ? light_label : dark_label;
 	var logo = document.querySelector("nav img[alt='Reepolee logo']");
 	if (logo) {
 		logo.src = is_dark() ? "/logo-light.svg" : "/logo-dark.svg";
@@ -50,7 +55,8 @@ function init_theme_toggle() {
 		document.cookie = `theme=${currently_dark ? "light" : "dark"}; path=/; max-age=31536000; SameSite=Lax`;
 
 		// Update button icon
-		this.textContent = currently_dark ? "🌙" : "☀️";
+		if (theme_icon) theme_icon.textContent = currently_dark ? "☀️" : "🌙";
+		if (theme_label) theme_label.textContent = currently_dark ? dark_label : light_label;
 
 		// Remove transition class after animation completes
 		setTimeout(() => {

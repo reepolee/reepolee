@@ -52,12 +52,12 @@
 					</span>
 					<div class="flex items-center gap-8">
 						<button type="button" onclick="clear_all()" class="text-brand hover:underline cursor-pointer">{_ ui.clear_all }</button>
-						<button type="button" onclick="close_panel()" class="px-2 py-2 text-xl text-neutral-500 hover:text-neutral-800 cursor-pointer leading-none">✕</button>
+						<button type="button" onclick="close_panel()" class="as-icon px-2 py-2 text-xl text-neutral-500 hover:text-neutral-800 leading-none">✕</button>
 					</div>
 				</div>
 				<div data-sidebar-search class="flex items-center border rounded overflow-hidden shadow-sm invisible">
 					<input type="search" name="query" placeholder="{_ search.search_term }" value="{= props.query || '' }" class="border-0 outline-none px-3 py-1.5 min-w-[15ch] max-w-[30ch]" />
-					<button type="button" class="w-9 py-1.5 border-l text-neutral-400 cursor-default flex items-center justify-center">
+					<button type="button" class="as-icon w-9 py-1.5 border-l text-neutral-400 cursor-default">
 						<span class="block w-4 h-4">
 							<ree-icon name="search"></ree-icon>
 						</span>

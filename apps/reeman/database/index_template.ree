@@ -14,12 +14,12 @@
 		<div class="flex items-center gap-1 justify-between w-full flex-wrap px-4">
 			<div class="pagination-info">
 				{#if first_url}
-					<a href="{~ localized_path(first_url) }" role="button" aria-label="First page" class="as-button"><ree-icon name="chevrons_left"></ree-icon></a>
+					<a href="{~ localized_path(first_url) }" role="button" aria-label="First page" class="as-icon"><ree-icon name="chevrons_left"></ree-icon></a>
 				{:else}
 					<ree-icon name="chevrons_left"></ree-icon>
 				{/if}
 				{#if prev_url}
-					<a href="{~ localized_path(prev_url) }" role="button" aria-label="Previous page" class="as-button"><ree-icon name="chevron_left"></ree-icon></a>
+					<a href="{~ localized_path(prev_url) }" role="button" aria-label="Previous page" class="as-icon"><ree-icon name="chevron_left"></ree-icon></a>
 				{:else}
 					<ree-icon name="chevron_left"></ree-icon>
 				{/if}
@@ -29,12 +29,12 @@
 					<div style="width: 9ch; text-align: center">0 / 0</div>
 				{/if}
 				{#if next_url}
-					<a href="{~ localized_path(next_url) }" role="button" aria-label="Next page" class="as-button"><ree-icon name="chevron_right"></ree-icon></a>
+					<a href="{~ localized_path(next_url) }" role="button" aria-label="Next page" class="as-icon"><ree-icon name="chevron_right"></ree-icon></a>
 				{:else}
 					<ree-icon name="chevron_right"></ree-icon>
 				{/if}
 				{#if last_url}
-					<a href="{~ localized_path(last_url) }" role="button" aria-label="Last page" class="as-button"><ree-icon name="chevrons_right"></ree-icon></a>
+					<a href="{~ localized_path(last_url) }" role="button" aria-label="Last page" class="as-icon"><ree-icon name="chevrons_right"></ree-icon></a>
 				{:else}
 					<ree-icon name="chevrons_right"></ree-icon>
 				{/if}

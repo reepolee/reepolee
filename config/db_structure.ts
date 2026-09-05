@@ -110,6 +110,13 @@ export const IMAGE_SUFFIXES = ["_image"] as const satisfies readonly string[];
 export const FILE_SUFFIXES = ["_file"] as const satisfies readonly string[];
 
 /**
+ * Description fields hold freeform copy and render as textareas in generated
+ * CRUD forms, regardless of their short text SQL storage type. The unprefixed
+ * `description` name is covered because it also ends with "description".
+ */
+export const TEXTAREA_SUFFIXES = ["description"] as const satisfies readonly string[];
+
+/**
  * Fields excluded from index/list schemas
  * those fields can be supplied by the SQL select but will not get a column on index table to be displayed by default
  */

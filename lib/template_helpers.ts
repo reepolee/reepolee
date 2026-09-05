@@ -16,6 +16,7 @@ import { display_currency as _display_currency, display_percent as _display_perc
 import { format_bcp47, format_og_locale, locale_short_code } from "./locale";
 import { resolve_localized, resolve_localized_path } from "./route_map";
 import { now_today, to_instant } from "./temporal";
+import { render_icon } from "./ree_icon";
 
 export type TemplateHelpers = Record<string, any>;
 
@@ -399,6 +400,7 @@ export function create_default_helpers(data: any = {}): TemplateHelpers {
 		image_thumbnail,
 		file_link,
 		file_icon_name,
+		render_icon,
 		cn,
 	};
 }

@@ -276,7 +276,7 @@ async function introspect_database(): Promise<DdlCacheData> {
 
 	const cache = { generated_at: new Date().toISOString(), db_type, tables, broken_views };
 	const cache_violations = collect_ddl_cache_display_violations(cache);
-	report_display_violations(cache_violations, "FK display fields");
+	report_display_violations(cache_violations, "cached tables and views");
 	return cache;
 }
 

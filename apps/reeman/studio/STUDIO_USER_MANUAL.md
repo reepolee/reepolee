@@ -91,9 +91,10 @@ an accidental deletion.
 
 ### Generate View
 
-Creates or replaces v_<table>. Explicit references and conventional *_id columns add
-left joins and display aliases. The action writes immediately and opens the generated
-read-only view.
+Creates or replaces v_<table> as a plain projection of the table's columns. The action
+writes immediately and opens the generated read-only view. Views are not required to
+carry display/_display columns - they are used when present, and natural string columns
+stand in when they are absent.
 
 ## Views
 

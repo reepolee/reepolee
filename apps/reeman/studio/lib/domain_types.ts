@@ -96,6 +96,10 @@ const NAME_RULES: NameRule[] = [
 	{ type: "suffix", value: "_years", domain: "years" },
 	{ type: "suffix", value: "_hours", domain: "hours" },
 	{ type: "suffix", value: "_minutes", domain: "minutes" },
+	{ type: "suffix", value: "_percent", domain: "percentage" },
+	{ type: "suffix", value: "_percentage", domain: "percentage" },
+	{ type: "suffix", value: "_price", domain: "amount" },
+	{ type: "suffix", value: "_amount", domain: "amount" },
 	// Prefix-based domains
 	...BOOLEAN_PREFIXES.map((p) => ({ type: "prefix" as const, value: p.toLowerCase(), domain: "boolean" })),
 ];

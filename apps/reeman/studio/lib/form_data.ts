@@ -146,12 +146,12 @@ function apply_column_values(
 	return column;
 }
 
-export function validate_table_references(table: StudioTable, model: StudioFile): void {
+export function validate_table_references(table: StudioTable, model: StudioFile, tables: StudioTable[] = model.statements.flatMap((item) => item.table ? [item.table] : [])): void {
 	for (const column of table.columns) {
 		if (!column.references) continue;
 		const target = column.references.table === table.name
 			? table
-			: model.statements.find((item) => item.table?.name === column.references!.table)?.table;
+			: tables.find((candidate) => candidate.name === column.references!.table);
 		if (!target?.columns.some((candidate) => candidate.name === column.references!.column)) {
 			throw new StudioError(`Reference target not found for ${column.name}: ${column.references.table}.${column.references.column}`);
 		}
@@ -162,7 +162,7 @@ export function validate_table_references(table: StudioTable, model: StudioFile)
 		}
 		const target = foreign_key.ref_table === table.name
 			? table
-			: model.statements.find((item) => item.table?.name === foreign_key.ref_table)?.table;
+			: tables.find((candidate) => candidate.name === foreign_key.ref_table);
 		if (!target?.columns.some((column) => column.name === foreign_key.ref_column)) {
 			throw new StudioError(`Reference target not found for ${foreign_key.column}: ${foreign_key.ref_table}.${foreign_key.ref_column}`);
 		}

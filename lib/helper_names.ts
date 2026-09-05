@@ -44,5 +44,6 @@ export const DEFAULT_HELPER_NAMES = [
 	"image_thumbnail",
 	"file_link",
 	"file_icon_name",
+	"render_icon",
 	"cn",
 ] as const;

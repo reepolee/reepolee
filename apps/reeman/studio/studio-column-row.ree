@@ -51,7 +51,7 @@
 		</label>
 		<button
 			type="button"
-			class="studio-delete-column row-start-1 text-text-tertiary hover:text-brand md:col-start-4"
+			class="as-icon studio-delete-column row-start-1 text-text-tertiary hover:text-brand md:col-start-4"
 			title="{_ actions.delete_column}"
 		>
 			<ree-icon name="x"></ree-icon>

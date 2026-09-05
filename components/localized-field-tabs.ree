@@ -54,7 +54,7 @@
 								formaction="{= loc.copy_action }"
 								formnovalidate
 								title="{_ localization.reset_to_default }"
-								class="localized-tab-remove"
+								class="as-icon localized-tab-remove"
 							>
 								×
 							</button>

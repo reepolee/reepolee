@@ -211,7 +211,7 @@
 						<h2 class="font-semibold">{_ page_sets.actions.add}</h2>
 						<button
 							type="button"
-							class="button tertiary page-set-create-close"
+							class="as-icon button tertiary page-set-create-close"
 							aria-label="{_ page_sets.actions.cancel}"
 						>
 							×

@@ -8,6 +8,528 @@
 				"translation": "Administracija"
 			}
 		},
+		"apps/main/admin/packages/en-us.json": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected packages",
+				"translation": "Arhiv izbranih paketov"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_package": {
+				"placeholders": [],
+				"source": "New Package",
+				"translation": "Nov paket"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Package",
+				"translation": "Uredi paket"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No packages found.",
+				"translation": "Paketov ni bilo najdenih."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Package",
+				"translation": "+ Nov paket"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Package",
+				"translation": "Nov paket"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.code_max": {
+				"placeholders": [],
+				"source": "Code must be at most 20 characters.",
+				"translation": "Koda mora imeti največ 20 znakov."
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.locale_max": {
+				"placeholders": [],
+				"source": "Locale must be at most 20 characters.",
+				"translation": "Ime lokacije sme vsebovati največ 20 znakov."
+			},
+			"errors.locale_required": {
+				"placeholders": [],
+				"source": "Locale is required.",
+				"translation": "Nastavitev je obvezna."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme vsebovati največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.code": {
+				"placeholders": [],
+				"source": "Code",
+				"translation": "Koda"
+			},
+			"labels.description": {
+				"placeholders": [],
+				"source": "Description",
+				"translation": "Opis"
+			},
+			"labels.display": {
+				"placeholders": [],
+				"source": "Display",
+				"translation": "Zaslon"
+			},
+			"labels.hero_image": {
+				"placeholders": [],
+				"source": "Hero Image",
+				"translation": "Glavna slika"
+			},
+			"labels.locale": {
+				"placeholders": [],
+				"source": "Locale",
+				"translation": "Jezikovna nastavitev"
+			},
+			"labels.net_price": {
+				"placeholders": [],
+				"source": "Net Price",
+				"translation": "Neto cena"
+			},
+			"labels.option_display": {
+				"placeholders": [],
+				"source": "Option Display",
+				"translation": "Prikaz možnosti"
+			},
+			"labels.programmes_id": {
+				"placeholders": [],
+				"source": "Programmes",
+				"translation": "Programi"
+			},
+			"labels.shipping_price": {
+				"placeholders": [],
+				"source": "Shipping Price",
+				"translation": "Stroški dostave"
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.tax_percent": {
+				"placeholders": [],
+				"source": "Tax Percent",
+				"translation": "Davčna stopnja"
+			},
+			"labels.tax_percentage": {
+				"placeholders": [],
+				"source": "Tax Percentage",
+				"translation": "Davčna stopnja"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naziv"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v večjem obsegu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No packages selected.",
+				"translation": "Ni izbranih paketov."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No packages archived|{count} package archived|{count} packages archived|{count} packages archived|{count} packages archived",
+				"translation": "Ni arhiviranih paketov|Arhivirano je {count} paket|Arhivirano je {count} paketov|Arhivirano je {count} paketov|Arhivirano je {count} paketov"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} package failed|{count} packages failed|{count} packages failed|{count} packages failed",
+				"translation": "|{count} paket ni uspel|{count} paketov ni uspelo|{count} paketov ni uspelo|{count} paketov ni uspelo"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Packages",
+				"translation": "Paketi"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "packages",
+				"translation": "paketi"
+			},
+			"scopes.__all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"scopes.__archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"scopes.__live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search packages...",
+				"translation": "Iskanje paketov..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Filtriraj"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Package",
+				"translation": "Uredi paket"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Packages",
+				"translation": "Paketi"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spremembo"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Package",
+				"translation": "Nov paket"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No packages found.",
+				"translation": "Paketov ni bilo najdenih."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži ukrepe"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Package",
+				"translation": "Paket"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			},
+			"v_labels.archived_by_user_display": {
+				"placeholders": [],
+				"source": "Archived By User Display",
+				"translation": "Arhivirano po prikazu uporabnika"
+			},
+			"v_labels.code": {
+				"placeholders": [],
+				"source": "Code",
+				"translation": "Koda"
+			},
+			"v_labels.description": {
+				"placeholders": [],
+				"source": "Description",
+				"translation": "Opis"
+			},
+			"v_labels.display": {
+				"placeholders": [],
+				"source": "Display",
+				"translation": "Zaslon"
+			},
+			"v_labels.hero_image": {
+				"placeholders": [],
+				"source": "Hero Image",
+				"translation": "Glavna slika"
+			},
+			"v_labels.locale": {
+				"placeholders": [],
+				"source": "Locale",
+				"translation": "Jezik"
+			},
+			"v_labels.net_price": {
+				"placeholders": [],
+				"source": "Net Price",
+				"translation": "Neto cena"
+			},
+			"v_labels.option_display": {
+				"placeholders": [],
+				"source": "Option Display",
+				"translation": "Prikaz možnosti"
+			},
+			"v_labels.programme_display": {
+				"placeholders": [],
+				"source": "Programme Display",
+				"translation": "Program"
+			},
+			"v_labels.programmes_id": {
+				"placeholders": [],
+				"source": "Programmes Id",
+				"translation": "ID programov"
+			},
+			"v_labels.search_text": {
+				"placeholders": [],
+				"source": "Search Text",
+				"translation": "Besedilo za iskanje"
+			},
+			"v_labels.shipping_price": {
+				"placeholders": [],
+				"source": "Shipping Price",
+				"translation": "Stroški dostave"
+			},
+			"v_labels.tax_percent": {
+				"placeholders": [],
+				"source": "Tax Percent",
+				"translation": "Davčna stopnja"
+			},
+			"v_labels.tax_percentage": {
+				"placeholders": [],
+				"source": "Tax Percentage",
+				"translation": "Davčna stopnja"
+			},
+			"v_labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"v_labels.total_amount": {
+				"placeholders": [],
+				"source": "Total Amount",
+				"translation": "Skupni znesek"
+			}
+		},
 		"apps/main/admin/users/en-us.json": {
 			"actions.abort_archive": {
 				"placeholders": [],
@@ -1109,7 +1631,7 @@
 			"ui.apply_filters": {
 				"placeholders": [],
 				"source": "Apply",
-				"translation": "Prijavi se"
+				"translation": "Filtriraj"
 			},
 			"ui.clear_all": {
 				"placeholders": [],
@@ -1187,6 +1709,398 @@
 				"placeholders": [],
 				"source": "system",
 				"translation": "sistem"
+			}
+		},
+		"apps/main/system/programmes/en-us.json": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected programmes",
+				"translation": "Arhiv izbranih oddaj"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_programme": {
+				"placeholders": [],
+				"source": "New Programme",
+				"translation": "Nov program"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Programme",
+				"translation": "Uredi program"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No programmes found.",
+				"translation": "Programov ni bilo mogoče najti."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Programme",
+				"translation": "+ Nov program"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Programme",
+				"translation": "Nov program"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.code_max": {
+				"placeholders": [],
+				"source": "Code must be at most 255 characters.",
+				"translation": "Koda mora imeti največ 255 znakov."
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme imeti največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.code": {
+				"placeholders": [],
+				"source": "Code",
+				"translation": "Koda"
+			},
+			"labels.display": {
+				"placeholders": [],
+				"source": "Display",
+				"translation": "Zaslon"
+			},
+			"labels.option_display": {
+				"placeholders": [],
+				"source": "Option Display",
+				"translation": "Prikaz možnosti"
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v večjem obsegu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No programmes selected.",
+				"translation": "Ni izbranih programov."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No programmes archived|{count} programme archived|{count} programmes archived|{count} programmes archived|{count} programmes archived",
+				"translation": "Ni arhiviranih oddaj|{count} arhivirana oddaja|{count} arhivirane oddaje|{count} arhivirane oddaje|{count} arhivirane oddaje"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} programme failed|{count} programmes failed|{count} programmes failed|{count} programmes failed",
+				"translation": "|{count} program ni uspel|{count} programi niso uspeli|{count} programi niso uspeli|{count} programi niso uspeli"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Programmes",
+				"translation": "Programi"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "programmes",
+				"translation": "programi"
+			},
+			"scopes.__all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"scopes.__archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"scopes.__live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search programmes...",
+				"translation": "Iskanje programov..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Filtriraj"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Programme",
+				"translation": "Uredi program"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Programmes",
+				"translation": "Programi"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spremembo"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Programme",
+				"translation": "Nov program"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No programmes found.",
+				"translation": "Programov ni bilo mogoče najti."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži dejanja"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Programme",
+				"translation": "Program"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
 			}
 		},
 		"apps/main/system/season_statuses/en-us.json": {
@@ -1498,7 +2412,7 @@
 			"ui.apply_filters": {
 				"placeholders": [],
 				"source": "Apply",
-				"translation": "Prijavi se"
+				"translation": "Filtriraj"
 			},
 			"ui.clear_all": {
 				"placeholders": [],
@@ -9054,6 +9968,11 @@
 				"source": "Login",
 				"translation": "Prijava"
 			},
+			"nav_auth.profile": {
+				"placeholders": [],
+				"source": "Profile",
+				"translation": "Profil"
+			},
 			"search.search_term": {
 				"placeholders": [],
 				"source": "Search...",
@@ -9316,6 +10235,11 @@
 				"source": "Slovenian",
 				"translation": "slovenščino"
 			},
+			"ui.languages": {
+				"placeholders": [],
+				"source": "Languages",
+				"translation": "Jeziki"
+			},
 			"ui.modifying": {
 				"placeholders": [],
 				"source": "You are about to modify",
@@ -9335,6 +10259,21 @@
 				"placeholders": [],
 				"source": "No records found.",
 				"translation": "Ni najdenih zapisov."
+			},
+			"ui.notifications_disable": {
+				"placeholders": [],
+				"source": "Disable notifications",
+				"translation": "Onemogoči obvestila"
+			},
+			"ui.notifications_enable": {
+				"placeholders": [],
+				"source": "Enable notifications",
+				"translation": "Omogoči obvestila"
+			},
+			"ui.notifications_unavailable": {
+				"placeholders": [],
+				"source": "Notifications unavailable",
+				"translation": "Obvestila niso na voljo"
 			},
 			"ui.page_not_found": {
 				"placeholders": [],
@@ -9365,6 +10304,16 @@
 				"placeholders": [],
 				"source": "Show more",
 				"translation": "Pokaži več"
+			},
+			"ui.theme_dark": {
+				"placeholders": [],
+				"source": "Dark mode",
+				"translation": "Temni način"
+			},
+			"ui.theme_light": {
+				"placeholders": [],
+				"source": "Light mode",
+				"translation": "Svetli način"
 			}
 		},
 		"platform/auth/invite/locales/en-us.json": {
@@ -10014,7 +10963,7 @@
 			"ui.apply_filters": {
 				"placeholders": [],
 				"source": "Apply",
-				"translation": "Prijavi se"
+				"translation": "Filtriraj"
 			},
 			"ui.clear_all": {
 				"placeholders": [],
@@ -11578,6 +12527,920 @@
 				"translation": "Moduli"
 			}
 		},
+		"packages": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected packages",
+				"translation": "Arhiv izbranih paketov"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_package": {
+				"placeholders": [],
+				"source": "New Package",
+				"translation": "Nov paket"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Package",
+				"translation": "Uredi paket"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No packages found.",
+				"translation": "Paketov ni bilo najdenih."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Package",
+				"translation": "+ Nov paket"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Package",
+				"translation": "Nov paket"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.code_max": {
+				"placeholders": [],
+				"source": "Code must be at most 20 characters.",
+				"translation": "Koda mora imeti največ 20 znakov."
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.locale_max": {
+				"placeholders": [],
+				"source": "Locale must be at most 20 characters.",
+				"translation": "Ime lokacije sme vsebovati največ 20 znakov."
+			},
+			"errors.locale_required": {
+				"placeholders": [],
+				"source": "Locale is required.",
+				"translation": "Nastavitev je obvezna."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme vsebovati največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.code": {
+				"placeholders": [],
+				"source": "Code",
+				"translation": "Koda"
+			},
+			"labels.description": {
+				"placeholders": [],
+				"source": "Description",
+				"translation": "Opis"
+			},
+			"labels.display": {
+				"placeholders": [],
+				"source": "Display",
+				"translation": "Zaslon"
+			},
+			"labels.hero_image": {
+				"placeholders": [],
+				"source": "Hero Image",
+				"translation": "Glavna slika"
+			},
+			"labels.locale": {
+				"placeholders": [],
+				"source": "Locale",
+				"translation": "Jezikovna nastavitev"
+			},
+			"labels.net_price": {
+				"placeholders": [],
+				"source": "Net Price",
+				"translation": "Neto cena"
+			},
+			"labels.option_display": {
+				"placeholders": [],
+				"source": "Option Display",
+				"translation": "Prikaz možnosti"
+			},
+			"labels.programmes_id": {
+				"placeholders": [],
+				"source": "Programmes",
+				"translation": "Programi"
+			},
+			"labels.shipping_price": {
+				"placeholders": [],
+				"source": "Shipping Price",
+				"translation": "Stroški dostave"
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.tax_percent": {
+				"placeholders": [],
+				"source": "Tax Percent",
+				"translation": "Davčna stopnja"
+			},
+			"labels.tax_percentage": {
+				"placeholders": [],
+				"source": "Tax Percentage",
+				"translation": "Davčna stopnja"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naziv"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v večjem obsegu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No packages selected.",
+				"translation": "Ni izbranih paketov."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No packages archived|{count} package archived|{count} packages archived|{count} packages archived|{count} packages archived",
+				"translation": "Ni arhiviranih paketov|Arhivirano je {count} paket|Arhivirano je {count} paketov|Arhivirano je {count} paketov|Arhivirano je {count} paketov"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} package failed|{count} packages failed|{count} packages failed|{count} packages failed",
+				"translation": "|{count} paket ni uspel|{count} paketov ni uspelo|{count} paketov ni uspelo|{count} paketov ni uspelo"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Packages",
+				"translation": "Paketi"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "packages",
+				"translation": "paketi"
+			},
+			"scopes.__all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"scopes.__archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"scopes.__live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search packages...",
+				"translation": "Iskanje paketov..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Filtriraj"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Package",
+				"translation": "Uredi paket"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Packages",
+				"translation": "Paketi"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spremembo"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Package",
+				"translation": "Nov paket"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No packages found.",
+				"translation": "Paketov ni bilo najdenih."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži ukrepe"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Package",
+				"translation": "Paket"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			},
+			"v_labels.archived_by_user_display": {
+				"placeholders": [],
+				"source": "Archived By User Display",
+				"translation": "Arhivirano po prikazu uporabnika"
+			},
+			"v_labels.code": {
+				"placeholders": [],
+				"source": "Code",
+				"translation": "Koda"
+			},
+			"v_labels.description": {
+				"placeholders": [],
+				"source": "Description",
+				"translation": "Opis"
+			},
+			"v_labels.display": {
+				"placeholders": [],
+				"source": "Display",
+				"translation": "Zaslon"
+			},
+			"v_labels.hero_image": {
+				"placeholders": [],
+				"source": "Hero Image",
+				"translation": "Glavna slika"
+			},
+			"v_labels.locale": {
+				"placeholders": [],
+				"source": "Locale",
+				"translation": "Jezik"
+			},
+			"v_labels.net_price": {
+				"placeholders": [],
+				"source": "Net Price",
+				"translation": "Neto cena"
+			},
+			"v_labels.option_display": {
+				"placeholders": [],
+				"source": "Option Display",
+				"translation": "Prikaz možnosti"
+			},
+			"v_labels.programme_display": {
+				"placeholders": [],
+				"source": "Programme Display",
+				"translation": "Program"
+			},
+			"v_labels.programmes_id": {
+				"placeholders": [],
+				"source": "Programmes Id",
+				"translation": "ID programov"
+			},
+			"v_labels.search_text": {
+				"placeholders": [],
+				"source": "Search Text",
+				"translation": "Besedilo za iskanje"
+			},
+			"v_labels.shipping_price": {
+				"placeholders": [],
+				"source": "Shipping Price",
+				"translation": "Stroški dostave"
+			},
+			"v_labels.tax_percent": {
+				"placeholders": [],
+				"source": "Tax Percent",
+				"translation": "Davčna stopnja"
+			},
+			"v_labels.tax_percentage": {
+				"placeholders": [],
+				"source": "Tax Percentage",
+				"translation": "Davčna stopnja"
+			},
+			"v_labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"v_labels.total_amount": {
+				"placeholders": [],
+				"source": "Total Amount",
+				"translation": "Skupni znesek"
+			}
+		},
+		"programmes": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected programmes",
+				"translation": "Arhiv izbranih oddaj"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_programme": {
+				"placeholders": [],
+				"source": "New Programme",
+				"translation": "Nov program"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Programme",
+				"translation": "Uredi program"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No programmes found.",
+				"translation": "Programov ni bilo mogoče najti."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Programme",
+				"translation": "+ Nov program"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Programme",
+				"translation": "Nov program"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.code_max": {
+				"placeholders": [],
+				"source": "Code must be at most 255 characters.",
+				"translation": "Koda mora imeti največ 255 znakov."
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme imeti največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.code": {
+				"placeholders": [],
+				"source": "Code",
+				"translation": "Koda"
+			},
+			"labels.display": {
+				"placeholders": [],
+				"source": "Display",
+				"translation": "Zaslon"
+			},
+			"labels.option_display": {
+				"placeholders": [],
+				"source": "Option Display",
+				"translation": "Prikaz možnosti"
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v večjem obsegu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No programmes selected.",
+				"translation": "Ni izbranih programov."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No programmes archived|{count} programme archived|{count} programmes archived|{count} programmes archived|{count} programmes archived",
+				"translation": "Ni arhiviranih oddaj|{count} arhivirana oddaja|{count} arhivirane oddaje|{count} arhivirane oddaje|{count} arhivirane oddaje"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} programme failed|{count} programmes failed|{count} programmes failed|{count} programmes failed",
+				"translation": "|{count} program ni uspel|{count} programi niso uspeli|{count} programi niso uspeli|{count} programi niso uspeli"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Programmes",
+				"translation": "Programi"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "programmes",
+				"translation": "programi"
+			},
+			"scopes.__all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"scopes.__archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"scopes.__live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search programmes...",
+				"translation": "Iskanje programov..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Filtriraj"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Programme",
+				"translation": "Uredi program"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Programmes",
+				"translation": "Programi"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spremembo"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Programme",
+				"translation": "Nov program"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No programmes found.",
+				"translation": "Programov ni bilo mogoče najti."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži dejanja"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Programme",
+				"translation": "Program"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			}
+		},
 		"season_statuses": {
 			"actions.abort_archive": {
 				"placeholders": [],
@@ -11887,7 +13750,7 @@
 			"ui.apply_filters": {
 				"placeholders": [],
 				"source": "Apply",
-				"translation": "Prijavi se"
+				"translation": "Filtriraj"
 			},
 			"ui.clear_all": {
 				"placeholders": [],

@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
-import { parse_column, parse_ddl_file, split_statements } from "./ddl_parser";
+import { classify_statement, parse_column, parse_ddl_file, split_statements } from "./ddl_parser";
 import { serialize_studio_file } from "./ddl_writer";
 import type { Dialect } from "./types";
 
@@ -13,7 +13,15 @@ const SAMPLE_FILES: { path: string; dialect: Dialect; }[] = [
 	{ path: "sql/mysql/demos/05-frameworks.sql", dialect: "mysql" },
 	{ path: "sql/sqlite/demos/06-init-books.sql", dialect: "sqlite" },
 	{ path: "sql/mysql/demos/06-init-books.sql", dialect: "mysql" },
+	...lego_league_files(),
 ];
+
+function lego_league_files(): { path: string; dialect: Dialect; }[] {
+	return readdirSync(join(REPO_ROOT, "sql/mysql/lego_league_ddl"))
+		.filter((file) => file.endsWith(".sql"))
+		.sort()
+		.map((file) => ({ path: `sql/mysql/lego_league_ddl/${file}`, dialect: "mysql" as Dialect }));
+}
 
 describe("round-trip", () => {
 	for (const { path, dialect } of SAMPLE_FILES) {
@@ -53,9 +61,57 @@ describe("classification", () => {
 );`;
 		const model = parse_ddl_file(source, "x.sql", "mysql");
 		const table = model.statements[0]!.table!;
-		expect(table.table_unique_keys).toEqual([{ key_name: "reading_ranges_metric_id_name", columns: ["metric_id", "name"] }]);
+		expect(table.table_unique_keys).toEqual([{ key_name: "reading_ranges_metric_id_name", columns: ["metric_id", "name"], columns_raw: "metric_id,name" }]);
 		model.statements[0]!.dirty = true;
 		expect(serialize_studio_file(model)).toContain("UNIQUE KEY reading_ranges_metric_id_name(metric_id,name)");
+	});
+
+	test("every CREATE TABLE spelling is classified as create_table", () => {
+		const cases: { sql: string; object_name: string; prefix: string; }[] = [
+			{ sql: "CREATE TABLE developers (\n    id INTEGER PRIMARY KEY\n);", object_name: "developers", prefix: "TABLE " },
+			{ sql: "CREATE TABLE IF NOT EXISTS teams (\n    id INTEGER PRIMARY KEY\n);", object_name: "teams", prefix: "TABLE IF NOT EXISTS " },
+			{ sql: "CREATE TEMP TABLE scratch (\n    id INTEGER\n);", object_name: "scratch", prefix: "TEMP TABLE " },
+			{ sql: "CREATE TEMPORARY TABLE IF NOT EXISTS scratch (\n    id INTEGER\n);", object_name: "scratch", prefix: "TEMPORARY TABLE IF NOT EXISTS " },
+			{ sql: "CREATE TABLE IF NOT EXISTS `order` (\n    id INTEGER\n);", object_name: "order", prefix: "TABLE IF NOT EXISTS " },
+			{ sql: "CREATE TABLE \"my table\" (\n    id INTEGER\n);", object_name: "my table", prefix: "TABLE " },
+			{ sql: "CREATE TABLE [x] (\n    id INTEGER\n);", object_name: "x", prefix: "TABLE " },
+			{ sql: "CREATE TABLE main.users (\n    id INTEGER\n);", object_name: "users", prefix: "TABLE " },
+			{ sql: "CREATE TABLE IF NOT EXISTS `main`.`users` (\n    id INTEGER\n);", object_name: "users", prefix: "TABLE IF NOT EXISTS " },
+		];
+		for (const c of cases) {
+			const stmt = classify_statement({ gap: "", text: c.sql });
+			expect(stmt.kind).toBe("create_table");
+			expect(stmt.object_name).toBe(c.object_name);
+			expect(stmt.table!.create_prefix_raw).toBe(c.prefix);
+			expect(stmt.table!.name_raw).toBeTruthy();
+		}
+	});
+
+	test("CREATE TABLE ... AS SELECT stays raw and never breaks opening", () => {
+		const stmt = classify_statement({ gap: "", text: "CREATE TABLE report AS SELECT id FROM users;" });
+		expect(stmt.kind).toBe("raw");
+	});
+
+	test("backquoted DROP VIEW IF EXISTS names classify with a bare object_name", () => {
+		const stmt = classify_statement({ gap: "", text: "DROP VIEW IF EXISTS `v_emails`;" });
+		expect(stmt.kind).toBe("drop_view");
+		expect(stmt.object_name).toBe("v_emails");
+	});
+
+	test("CREATE INDEX IF NOT EXISTS with quoted and schema-qualified names", () => {
+		const stmt = classify_statement({ gap: "", text: "CREATE INDEX IF NOT EXISTS `weird idx` ON `main`.`users`(name);" });
+		expect(stmt.kind).toBe("index");
+		expect(stmt.object_name).toBe("weird idx");
+		expect(stmt.parent_table).toBe("users");
+	});
+
+	test("backquoted column names parse in place (MySQL reserved words)", () => {
+		const source = `CREATE TABLE IF NOT EXISTS points (\n    ` + "`rank`" + `              INT          DEFAULT NULL,\n    points              INT          DEFAULT NULL\n);`;
+		const model = parse_ddl_file(source, "x.sql", "mysql");
+		const table = model.statements[0]!.table!;
+		expect(table.columns.map((c) => c.name)).toEqual(["`rank`", "points"]);
+		model.statements[0]!.dirty = true;
+		expect(serialize_studio_file(model)).toContain("`rank`              INT          DEFAULT NULL");
 	});
 });
 

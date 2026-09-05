@@ -44,14 +44,12 @@ describe("check_sqlite_sql", () => {
 		expect(report.issues[0]!.message).toContain("no such table");
 	});
 
-	test("flags a view with no display column", async () => {
+	test("accepts a view with no display column", async () => {
 		const sql = [TEAMS_TABLE, "CREATE VIEW v_nodisplay AS SELECT t.id, t.title FROM teams t;"].join("\n");
 		const report = await check_sqlite_sql(sql);
-		expect(report.ok).toBe(false);
-		const issue = report.issues[0]!;
-		expect(issue.kind).toBe("display");
-		expect(issue.object_name).toBe("v_nodisplay");
-		expect(issue.message).toContain(`must expose a "display" string column`);
+		expect(report.ok).toBe(true);
+		expect(report.views_checked).toEqual(["v_nodisplay"]);
+		expect(report.issues).toEqual([]);
 	});
 
 	test("flags an uncast display expression, which SQLite reports as untyped", async () => {
@@ -77,10 +75,12 @@ describe("check_sqlite_sql", () => {
 	});
 
 	test("reports the first contract violation when several views are bad", async () => {
+		// Views without display columns are valid now, so the violations come
+		// from uncast display expressions (untyped in SQLite).
 		const sql = [
 			TEAMS_TABLE,
-			"CREATE VIEW v_a AS SELECT t.id, t.title FROM teams t;",
-			"CREATE VIEW v_b AS SELECT t.id, t.title FROM teams t;",
+			"CREATE VIEW v_a AS SELECT t.id, MAX(t.title) AS display FROM teams t;",
+			"CREATE VIEW v_b AS SELECT t.id, MAX(t.title) AS display FROM teams t;",
 		].join("\n");
 		const report = await check_sqlite_sql(sql);
 		expect(report.ok).toBe(false);
@@ -112,28 +112,28 @@ describe("generator-owned rules the studio no longer reimplements", () => {
 		expect(report.issues[0]!.message).toContain("must be a generated column");
 	});
 
-	test("rejects a table with no display column at all", async () => {
+	test("accepts a table with no display column at all", async () => {
 		const sql = "CREATE TABLE teams (id INTEGER PRIMARY KEY, title TEXT);";
 		const report = await check_sqlite_sql(sql);
-		expect(report.ok).toBe(false);
-		expect(report.issues[0]!.object_name).toBe("teams");
+		expect(report.ok).toBe(true);
+		expect(report.issues).toEqual([]);
 	});
 
-	test("enforces the <stem>_display FK rule on a v_<table> companion view", async () => {
-		// v_games matches the games table by name, so it enters the stricter
-		// companion-view contract and must expose team_display for team_id.
+	test("accepts a v_<table> companion view without <stem>_display columns", async () => {
+		// Display/_display columns are optional; a companion view that projects
+		// only its own columns is valid and works off natural string columns.
 		const sql = [
 			TEAMS_TABLE,
 			"CREATE TABLE games (",
 			"    id INTEGER PRIMARY KEY AUTOINCREMENT,",
 			"    team_id INTEGER NOT NULL REFERENCES teams(id),",
-			"    display TEXT GENERATED ALWAYS AS (id) VIRTUAL",
+			"    title TEXT",
 			");",
-			"CREATE VIEW v_games AS SELECT g.id, g.team_id, CAST(g.id AS TEXT) AS display FROM games g;",
+			"CREATE VIEW v_games AS SELECT g.id, g.team_id, g.title FROM games g;",
 		].join("\n");
 		const report = await check_sqlite_sql(sql);
-		expect(report.ok).toBe(false);
-		expect(report.issues[0]!.message).toContain("team_display");
+		expect(report.ok).toBe(true);
+		expect(report.issues).toEqual([]);
 	});
 
 	test("accepts the same companion view once the fk display is present", async () => {
@@ -229,6 +229,6 @@ describe("format_check_report", () => {
 	test("summarizes a passing run with the view count", async () => {
 		const sql = [TEAMS_TABLE, "CREATE VIEW v_teams AS SELECT t.id, CAST(t.title AS TEXT) AS display FROM teams t;"].join("\n");
 		const text = format_check_report(await check_sqlite_sql(sql));
-		expect(text).toBe("DDL valid. 1 view(s) queried, all expose display.");
+		expect(text).toBe("DDL valid. 1 view(s) queried.");
 	});
 });

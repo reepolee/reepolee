@@ -5,23 +5,15 @@
 		url.searchParams.set("locale", locale);
 		return url.pathname + url.search;
 	};
-	const nav_class = class_name ? `${class_name} flex flex-wrap items-center gap-1` : "flex flex-wrap items-center gap-1";
-	const select_class = class_name ? `${class_name} text-base w-36 px-2 py-1` : "text-base w-36 px-2 py-1";
+	const nav_class = class_name ? `${class_name} grid gap-1` : "grid gap-1";
 }}
-{#if props.active_locales.length <= 5}
-	<nav class="{= nav_class }" aria-label="Language">
-		{#each props.active_locales as locale}
-			{#if props.locale === locale}
-				<span aria-current="true" class="text-xs px-2 py-1 font-bold" title="{= props.locale_names?.[locale] || locale }">{= locale_short_code(locale) }</span>
-			{:else}
-				<a href="{= locale_switch_url(locale) }" class="text-xs px-2 py-1 rounded border border-transparent no-underline hover:border-neutral-300 hover:bg-neutral-100" title="{= props.locale_names?.[locale] || locale }">{= locale_short_code(locale) }</a>
-			{/if}
-		{/each}
-	</nav>
-{:else}
-	<select aria-label="Language" onchange="location.href=this.value" class="{= select_class }">
-		{#each props.active_locales as locale}
-			<option value="{= locale_switch_url(locale) }" {#if props.locale === locale}selected{/if}>{= props.locale_names?.[locale] || locale}</option>
-		{/each}
-	</select>
-{/if}
+
+<nav aria-label="Language" class="{= nav_class }">
+	{#each props.active_locales as locale}
+		{#if props.locale === locale}
+			<span aria-current="true" class="rounded bg-surface-sunken text-text-primary px-3 py-2 text-xs font-semibold">{= props.locale_names?.[locale] || locale}</span>
+		{:else}
+			<a href="{= locale_switch_url(locale) }" class="rounded px-3 py-2 text-xs text-text-primary no-underline hover:bg-surface-sunken">{= props.locale_names?.[locale] || locale}</a>
+		{/if}
+	{/each}
+</nav>

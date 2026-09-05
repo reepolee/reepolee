@@ -9,7 +9,7 @@ import { diff_ddl_lines } from "./lib/ddl_diff";
 import { render_create_table } from "./lib/ddl_writer";
 import { domain_type_matches, get_domain_groups, get_domain_types } from "./lib/domain_types";
 import { column_reference_value } from "./lib/form_data";
-import { get_studio_tables, is_system_column, read_studio_file, StudioError } from "./lib/model";
+import { get_folder_studio_tables, is_system_column, read_studio_file, StudioError } from "./lib/model";
 import { group_demo_files, list_demo_files, studio_url } from "../database/lib/sql_files";
 
 export { studio_url } from "../database/lib/sql_files";
@@ -72,7 +72,7 @@ export async function render_studio_page(req: BunRequest, overrides: PageOverrid
 
 	const objects = model ? object_links(model) : { tables: [], views: [] };
 	const selected_table = selected?.table ?? null;
-	const tables = model ? get_studio_tables(model) : [];
+	const tables = model ? get_folder_studio_tables(model.path) : [];
 	const domain_types = model ? get_domain_types(model.dialect) : [];
 	const domain_groups = model ? get_domain_groups(model.dialect) : [];
 	const hide_system_columns = get_cookie(req, "studio_hide_system_columns") === "1";
@@ -88,7 +88,7 @@ export async function render_studio_page(req: BunRequest, overrides: PageOverrid
 		};
 	}) ?? [];
 	const selected_view = selected?.kind === "create_view" ? selected : null;
-	const fk_options = model ? get_fk_options(model) : [];
+	const fk_options = model ? get_fk_options(tables) : [];
 	const fk_id_options = fk_options.filter((option) => option.value.endsWith(".id"));
 	const fk_other_options = fk_options.filter((option) => !option.value.endsWith(".id"));
 	const fk_targets = get_fk_targets(tables);
@@ -153,12 +153,11 @@ function object_links(model: StudioFile) {
 	return { tables, views };
 }
 
-function get_fk_options(model: StudioFile): Array<{ value: string; label: string; }> {
+export function get_fk_options(tables: StudioTable[]): Array<{ value: string; label: string; }> {
 	const options: Array<{ value: string; label: string; }> = [];
-	for (const statement of model.statements) {
-		if (!statement.table) continue;
-		for (const column of statement.table.columns) {
-			const value = `${statement.table.name}.${column.name}`;
+	for (const table of tables) {
+		for (const column of table.columns) {
+			const value = `${table.name}.${column.name}`;
 			options.push({ value, label: `${value} (${column.type_string})` });
 		}
 	}

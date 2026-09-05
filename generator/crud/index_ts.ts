@@ -421,7 +421,7 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => colum
 			"parent.fk_column": parent_info?.fk_column || "",
 			"parent.route_param": parent_info?.route_param || "",
 			"list.strategy": list_strategy,
-			"import.ree_icon": render_strategy === "stream" ? "import { ICONS } from \"$lib/ree_icon\";\n" : "",
+			"import.ree_icon": render_strategy === "stream" ? "import { render_icon } from \"$lib/ree_icon\";\n" : "",
 			"import.view": view_import,
 			"view.name": view_name,
 			"field.first": first_field,

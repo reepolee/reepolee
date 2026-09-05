@@ -1,7 +1,7 @@
 import { describe, expect, mock, test } from "bun:test";
 
 const saved_settings: Array<{ path: string; settings: Record<string, unknown>; }> = [];
-const refreshed_routes: Array<Array<string | undefined>> = [];
+const regenerated_routes: Array<{ table: string; options: Record<string, unknown>; }> = [];
 const removed_routes: string[] = [];
 
 mock.module("$config/db", () => ({ DB_CONNECTION_STRING: "" }));
@@ -22,8 +22,8 @@ mock.module("$generator/reeman/utils/route_scan", () => ({
 mock.module("$generator/schema/write_table", () => ({
 	update_table_file_settings: async (path: string, settings: Record<string, unknown>) => { saved_settings.push({ path, settings }); },
 }));
-mock.module("$generator/reeman/refresh_crud", () => ({
-	refresh_crud_fields_only: async (...args: Array<string | undefined>) => { refreshed_routes.push(args); return true; },
+mock.module("$generator/crud/main", () => ({
+	generate_crud: async (table: string, options: Record<string, unknown>) => { regenerated_routes.push({ table, options }); return true; },
 }));
 mock.module("$generator/reeman/remove_route", () => ({
 	list_removable_routes: async () => [
@@ -146,9 +146,9 @@ describe("build_bulk_command_args", () => {
 		}
 	});
 
-	test("saves route settings before refreshing CRUD", async () => {
+	test("saves route settings before fully regenerating CRUD", async () => {
 		saved_settings.length = 0;
-		refreshed_routes.length = 0;
+		regenerated_routes.length = 0;
 
 		const result = await action_save_route_settings({
 			url: "/admin/metrics",
@@ -172,7 +172,16 @@ describe("build_bulk_command_args", () => {
 			form_hints: undefined,
 			form_details: undefined,
 		});
-		expect(refreshed_routes).toEqual([["metrics", "admin", undefined, undefined]]);
+		expect(regenerated_routes).toEqual([{
+			table: "metrics",
+			options: {
+				force: true,
+				interactive: false,
+				prefix: "admin",
+				parent_table: undefined,
+				route_name: undefined,
+			},
+		}]);
 	});
 
 	test("removes a selected parent once when its nested child is also selected", async () => {

@@ -329,8 +329,14 @@ export async function action_save_route_settings(params: {
 			grid_column_definitions: params.grid_column_definitions,
 		});
 		if (params.refresh) {
-			const { refresh_crud_fields_only } = await import("$generator/reeman/refresh_crud");
-			return await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name);
+			const { generate_crud } = await import("$generator/crud/main");
+			return await generate_crud(route.table, {
+				force: true,
+				interactive: false,
+				prefix: route.prefix,
+				parent_table: route.parent,
+				route_name: route.route_name,
+			});
 		}
 		return true;
 	}, params.url);

@@ -46,13 +46,14 @@ This allows:
 
 ### Display column contract
 
-Every table and view must expose a string `display` column as its canonical row representation. On tables, `display` must be a generated column, so it remains readable but is excluded from generated create and update payloads.
+Display columns are **optional everywhere** - the generator works with or without them, using them only when they exist.
 
-Tables and views may also expose an optional string `option_display`. Generated selects and autocomplete results use `option_display` when it exists and otherwise use `display`. This lets a company use `display = name` in invoice listings while using `option_display = name + ' - ' + vat_id` in company selectors.
+- On tables, a `display` column, when present, must be a string **generated** column, so it remains readable but is excluded from generated create and update payloads.
+- Views may define their own `display` and `option_display` expressions independently of the source table. A view that expands a foreign key may expose the joined label as `<fk_stem>_display`, such as `author_display` for `author_id` - optional, used only when present.
+- Generated selects, dropdowns, and autocomplete results pick their option text with this resolution: `option_display` when it exists, else `display`, else the first non-binary string column in declaration order. The string-column fallback is what lets tables and views without any canonical display column still produce working dropdowns.
+- The CRUD search field resolves the same way: `search_text`, else `display`, else the first non-binary string column.
 
-Views may define their own `display` and `option_display` expressions independently of the source table. A view that expands a foreign key must expose the joined label as `<fk_stem>_display`, such as `author_display` for `author_id`.
-
-Canonical `display` and optional `option_display` remain available to generated read, search, sort, select, and autocomplete code but are omitted from default index grids. FK `<fk_stem>_display` columns remain visible and use the relationship stem as their header label.
+Canonical `display` and optional `option_display`, when present, remain available to generated read, search, sort, select, and autocomplete code but are omitted from default index grids. FK `<fk_stem>_display` columns remain visible and use the relationship stem as their header label.
 
 **Visibility precedence** (highest to lowest):
 1. A field in `IGNORE_INDEX_FIELDS` is omitted from the generated grid

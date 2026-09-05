@@ -1,6 +1,6 @@
 import { pluralize_english } from "$generator/naming";
 
-import { get_studio_tables, render_view } from "./model";
+import { get_studio_tables } from "./model";
 import type { Dialect, StudioColumn, StudioFile, StudioTable } from "./types";
 
 export interface SchemaAdaptationSummary {
@@ -86,8 +86,9 @@ function resolves_to_table(stem: string, table_names: Set<string>): boolean {
 /**
  * Adapt every table in the file to the standard Reepolee DDL shape:
  * integer `id` primary key (a non-integer PK is renamed to `code` and kept
- * as a unique natural key), plus mandatory `display`, `created_at`, and
- * `updated_at` columns. Runs over the whole file in two passes so that
+ * as a unique natural key), plus `display`, `created_at`, and `updated_at`
+ * columns. `display` is a convenience, not a requirement - the generator
+ * works without it. Runs over the whole file in two passes so that
  * incoming FK columns/references can be repointed at a renamed PK before
  * any table is mutated.
  */
@@ -131,206 +132,10 @@ export function adapt_schema_to_standard(model: StudioFile): SchemaAdaptationSum
 		if (statement.table && tables_adapted.includes(statement.table.name)) statement.dirty = true;
 	}
 
-	const views_adapted = adapt_views(model);
-
-	return { tables_adapted, references_updated, views_adapted };
-}
-
-/**
- * Add a `display` column to every view that lacks one. Views are stored as raw
- * text (the parser does not model their columns), so the projection is rewritten
- * textually: a `CAST(<source> AS TEXT) AS display` item is appended to the outer
- * SELECT list. The cast is mandatory - SQLite reports no declared type for a bare
- * expression column, which fails the generator's string-compatibility check.
- */
-function adapt_views(model: StudioFile): string[] {
-	const views_adapted: string[] = [];
-	const table_names = new Set(get_studio_tables(model).map((table) => table.name));
-
-	for (const statement of model.statements) {
-		if (statement.kind !== "create_view") continue;
-
-		// A `v_<table>` companion view enters the generator's stricter contract:
-		// it must expose `<stem>_display` for every FK column it projects. Text
-		// patching cannot satisfy that (the FK columns may arrive via `t.*`), so
-		// the view is regenerated from the table, which emits the joins and the
-		// `_display` columns. Views with no matching table are reporting views -
-		// they only need `display`, which is patched in below.
-		const companion_table = companion_table_name(statement.object_name, table_names);
-		if (companion_table) {
-			statement.text = render_companion_view(model, companion_table);
-			views_adapted.push(statement.object_name);
-			continue;
-		}
-
-		const rewritten = add_display_to_view(statement.text);
-		if (!rewritten) continue;
-		statement.text = rewritten;
-		views_adapted.push(statement.object_name);
-	}
-
-	return views_adapted;
-}
-
-/** Regenerate a companion view from its table, so FK `_display` columns and joins are emitted. */
-function render_companion_view(model: StudioFile, table_name: string): string {
-	const tables = get_studio_tables(model);
-	const table = tables.find((candidate) => candidate.name === table_name)!;
-	return render_view(model, table);
-}
-
-/** Table this view is the `v_<table>` companion of, or null when it is a standalone view. */
-function companion_table_name(view_name: string, table_names: Set<string>): string | null {
-	if (!view_name.startsWith("v_")) return null;
-	const candidate = view_name.slice(2);
-	return table_names.has(candidate) ? candidate : null;
-}
-
-/** Rewrite one CREATE VIEW to expose `display`. Returns null when no change is needed or possible. */
-function add_display_to_view(text: string): string | null {
-	const select_start = find_outer_select(text);
-	if (select_start === -1) return null;
-
-	const select_end = find_select_list_end(text, select_start);
-	if (select_end === -1) return null;
-
-	const select_list = text.slice(select_start, select_end);
-	if (has_display_item(select_list)) return null;
-
-	const source = find_view_display_source(select_list);
-	if (!source) return null;
-
-	const indent = detect_select_indent(select_list);
-	const trimmed_list = select_list.replace(/\s+$/, "");
-	const separator = trimmed_list.endsWith(",") ? "" : ",";
-	const display_item = `${separator}\n${indent}CAST(${source} AS TEXT) AS display`;
-	return `${text.slice(0, select_start)}${trimmed_list}${display_item}${text.slice(select_end)}`;
-}
-
-/** Index just past the view's outer SELECT keyword, skipping any leading CTE or parenthesized prefix. */
-function find_outer_select(text: string): number {
-	const as_match = /\bAS\b/i.exec(text);
-	if (!as_match) return -1;
-	const after_as = as_match.index + as_match[0].length;
-	const select_match = /\bSELECT\b(\s+(DISTINCT|ALL)\b)?/i.exec(text.slice(after_as));
-	if (!select_match) return -1;
-	return after_as + select_match.index + select_match[0].length;
-}
-
-/** Index of the top-level FROM that terminates the outer SELECT list. */
-function find_select_list_end(text: string, select_start: number): number {
-	let depth = 0;
-	let index = select_start;
-
-	while (index < text.length) {
-		const char = text[index]!;
-		if (char === "'") {
-			index = skip_quoted(text, index);
-			continue;
-		}
-		if (char === "(") depth++;
-		else if (char === ")") depth--;
-		else if (depth === 0 && /\s/.test(char)) {
-			const from_match = /^\s+FROM\b/i.exec(text.slice(index));
-			if (from_match) return index;
-		}
-		index++;
-	}
-	return -1;
-}
-
-/** Index just past a single-quoted literal starting at `index`. */
-function skip_quoted(text: string, index: number): number {
-	let cursor = index + 1;
-	while (cursor < text.length) {
-		if (text[cursor] === "'") {
-			if (text[cursor + 1] === "'") { cursor += 2; continue; }
-			return cursor + 1;
-		}
-		cursor++;
-	}
-	return cursor;
-}
-
-/** True when the select list already projects a column aliased (or named) `display`. */
-function has_display_item(select_list: string): boolean {
-	const items = split_top_level_items(select_list);
-	for (const item of items) {
-		if (/\bAS\s+["`]?display["`]?\s*$/i.test(item.trim())) return true;
-		if (/(^|\.)["`]?display["`]?\s*$/i.test(item.trim())) return true;
-	}
-	return false;
-}
-
-/**
- * Pick the expression the view's `display` is built from: the first select item
- * whose output name matches the display-source priority, else the first item that
- * is a plain column reference and not an id/star.
- */
-function find_view_display_source(select_list: string): string | null {
-	const items = split_top_level_items(select_list);
-	const named: { name: string; expr: string; }[] = [];
-
-	for (const item of items) {
-		const expr = item.trim();
-		if (!expr || expr.endsWith("*")) continue;
-		const alias_match = /\bAS\s+["`]?(\w+)["`]?\s*$/i.exec(expr);
-		const name = alias_match ? alias_match[1]! : last_identifier(expr);
-		if (!name) continue;
-		named.push({ name: name.toLowerCase(), expr: alias_match ? expr.slice(0, alias_match.index).trim() : expr });
-	}
-
-	for (const candidate of DISPLAY_SOURCE_PRIORITY) {
-		const match = named.find((item) => item.name === candidate);
-		if (match) return match.expr;
-	}
-	const usable = named.filter((item) => item.name !== "id" && !item.name.endsWith("_id"));
-	const plain = usable.find((item) => /^[\w.]+$/.test(item.expr));
-	if (plain) return plain.expr;
-	// Aggregate-only views (every item wrapped in MAX/CASE) have no plain column.
-	// Repeat the first usable item's expression - SQLite cannot reference another
-	// select item's alias from within the same select list.
-	const aliased = usable.find((item) => item.expr !== "");
-	return aliased ? aliased.expr : null;
-}
-
-/** Trailing identifier of a select item, e.g. "t.title" -> "title". Null when the item is an expression. */
-function last_identifier(expr: string): string | null {
-	const match = /^[\w.]+$/.exec(expr.trim());
-	if (!match) return null;
-	const parts = expr.trim().split(".");
-	return parts[parts.length - 1] ?? null;
-}
-
-/** Split a select list on top-level commas, ignoring commas inside parens or quotes. */
-function split_top_level_items(select_list: string): string[] {
-	const items: string[] = [];
-	let depth = 0;
-	let start = 0;
-	let index = 0;
-
-	while (index < select_list.length) {
-		const char = select_list[index]!;
-		if (char === "'") {
-			index = skip_quoted(select_list, index);
-			continue;
-		}
-		if (char === "(") depth++;
-		else if (char === ")") depth--;
-		else if (char === "," && depth === 0) {
-			items.push(select_list.slice(start, index));
-			start = index + 1;
-		}
-		index++;
-	}
-	items.push(select_list.slice(start));
-	return items;
-}
-
-/** Indentation used by the view's select items, so the appended item lines up. */
-function detect_select_indent(select_list: string): string {
-	const match = /\n([ \t]+)\S/.exec(select_list);
-	return match ? match[1]! : "    ";
+	// Views are never rewritten: display/_display columns are optional, and the
+	// generator uses them only when they exist. A view without them works off
+	// its natural string columns, so adaptation has nothing to add.
+	return { tables_adapted, references_updated, views_adapted: [] };
 }
 
 /** Adapt one table's columns in place. Returns true if anything changed. */

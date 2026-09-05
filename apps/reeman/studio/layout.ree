@@ -72,7 +72,7 @@
 				{#if props.model}
 					<div class="flex items-center justify-between px-4 mb-2">
 						<h2 class="text-sm font-semibold uppercase tracking-wider text-brand">{_ labels.tables}</h2>
-						<button type="button" class="as-button-secondary px-2! py-1!" command="show-modal" commandfor="new-table-dialog" title="{_ actions.new_table}">+</button>
+						<button type="button" class="as-icon as-button-secondary px-2! py-1!" command="show-modal" commandfor="new-table-dialog" title="{_ actions.new_table}">+</button>
 					</div>
 					<div class="flex flex-col mb-4">
 						{#each props.objects.tables as item}
@@ -117,7 +117,7 @@
 							{= toast.message } {~ toast.user ? `(${toast.user})` : "" }
 						</div>
 
-						<a href="#toast-{= toast.key }" class="absolute top-1 right-1 h-8 w-8 flex items-center justify-center text-lg leading-none opacity-70 hover:opacity-100 hover:bg-black/10 rounded-full no-underline" aria-label="Close toast">
+						<a href="#toast-{= toast.key }" class="as-icon absolute top-1 right-1 h-8 w-8 text-lg leading-none opacity-70 hover:opacity-100 hover:bg-black/10 rounded-full no-underline" aria-label="Close toast">
 							🗙
 						</a>
 

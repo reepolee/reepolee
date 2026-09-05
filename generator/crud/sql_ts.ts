@@ -211,8 +211,13 @@ export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 	const filtered = user_fields(fields);
 	const editable = configured_form_fields(fields, form_columns);
 	const field_names = fields.map((field) => field.name);
-	const option_text_field = resolve_option_display_field(field_names);
-	const display_field_names = option_text_field === "option_display" ? ["display", "option_display"] : ["display"];
+	// Resolution carries the column types so the fallback can pick the first
+	// non-binary string column when neither option_display nor display exists.
+	const option_text_field = resolve_option_display_field(fields.map((field) => ({ name: field.name, type_string: field.attributes?.column_type })));
+	// The write payloads omit the generated display columns that actually exist in
+	// the schema - driven by presence, never by which column won the option
+	// resolution (the option field may now be an ordinary writable string column).
+	const display_field_names = ["display", "option_display"].filter((name) => field_names.includes(name));
 
 	// For non-auto-increment PKs, id is in the fields, so don't duplicate it
 	const has_id_in_fields = fields.some((f) => f.name === "id");

@@ -299,7 +299,7 @@ Name column widths are per-table (no universal convention). Use these when the s
 | Domain Type  | SQL              | Config constant                                                                                                    |
 | ------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `amount`     | `DECIMAL(18,2)`  | `CURRENCY_FIELD` - all monetary values. Migrate `DECIMAL(10,2)` → this.                                            |
-| `percentage` | `DECIMAL(7,4)`   | `PERCENT_FIELD` - all percentage/commission rates. Migrate `DECIMAL(4,2)`, `DECIMAL(5,2)`, `DECIMAL(10,3)` → this. |
+| `percentage` | `DECIMAL(12,4)`   | `PERCENT_FIELD` - all percentage/commission rates. Migrate `DECIMAL(4,2)`, `DECIMAL(5,2)`, `DECIMAL(10,3)` → this. |
 | `quantity`   | `DECIMAL(12,3)`  | Order/inventory quantity, whole or fractional (e.g. `2 pcs`, `0.5 liter`). Unit lives in a separate column.        |
 
 ### Temporal
@@ -379,7 +379,7 @@ Widths are per-domain, not forced - these are recommended buckets.
 
 ## Generated columns (VIRTUAL / STORED)
 
-MySQL generated columns (`VIRTUAL GENERATED` / `STORED GENERATED`) are detected during schema introspection via `EXTRA` in `INFORMATION_SCHEMA.COLUMNS`. SQLite detects them via `PRAGMA table_xinfo().hidden > 0`. Generated columns are excluded from write fields because they cannot be directly inserted or updated. The required `display` and optional `option_display` columns remain in read fields; other generated table columns are omitted from generated CRUD metadata.
+MySQL generated columns (`VIRTUAL GENERATED` / `STORED GENERATED`) are detected during schema introspection via `EXTRA` in `INFORMATION_SCHEMA.COLUMNS`. SQLite detects them via `PRAGMA table_xinfo().hidden > 0`. Generated columns are excluded from write fields because they cannot be directly inserted or updated. `display` and `option_display`, when present, remain in read fields; other generated table columns are omitted from generated CRUD metadata.
 
 ## Fulltext search
 

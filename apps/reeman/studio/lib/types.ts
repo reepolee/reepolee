@@ -68,6 +68,8 @@ export interface TableForeignKey {
 	ref_column: string;
 	on_update?: string;
 	on_delete?: string;
+	/** Verbatim ON UPDATE/ON DELETE text after the REFERENCES, so regeneration keeps the original clause order. */
+	actions_raw?: string;
 }
 
 /** A table-level UNIQUE constraint, including MySQL's named UNIQUE KEY form. */
@@ -77,6 +79,8 @@ export interface TableUniqueKey {
 	/** MySQL UNIQUE KEY <name>(...) name. */
 	key_name?: string;
 	columns: string[];
+	/** Verbatim comma-separated text inside the parens, so regeneration keeps original spacing. */
+	columns_raw?: string;
 }
 
 export interface StudioIndex {
@@ -87,6 +91,12 @@ export interface StudioIndex {
 
 export interface StudioTable {
 	name: string;
+	/** Verbatim identifier as written (quotes, schema qualifier), when it differs from `name`. */
+	name_raw?: string;
+	/** Verbatim clause between CREATE and the identifier, e.g. "TABLE IF NOT EXISTS " or "TEMP TABLE ". */
+	create_prefix_raw?: string;
+	/** Body lines the parser did not understand (e.g. table-level PRIMARY KEY(...)) - re-emitted verbatim so regeneration is lossless. */
+	extra_lines_raw?: string[];
 	columns: StudioColumn[];
 	table_foreign_keys: TableForeignKey[];
 	table_unique_keys: TableUniqueKey[];

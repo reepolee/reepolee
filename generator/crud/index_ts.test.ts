@@ -9,6 +9,25 @@ const fields: FieldDef[] = [
 ];
 
 describe("generate_index_ts localized save", () => {
+	test("uses the shared icon renderer for streaming pagination", async () => {
+		const source = await generate_index_ts({
+			table_name: "metrics",
+			fields,
+			column_names: ["id", "name"],
+			view_column_names: [],
+			sort_options: "[]",
+			view_name: "v_metrics",
+			has_view: false,
+			first_field: "name",
+			foreign_keys: new Map(),
+			render_strategy: "stream",
+		});
+
+		expect(source).toContain('import { render_icon } from "$lib/ree_icon";');
+		expect(source).toContain('render_icon("chevron_left")');
+		expect(source).not.toContain("ICONS.");
+	});
+
 	test("passes translated page titles to index and form renders", async () => {
 		const source = await generate_index_ts({
 			table_name: "metrics",

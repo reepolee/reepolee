@@ -77,7 +77,9 @@ describe("adapt_schema_to_standard", () => {
 		expect(fk_column.references).toEqual({ table: "languages", column: "id" });
 	});
 
-	test("adds a cast display column to a view that lacks one, sourced from title", () => {
+	test("leaves a view without a display column untouched", () => {
+		// Views are never rewritten - display columns are optional and the
+		// generator works off natural string columns when they are absent.
 		const text = [
 			"CREATE VIEW v_judging_points AS",
 			"SELECT",
@@ -94,13 +96,13 @@ describe("adapt_schema_to_standard", () => {
 		const model = view_model(text, "v_judging_points");
 
 		const summary = adapt_schema_to_standard(model);
-		expect(summary.views_adapted).toEqual(["v_judging_points"]);
-		const rewritten = model.statements[0]!.text;
-		expect(rewritten).toContain("    p.points,\n    CAST(t.title AS TEXT) AS display\nFROM points p");
-		expect(rewritten).toContain("ORDER BY p.category_id ASC, p.rank ASC;");
+		expect(summary.views_adapted).toEqual([]);
+		expect(model.statements[0]!.text).toBe(text);
 	});
 
-	test("regenerates a v_<table> companion view so fk _display columns are emitted", () => {
+	test("leaves a v_<table> companion view untouched", () => {
+		// Companion views are no longer regenerated to force <stem>_display
+		// columns - display columns are optional and used only when present.
 		const model: StudioFile = {
 			path: "example.sql",
 			dialect: "sqlite",
@@ -128,12 +130,8 @@ describe("adapt_schema_to_standard", () => {
 		};
 
 		const summary = adapt_schema_to_standard(model);
-		expect(summary.views_adapted).toContain("v_schedule");
-		const view_text = model.statements[2]!.text;
-		// The companion-view contract requires <stem>_display for each FK column.
-		expect(view_text).toContain("team_1_display");
-		expect(view_text).toContain("LEFT JOIN teams team_1");
-		expect(view_text).not.toContain("s.*");
+		expect(summary.views_adapted).toEqual([]);
+		expect(model.statements[2]!.text).toBe("CREATE VIEW v_schedule AS\nSELECT s.*\nFROM schedule s;");
 	});
 
 	test("leaves a view that already projects display untouched", () => {
@@ -145,16 +143,16 @@ describe("adapt_schema_to_standard", () => {
 		expect(model.statements[0]!.text).toBe(text);
 	});
 
-	test("uses an aliased column name when picking the display source", () => {
+	test("leaves a view with an aliased column untouched", () => {
 		const text = "CREATE VIEW v_last_entry AS\nSELECT t.id, MAX(g.ts) AS name\nFROM teams t;";
 		const model = view_model(text, "v_last_entry");
 
 		const summary = adapt_schema_to_standard(model);
-		expect(summary.views_adapted).toEqual(["v_last_entry"]);
-		expect(model.statements[0]!.text).toContain("CAST(MAX(g.ts) AS TEXT) AS display");
+		expect(summary.views_adapted).toEqual([]);
+		expect(model.statements[0]!.text).toBe(text);
 	});
 
-	test("repeats the expression, not the alias, for an aggregate-only view", () => {
+	test("leaves an aggregate-only view untouched", () => {
 		const text = [
 			"CREATE VIEW v_judging_points_for_display AS",
 			"SELECT",
@@ -166,11 +164,8 @@ describe("adapt_schema_to_standard", () => {
 		const model = view_model(text, "v_judging_points_for_display");
 
 		const summary = adapt_schema_to_standard(model);
-		expect(summary.views_adapted).toEqual(["v_judging_points_for_display"]);
-		const rewritten = model.statements[0]!.text;
-		// SQLite cannot reference a sibling select alias, so the expression is repeated.
-		expect(rewritten).toContain("CAST(MAX(CASE WHEN category_id = 'cv' THEN points END) AS TEXT) AS display");
-		expect(rewritten).not.toContain("CAST(cv_points AS TEXT)");
+		expect(summary.views_adapted).toEqual([]);
+		expect(model.statements[0]!.text).toBe(text);
 	});
 
 	test("skips a view whose select list exposes no usable display source", () => {
@@ -182,13 +177,13 @@ describe("adapt_schema_to_standard", () => {
 		expect(model.statements[0]!.text).toBe(text);
 	});
 
-	test("ignores commas inside function calls when splitting the select list", () => {
+	test("leaves a view with function calls in its select list untouched", () => {
 		const text = "CREATE VIEW v_results AS\nSELECT p.team_id, ROUND(AVG(p.points), 3) AS mean, t.title\nFROM points p;";
 		const model = view_model(text, "v_results");
 
 		const summary = adapt_schema_to_standard(model);
-		expect(summary.views_adapted).toEqual(["v_results"]);
-		expect(model.statements[0]!.text).toContain("CAST(t.title AS TEXT) AS display");
+		expect(summary.views_adapted).toEqual([]);
+		expect(model.statements[0]!.text).toBe(text);
 	});
 });
 

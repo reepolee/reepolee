@@ -1,12 +1,6 @@
 (function initialize_navigation() {
 	init_theme_toggle();
 
-	const automatic_nav_details = document.querySelectorAll('details[data-nav-module][data-nav-manual="false"], details[data-nav-section][data-nav-manual="false"]');
-	for (const automatic_nav_detail of automatic_nav_details) {
-		const current_entry = automatic_nav_detail.querySelector("a.current");
-		automatic_nav_detail.open = current_entry !== null;
-	}
-
 	function close_automatic_nav_siblings(nav_detail) {
 		const section_id = nav_detail.dataset.navSection;
 		const is_top_level = nav_detail.hasAttribute("data-nav-module") || section_id?.startsWith("root:");

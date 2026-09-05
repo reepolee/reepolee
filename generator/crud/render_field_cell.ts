@@ -59,7 +59,8 @@ export function default_field_helper(field: DefaultHelperField): string {
 	// The introspectors pass through the raw SQL type string (SQLite preserves
 	// the declared casing), so compare case-insensitively - mirrors column_class()
 	// in write_table.ts, which lowercases before matching.
-	if (field.attributes?.column_type?.toLowerCase() === CURRENCY_FIELD) return "display_currency";
+	if (field.attributes?.domain_type === "percentage") return "display_percent";
+	if (field.attributes?.domain_type === "amount" || field.attributes?.column_type?.toLowerCase() === CURRENCY_FIELD) return "display_currency";
 	switch (field.type) {
 		case "tags": return "tags";
 		case "datetime":
@@ -98,6 +99,9 @@ export function render_field_cell(
 	switch (true) {
 		case is_boolean_field(field.name):
 			return `${indent}<div${cls_attr}>{~ yes_no(${record_val}${field.name}) }</div>`;
+		case field.attributes?.domain_type === "percentage":
+			return `${indent}<div${cls_attr}>{~ display_percent(${record_val}${field.name}) }</div>`;
+		case field.attributes?.domain_type === "amount":
 		case field.attributes?.column_type?.toLowerCase() === CURRENCY_FIELD:
 			return `${indent}<div${cls_attr}>{~ display_currency(${record_val}${field.name}) }</div>`;
 		case field.type === "tags":

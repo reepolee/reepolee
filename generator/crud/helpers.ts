@@ -2,6 +2,7 @@ import { join, relative } from "node:path";
 
 import { ARCHIVE_TIMESTAMP_FIELD, IGNORE_ORDER_FIELDS, MAINTENANCE_FIELDS } from "$config/db_structure";
 
+import { is_non_binary_string_type } from "../schema/display_contract";
 import type { FieldDef, ForeignKeyMap } from "./types";
 import { MAIN_APP } from "$config/paths";
 
@@ -109,7 +110,11 @@ export function determine_search_field(fields: FieldDef[]): string {
 	for (const name of priority) {
 		if (fields.some((f) => f.name === name)) return name;
 	}
-	return "id";
+	// No canonical display column - fall back to the first non-binary string
+	// column so searching still works on display-less tables and views. A table
+	// with no string column at all degrades to the id search of old.
+	const string_field = fields.find((f) => is_non_binary_string_type(f.attributes?.column_type));
+	return string_field?.name ?? "id";
 }
 
 /**

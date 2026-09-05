@@ -5,8 +5,32 @@ const DISPLAY_FIELD = "display";
 const OPTION_DISPLAY_FIELD = "option_display";
 const STRING_TYPE_PARTS = ["char", "text", "clob"];
 
-export function resolve_option_display_field(column_names: string[]): "display" | "option_display" {
-	return column_names.includes(OPTION_DISPLAY_FIELD) ? OPTION_DISPLAY_FIELD : DISPLAY_FIELD;
+/** A column as seen by display resolution: its name plus the raw SQL type. */
+export interface DisplayColumnCandidate {
+	name: string;
+	type_string?: string | null;
+}
+
+/**
+ * Resolve the column used for option lists and dropdown text:
+ * `option_display` when present, else `display` when present, else the first
+ * non-binary string column in declaration order. The string-column fallback
+ * keeps generated selects pointing at a real column even when a table or view
+ * exposes neither canonical display column.
+ */
+export function resolve_option_display_field(columns: DisplayColumnCandidate[]): string {
+	if (columns.some((column) => column.name === OPTION_DISPLAY_FIELD)) return OPTION_DISPLAY_FIELD;
+	if (columns.some((column) => column.name === DISPLAY_FIELD)) return DISPLAY_FIELD;
+	const string_column = columns.find((column) => is_non_binary_string_type(column.type_string));
+	return string_column?.name ?? columns[0]?.name ?? DISPLAY_FIELD;
+}
+
+/** Whether a SQL type is a non-binary string family (char/varchar/text/clob, not binary/blob). */
+export function is_non_binary_string_type(type_string: string | null | undefined): boolean {
+	const normalized_type = (type_string ?? "").toLowerCase();
+	return STRING_TYPE_PARTS.some((type_part) => normalized_type.includes(type_part))
+		&& !normalized_type.includes("binary")
+		&& !normalized_type.includes("blob");
 }
 
 function is_string_type(type_string: string): boolean {
@@ -14,18 +38,20 @@ function is_string_type(type_string: string): boolean {
 	return STRING_TYPE_PARTS.some((type_part) => normalized_type.includes(type_part));
 }
 
+/**
+ * Validate one display column. Display columns are optional - a table or view
+ * without them is valid and falls back to natural string columns. When present
+ * they must be string-compatible; on tables they must also be generated so
+ * they stay readable but are excluded from create/update payloads.
+ */
 function validate_display_column(
 	columns: ColumnDef[] | DdlCachedColumn[],
 	object_name: string,
 	column_name: string,
-	required: boolean,
 	require_generated: boolean,
 ): void {
 	const column = columns.find((candidate) => candidate.name === column_name);
-	if (!column) {
-		if (!required) return;
-		throw new Error(`Display contract violation: "${object_name}" must expose a "${column_name}" string column.`);
-	}
+	if (!column) return;
 	if (!is_string_type(column.type_string)) {
 		throw new Error(`Display contract violation: "${object_name}.${column_name}" must be string-compatible, got "${column.type_string || "unknown"}".`);
 	}
@@ -35,8 +61,18 @@ function validate_display_column(
 }
 
 function validate_display_columns(object_name: string, columns: ColumnDef[] | DdlCachedColumn[], require_generated: boolean): void {
-	validate_display_column(columns, object_name, DISPLAY_FIELD, true, require_generated);
-	validate_display_column(columns, object_name, OPTION_DISPLAY_FIELD, false, require_generated);
+	validate_display_column(columns, object_name, DISPLAY_FIELD, require_generated);
+	validate_display_column(columns, object_name, OPTION_DISPLAY_FIELD, require_generated);
+	// View denormalizations (<stem>_display) are optional too - generated
+	// sort/search/grid code uses them only when present. When one does exist it
+	// must be string-compatible so it can serve as readable text.
+	if (!require_generated) {
+		for (const column of columns) {
+			if (column.name.toLowerCase().endsWith("_display") && !is_string_type(column.type_string)) {
+				throw new Error(`Display contract violation: "${object_name}.${column.name}" must be string-compatible, got "${column.type_string || "unknown"}".`);
+			}
+		}
+	}
 }
 
 export function validate_schema_display_contract(schemas: SchemaObject[]): void {
@@ -45,31 +81,10 @@ export function validate_schema_display_contract(schemas: SchemaObject[]): void 
 	}
 }
 
-function validate_view_fk_displays(table: DdlCachedTable): void {
-	if (!table.has_view || !table.view_columns) return;
-	const view_column_names = new Set(table.view_columns.map((column) => column.name));
-	const foreign_keys = [...table.foreign_keys, ...table.inferred_foreign_keys, ...table.view_foreign_keys];
-	const checked_fields = new Set<string>();
-
-	for (const foreign_key of foreign_keys) {
-		if (checked_fields.has(foreign_key.column_name)) continue;
-		checked_fields.add(foreign_key.column_name);
-		if (!foreign_key.column_name.endsWith("_id")) continue;
-		if (!view_column_names.has(foreign_key.column_name)) continue;
-
-		const stem = foreign_key.column_name.slice(0, -3);
-		const display_field = `${stem}_display`;
-		if (!view_column_names.has(display_field)) {
-			throw new Error(`Display contract violation: "${table.view_name}" must expose "${display_field}" for FK "${foreign_key.column_name}".`);
-		}
-	}
-}
-
 function validate_cached_table_display_contract(table: DdlCachedTable): void {
 	validate_display_columns(table.name, table.columns, true);
 	if (table.has_view && table.view_columns) {
 		validate_display_columns(table.view_name ?? `v_${table.name}`, table.view_columns, false);
-		validate_view_fk_displays(table);
 	}
 }
 

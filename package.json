@@ -1,5 +1,5 @@
 {
-	"name": "reepolee",
+	"name": "reepolee-dev",
 	"project-type": "template",
 	"ree": {
 		"project_family": "reepolee",
@@ -26,7 +26,7 @@
 			"reepolee/ree-templates"
 		]
 	},
-	"version": "26.09.14",
+	"version": "26.09.15",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",

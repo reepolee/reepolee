@@ -113,13 +113,16 @@ export function render_create_table(table: StudioTable, dialect: Dialect): strin
 	for (const fk of table.table_foreign_keys) {
 		const prefix = fk.constraint_name ? `CONSTRAINT ${fk.constraint_name} ` : "";
 		let line = `    ${prefix}FOREIGN KEY(${fk.column}) REFERENCES ${fk.ref_table}(${fk.ref_column})`;
-		if (fk.on_update) line += ` ON UPDATE ${fk.on_update}`;
-		if (fk.on_delete) line += ` ON DELETE ${fk.on_delete}`;
+		if (fk.actions_raw) line += ` ${fk.actions_raw}`;
+		else {
+			if (fk.on_update) line += ` ON UPDATE ${fk.on_update}`;
+			if (fk.on_delete) line += ` ON DELETE ${fk.on_delete}`;
+		}
 		lines.push(line);
 	}
 
 	for (const unique_key of table.table_unique_keys) {
-		const columns = unique_key.columns.join(",");
+		const columns = unique_key.columns_raw ?? unique_key.columns.join(",");
 		if (unique_key.key_name) {
 			lines.push(`    UNIQUE KEY ${unique_key.key_name}(${columns})`);
 		} else if (unique_key.constraint_name) {
@@ -129,9 +132,17 @@ export function render_create_table(table: StudioTable, dialect: Dialect): strin
 		}
 	}
 
+	// Body lines the parser did not model (e.g. table-level PRIMARY KEY(...)) are
+	// re-emitted verbatim at the end so regeneration never drops them.
+	for (const extra of table.extra_lines_raw ?? []) {
+		lines.push(`    ${extra}`);
+	}
+
 	const body = lines.join(",\n");
+	const prefix = table.create_prefix_raw ?? "TABLE ";
+	const name = table.name_raw ?? table.name;
 	const suffix = table.table_suffix_raw ? ` ${table.table_suffix_raw}` : "";
-	return `CREATE TABLE ${table.name} (\n${body}\n)${suffix};`;
+	return `CREATE ${prefix}${name} (\n${body}\n)${suffix};`;
 }
 
 /** Render a CREATE INDEX statement in house style. */

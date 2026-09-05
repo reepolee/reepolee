@@ -115,7 +115,8 @@
 	},
 	"nav_auth": {
 		"invite_user": "Povabi uporabnika",
-		"login": "Prijava"
+		"login": "Prijava",
+		"profile": "Profil"
 	},
 	"search": {
 		"search_term": "Iskanje ...",
@@ -182,6 +183,7 @@
 			"en": "angleščino",
 			"sl": "slovenščino"
 		},
+		"languages": "Jeziki",
 		"modifying": "Spremenili boste",
 		"nav_group_auto": "Samodejno",
 		"nav_group_manual": "Ročno",
@@ -192,6 +194,8 @@
 		"page_not_found": "Stran ne obstaja",
 		"page_not_found_description": "Žal te strani ne moremo prikazati",
 		"records": "zapis(ov)",
+		"theme_dark": "Temni način",
+		"theme_light": "Svetli način",
 		"show_actions": "Prikaži dejanja",
 		"show_less": "Pokaži manj",
 		"show_more": "Pokaži več"

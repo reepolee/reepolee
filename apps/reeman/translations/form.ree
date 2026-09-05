@@ -3,7 +3,7 @@
 	<div class="p-4">
 		<div class="flex items-center justify-between">
 			<ree-breadcrumbs items="{= breadcrumb_items }"></ree-breadcrumbs>
-			<a id="close-translation-editor" href="{~ localized_path(return_url) }" class="grid size-10 place-items-center rounded hover:bg-neutral-200" aria-label="{_ actions.close}" title="{_ actions.close}">
+			<a id="close-translation-editor" href="{~ localized_path(return_url) }" class="as-icon size-10 rounded hover:bg-neutral-200" aria-label="{_ actions.close}" title="{_ actions.close}">
 				<ree-icon name="x" class="size-6"></ree-icon>
 			</a>
 		</div>
@@ -36,7 +36,7 @@
 									</td>
 								{/each}
 								<td class="px-2 py-2 text-center">
-									<button type="button" class="text-text-tertiary hover:text-brand text-xs cursor-pointer" command="show-modal" commandfor="{= dialog_id }">
+									<button type="button" class="as-icon text-text-tertiary hover:text-brand text-xs" command="show-modal" commandfor="{= dialog_id }">
 										<ree-icon name="x" class="size-4"></ree-icon>
 									</button>
 								</td>

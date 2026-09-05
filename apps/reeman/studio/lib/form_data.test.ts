@@ -127,6 +127,9 @@ describe("domain naming", () => {
 	test("recognizes conventional and duration column names", () => {
 		expect(resolve_column_domain("id", "INTEGER", "sqlite")).toBe("pk_id");
 		expect(resolve_column_domain("cook_time_minutes", "INTEGER", "sqlite")).toBe("minutes");
+		expect(resolve_column_domain("tax_percentage", "DECIMAL(12,4)", "mysql")).toBe("percentage");
+		expect(resolve_column_domain("total_amount", "DECIMAL(18,2)", "mysql")).toBe("amount");
+		expect(resolve_column_domain("net_price", "DECIMAL(18,2)", "mysql")).toBe("amount");
 		expect(resolve_column_domain("first_name", "VARCHAR(30)", "mysql")).toBe("first_name");
 		expect(resolve_column_domain("display", "VARCHAR(61)", "mysql")).toBe("varchar");
 		expect(suggest_column_name("minutes", "cook_time")).toBe("cook_time_minutes");

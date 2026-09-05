@@ -3,40 +3,33 @@
 -- pending -> running -> completed | failed, with the reaper re-queueing stale
 -- running rows. scheduled_for > 0 marks a delayed job (0 = immediate); delayed
 -- jobs are not claimable until their timestamp arrives, so no sweeper is needed.
-
 DROP TABLE IF EXISTS jobs;
 
-CREATE TABLE jobs (
-    id            VARCHAR(36)  NOT NULL COMMENT 'ICU',
-    type          VARCHAR(64)  NOT NULL COMMENT '',
-    queue         VARCHAR(64)  NOT NULL COMMENT 'ICU',
-    payload       TEXT         NOT NULL COMMENT '',
-    status        VARCHAR(16)  NOT NULL DEFAULT 'pending' COMMENT 'ICU',
-    attempts      INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '',
-    max_attempts  INT UNSIGNED NOT NULL DEFAULT 3 COMMENT '',
-    error_message TEXT         NULL COMMENT '',
-    created_at    BIGINT       NOT NULL COMMENT '',
-    last_run_at   BIGINT       NOT NULL DEFAULT 0 COMMENT '',
-    scheduled_for BIGINT       NOT NULL DEFAULT 0 COMMENT '',
-    expires_at    BIGINT       NOT NULL COMMENT '',
-    display       VARCHAR(36)  GENERATED ALWAYS AS (id) VIRTUAL,
-    PRIMARY KEY (id),
-    -- Claim path: WHERE queue = ? AND status = 'pending'
-    --              AND (scheduled_for = 0 OR scheduled_for <= ?) ORDER BY created_at
-    INDEX jobs_queue_status_scheduled_created (queue, status, scheduled_for, created_at),
-    -- Reaper path: WHERE status = 'running' AND last_run_at < ?
-    INDEX jobs_status (status),
-    -- TTL sweep: WHERE expires_at <= ?
-    INDEX jobs_expires_at (expires_at)
-) COMMENT '';
+CREATE TABLE IF NOT EXISTS jobs (
+    id            VARCHAR(36) NOT NULL COMMENT 'ICU',
+    type          VARCHAR(64) NOT NULL,
+    queue         VARCHAR(64) NOT NULL COMMENT 'ICU',
+    payload       TEXT        NOT NULL,
+    status        VARCHAR(16) NOT NULL DEFAULT 'pending' COMMENT 'ICU',
+    attempts      INT(10)     NOT NULL DEFAULT 0,
+    max_attempts  INT(10)     NOT NULL DEFAULT 3,
+    error_message TEXT        DEFAULT NULL,
+    created_at    BIGINT(20)  NOT NULL,
+    last_run_at   BIGINT(20)  NOT NULL DEFAULT 0,
+    scheduled_for BIGINT(20)  NOT NULL DEFAULT 0,
+    expires_at    BIGINT(20)  NOT NULL,
+    PRIMARY KEY(id),
+    KEY jobs_queue_status_scheduled_created(queue, status, scheduled_for, created_at),
+    KEY jobs_status(status),
+    KEY jobs_expires_at(expires_at)
+);
 
 -- Tiny key/value table for the worker heartbeat (worker PID) - storage-agnostic
 -- replacement for the Redis `queue:worker:pid` key.
 DROP TABLE IF EXISTS queue_meta;
 
-CREATE TABLE queue_meta (
+CREATE TABLE IF NOT EXISTS queue_meta (
     meta_key   VARCHAR(64)  NOT NULL COMMENT 'ICU',
-    meta_value VARCHAR(255) NOT NULL DEFAULT '' COMMENT '',
-    display    VARCHAR(64)  GENERATED ALWAYS AS (meta_key) VIRTUAL,
-    PRIMARY KEY (meta_key)
-) COMMENT '';
+    meta_value VARCHAR(255) NOT NULL DEFAULT '',
+    PRIMARY KEY(meta_key)
+);

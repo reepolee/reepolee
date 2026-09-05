@@ -59,8 +59,8 @@ export async function get_view_dependencies(table_name: string): Promise<string[
 
 export interface DisplaySource {
 	source_name: string;
-	option_field: "display" | "option_display";
-	search_field: "display" | "option_display" | "search_text";
+	option_field: string;
+	search_field: string;
 	/** Whether the resolved source exposes `archived_at`, so FK dropdowns and
 	 * autocomplete lookups over it can exclude archived rows. A view only
 	 * qualifies if it selects the column through from its base table. */
@@ -79,7 +79,9 @@ export async function resolve_display_source(table_name: string, prefer_view: bo
 	if (!columns || !object_name) { throw new Error(`Display contract violation: view "v_${table_name}" is unavailable.`); }
 
 	const column_names = columns.map((column) => column.name);
-	const option_field = resolve_option_display_field(column_names);
+	// Resolution carries the column types so the fallback can pick the first
+	// non-binary string column when neither option_display nor display exists.
+	const option_field = resolve_option_display_field(columns);
 	const search_field = column_names.includes("search_text") ? "search_text" : option_field;
 	const has_archive = column_names.includes(ARCHIVE_TIMESTAMP_FIELD);
 	log_step(`resolve_display_source: ${object_name} uses option="${option_field}", search="${search_field}", archive=${has_archive}`);

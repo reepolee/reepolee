@@ -6,7 +6,7 @@
 
 		{#if props.enable_archive}
 			<div class="grid grid-cols-2 place-items-center p-0! m-0!">
-				<button class="w-6 text-neutral-600 cursor-grab hover:text-white"
+				<button class="as-icon size-6 text-neutral-600 cursor-grab hover:text-white"
 					onclick="event.stopPropagation();event.preventDefault()">
 					<ree-icon name="grip"></ree-icon>
 				</button>

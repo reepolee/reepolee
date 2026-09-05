@@ -115,7 +115,8 @@
 	},
 	"nav_auth": {
 		"invite_user": "Invite user",
-		"login": "Login"
+		"login": "Login",
+		"profile": "Profile"
 	},
 	"search": {
 		"search_term": "Search...",
@@ -182,6 +183,7 @@
 			"en": "English",
 			"sl": "Slovenian"
 		},
+		"languages": "Languages",
 		"modifying": "You are about to modify",
 		"nav_group_auto": "Auto",
 		"nav_group_manual": "Manual",
@@ -192,6 +194,8 @@
 		"page_not_found": "Page Not Found",
 		"page_not_found_description": "Sorry, we can't display this page",
 		"records": "record(s)",
+		"theme_dark": "Dark mode",
+		"theme_light": "Light mode",
 		"show_actions": "Show actions",
 		"show_less": "Show less",
 		"show_more": "Show more"

@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import { parse_ddl_file } from "./ddl_parser";
 import { serialize_studio_file } from "./ddl_writer";
 import { get_domain_types, make_default_table, resolve_column_domain } from "./domain_types";
-import { resolve_demo_path } from "../../database/lib/sql_files";
+import { list_demo_files, resolve_demo_path } from "../../database/lib/sql_files";
 import { append_studio_metadata, apply_studio_metadata, extract_studio_metadata } from "./studio_metadata";
 import type { Dialect, StudioFile, StudioStatement, StudioTable } from "./types";
 
@@ -100,6 +100,23 @@ export function get_studio_tables(model: StudioFile): StudioTable[] {
 	return model.statements.filter((item) => item.kind === "create_table" && item.table).map((item) => item.table!);
 }
 
+/** Return every table defined alongside the selected Studio SQL file. */
+export function get_folder_studio_tables(path: string): StudioTable[] {
+	const normalized_path = path.replaceAll("\\", "/");
+	const folder = normalized_path.slice(0, normalized_path.lastIndexOf("/"));
+	const dialect = dialect_from_path(normalized_path);
+	const files = list_demo_files().filter((file) => {
+		const file_path = file.path.replaceAll("\\", "/");
+		return file.dialect === dialect && file_path.slice(0, file_path.lastIndexOf("/")) === folder;
+	});
+	const tables: StudioTable[] = [];
+	for (const file of files) {
+		const model = read_studio_file(file.path);
+		tables.push(...get_studio_tables(model));
+	}
+	return tables;
+}
+
 export function add_new_table(model: StudioFile, name: string): void {
 	assert_new_table_name(model, name);
 	const table = make_default_table(name, model.dialect);
@@ -183,12 +200,8 @@ function new_table_placeholder(table: StudioTable): StudioStatement {
 	return { gap: "", kind: "create_table", object_name: table.name, text: "", table, is_new: true };
 }
 
-type ForeignKeyInfo = { column_name: string; ref_table: string; ref_column: string; stem: string; alias: string; };
-
 export function render_view(model: StudioFile, table: StudioTable): string {
-	const foreign_keys = detect_foreign_keys(model, table);
 	const selected = table.columns.map((column) => `t.${column.name}`);
-	for (const foreign_key of foreign_keys) selected.push(`${foreign_key.alias}.display AS ${foreign_key.stem}_display`);
 
 	const lines = [`CREATE VIEW v_${table.name} AS`, "SELECT"];
 	for (let index = 0; index < selected.length; index++) {
@@ -196,36 +209,7 @@ export function render_view(model: StudioFile, table: StudioTable): string {
 		lines.push(`    ${selected[index]}${comma}`);
 	}
 	lines.push(`FROM ${table.name} t`);
-	for (const foreign_key of foreign_keys) {
-		lines.push(`    LEFT JOIN ${foreign_key.ref_table} ${foreign_key.alias}`);
-		lines.push(`        ON ${foreign_key.alias}.${foreign_key.ref_column} = t.${foreign_key.column_name}`);
-	}
 	return `${lines.join("\n")};`;
-}
-
-function detect_foreign_keys(model: StudioFile, table: StudioTable): ForeignKeyInfo[] {
-	const tables = get_studio_tables(model);
-	const aliases = new Map<string, number>();
-	const result: ForeignKeyInfo[] = [];
-
-	for (const column of table.columns) {
-		const explicit = column.references;
-		const implicit = explicit ? null : detect_soft_reference(column.name, tables);
-		const reference = explicit ?? implicit;
-		if (!reference) continue;
-
-		const stem = column.name.endsWith("_id") ? column.name.slice(0, -3) : reference.table.replace(/s$/, "");
-		const count = (aliases.get(stem) ?? 0) + 1;
-		aliases.set(stem, count);
-		result.push({
-			column_name: column.name,
-			ref_table: reference.table,
-			ref_column: reference.column,
-			stem,
-			alias: count === 1 ? stem : `${stem}_${count}`,
-		});
-	}
-	return result;
 }
 
 const SYSTEM_COLUMN_NAMES = new Set(["id", "display", "option_display", "created_at", "updated_at"]);

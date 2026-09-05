@@ -1,8 +1,12 @@
 import { describe, expect, test } from "bun:test";
+import { readdirSync } from "node:fs";
+import { join } from "node:path";
 
-import { add_new_table, copy_table, delete_table, generate_view } from "./model";
+import { add_new_table, copy_table, delete_table, generate_view, get_folder_studio_tables, get_studio_tables, read_studio_file } from "./model";
 import { serialize_studio_file } from "./ddl_writer";
 import type { StudioFile, StudioTable } from "./types";
+
+const REPO_ROOT = join(import.meta.dir, "..", "..", "..", "..");
 
 describe("studio model actions", () => {
 	test("new and copied tables use writer placeholders", () => {
@@ -19,14 +23,42 @@ describe("studio model actions", () => {
 		expect(model.statements.some((item) => item.object_name === "authors" || item.parent_table === "authors")).toBe(false);
 	});
 
-	test("generated view includes soft foreign key joins and drop statement", () => {
+	test("generated view is a plain column projection and comes with a drop statement", () => {
 		const model = example_file();
 		const recipes = table("recipes", ["id", "author_id", "display"]);
 		model.statements.push({ gap: "", kind: "create_table", object_name: "recipes", text: "", table: recipes });
 		generate_view(model, "recipes");
 		const view = model.statements.find((item) => item.kind === "create_view");
-		expect(view?.text).toContain("LEFT JOIN authors author");
+		// Views are plain projections of the table's columns - no FK joins and no
+		// <stem>_display aliases, which are optional and used only when present.
+		expect(view?.text).toBe("CREATE VIEW v_recipes AS\nSELECT\n    t.id,\n    t.author_id,\n    t.display\nFROM recipes t;");
+		expect(view?.text).not.toContain("LEFT JOIN");
 		expect(model.statements.some((item) => item.kind === "drop_view" && item.object_name === "v_recipes")).toBe(true);
+	});
+
+	test("lego_league_ddl files using CREATE TABLE IF NOT EXISTS open through read_studio_file and list their tables", () => {
+		const files = readdirSync(join(REPO_ROOT, "sql/mysql/lego_league_ddl")).filter((file) => file.endsWith(".sql")).sort();
+		expect(files.length).toBeGreaterThan(0);
+
+		for (const file of files) {
+			const path = `sql/mysql/lego_league_ddl/${file}`;
+			const model = read_studio_file(path);
+			const expected_table = file.replace(/^\d+-/, "").replace(/\.sql$/, "");
+			if (file === "411-views.sql") {
+				expect(get_studio_tables(model).length).toBe(0);
+			} else {
+				const tables = get_studio_tables(model);
+				expect(tables.map((t) => t.name)).toEqual([expected_table]);
+			}
+		}
+	});
+
+	test("folder table discovery includes foreign key targets from sibling DDL files", () => {
+		const tables = get_folder_studio_tables("sql/mysql/lego_league_ddl/106-packages.sql");
+		const names = tables.map((item) => item.name);
+		expect(names).toContain("packages");
+		expect(names).toContain("programmes");
+		expect(names.length).toBeGreaterThan(2);
 	});
 
 	test("generated view stays separated from an existing leading view", () => {

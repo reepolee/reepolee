@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 import { parse_ddl_file } from "./ddl_parser";
@@ -9,11 +9,21 @@ import type { Dialect } from "./types";
 
 const REPO_ROOT = join(import.meta.dir, "..", "..", "..", "..");
 
+function lego_league_files(): { path: string; dialect: Dialect; }[] {
+	// 411-views.sql has no CREATE TABLE statements, so the regeneration-fidelity
+	// loop below (which asserts tables exist) skips it.
+	return readdirSync(join(REPO_ROOT, "sql/mysql/lego_league_ddl"))
+		.filter((file) => file.endsWith(".sql") && file !== "411-views.sql")
+		.sort()
+		.map((file) => ({ path: `sql/mysql/lego_league_ddl/${file}`, dialect: "mysql" as Dialect }));
+}
+
 const SAMPLE_FILES: { path: string; dialect: Dialect; }[] = [
 	{ path: "sql/sqlite/demos/05-frameworks.sql", dialect: "sqlite" },
 	{ path: "sql/mysql/demos/05-frameworks.sql", dialect: "mysql" },
 	{ path: "sql/sqlite/demos/06-init-books.sql", dialect: "sqlite" },
 	{ path: "sql/mysql/demos/06-init-books.sql", dialect: "mysql" },
+	...lego_league_files(),
 ];
 
 describe("regeneration fidelity", () => {
@@ -33,6 +43,36 @@ describe("regeneration fidelity", () => {
 });
 
 describe("serialize with edits", () => {
+	test("IF NOT EXISTS clause survives a dirty save while untouched statements stay byte-identical", () => {
+		const path = "sql/mysql/lego_league_ddl/241-team_statuses.sql";
+		const source = readFileSync(join(REPO_ROOT, path), "utf-8");
+		const model = parse_ddl_file(source, path, "mysql");
+
+		const team_statuses = model.statements.find((s) => s.kind === "create_table" && s.object_name === "team_statuses")!;
+		team_statuses.table!.columns.push({
+			name: "note",
+			type_string: "VARCHAR(255)",
+			nullability: "unspecified",
+			default_value: "''",
+			is_primary_key: false,
+			is_auto_increment: false,
+			is_unique: false,
+			is_generated: false,
+			on_update_current_timestamp: false,
+			modifier_order: ["default"],
+		});
+		team_statuses.dirty = true;
+
+		const output = serialize_studio_file(model);
+		// The IF NOT EXISTS leading clause is preserved on regeneration.
+		expect(output).toContain("CREATE TABLE IF NOT EXISTS team_statuses (");
+		// Untouched statements stay byte-identical: every non-create_table
+		// statement from the source appears verbatim in the output.
+		for (const stmt of model.statements.filter((s) => s.kind !== "create_table")) {
+			expect(output).toContain(stmt.text);
+		}
+	});
+
 	test("dirty table regenerates, everything else stays verbatim", () => {
 		const path = "sql/sqlite/demos/05-frameworks.sql";
 		const source = readFileSync(join(REPO_ROOT, path), "utf-8");

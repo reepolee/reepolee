@@ -14,6 +14,7 @@ import {
 	IMAGE_SUFFIXES,
 	MAINTENANCE_FIELDS,
 	PERCENT_FIELD,
+	TEXTAREA_SUFFIXES,
 } from "$config/db_structure";
 import { DOMAIN_TYPES as MYSQL_DT } from "$config/domain_types/mysql";
 import { DOMAIN_TYPES as SQLITE_DT } from "$config/domain_types/sqlite";
@@ -114,6 +115,16 @@ export function resolve_domain_type(column_name: string, column_type: string): D
 	if (FILE_SUFFIXES.some((suffix) => lower_name.endsWith(suffix))) {
 		const canonical_sql = (dt_map as Record<string, string>).file_path!;
 		return { domain: "file_path", compliant: normalized_type === normalize_sql(canonical_sql) };
+	}
+
+	if (lower_name.endsWith("_percent") || lower_name.endsWith("_percentage")) {
+		const canonical_sql = (dt_map as Record<string, string>).percentage!;
+		return { domain: "percentage", compliant: normalized_type === normalize_sql(canonical_sql) };
+	}
+
+	if (lower_name.endsWith("_price") || lower_name.endsWith("_amount")) {
+		const canonical_sql = (dt_map as Record<string, string>).amount!;
+		return { domain: "amount", compliant: normalized_type === normalize_sql(canonical_sql) };
 	}
 
 	return { domain: null, compliant: false };
@@ -350,6 +361,10 @@ export function generate_fields_object(schema_obj: SchemaObject, type_mapper: Ty
 		// Detect _file suffix - stores an uploaded document path, rendered via <file-upload>
 		// in forms and as a filename/size link in grids. Only auto-detect if not explicitly set.
 		if (FILE_SUFFIXES.some((suffix) => col.name.toLowerCase().endsWith(suffix)) && !attributes.type) { field_type = "file"; }
+
+		// Detect description and *_description fields - freeform copy uses a textarea
+		// even when its SQL type is a short VARCHAR. An explicit column-comment type still wins.
+		if (TEXTAREA_SUFFIXES.some((suffix) => col.name.toLowerCase().endsWith(suffix)) && !attributes.type) { field_type = "textarea"; }
 
 		// Parse max length from type_string for string types (e.g. varchar(255))
 		// Only apply when the user hasn't explicitly set max via column comment

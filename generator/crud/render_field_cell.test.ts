@@ -51,6 +51,11 @@ describe("default_field_helper", () => {
 		expect(default_field_helper(typed_field("price", "number", { column_type: "Decimal(18,2)" }))).toBe("display_currency");
 	});
 
+	test("maps amount and percentage domains to display helpers", () => {
+		expect(default_field_helper(typed_field("total_amount", "number", { domain_type: "amount" }))).toBe("display_currency");
+		expect(default_field_helper(typed_field("tax_percentage", "number", { domain_type: "percentage" }))).toBe("display_percent");
+	});
+
 	test("maps typed fields to their matching helper", () => {
 		expect(default_field_helper(typed_field("name", "tags"))).toBe("tags");
 		expect(default_field_helper(typed_field("birthday", "datetime"))).toBe("js_datetime_to_locale_string");

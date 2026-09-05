@@ -5,9 +5,10 @@ import type { BunRequest } from "bun";
 import { apply_column_renames, detect_column_renames } from "./lib/column_rename";
 import { check_studio_file, format_check_report } from "./lib/ddl_checker";
 import { diff_ddl_lines } from "./lib/ddl_diff";
+import { format_ddl_for_diff } from "./lib/ddl_format";
 import { render_create_table } from "./lib/ddl_writer";
 import { parse_table_form, validate_table_references } from "./lib/form_data";
-import { add_new_table, copy_table, delete_table, delete_view, derive_copy_path, generate_view, get_studio_tables, get_table_statement, read_studio_file, StudioError, write_studio_file, write_studio_file_copy } from "./lib/model";
+import { add_new_table, copy_table, delete_table, delete_view, derive_copy_path, generate_view, get_folder_studio_tables, get_studio_tables, get_table_statement, read_studio_file, StudioError, write_studio_file, write_studio_file_copy } from "./lib/model";
 import { adapt_schema_to_standard } from "./lib/schema_adaptation";
 import { read_required, render_studio_page, studio_url } from "./page";
 import { clear_versions, get_version, push_version, reset_versions } from "./lib/undo_store";
@@ -21,8 +22,9 @@ export async function post_save_table(req: BunRequest): Promise<Response> {
 		const statement = get_table_statement(model, read_required(params, "table_name"));
 		const source_table = statement.table!;
 		const source_indexes: (number | null)[] = [];
-		statement.table = parse_table_form(params, source_table, model.dialect, get_studio_tables(model), source_indexes);
-		validate_table_references(statement.table, model);
+		const tables = get_folder_studio_tables(model.path);
+		statement.table = parse_table_form(params, source_table, model.dialect, tables, source_indexes);
+		validate_table_references(statement.table, model, tables);
 		statement.dirty = true;
 
 		// INSERTs, triggers, and indexes are raw text with no editor of their own,
@@ -56,10 +58,13 @@ export async function post_preview(req: BunRequest): Promise<Response> {
 		const statement = get_table_statement(model, read_required(params, "table_name"));
 		const source_table = statement.table!;
 		const original_ddl = statement.is_new ? "" : render_create_table(source_table, model.dialect);
-		const table = parse_table_form(params, source_table, model.dialect, get_studio_tables(model));
-		validate_table_references(table, model);
+		const tables = get_folder_studio_tables(model.path);
+		const table = parse_table_form(params, source_table, model.dialect, tables);
+		validate_table_references(table, model, tables);
 		const updated_ddl = render_create_table(table, model.dialect);
-		const diff = diff_ddl_lines(original_ddl, updated_ddl);
+		const formatted_original_ddl = format_ddl_for_diff(original_ddl, model.dialect);
+		const formatted_updated_ddl = format_ddl_for_diff(updated_ddl, model.dialect);
+		const diff = diff_ddl_lines(formatted_original_ddl, formatted_updated_ddl);
 
 		let version = Number(params.get("v") ?? "0");
 		if (!statement.is_new) {

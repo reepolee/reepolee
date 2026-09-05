@@ -232,6 +232,7 @@
 		--color-surface-raised: #1f2937;
 		--color-surface-sunken: #111827;
 		--color-border: #374151;
+		--color-text-primary: #f9fafb;
 		--color-text-secondary: #9ca3af;
 		--color-text-tertiary: #d1d5db;
 		--color-danger-50: #450a0a;
@@ -277,6 +278,7 @@ html.dark {
 	--color-surface-raised: #1f2937;
 	--color-surface-sunken: #111827;
 	--color-border: #374151;
+	--color-text-primary: #f9fafb;
 	--color-text-secondary: #9ca3af;
 	--color-text-tertiary: #d1d5db;
 	--color-danger-50: #450a0a;
@@ -346,6 +348,14 @@ html.theme-transitioning * {
 	&:disabled {
 		@apply cursor-not-allowed opacity-60;
 		transform: none;
+	}
+}
+
+@utility as-icon {
+	@apply as-button size-10 shrink-0 p-0 no-underline;
+
+	&:focus-visible {
+		@apply outline-2 outline-offset-2 outline-brand;
 	}
 }
 

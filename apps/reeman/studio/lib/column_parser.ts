@@ -24,7 +24,7 @@ export function parse_column(line: string): StudioColumn | null {
 	if (trimmed === "") return null;
 	if (/^(FOREIGN\s+KEY|PRIMARY\s+KEY|UNIQUE\s*\(|CONSTRAINT|CHECK\s*\(|KEY\s)/i.test(trimmed)) return null;
 
-	const head = /^(\w+)(\s+)([A-Za-z]+(?:\s+UNSIGNED)?(?:\([^)]*\))?)(\s*)(.*)$/is.exec(trimmed);
+	const head = /^((?:\w+|`[^`]*`|"[^"]*"|\[[^\]]*\]))(\s+)([A-Za-z]+(?:\s+UNSIGNED)?(?:\([^)]*\))?)(\s*)(.*)$/is.exec(trimmed);
 	if (!head) return null;
 	const column: StudioColumn = {
 		name: head[1]!,
@@ -125,6 +125,10 @@ export function parse_table_foreign_key(line: string): TableForeignKey | null {
 	const on_delete = /ON\s+DELETE\s+(CASCADE|SET NULL|SET DEFAULT|RESTRICT|NO ACTION)/i.exec(match[5]!);
 	if (on_update) foreign_key.on_update = on_update[1]!.toUpperCase();
 	if (on_delete) foreign_key.on_delete = on_delete[1]!.toUpperCase();
+	// Preserve the verbatim ON UPDATE/ON DELETE tail so regeneration keeps the
+	// original clause order (e.g. ON DELETE before ON UPDATE).
+	const actions_raw = match[5]!.trim();
+	if (actions_raw !== "") foreign_key.actions_raw = actions_raw;
 	return foreign_key;
 }
 
@@ -132,13 +136,13 @@ export function parse_table_foreign_key(line: string): TableForeignKey | null {
 export function parse_table_unique_key(line: string): TableUniqueKey | null {
 	const trimmed = line.trim();
 	const named_key = /^UNIQUE\s+KEY\s+(\w+)\s*\(([^)]+)\)$/i.exec(trimmed);
-	if (named_key) return { key_name: named_key[1]!, columns: parse_key_columns(named_key[2]!) };
+	if (named_key) return { key_name: named_key[1]!, columns: parse_key_columns(named_key[2]!), columns_raw: named_key[2]! };
 
 	const constraint = /^CONSTRAINT\s+(\w+)\s+UNIQUE\s*\(([^)]+)\)$/i.exec(trimmed);
-	if (constraint) return { constraint_name: constraint[1]!, columns: parse_key_columns(constraint[2]!) };
+	if (constraint) return { constraint_name: constraint[1]!, columns: parse_key_columns(constraint[2]!), columns_raw: constraint[2]! };
 
 	const unique = /^UNIQUE\s*\(([^)]+)\)$/i.exec(trimmed);
-	if (unique) return { columns: parse_key_columns(unique[1]!) };
+	if (unique) return { columns: parse_key_columns(unique[1]!), columns_raw: unique[1]! };
 	return null;
 }
 

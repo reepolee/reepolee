@@ -69,9 +69,6 @@
 			<sidebar-footer></sidebar-footer>
 		</aside>
 
-		{#if props.user && props.web_push_enabled}
-			<button id="web-push-toggle" type="button" class="fixed bottom-4 right-4 z-10 cursor-pointer rounded border border-neutral-300 bg-neutral-100 px-3 py-2 text-xs shadow hover:bg-neutral-200" data-enabled-label="{_ ui.notifications_disable}" data-disabled-label="{_ ui.notifications_enable}" data-error-label="{_ ui.notifications_unavailable}">{_ ui.notifications_enable}</button>
-		{/if}
 
 		<main id="main" class="max-xl:min-w-screen">
 			{#if props.busy_poller}
@@ -103,7 +100,7 @@
 							{= toast.message } {~ toast.user ? `(${toast.user})` : "" }
 						</div>
 
-						<a href="#toast-{= toast.key }" class="absolute top-1 right-1 h-8 w-8 flex items-center justify-center text-lg leading-none opacity-70 hover:opacity-100 hover:bg-black/10 rounded-full no-underline" aria-label="Close toast">
+						<a href="#toast-{= toast.key }" class="as-icon absolute top-1 right-1 h-8 w-8 text-lg leading-none opacity-70 hover:opacity-100 hover:bg-black/10 rounded-full no-underline" aria-label="Close toast">
 							🗙
 						</a>
 

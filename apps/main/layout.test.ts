@@ -162,10 +162,10 @@ describe("layout presentation-boundary metadata", () => {
 		const section_start = html.indexOf('data-nav-section="admin:admin.data"');
 		const section_end = html.indexOf("</details>", section_start);
 		const section_button = html.indexOf("data-nav-section-mode-toggle");
-		const group_end = html.lastIndexOf("</details>");
+		const group_end = html.indexOf("</details>", html.indexOf('data-nav-module="admin"'));
 		const group_button = html.indexOf("data-nav-mode-toggle");
 
-		expect(summaries).toHaveLength(2);
+		expect(summaries).toHaveLength(3);
 		expect(summaries.every((summary) => !summary.includes("<button"))).toBe(true);
 		expect(section_button).toBeGreaterThan(section_end);
 		expect(group_button).toBeGreaterThan(group_end);
@@ -214,25 +214,20 @@ describe("layout presentation-boundary metadata", () => {
 		expect(html).toContain('aria-current="page"');
 		expect(html).toContain('href="http://localhost:2339/"');
 		expect(html).toContain('href="http://localhost:2340/"');
-		expect(html).toContain('data-dev-app-switcher hidden class="ml-auto flex items-center gap-1"');
-		expect(html).toContain("new AbortController()");
-		expect(html).toContain('mode: "no-cors"');
-		// LAN access: localhost links are rewritten to the host the page was served from
-		expect(html).toContain('const server_origin = `${location.protocol}//${location.hostname}`');
-		expect(html).toContain('const parsed_url = new URL(app_link.href, location.href)');
-		expect(html).toContain('parsed_url.hostname = location.hostname');
-		expect(html).toContain('if (location.protocol === "https:") parsed_url.protocol = "https:"');
+		expect(html).toContain('class="ml-auto flex items-center gap-1" aria-label="Apps"');
+		expect(html).not.toContain('data-dev-app-switcher');
+		expect(html).not.toContain("new AbortController()");
 		expect(html).toContain('class="flex items-center justify-between gap-2 px-4 py-4"');
 		expect(html).toContain('class="w-24"');
-		expect(html).toContain('class="flex items-center gap-2 font-semibold pl-2"');
-		expect(html.indexOf('aria-label="Apps"')).toBeLessThan(html.indexOf('<footer class="bottom flex flex-col'));
+		expect(html).toContain('<summary class="cursor-pointer list-none font-semibold pl-2">');
+		expect(html.indexOf('aria-label="Apps"')).toBeLessThan(html.indexOf('<footer class="bottom px-4 py-4">'));
 		expect(html).toContain('<aside class="flex flex-col bg-neutral-200  border-r border-r-neutral-300 h-screen sticky top-0 max-xl:hidden">');
 		expect(html).toContain('<header class="top flex flex-col">');
 		expect(html).toContain('<nav class="flex flex-col min-h-0 flex-1 overflow-y-auto">');
-		expect(html).toContain('<footer class="bottom flex flex-col');
-		expect(html).toContain('class="cursor-pointer px-2 py-1 text-xs rounded border border-transparent no-underline hover:border-neutral-300 hover:bg-neutral-100');
-		expect(html).toContain('<svg class="size-4 text-brand" viewBox="0 0 24 24"');
-		expect(html).not.toContain("<details");
+		expect(html).toContain('<footer class="bottom px-4 py-4">');
+		expect(html).toContain('class="as-icon text-xs hover:border-neutral-300 hover:bg-neutral-100');
+		expect(html).toContain('<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="size-4 text-brand"');
+		expect(html).toContain("<details");
 		expect(html.match(/<svg/g)!.length).toBe(3);
 	});
 
@@ -261,19 +256,11 @@ describe("layout presentation-boundary metadata", () => {
 		expect(html).not.toContain('href="http://localhost:2339/"');
 	});
 
-	test("locale switcher shows short codes on links", async () => {
+	test("locale switcher shows full locale names in the preferences panel", async () => {
 		const html = await render_layout();
-		const switcher = html.slice(html.indexOf('aria-label="Language"'), html.indexOf('</div>', html.indexOf('aria-label="Language"')));
-		// Active locale: font-bold only - no bg, border, or text color
-		expect(switcher).toContain('<span aria-current="true" class="text-xs px-2 py-1 font-bold"');
-		expect(switcher).not.toContain('bg-brand');
-		expect(switcher).not.toContain('border-brand');
-		expect(switcher).not.toContain('text-white');
-		// Both locales render as their uppercase short codes, full name in tooltip
-		expect(switcher).toContain('>SL</span>');
-		expect(switcher).toContain('>EN</a>');
-		expect(switcher).toContain('title="English"');
-		expect(switcher).toContain('title="Slovenščina"');
+		const switcher = html.slice(html.indexOf('aria-label="Language"'), html.indexOf('</nav>', html.indexOf('aria-label="Language"')));
+		expect(switcher).toContain('>Slovenščina</span>');
+		expect(switcher).toContain('>English</a>');
 	});
 
 	test("uses base text in sidebar dropdowns", async () => {
@@ -292,7 +279,40 @@ describe("layout presentation-boundary metadata", () => {
 		};
 		const html = await engine.render(shared_layout_template, { ...sidebar_data, helpers: create_template_helpers(sidebar_data) });
 
-		expect(html).toContain('aria-label="Language" onchange="location.href=this.value" class="text-base w-36 px-2 py-1"');
+		expect(html).toContain('aria-label="Language" class="w-full grid gap-1"');
+	});
+
+	test("dropup shows the profile link for a signed-in user", async () => {
+		const footer_data = {
+			...render_data,
+			user: { display_name: "Jane Doe", modules_tags: "system" },
+			nav_final_links: [
+				{ key: "profile", url: "/profile", nav_title_key: "nav_auth.profile", nav_final_order: 10, requires_user: true },
+				{ key: "login", url: "/login", nav_title_key: "nav_auth.login", nav_final_order: 20, requires_user: false },
+			],
+			translations: { ui: { title: "Izdelki" }, nav: {}, nav_auth: { login: "Login", profile: "Profile" } },
+		};
+		const html = await engine.render(shared_layout_template, { ...footer_data, helpers: create_template_helpers(footer_data) });
+
+		// The signed-in profile action uses the stable localized caption.
+		expect(html).toMatch(/href="\/profile"[^>]*>\s*Profile\s*<\/a>/);
+		// The login link is for anonymous users only.
+		expect(html).not.toMatch(/>\s*Login\s*<\/a>/);
+	});
+
+	test("dropup shows the login link for anonymous users", async () => {
+		const footer_data = {
+			...render_data,
+			nav_final_links: [
+				{ key: "profile", url: "/profile", nav_title_key: "nav_auth.profile", nav_final_order: 10, requires_user: true },
+				{ key: "login", url: "/login", nav_title_key: "nav_auth.login", nav_final_order: 20, requires_user: false },
+			],
+			translations: { ui: { title: "Izdelki" }, nav: {}, nav_auth: { login: "Login" } },
+		};
+		const html = await engine.render(shared_layout_template, { ...footer_data, helpers: create_template_helpers(footer_data) });
+
+		expect(html).toMatch(/href="\/login"[^>]*>\s*Login\s*<\/a>/);
+		expect(html).not.toContain('href="/profile"');
 	});
 
 	test("shared layout stays a pure shell - no app-specific sidebar sections", async () => {
@@ -306,7 +326,7 @@ describe("layout presentation-boundary metadata", () => {
 		// output carries each component's inner markup.
 		expect(html).toContain('<header class="top flex flex-col">');
 		expect(html).toContain('<nav class="flex flex-col min-h-0 flex-1 overflow-y-auto">');
-		expect(html).toContain('<footer class="bottom flex flex-col gap-2 px-4 py-4">');
+		expect(html).toContain('<footer class="bottom px-4 py-4">');
 
 		expect(html).not.toContain('name="project_id"');
 		expect(html).not.toContain('name="page_set_id"');

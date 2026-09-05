@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 
-import { generate_field_block, generate_form_ree } from "./form_ree";
+import { generate_field_block, generate_form_ree, generate_input_field } from "./form_ree";
 import type { FieldDef } from "./types";
 
 test("read-only fields render a static value without a submitted editor", async () => {
@@ -33,6 +33,16 @@ test("tags fields read dynamic labels from form translations", async () => {
 
 	expect(output).toContain("props.translations.modules_tags?.[tag.tag_key]");
 	expect(output).not.toContain("{= modules_tags?.[tag.tag_key]");
+});
+
+test("textarea fields render textarea controls in both generator modes", async () => {
+	const field: FieldDef = { name: "short_description", type: "textarea", required: false, is_nullable: true };
+
+	const flat_output = await generate_input_field(field, new Map());
+	const tags_output = await generate_input_field(field, new Map(), "articles", "", false, null, "tags");
+
+	expect(flat_output).toContain('<textarea id="short_description" name="short_description">');
+	expect(tags_output).toContain('<input-textarea name="short_description"');
 });
 
 test("generated form layout uses two field tracks and a third details track", async () => {

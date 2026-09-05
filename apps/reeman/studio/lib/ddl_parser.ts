@@ -183,19 +183,48 @@ export function split_top_level_commas(body: string): string[] {
 	return items;
 }
 
+/**
+ * Identifier token as it may appear in repo SQL: bare snake_case, or
+ * backtick / double-quote / bracket quoted (e.g. `` `order` ``, "my table", [x]).
+ */
+const IDENT_TOKEN = "(?:[A-Za-z0-9_]+|`[^`]*`|\"[^\"]*\"|\\[[^\\]]*\\])";
+
+/** An identifier, optionally schema-qualified (e.g. `main.users`, `` `main`.`users` ``). */
+const QUALIFIED_NAME = "(?:" + IDENT_TOKEN + "(?:\\." + IDENT_TOKEN + ")?)";
+
+/** Legal clause between CREATE and the identifier for tables: SQLite TEMP/TEMPORARY, MySQL+SQLite IF NOT EXISTS. */
+const TABLE_CLAUSE = "(?:TEMP(?:ORARY)?\\s+)?TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?";
+
+/** Unquote and strip a schema qualifier from a captured identifier, e.g. "`main`.`users`" -> "users". */
+function bare_identifier(raw: string): string {
+	const token = raw.split(".").pop()!;
+	if (token.length >= 2 && (token.startsWith("`") || token.startsWith("\"") || token.startsWith("["))) {
+		return token.slice(1, -1);
+	}
+	return token;
+}
+
 /** Classify a statement and fill in object_name / parent_table / parsed table. */
 export function classify_statement(part: RawPart): StudioStatement {
 	const text = part.text.trim();
 	const base: StudioStatement = { gap: part.gap, kind: "raw", object_name: "", text: part.text };
 
-	let match = /^DROP\s+TABLE\s+IF\s+EXISTS\s+(\w+)/i.exec(text);
-	if (match) return { ...base, kind: "drop_table", object_name: match[1]! };
+	let match = new RegExp("^DROP\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?(" + QUALIFIED_NAME + ")", "i").exec(text);
+	if (match) return { ...base, kind: "drop_table", object_name: bare_identifier(match[1]!) };
 
-	match = /^DROP\s+VIEW\s+IF\s+EXISTS\s+(\w+)/i.exec(text);
-	if (match) return { ...base, kind: "drop_view", object_name: match[1]! };
+	match = new RegExp("^DROP\\s+VIEW\\s+(?:IF\\s+EXISTS\\s+)?(" + QUALIFIED_NAME + ")", "i").exec(text);
+	if (match) return { ...base, kind: "drop_view", object_name: bare_identifier(match[1]!) };
 
-	const table_match = /^CREATE\s+TABLE\s+(\w+)\s*\(/i.exec(text);
+	// CREATE TABLE ... AS SELECT has no parenthesized column list, so it cannot be
+	// edited in the table editor. Classify it raw: opening never breaks and the
+	// statement is preserved verbatim on save.
+	match = new RegExp("^CREATE\\s+" + TABLE_CLAUSE + "(" + QUALIFIED_NAME + ")\\s+AS\\s+SELECT", "i").exec(text);
+	if (match) return { ...base, kind: "raw", object_name: bare_identifier(match[1]!) };
+
+	const table_match = new RegExp("^CREATE\\s+(" + TABLE_CLAUSE + ")(" + QUALIFIED_NAME + ")\\s*\\(", "i").exec(text);
 	if (table_match) {
+		const clause_raw = table_match[1]!;
+		const name_raw = table_match[2]!;
 		const open = text.indexOf("(");
 		const [body, end] = read_paren_group(text, open);
 		const suffix = /^(\s*[^;]*)?;\s*$/s.exec(text.slice(end + 1));
@@ -204,6 +233,7 @@ export function classify_statement(part: RawPart): StudioStatement {
 		const columns: StudioColumn[] = [];
 		const table_foreign_keys: TableForeignKey[] = [];
 		const table_unique_keys: TableUniqueKey[] = [];
+		const extra_lines_raw: string[] = [];
 		for (const item of split_top_level_commas(body)) {
 			const fk = parse_table_foreign_key(item);
 			if (fk) {
@@ -217,30 +247,40 @@ export function classify_statement(part: RawPart): StudioStatement {
 			}
 			const column = parse_column(item);
 			if (column) columns.push(column);
+			else if (item.trim() !== "") extra_lines_raw.push(item.trim());
 		}
 
 		return {
 			...base,
 			kind: "create_table",
-			object_name: table_match[1]!,
-			table: { name: table_match[1]!, columns, table_foreign_keys, table_unique_keys, table_suffix_raw },
+			object_name: bare_identifier(name_raw),
+			table: {
+				name: bare_identifier(name_raw),
+				name_raw,
+				create_prefix_raw: clause_raw,
+				extra_lines_raw: extra_lines_raw.length > 0 ? extra_lines_raw : undefined,
+				columns,
+				table_foreign_keys,
+				table_unique_keys,
+				table_suffix_raw,
+			},
 		};
 	}
 
-	match = /^CREATE\s+(UNIQUE\s+)?INDEX\s+(\w+)\s+ON\s+(\w+)/i.exec(text);
-	if (match) return { ...base, kind: "index", object_name: match[2]!, parent_table: match[3]! };
+	match = new RegExp("^CREATE\\s+(?:UNIQUE\\s+)?INDEX\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(" + QUALIFIED_NAME + ")\\s+ON\\s+(" + QUALIFIED_NAME + ")", "i").exec(text);
+	if (match) return { ...base, kind: "index", object_name: bare_identifier(match[1]!), parent_table: bare_identifier(match[2]!) };
 
-	const trigger_match = /^CREATE\s+TRIGGER\s+(\w+)/i.exec(text);
+	const trigger_match = new RegExp("^CREATE\\s+TRIGGER\\s+(" + QUALIFIED_NAME + ")", "i").exec(text);
 	if (trigger_match) {
-		const on = /\bON\s+(\w+)\s+FOR\s+EACH\s+ROW/i.exec(text);
-		return { ...base, kind: "trigger", object_name: trigger_match[1]!, parent_table: on?.[1] ?? "" };
+		const on = new RegExp("\\bON\\s+(" + QUALIFIED_NAME + ")\\s+FOR\\s+EACH\\s+ROW", "i").exec(text);
+		return { ...base, kind: "trigger", object_name: bare_identifier(trigger_match[1]!), parent_table: on ? bare_identifier(on[1]!) : "" };
 	}
 
-	match = /^INSERT(?:\s+IGNORE)?\s+INTO\s+(?:main\.)?(\w+)/i.exec(text);
-	if (match) return { ...base, kind: "insert", object_name: "", parent_table: match[1]! };
+	match = new RegExp("^INSERT(?:\\s+IGNORE)?\\s+INTO\\s+(" + QUALIFIED_NAME + ")", "i").exec(text);
+	if (match) return { ...base, kind: "insert", object_name: "", parent_table: bare_identifier(match[1]!) };
 
-	match = /^CREATE\s+(?:OR\s+REPLACE\s+)?VIEW\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)/i.exec(text);
-	if (match) return { ...base, kind: "create_view", object_name: match[1]! };
+	match = new RegExp("^CREATE\\s+(?:OR\\s+REPLACE\\s+)?VIEW\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(" + QUALIFIED_NAME + ")", "i").exec(text);
+	if (match) return { ...base, kind: "create_view", object_name: bare_identifier(match[1]!) };
 
 	return base;
 }
