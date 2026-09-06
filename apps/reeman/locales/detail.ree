@@ -1,0 +1,74 @@
+{#layout("layout") }
+
+{#with props}
+	<div class="p-4">
+
+		<div class="flex items-center justify-between">
+			<h1 class="mb-4">{_ ui.edit_title }</h1>
+		</div>
+
+		{#if busy}
+			<div class="py-4">
+				<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
+			</div>
+		{/if}
+
+		<form method="POST" action="{~ localized_path('/locales/' + record.code) }" class="grid gap-4 max-w-[60ch] lg:max-w-[100ch] lg:grid-cols-2 lg:gap-x-6" id="entry-form">
+
+			<!-- CSRF token -->
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="code">
+				<div class="grid">
+					<label class="px-3" for="code">{_ labels.code}</label>
+					<input type="text" id="code" name="code" value="{= record.code }" disabled />
+				</div>
+			</field-wrapper>
+
+			<input-text name="name" label="{_ labels.name}" value="{= record.name }"></input-text>
+
+			<input-text name="alias" label="{_ labels.alias}" value="{= record.alias }"></input-text>
+
+			<input-checkbox name="active" label="{_ labels.active}" value="{= record.active }"></input-checkbox>
+
+			<input-checkbox name="is_default" label="{_ labels.default}" value="{= record.is_default }"></input-checkbox>
+
+			<div class="flex gap-2 mt-8 items-center">
+				<button id="btn-submit" type="submit" class="as-button-primary" {#if busy}disabled{/if}>{_ actions.save}</button>
+				<button id="btn-cancel" type="button" onclick="location.href='{~ localized_path('/locales') }'" class="as-button-secondary">{_ actions.cancel}</button>
+
+				<button id="action_delete" type="button" command="show-modal" commandfor="action_delete_dialog" class="ml-auto as-button-tertiary" {#if busy}disabled{/if}>{_ actions.remove}</button>
+			</div>
+		</form>
+
+		<!-- Remove form lives outside the save form (form attribute association). -->
+		<form id="remove-form" method="POST" action="{~ localized_path('/locales/remove') }">
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+			<input type="hidden" name="locale_code" value="{= record.code }" />
+		</form>
+
+	</div>
+
+	<dialog id="action_delete_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+		<div class="p-6">
+			<h2 class="text-lg font-semibold">{_ actions.remove}</h2>
+			<p class="text-slate-600 mt-2">{_ confirm.remove_locale }</p>
+			<div class="mt-6 flex justify-end gap-2">
+				<button class="as-button-secondary" type="button" commandfor="action_delete_dialog" command="close">{_ actions.abort_delete}</button>
+				<button class="as-button-danger" type="button" command="--confirm" commandfor="action_delete_dialog">{_ actions.confirm_delete}</button>
+			</div>
+		</div>
+	</dialog>
+	<script src="/dialog-confirm.js?v={= version}"></script>
+
+	<script>
+		$("#action_delete_dialog").addEventListener("command", (e) => {
+			if (e.command !== "--confirm") return;
+			e.currentTarget.close();
+			$("#remove-form").submit();
+		});
+		document.getElementById("entry-form").addEventListener("submit", () => {
+			document.querySelectorAll("#entry-form button").forEach((btn) => { btn.disabled = true; });
+		});
+	</script>
+{/with}

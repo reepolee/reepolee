@@ -1,0 +1,14 @@
+{{
+	const _output_class="input flex items-center break-all bg-surface-sunken";
+	const final_output_class=cn(_output_class, props.attributes['output-class']);
+}}
+
+
+<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= props.attributes.name }">
+	<div class="grid">
+		<label class="px-3 font-semibold" for="{= props.attributes.name }">{= props.attributes.label}</label>
+		<output id="{= props.attributes.name }" class="{= final_output_class}">{= props.attributes.value}</output>
+		<validation-error class="mt-1" id="error-{= props.attributes.name }"></validation-error>
+	</div>
+	<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"><!-- hints.{~ props.attributes.name } --></p>
+</field-wrapper>

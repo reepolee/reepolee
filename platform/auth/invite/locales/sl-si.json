@@ -1,0 +1,32 @@
+{
+	"actions": {
+		"submit": "Pošlji povabilo"
+	},
+	"email": {
+		"body": "Pozdravljeni {username},\n\nPovabljeni ste bili. Dokončajte registracijo tukaj:\n{url}",
+		"subject": "Povabljeni ste"
+	},
+	"errors": {
+		"email_exists": "Uporabnik s tem e-poštnim naslovom že obstaja.",
+		"email_required": "E-poštni naslov je obvezen.",
+		"invitation_not_found": "Povabilo ni bilo najdeno.",
+		"username_invalid": "Uporabniško ime lahko vsebuje samo male črke, številke, podčrtaje in vezaje."
+	},
+	"labels": {
+		"email": "E-pošta povabljenca",
+		"username": "Uporabniško ime"
+	},
+	"route_name": "povabilo",
+	"ui": {
+		"confirm_title": "Povabilo poslano",
+		"created_field": "Ustvarjeno",
+		"email_field": "E-pošta",
+		"email_label": "E-pošta povabljenca",
+		"link_label": "Registracijska povezava:",
+		"send_another": "Pošlji drugo povabilo",
+		"success_message": "Povabilo je bilo uspešno ustvarjeno.",
+		"success_send_this_link": "Pošljite to povezavo povabljencu:",
+		"title": "Povabi uporabnika",
+		"username_field": "Uporabniško ime"
+	}
+}

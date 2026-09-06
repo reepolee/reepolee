@@ -1,0 +1,42 @@
+{#layout("layout")}
+
+<div class="p-4">
+	<h1 class="mb-4">{_ ui.title}</h1>
+
+	{#if props.form_error}
+		<div class="py-4">
+			<app-banner type="red">{= props.form_error}</app-banner>
+		</div>
+
+		<p>
+			<a href="{~ localized_path('/invite') }">← {_ ui.send_another}</a>
+		</p>
+
+	{:else}
+		<div class="my-4">
+			<app-banner type="green">{_ ui.success_message}</app-banner>
+		</div>
+
+		<dl class="mb-8 grid gap-2 max-w-[60ch] grid-cols-[auto_auto]">
+			<div class="grid col-span-2 grid-cols-subgrid gap-2">
+				<dt class="font-medium">{_ ui.username_field}</dt>
+				<dd>{= props.invited_username}</dd>
+			</div>
+			<div class="grid col-span-2 grid-cols-subgrid gap-2">
+				<dt class="font-medium">{_ ui.email_field}</dt>
+				<dd>{= props.invited_email}</dd>
+			</div>
+			<div class="grid col-span-2 grid-cols-subgrid gap-2">
+				<dt class="font-medium">{_ ui.created_field}</dt>
+				<dd>{= props.invited_at}</dd>
+			</div>
+		</dl>
+
+		<p class="mb-2 font-medium">{_ ui.link_label}</p>
+		<p class="mb-8 break-all">
+			<a href="{= props.register_url }">{= props.register_url}</a>
+		</p>
+
+		<a href="{~ localized_path('/invite') }">← {= props.send_another}</a>
+	{/if}
+</div>

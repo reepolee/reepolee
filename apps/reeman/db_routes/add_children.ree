@@ -1,0 +1,41 @@
+{#layout("layout") }
+{#with props}
+	<div class="p-4 max-w-[90ch]">
+		<h1 class="mb-2">{_ actions.add_children}</h1>
+		<p class="mb-6 text-text-secondary">{_ ui.add_children_hint} <code>{= parent.table_name }</code>.</p>
+
+		{#if children.length === 0}
+			<app-banner type="yellow">{_ ui.no_eligible_children}</app-banner>
+			<div class="mt-6"><a href="{~ localized_path(return_to) }" role="button" class="as-button-secondary">{_ actions.cancel}</a></div>
+		{:else}
+			<form method="POST" action="{~ localized_path('/routes/children') }" class="grid gap-5">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="return_to" value="{= return_to }" />
+				<input type="hidden" name="parent_table" value="{= parent.table_name }" />
+				<input type="hidden" name="parent_url" value="{= parent.url }" />
+
+				<field-wrapper class="grid" data-field="children">
+					<div class="grid">
+						<label class="px-3">{_ labels.children}</label>
+						<div class="grid rounded border border-border bg-surface-raised">
+							{#each children as child}
+								<label class="flex cursor-pointer items-center gap-2 border-b border-border px-3 py-2 last:border-b-0">
+									<input type="checkbox" name="child_selection" value="{= child.table }: {= child.fk_column }" />
+									<span><code>{= child.table }</code> <span class="text-text-secondary">{_ labels.via_fk} <code>{= child.fk_column }</code></span></span>
+								</label>
+							{/each}
+						</div>
+					</div>
+				</field-wrapper>
+
+				<generator-settings id-prefix="children" pagination="{= pagination }" render-strategy="{= render_strategy }" template-tags="{= template_tags }"></generator-settings>
+				<label class="flex cursor-pointer items-center gap-1.5 text-sm"><input type="checkbox" name="translate" value="1" /> {_ actions.translate}</label>
+				{#if busy}<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>{/if}
+				<div class="flex gap-2">
+					<button type="submit" class="as-button-primary" {#if busy}disabled{/if}>{_ actions.generate_crud}</button>
+					<a href="{~ localized_path(return_to) }" role="button" class="as-button-secondary">{_ actions.cancel}</a>
+				</div>
+			</form>
+		{/if}
+	</div>
+{/with}

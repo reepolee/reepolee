@@ -1,0 +1,32 @@
+{
+	"actions": {
+		"submit": "Send invitation"
+	},
+	"email": {
+		"body": "Hi {username},\n\nYou've been invited. Complete your registration here:\n{url}",
+		"subject": "You've been invited"
+	},
+	"errors": {
+		"email_exists": "User with this email address already exists.",
+		"email_required": "Email address is required.",
+		"invitation_not_found": "Invitation not found.",
+		"username_invalid": "Username can only contain lowercase letters, numbers, underscores, and hyphens."
+	},
+	"labels": {
+		"email": "Invitee email",
+		"username": "Username"
+	},
+	"route_name": "invitation",
+	"ui": {
+		"confirm_title": "Invitation sent",
+		"created_field": "Created",
+		"email_field": "Email",
+		"email_label": "Invitee email",
+		"link_label": "Registration link:",
+		"send_another": "Send another invitation",
+		"success_message": "Invitation was successfully created.",
+		"success_send_this_link": "Send this link to the invitee:",
+		"title": "Invite user",
+		"username_field": "Username"
+	}
+}

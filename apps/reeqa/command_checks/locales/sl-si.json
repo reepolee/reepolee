@@ -1,0 +1,27 @@
+{
+	"actions": {
+		"add_project": "Dodaj projekt",
+		"cancel": "Prekliči",
+		"clear": "Počisti zgodovino",
+		"confirm_clear": "Počisti dokončane",
+		"run_check": "Zaženi preverjanje"
+	},
+	"command_checks": {
+		"description": "Zaženite dovoljene ukaze Bun, definirane za ta projekt.",
+		"script_unavailable": "Skripta paketa ni na voljo",
+		"title": "Preverjanja ukazov"
+	},
+	"confirm": {
+		"clear": "Odstranim vse zapise dokončanih zagonov QA?"
+	},
+	"nav": "Preverjanja ukazov",
+	"route_name": "preverjanja-ukazov",
+	"ui": {
+		"active_run": "Zagon QA v teku",
+		"description": "Zaženite in pregledujte dovoljena preverjanja ukazov Bun.",
+		"history_title": "Zgodovina zagonov",
+		"no_projects": "Pred zagonom preverjanj ukazov registrirajte projekt.",
+		"no_runs": "Še ni zagonov ukazov.",
+		"title": "Preverjanja ukazov"
+	}
+}

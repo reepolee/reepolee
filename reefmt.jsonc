@@ -1,0 +1,75 @@
+{
+	// Directories to skip when formatting - any folder matching a name
+	// in this list is skipped, regardless of its location in the project.
+	"skipDirs": [
+		"node_modules",
+		"vendor",
+		"vendors",
+		"dist",
+		"static",
+		"templates"
+	],
+	// Glob patterns for files to skip (e.g. "generator/templates/**/*.ts").
+	// Matches file paths relative to the project root.
+	"skipFiles": [],
+	// Compound extensions to always skip, regardless of "extensions".
+	// A file ending in ".min.js" is skipped even if "js" is in extensions.
+	"skipExtensions": [
+		"min.js",
+		"min.css"
+	],
+	// File extensions to format. Only files with these extensions will be
+	// picked up during recursive directory walks or glob matching.
+	"extensions": [
+		"ree",
+		"ts",
+		"js",
+		"css"
+	],
+	// Whether to skip dot-directories (folders starting with '.',
+	// like .git, .next, .cache, .svelte-kit, etc.).
+	"skipDotDirs": true,
+	// Maximum line width before elements are broken onto multiple lines.
+	// Controls when inline elements are folded and when long tag lines
+	// are split across multiple lines.
+	"wrapWidth": 180,
+	// When true, single-statement blocks (if, for, while, etc.) and
+	// object literal function params collapse onto one line when
+	// they fit within wrapWidth.
+	"collapseSingleStatementBlocks": true,
+	// Per-category maximum member/param/arg counts for inline collapsing.
+	// Structures with more items than their limit stay multi-line regardless
+	// of wrapWidth. collapseMaxMembers is the global fallback - set a
+	// category key to override it for that category only.
+	"collapseMaxMembers": 4,
+	"collapseMaxObjectMembers": 4,
+	"collapseMaxArrayElements": 4,
+	"collapseMaxFunctionParams": 4,
+	"collapseMaxCallArgs": 4,
+	"collapseMaxImports": 4,
+	"collapseMaxTypeMembers": 4,
+	// "Soft" wrap width. Any collapsible structure (call args, array/object/
+	// type members, imports) whose inline form fits within this width stays on
+	// one line regardless of the count caps above - so a short call with many
+	// short args collapses instead of exploding one-per-line. Above this width
+	// the count caps apply and wrapWidth is the hard ceiling. Set to 0 to
+	// disable (count caps always apply).
+	"collapseSoftWidth": 110,
+	// Display width of a tab character. The formatter indents with hard tabs,
+	// so a deeply nested line takes up more screen columns than its raw length.
+	// This value is used when measuring line widths for wrapWidth and
+	// collapseSoftWidth decisions - set it to match your editor's tab size so
+	// those widths reflect where the last character actually lands on screen.
+	"tabWidth": 4,
+	// Maximum number of key:value ("named") properties an object literal may have
+	// and still collapse onto one line. Shorthand ({ a, b }) and spread ({ ...x })
+	// properties don't count. With the default 1, { x: 1 } stays inline but
+	// { x: 1, y: 2 } always expands one-per-line - inline lists of named
+	// assignments are hard to scan. Set high to disable (or 0 to never collapse).
+	"collapseMaxKeyValueProps": 1,
+	// When true, multi-line HTML elements in .ree files whose entire
+	// content (tag + children + closing tag) fits within wrapWidth are
+	// collapsed to a single line. Only applies to leaf elements (no child
+	// tags). Elements that exceed wrapWidth stay multi-line.
+	"oneline": 100
+}

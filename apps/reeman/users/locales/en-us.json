@@ -1,0 +1,63 @@
+{
+	"actions": {
+		"abort_archive": "Cancel",
+		"abort_restore": "Cancel",
+		"archive": "Archive",
+		"bulk_action": "Archive selected users",
+		"bulk_action_2": "Bulk action 2",
+		"confirm_archive": "Yes, archive",
+		"confirm_restore": "Yes, restore",
+		"new_user": "New User",
+		"restore": "Restore"
+	},
+	"counts": {
+		"archived": "Archived",
+		"live": "Active",
+		"total": "Total"
+	},
+	"labels": {
+		"avatar_filename": "Avatar Filename",
+		"email": "Email",
+		"hashed_password": "Hashed Password",
+		"invitation_code": "Invitation Code",
+		"modules_tags": "Modules",
+		"name": "Name",
+		"previous_hashed_password": "Previous Hashed Password",
+		"username": "Username",
+		"verified_at": "Verified At"
+	},
+	"messages": {
+		"bulk_archive_no_ids": "No users selected.",
+		"bulk_archived": "No users archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
+		"bulk_errors": "|{count} user failed|{count} users failed|{count} users failed|{count} users failed",
+		"record_archived": "Record archived",
+		"record_restored": "Record restored"
+	},
+	"modules_tags": {
+		"admin": "Admin",
+		"default": "Default",
+		"examples": "Examples",
+		"system": "System",
+		"user": "User"
+	},
+	"nav": "Users",
+	"route_name": "users",
+	"scopes": {
+		"__all": "All",
+		"__archived": "Archived"
+	},
+	"search": {
+		"search_term": "Search users...",
+		"submit": "Search"
+	},
+	"selectors": {
+		"all": "All"
+	},
+	"ui": {
+		"edit_title": "Edit user",
+		"index_title": "Users",
+		"no_records": "No users found.",
+		"new_title": "New user",
+		"title": "Users"
+	}
+}

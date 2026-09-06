@@ -1,0 +1,71 @@
+{
+	"actions": {
+		"add_project": "Dodaj projekt",
+		"cancel": "Prekliči",
+		"clear": "Počisti zgodovino",
+		"compare": "Primerjaj z izhodiščem",
+		"confirm_clear": "Počisti dokončane",
+		"manage_page_sets": "Upravljaj nabore strani"
+	},
+	"baseline": {
+		"capture": "Zajemi izhodišče",
+		"capture_hint": "Nadomesti shranjeno vizualno referenco s svežimi zajemi izbranega nabora strani.",
+		"description": "Zajemite ali zamenjajte shranjeno vizualno referenco za aktivni nabor strani.",
+		"title": "Vizualno izhodišče"
+	},
+	"confirm": {
+		"clear": "Odstranim vsa poročila o dokončanih vizualnih primerjavah? Shranjena izhodišča ostanejo."
+	},
+	"labels": {
+		"baseline_details": "Podrobnosti izhodišča",
+		"baseline_pages": "strani izhodišča",
+		"baseline_updated": "Izhodišče zajeto",
+		"baseline_url": "Osnovni URL izhodišča",
+		"capture_size": "Velikost zajema",
+		"changed": "spremenjeno",
+		"chrome": "Zajem strani",
+		"db_snapshot": "Posnetek baze",
+		"evidence_render": "Dokazni video",
+		"image_diff": "Primerjava slik",
+		"latest_capture_pages": "Nazadnje zajete strani",
+		"pages": "strani",
+		"voiceover": "Glasovna pripoved"
+	},
+	"nav": "Zagon in rezultati",
+	"results": {
+		"history_description": "Vizualne primerjave, najnovejše najprej.",
+		"history_title": "Zgodovina rezultatov",
+		"no_results": "Še ni vizualnih primerjav."
+	},
+	"route_name": "zagon-testov",
+	"schedule": {
+		"add": "Dodaj načrt",
+		"description": "Samodejno izvajaj primerjavo ali zajem izhodišča aktivnega nabora strani v intervalih.",
+		"every": "vsakih",
+		"hours": "h",
+		"interval": "Interval (ure)",
+		"last_run": "zadnji zagon",
+		"no_schedules": "Še ni načrtov.",
+		"operation": "Operacija",
+		"remove": "Odstrani",
+		"title": "Načrt"
+	},
+	"status": {
+		"baseline_ready": "Izhodišče pripravljeno",
+		"no_baseline": "Ni izhodišča"
+	},
+	"ui": {
+		"db_snapshot_missing": "Posnetek baze tega izhodišča manjka. Znova zajemite izhodišče za obnovitev skladne testne baze.",
+		"description": "Zajemite izhodišča, zaženite vizualne primerjave in pregledujte rezultate na enem mestu.",
+		"no_page_set": "Pred zagonom testov strani izberite ali ustvarite nabor strani.",
+		"no_projects": "Pred zagonom testov registrirajte projekt.",
+		"qa_run_active": "Zagon QA v teku",
+		"title": "Zagon in rezultati",
+		"visual_run_active": "Vizualni zagon v teku"
+	},
+	"visual": {
+		"description": "Primerjaj izhodišče aktivnega nabora strani s trenutno delujočim spletiščem.",
+		"no_baseline_hint": "Pred vizualno primerjavo zajemite izhodišče za ta nabor strani.",
+		"title": "Vizualna primerjava"
+	}
+}

@@ -1,0 +1,35 @@
+{
+	"actions": {
+		"back": "Nazaj na zagone",
+		"cancel": "Prekliči",
+		"cancel_run": "Prekliči zagon",
+		"clear": "Počisti dokončane",
+		"do_it": "Potrdi"
+	},
+	"breadcrumbs": {
+		"results": "Preverjanja ukazov",
+		"run": "Zagon QA"
+	},
+	"confirm": {
+		"cancel_run": "Ustavim ta tekoči postopek QA?",
+		"clear": "Odstranim vse zapise dokončanih zagonov QA?"
+	},
+	"labels": {
+		"duration": "Trajanje",
+		"exit_code": "Izhodna koda",
+		"output": "Izhod",
+		"project": "Projekt",
+		"started": "Začeto",
+		"status": "Stanje",
+		"suite": "Sklop"
+	},
+	"nav": "Zagoni",
+	"route_name": "zagoni",
+	"ui": {
+		"active_run": "Aktivni zagon",
+		"description": "Trajno stanje in zajeti izhod ukazov ReeQA.",
+		"no_runs": "Še ni zagonov QA.",
+		"title": "Zgodovina zagonov",
+		"waiting_output": "Čakanje na izhod..."
+	}
+}

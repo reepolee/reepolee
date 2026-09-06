@@ -1,0 +1,6 @@
+# bunfig.toml
+[run]
+noOrphans = true
+
+[test]
+coveragePathIgnorePatterns = ["generator/templates/**", "vendor/**"]

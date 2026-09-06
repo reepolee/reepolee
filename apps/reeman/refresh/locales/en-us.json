@@ -1,0 +1,25 @@
+{
+	"actions": {
+		"archive_live_translations": "Archive live translations",
+		"fields": "Fields only",
+		"refresh_crud": "Refresh CRUD",
+		"sync_locale_tables": "Sync locale tables",
+		"sync_translations": "Sync translations",
+		"translate": "Translate via AI"
+	},
+	"labels": {
+		"route": "Route",
+		"template_tags": "Template tags"
+	},
+	"nav": "Refresh",
+	"selectors": {
+		"default": "(default)"
+	},
+	"ui": {
+		"archive_live_translations_hint": "Snapshot current translations into per-locale memory in locales-archive (reused before AI) and write locales-archive/en-us.json - the full English file to send out for external translation.",
+		"busy": "Processing — the page will refresh when complete.",
+		"refresh_description": "Sync translations, manage locales and refresh locale tables.",
+		"refresh_title": "Refresh & languages",
+		"sync_locale_tables_hint": "Syncs per-locale content tables with the configured locales and schema: creates missing clones, updates changed columns, and removes tables for deleted locales."
+	}
+}

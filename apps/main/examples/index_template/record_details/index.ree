@@ -1,0 +1,73 @@
+{#layout("layout") }
+
+{#with props}
+	<!--
+		AGENT GUIDE: This is a fake generated-CRUD edit form for a row that does
+		not come from a database table. GET fills the controls; POST only shows a
+		toast and redirects to the list. Replace the POST handler before relying
+		on submitted values.
+	-->
+	<div class="p-4">
+		<!-- Page heading and list navigation. -->
+		<div class="flex items-center justify-between gap-4">
+			<h1 class="mb-4">{= title }</h1>
+			<a href="{~ localized_path('/examples/index-template') }" class="button secondary">{_ actions.back}</a>
+		</div>
+
+		<div class="mb-6 rounded border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+			This is a demo edit page. Saving displays a toast but does not change the local array.
+		</div>
+
+		<!-- AGENT EXTENSION POINT: Add fields here and parse the matching names in
+		     post_record_details(). The form action is supplied by the handler. -->
+		<form method="POST" action="{~ localized_path(action) }" class="grid max-w-[60ch] gap-4">
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+			<label class="grid gap-1">
+				<span class="ml-input font-semibold">{_ labels.id}</span>
+				<input value="{= record.id }" disabled />
+			</label>
+
+			<label class="grid gap-1">
+				<span class="ml-input font-semibold">{_ labels.method}</span>
+				<select name="method">
+					{#each ["GET", "POST", "PUT", "PATCH", "DELETE"] as method }
+						<option value="{= method }" {#if method === record.method }selected{/if}>{= method }</option>
+					{/each}
+				</select>
+			</label>
+
+			<label class="grid gap-1">
+				<span class="ml-input font-semibold">{_ labels.path}</span>
+				<input type="text" name="path" value="{= record.path }" />
+			</label>
+
+			<label class="grid gap-1">
+				<span class="ml-input font-semibold">{_ labels.status}</span>
+				<input type="number" name="status" value="{= record.status }" />
+			</label>
+
+			<!-- Owner is rendered as a selection from the shared lookup array. In a
+			     real app this may be replaced with a service-backed autocomplete. -->
+			<label class="grid gap-1">
+				<span class="ml-input font-semibold">{_ labels.owner}</span>
+				<select name="owner_id">
+					{#each owners as owner }
+						<option value="{= owner.id }" {#if owner.id === record.owner_id }selected{/if}>{= owner.name }</option>
+					{/each}
+				</select>
+			</label>
+
+			<label class="grid gap-1">
+				<span class="ml-input font-semibold">{_ labels.last_checked}</span>
+				<input type="date" name="last_checked" value="{= record.last_checked }" />
+			</label>
+
+			<!-- Save is intentionally fake; the handler owns persistence/toast logic. -->
+			<div class="mt-4 flex gap-2">
+				<button type="submit" class="button primary">{_ actions.save}</button>
+				<a href="{~ localized_path('/examples/index-template') }" class="button secondary">{_ actions.cancel}</a>
+			</div>
+		</form>
+	</div>
+{/with}

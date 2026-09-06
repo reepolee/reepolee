@@ -1,0 +1,178 @@
+{{
+	const attrs = props.attributes || {};
+	const column = attrs.column;
+	const index = attrs.index;
+	const fk_id_options = props.fk_id_options ?? [];
+	const fk_other_options = props.fk_other_options ?? [];
+}}
+<div
+	class="studio-column-row grid gap-2 border-t border-border p-3 first:border-t-0 {#if column.hidden}hidden{/if}"
+	draggable="true"
+	data-system="{= column.is_system ? '1' : '0' }"
+>
+	<div class="grid grid-cols-[2rem_minmax(0,1fr)_2rem] gap-2 md:grid-cols-[2rem_repeat(2,minmax(0,1fr))_2rem]">
+		<div class="studio-drag-handle flex cursor-grab items-center justify-center md:row-span-1">
+			<ree-icon name="grip"></ree-icon>
+			<input type="hidden" name="column_source" value="{= index }" />
+			<input
+				type="hidden"
+				name="column_preserve_type"
+				value="{= column.domain_compliant ? '0' : '1' }"
+			/>
+		</div>
+		<label class="studio-field">
+			<span class="studio-field-label">{_ labels.name}</span>
+			<input
+				class="studio-column-name w-full font-semibold"
+				name="column_name"
+				value="{= column.name }"
+				required
+				pattern="[a-z][a-z0-9_]*"
+			/>
+		</label>
+		<label class="studio-field col-start-2 md:col-start-auto">
+			<span class="studio-field-label flex items-center gap-2">{_ labels.domain_type}
+				{#if !column.domain_compliant}
+					<span
+						class="studio-domain-warning rounded bg-amber-300 px-1.5 py-0.5 text-[10px] font-semibold text-black normal-case tracking-normal"
+						title="{_ labels.expected_type}: {= column.canonical_type || '-' }"
+					>
+						{_ labels.nonstandard_sql}
+					</span>
+				{/if}
+			</span>
+			<domain-select
+				selected-domain="{= column.domain_type || '' }"
+				selected-non-compliant="{= !column.domain_compliant }"
+				selected-type-string="{= column.type_string }"
+				required="{= !!column.domain_type }"
+			>
+			</domain-select>
+		</label>
+		<button
+			type="button"
+			class="as-icon studio-delete-column row-start-1 text-text-tertiary hover:text-brand md:col-start-4"
+			title="{_ actions.delete_column}"
+		>
+			<ree-icon name="x"></ree-icon>
+		</button>
+	</div>
+	<div class="grid grid-cols-1 gap-2 pl-10 sm:grid-cols-2 lg:grid-cols-3">
+		<label class="studio-field">
+			<span class="studio-field-label">FK</span>
+			<select class="w-full min-w-0 font-mono" name="column_reference">
+				<option value="">-</option>
+				<optgroup label="{_ labels.table_ids}">
+					{#each fk_id_options as option}
+						<option
+							value="{= option.value }"
+							{#if option.value===column.reference_value}selected{/if}
+						>
+							{= option.label}
+						</option>
+					{/each}
+				</optgroup>
+				<optgroup label="{_ labels.other_fields}">{#each fk_other_options as option}
+						<option
+							value="{= option.value }"
+							{#if option.value===column.reference_value}selected{/if}
+						>
+							{= option.label}
+						</option>
+					{/each}
+				</optgroup>
+			</select>
+		</label>
+		<label class="grid gap-1">
+			<span class="studio-field-label">{_ labels.nullability}</span>
+			<select class="w-full" name="column_nullability">
+				<option
+					value="unspecified"
+					{#if column.nullability==='unspecified'}selected{/if}
+				>
+					-
+				</option>
+				<option
+					value="not_null"
+					{#if column.nullability==='not_null'}selected{/if}
+				>
+					NOT NULL
+				</option>
+				<option
+					value="null"
+					{#if column.nullability==='null'}selected{/if}
+				>
+					NULL
+				</option>
+			</select>
+		</label>
+		<label class="grid gap-1">
+			<span class="studio-field-label">{_ labels.default}</span>
+			<input
+				class="w-full font-mono"
+				name="column_default"
+				value="{= column.default_value ?? '' }"
+				placeholder="NULL"
+			/>
+		</label>
+		<details class="col-span-full rounded border border-border px-3 py-2">
+			<summary class="cursor-pointer text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ ui.show_more}</summary>
+			<div class="mt-2 grid grid-cols-2 gap-2 md:grid-cols-[minmax(0,3fr)_repeat(2,minmax(0,1fr))]">
+				<label class="col-span-2 grid min-w-0 gap-1 md:col-span-1">
+					<span class="studio-field-label">{_ labels.sql_type}</span>
+					<input
+						class="studio-column-type w-full min-w-0 cursor-not-allowed bg-surface-sunken font-mono text-text-secondary"
+						name="column_type"
+						value="{= column.type_string }"
+						readonly
+						tabindex="-1"
+					/>
+				</label>
+				<label class="studio-field">
+					<span class="studio-field-label">{_ labels.auto_increment}</span>
+					<select class="w-full min-w-0" name="column_auto_increment">
+						<option value="0">-</option>
+						<option
+							value="1"
+							{#if column.is_auto_increment}selected{/if}
+						>
+							AI
+						</option>
+					</select>
+				</label>
+				<label class="studio-field">
+					<span class="studio-field-label">{_ labels.unique}</span>
+					<select class="w-full min-w-0" name="column_unique">
+						<option value="0">-</option>
+						<option
+							value="1"
+							{#if column.is_unique}selected{/if}
+						>
+							UNIQUE
+						</option>
+					</select>
+				</label>
+				<label class="col-span-2 grid min-w-0 gap-1 md:col-span-3">
+					<span class="studio-field-label">{_ labels.generated}</span>
+					<span class="flex min-w-0 gap-1">
+						<select name="column_generated">
+							<option value="0">-</option>
+							<option
+								value="1"
+								{#if column.is_generated}selected{/if}
+							>
+								GEN
+							</option>
+						</select>
+						<input
+							class="min-w-0 flex-1 font-mono"
+							name="column_generated_expr"
+							value="{= column.generated_expr ?? '' }"
+							placeholder="expression"
+						/>
+					</span>
+				</label>
+			</div>
+		</details>
+	</div>
+</div>

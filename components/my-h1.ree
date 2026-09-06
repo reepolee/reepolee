@@ -1,0 +1,6 @@
+{{
+	const uppercased = (props.children || "").toUpperCase();
+	const rest = { ...props.attributes };
+	delete rest.class;
+}}
+<h1 class="{= props.attributes?.class}" ...rest>{= uppercased}</h1>

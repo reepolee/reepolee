@@ -1,0 +1,129 @@
+/* ==========================================================================
+   Filter Panel - Right Slide-In
+   ========================================================================== */
+
+@layer components {
+	dialog.filter-panel {
+		@apply fixed top-0 right-0 bottom-0 left-auto z-50 m-0 h-dvh max-h-dvh w-[40ch] max-w-[90vw] flex-col rounded-none p-0;
+		transform: none;
+		box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+	}
+
+	dialog.filter-panel::backdrop {
+		@apply bg-black/20;
+		backdrop-filter: blur(1px);
+	}
+
+	dialog.filter-panel[open] {
+		@apply flex;
+		animation: slide-in 0.2s ease-out;
+	}
+
+	@keyframes slide-in {
+		from {
+			transform: translateX(100%);
+		}
+		to {
+			transform: translateX(0);
+		}
+	}
+
+	.filter-panel-header {
+		@apply flex items-center justify-between border-b border-neutral-200 px-4 py-3;
+	}
+
+	.filter-panel-header h2 {
+		@apply font-semibold;
+	}
+
+	.filter-panel-body {
+		@apply flex-1 overflow-y-auto p-4;
+	}
+
+	.filter-panel-footer {
+		@apply flex items-center justify-end border-t border-neutral-200 px-4 py-3;
+	}
+
+	.filter-group {
+		@apply mb-3;
+	}
+
+	.filter-group-title {
+		@apply text-text-secondary mb-0.5 flex cursor-pointer items-center justify-between gap-4 font-semibold tracking-wider uppercase select-none;
+	}
+
+	.filter-group-title:hover {
+		@apply text-neutral-800;
+	}
+
+	.filter-group-body {
+		max-height: 9999px;
+		overflow: hidden;
+		opacity: 1;
+		transition: max-height 0.25s ease-in-out, opacity 0.2s ease-in-out;
+	}
+
+	.filter-group.collapsed .filter-group-body {
+		@apply max-h-0 opacity-0;
+	}
+
+	.filter-group.collapsed .chevron {
+		@apply rotate-0;
+	}
+
+	.chevron {
+		@apply inline-block rotate-90;
+		transition: transform 0.15s ease;
+	}
+
+	.filter-option {
+		@apply flex cursor-pointer items-center gap-2 py-[0.15rem];
+	}
+
+	.filter-option:hover {
+		@apply text-primary;
+	}
+
+	.filter-group-body input[type="text"],
+	.filter-group-body input[type="number"] {
+		@apply w-full rounded-sm border border-border px-2 py-1.5;
+	}
+
+	.filter-group-body input[type="text"]:focus,
+	.filter-group-body input[type="number"]:focus {
+		@apply outline-none;
+		border-color: var(--color-primary);
+		box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+	}
+
+	.filter-not {
+		@apply text-danger mb-1 flex cursor-pointer items-center gap-1.5 py-[0.15rem] font-semibold;
+	}
+
+	.filter-not input[type="checkbox"] {
+		@apply h-3.5 w-3.5;
+		accent-color: var(--color-danger);
+	}
+
+	/* Active filter chips */
+	.filter-chips {
+		@apply mt-2 flex flex-wrap gap-2 px-4;
+	}
+
+	.filter-chip {
+		@apply bg-surface-sunken text-text-secondary inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+	}
+
+	.filter-chip button {
+		@apply text-text-tertiary cursor-pointer border-none bg-transparent p-0 leading-none;
+	}
+
+	.filter-chip button:hover {
+		@apply text-danger;
+	}
+
+	/* Filter trigger button badge */
+	.filter-badge {
+		@apply bg-primary inline-flex h-5 w-5 items-center justify-center rounded-full font-semibold text-white;
+	}
+}

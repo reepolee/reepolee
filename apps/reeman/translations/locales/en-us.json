@@ -1,0 +1,48 @@
+{
+	"actions": {
+		"add_group": "Add Group",
+		"add_namespace": "Add Namespace",
+		"bulk_action": "Delete selected",
+		"close": "Close",
+		"create": "Create",
+		"delete": "Delete key",
+		"delete_namespace": "Delete namespace",
+		"do_it": "Delete",
+		"edit": "Edit",
+		"save": "Save Changes",
+		"save_close": "Save & close"
+	},
+	"messages": {
+		"delete_namespace_confirm": "All translations in \"{namespace}\" will be permanently deleted.",
+		"no_groups": "No translation groups found.",
+		"record_updated": "Translations updated",
+		"select_templates": "Optionally pre-populate with common keys:",
+		"shadowed_files_intro": "These locale files are ignored — a higher-priority app tree already owns the same namespace:",
+		"shadowed_files_superseded_by": "is superseded by",
+		"shadowed_files_title": "Shadowed translation files"
+	},
+	"nav": "Translations",
+	"route_name": "translations",
+	"search": {
+		"search_term": "Search translation keys...",
+		"submit": "Filter"
+	},
+	"selectors": {
+		"all": "-- All --",
+		"per_page": "per page"
+	},
+	"ui": {
+		"edit_title": "Edit translation",
+		"bulk_delete_warning": "This will permanently delete",
+		"bulk_delete_warning_suffix": "key group(s) - including every nested key and every language.",
+		"filter_label": "Filter by namespace",
+		"global_label": "(global)",
+		"group_label": "Group",
+		"key_label": "Key",
+		"keys_label": "Keys",
+		"languages_label": "Languages",
+		"namespace_label": "Namespace",
+		"no_records": "No translation keys found.",
+		"title": "Translations"
+	}
+}

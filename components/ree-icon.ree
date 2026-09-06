@@ -1,0 +1,7 @@
+{{
+	const attrs = props.attributes || {};
+	const name = attrs.name || "";
+	const icon_attributes = { class: attrs.class || "" };
+}}
+
+{~ render_icon(name, icon_attributes) }

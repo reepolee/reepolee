@@ -1,0 +1,31 @@
+{
+	"actions": {
+		"cancel": "Cancel",
+		"confirm_delete": "Delete",
+		"delete_selected": "Delete selected",
+		"hide_values": "Hide values",
+		"save": "Save",
+		"search": "Search",
+		"show_values": "Show values"
+	},
+	"confirm": {
+		"delete_selected": "Delete the selected environment keys?"
+	},
+	"hints": {
+		"description": "Descriptions come from .env.example and cannot be edited here.",
+		"value": "Enter the dotenv value exactly as it should appear after the equals sign. Values must fit on one line."
+	},
+	"labels": {
+		"description": "Description",
+		"key": "Key",
+		"native_order": "Native .env order",
+		"selected": "Selected",
+		"value": "Value"
+	},
+	"nav": "Environment",
+	"ui": {
+		"edit_title": "Edit environment variable",
+		"index_title": "Environment variables",
+		"no_records": "No environment variables found."
+	}
+}

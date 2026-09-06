@@ -1,0 +1,57 @@
+{#layout("layout") }
+{#with props}
+	<div class="p-4">
+		<h1 class="mb-4">{_ actions.generate_crud}</h1>
+
+		{#if !valid_selection}
+			<app-banner type="red">{_ ui.no_tables_selected}</app-banner>
+		{:else}
+			<form method="POST" action="{~ localized_path('/tables/bulk') }" class="grid grid-cols-1 gap-4 max-w-[120ch]">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="return_to" value="{= return_to }" />
+				{#each selected_tables as table}
+					<input type="hidden" name="tables" value="{= table }" />
+				{/each}
+
+				<div>
+					<p class="text-text-secondary">{_ ui.modifying} <span class="font-semibold text-brand">{= selected_tables.length }</span> {_ ui.records}.</p>
+					<p class="mt-1 text-sm text-text-secondary">{= selected_tables.join(", ") }</p>
+				</div>
+
+				<field-wrapper class="grid max-w-[60ch]" data-field="prefix">
+					<div class="grid">
+						<label class="px-3" for="generate-prefix">{_ labels.prefix}</label>
+						<select id="generate-prefix" name="prefix" title="{_ hints.prefix }">
+							<option value=""></option>
+							{#each modules as module}
+								<option value="{= module.code }">{= module.code } - {= module.name }</option>
+							{/each}
+						</select>
+					</div>
+				</field-wrapper>
+
+				<generator-settings id-prefix="generate"></generator-settings>
+
+				<fieldset class="grid gap-2 max-w-[60ch]">
+					<legend>{_ labels.form_layout}</legend>
+					<label class="flex cursor-pointer items-center gap-1.5"><input type="checkbox" name="form_hints" value="1" /> {_ labels.form_hints}</label>
+					<label class="flex cursor-pointer items-center gap-1.5"><input type="checkbox" name="form_details" value="1" /> {_ labels.form_details}</label>
+				</fieldset>
+
+				<div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+					<label class="flex cursor-pointer items-center gap-1.5"><input type="checkbox" name="force" value="1" /> {_ actions.force}</label>
+					<label class="flex cursor-pointer items-center gap-1.5"><input type="checkbox" name="translate" value="1" /> {_ actions.translate}</label>
+				</div>
+
+				{#if busy}
+					<div><app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner></div>
+				{/if}
+
+				<div class="flex gap-2 items-center">
+					<button type="submit" class="as-button-primary" {#if busy}disabled{/if}>{_ actions.generate_crud}</button>
+					<a href="{~ localized_path('/tables') }" role="button" class="as-button-secondary">{_ actions.cancel}</a>
+				</div>
+			</form>
+		{/if}
+	</div>
+{/with}

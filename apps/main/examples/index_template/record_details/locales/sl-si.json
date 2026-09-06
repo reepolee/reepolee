@@ -1,0 +1,10 @@
+{
+	"labels": {
+		"id": "ID",
+		"last_checked": "Nazadnje preverjeno",
+		"method": "Metoda",
+		"owner": "Lastnik",
+		"path": "Pot",
+		"status": "Stanje"
+	}
+}

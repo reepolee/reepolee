@@ -1,0 +1,63 @@
+{
+	"actions": {
+		"activate_selected": "Aktiviraj izbrane",
+		"add": "Dodaj",
+		"add_locale": "Dodaj jezik",
+		"back_to_locales": "Nazaj na jezike",
+		"cancel": "Prekliči",
+		"do_it": "Izvedi",
+		"export_english": "Izvozi angleški JSON",
+		"import": "Uvozi",
+		"remove": "Odstrani",
+		"remove_selected": "Odstrani izbrane",
+		"save": "Shrani spremembe",
+		"set_active": "Nastavi kot aktivno",
+		"set_inactive": "Nastavi kot neaktivno",
+		"translate": "Prevedi z AI",
+		"upload": "Naloži",
+		"upload_translation": "Naloži prevedeni JSON"
+	},
+	"confirm": {
+		"remove_locale": "Odstranim ta jezik? Njegovi prevodi in vsebinske tabele bodo izbrisani."
+	},
+	"hints": {
+		"alias": "Vzdevek za streženje UI-nizov - zahteve za ta jezik prikažejo nize ciljnega jezika",
+		"locale_code": "Koda jezika BCP 47 za dodajanje (npr. de-at)"
+	},
+	"labels": {
+		"active": "Aktiven",
+		"alias": "Vzdevek",
+		"alias_placeholder": "npr. de-at",
+		"archived_locales": "Arhivirani jeziki",
+		"available_locales": "Razpoložljivi pripravljeni jeziki",
+		"code": "Koda",
+		"default": "Privzet",
+		"locale_code": "Koda jezika",
+		"locales": "Jeziki",
+		"name": "Ime",
+		"name_placeholder": "Prikazno ime",
+		"remove": "Odstrani"
+	},
+	"nav": "Jeziki",
+	"route_name": "jeziki",
+	"ui": {
+		"activate_locale_hint": "Že podprti jeziki - zažene njihove pripravljene prevode in jih označi kot aktivne.",
+		"add_locale_hint": "Doda jezik v konfiguracijo, vnese njegove prevode in klonira vsebinske tabele (generator add-locale).",
+		"archived_locales_hint": "Pripravljene arhivirane prevode lahko uvozite v ustrezne aktivne mape. Uvoženi jeziki so podprti, vendar ostanejo neaktivni.",
+		"available_locales_hint": "Za te jezike na disku že obstajajo pripravljeni prevodi - dodajte jih z enim klikom (samo v konfiguracijo, ne kot aktivne).",
+		"busy": "Obdelava v teku — stran se bo osvežila, ko bo končano.",
+		"edit_title": "Uredi jezik",
+		"index_title": "Jeziki",
+		"locales_description": "Upravljanje config/supported_locales.ts - kode jezikov, prikazana imena, vzdevki, aktivni seznam in privzeti jezik.",
+		"locales_manage_hint": "Dodajte jezik za ustvarjanje njegovih prevodov + vsebinskih tabel ali neposredno uredite konfiguracijo spodaj.",
+		"locales_title": "Jeziki",
+		"modifying": "Odstranili boste",
+		"new_title": "Nov jezik",
+		"no_records": "V config/supported_locales.ts ni najdenih jezikov.",
+		"records": "jezik(-e)",
+		"remove_selected_hint": "Odstrani izbrane jezike - njihovi prevodi in vsebinske tabele bodo izbrisani.",
+		"save_hint": "Shrani neposredno v config/supported_locales.ts. Za uveljavitev osvežite poti.",
+		"title": "Jezik",
+		"upload_translation_hint": "Naložite prevedeni izvozni paket. Po preverjanju se doda med arhivirane jezike; tam ga namestite z gumbom Uvozi."
+	}
+}
