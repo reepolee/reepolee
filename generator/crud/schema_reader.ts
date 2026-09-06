@@ -40,6 +40,8 @@ export interface TableMeta {
 	generated_fields: Record<string, any> | null;
 	indexed_columns: string[] | undefined;
 	foreign_keys: ForeignKeyMap;
+	/** Includes foreign keys exposed only through the list view. */
+	filter_foreign_keys: ForeignKeyMap;
 	list_fields: FieldDef[];
 	search_field: string;
 	sort_options: string;
@@ -172,6 +174,11 @@ export async function load_table_schema(table_name: string, options: {
 	}
 
 	const foreign_keys = extract_foreign_keys(fields, generated_fields);
+	const filter_view_fields = (v_fields || []).filter((field) => {
+		return field.attributes?.filter === true || columns?.[field.name]?.filter === true;
+	});
+	const view_filter_foreign_keys = extract_foreign_keys(filter_view_fields, generated_fields);
+	const filter_foreign_keys = new Map([...foreign_keys, ...view_filter_foreign_keys]);
 
 	// Cross-reference with DB cache - the cache may have detected additional FKs
 	// (e.g. from view JOINs or improved naming convention logic) that aren't yet
@@ -199,6 +206,13 @@ export async function load_table_schema(table_name: string, options: {
 					log_step(`FK added from cache: ${cfk.column_name} → ${cfk.referenced_table}.${cfk.referenced_column}`);
 				}
 			}
+			if (!filter_foreign_keys.has(cfk.column_name)) {
+				filter_foreign_keys.set(cfk.column_name, {
+					table: cfk.referenced_table,
+					column: cfk.referenced_column,
+					label: undefined,
+				});
+			}
 		}
 		const cached_table = get_cached_table(cache, table_name);
 		column_names = cached_table?.columns.map((c) => c.name) ?? [];
@@ -206,6 +220,13 @@ export async function load_table_schema(table_name: string, options: {
 		cached_primary_key_is_auto_increment = cached_table?.primary_key?.is_auto_increment;
 	} catch (err) {
 		log_step(`Cache cross-reference failed for ${table_name}: ${err instanceof Error ? err.message : String(err)} - proceeding with file-based FKs`);
+	}
+
+	const { discover_localized_tables } = await import("../locale_tables/run");
+	const localized_table_info = await discover_localized_tables();
+	const localized_table_names = new Set(localized_table_info.map((info) => info.table_name));
+	for (const foreign_key of [...foreign_keys.values(), ...filter_foreign_keys.values()]) {
+		foreign_key.localized = localized_table_names.has(foreign_key.table);
 	}
 
 	const list_fields = v_fields || fields;
@@ -264,6 +285,7 @@ export async function load_table_schema(table_name: string, options: {
 		generated_fields,
 		indexed_columns,
 		foreign_keys,
+		filter_foreign_keys,
 		list_fields,
 		search_field,
 		sort_options,

@@ -14,6 +14,7 @@ export interface RouteGridColumn {
 	localized: boolean;
 	readonly: boolean;
 	form: boolean;
+	is_new: boolean;
 	/** Built-in template helper applied to this column's grid cell ("" = default). */
 	helper: string;
 	/** The type-based helper the CRUD generator would apply if none is selected. */
@@ -23,11 +24,15 @@ export interface RouteGridColumn {
 export interface RouteSettings {
 	route: RouteSchema;
 	grid_columns: RouteGridColumn[];
+	has_new_columns: boolean;
+	grid_cols: string;
 	pagination_strategy: "cursor" | "offset";
 	render_strategy: "stream" | "load";
 	template_tags: "flat" | "tags";
 	form_hints: boolean;
 	form_details: boolean;
+	/** A route can move only when it is not a child and owns no child CRUD routes. */
+	can_move_module?: boolean;
 }
 
 export function route_edit_path(url: string): string {
@@ -53,6 +58,7 @@ type TableColumn = {
 	localized?: boolean;
 	readonly?: boolean;
 	form?: boolean;
+	new?: boolean;
 };
 
 type TableModule = {
@@ -78,13 +84,19 @@ export function route_settings_from_module(route: RouteSchema, table_module: Tab
 		localized: column.localized === true,
 		readonly: column.readonly === true,
 		form: column.form !== false,
+		is_new: column.new === true,
 		helper: column.helper ?? "",
 		default_helper: fields?.[name] ? default_field_helper(fields[name]!) : "",
 	}));
 
+	const has_new_columns = grid_columns.some((column) => column.is_new);
+	const grid_cols = `${has_new_columns ? "auto " : ""}minmax(0,1fr) 12ch minmax(0,1fr) minmax(0,22ch) auto auto auto auto`;
+
 	return {
 		route,
 		grid_columns,
+		has_new_columns,
+		grid_cols,
 		pagination_strategy: table_module.pagination_strategy,
 		render_strategy: table_module.render_strategy,
 		template_tags: table_module.template_tags,
@@ -104,5 +116,7 @@ export async function load_route_settings(url: string): Promise<RouteSettings | 
 	const table_path = join(process.cwd(), MAIN_APP, ...route_parts, "config.ts");
 	const table_module = await load_table_module_fresh<TableModule>(table_path);
 
-	return route_settings_from_module(route, table_module);
+	const settings = route_settings_from_module(route, table_module);
+	settings.can_move_module = !route.parent && !routes.some((candidate) => candidate.url.startsWith(`${route.url}/`));
+	return settings;
 }

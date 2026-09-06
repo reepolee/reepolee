@@ -16,14 +16,27 @@ import { SQL } from "bun";
 
 const DEV_CONNECTION_STRING = get_connection_string("DEV");
 
-let _cached_url: string = DEV_CONNECTION_STRING;
+declare global {
+	// Bun --hot re-evaluates this module while a Reeman action is running. Keep
+	// the CLI connection outside the module instance so an old importer never
+	// continues with a pool that hot reload has discarded.
+	var __reepolee_db_cli: SQL | undefined;
+	var __reepolee_db_cli_url: string | undefined;
+	var __reepolee_db_cli_keepalive: Timer | null | undefined;
+}
+
+let _cached_url: string = globalThis.__reepolee_db_cli_url ?? DEV_CONNECTION_STRING;
 // Keepalive timer prevents the event loop from exiting before SQL queries
 // complete in standalone CLI scripts (e.g. reeman generator). Without this,
 // Bun may exit while an async query is still in-flight when there is no
 // other pending I/O (e.g. after stdin is paused by select_from_list).
-let _cli_keepalive: Timer | null = setInterval(() => {}, 2_147_483_647);
+let _cli_keepalive: Timer | null = globalThis.__reepolee_db_cli_keepalive ?? setInterval(() => {}, 2_147_483_647);
 
-export let db_cli: SQL = new SQL(DEV_CONNECTION_STRING);
+const existing_db_cli = globalThis.__reepolee_db_cli;
+export let db_cli: SQL = existing_db_cli ?? new SQL(_cached_url);
+globalThis.__reepolee_db_cli = db_cli;
+globalThis.__reepolee_db_cli_url = _cached_url;
+globalThis.__reepolee_db_cli_keepalive = _cli_keepalive;
 
 // SQLite only allows one writer at a time. Without WAL + a busy timeout, the
 // generator/reeman connection and the dev server's own connection collide
@@ -41,7 +54,7 @@ async function apply_sqlite_pragmas(connection: SQL, url: string): Promise<void>
 	await connection`PRAGMA journal_mode = WAL`;
 }
 
-await apply_sqlite_pragmas(db_cli, DEV_CONNECTION_STRING);
+if (!existing_db_cli) await apply_sqlite_pragmas(db_cli, _cached_url);
 
 /**
  * Reconnect db_cli if DEV_CONNECTION_STRING has changed at runtime.
@@ -62,6 +75,9 @@ export async function sync_db_cli(): Promise<boolean> {
 	_cached_url = new_url;
 	_cli_keepalive = setInterval(() => {}, 2_147_483_647);
 	db_cli = new SQL(new_url);
+	globalThis.__reepolee_db_cli = db_cli;
+	globalThis.__reepolee_db_cli_url = new_url;
+	globalThis.__reepolee_db_cli_keepalive = _cli_keepalive;
 	await apply_sqlite_pragmas(db_cli, new_url);
 
 	const new_prefix = new_url.split(":")[0]?.toLowerCase() || "?";
@@ -75,4 +91,9 @@ export async function close_db_cli(): Promise<void> {
 		_cli_keepalive = null;
 	}
 	await db_cli.close();
+	if (globalThis.__reepolee_db_cli === db_cli) {
+		globalThis.__reepolee_db_cli = undefined;
+		globalThis.__reepolee_db_cli_url = undefined;
+		globalThis.__reepolee_db_cli_keepalive = null;
+	}
 }

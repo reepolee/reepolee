@@ -32,10 +32,10 @@ Bypass with `git commit --no-verify` (or `-n`) for WIP/emergency commits.
 
 ## Dev mode quirks
 
-- **`bun dev`** runs `scripts/dev_run.ts`, which builds CSS once (`bun run css:once`) then starts `bun --hot --no-clear-screen apps/main/server.ts --dev`. The Bun-native file watcher (`lib/watcher.ts`) rebuilds CSS on `.css`/`.ree` changes during dev and reloads in-memory translations (plus route maps) when a `{locale}.json` file changes. Template cache is disabled in dev and enabled in prod.
+- **`bun dev`** runs `scripts/dev_run.ts`, which builds CSS once (`bun run css:once`), starts a long-lived Tailwind watcher, then starts `bun --hot --no-clear-screen apps/main/server.ts --dev`. The Bun-native file watcher (`lib/watcher.ts`) reloads the browser after changed templates or Tailwind's `static/app.css` output, and reloads in-memory translations (plus route maps) when a `{locale}.json` file changes. Template cache is disabled in dev and enabled in prod.
 - **`bun dev:worker`** runs the same via `scripts/dev_run.ts --worker`, additionally starting `bun --hot worker.ts`. The worker is opt-in: it runs only when `--worker` is passed, never implicitly alongside the app (see `scripts/dev_run.ts`). Use `bun run worker` to start the worker on its own instead.
 - **`bun --hot`** reloads the process on code changes without clearing the terminal.
-- Live reload SSE at `/__reload`; CSS output goes to `static/app-dev.css` (gitignored).
+- Live reload uses WebSocket at `/__reload`; CSS output goes to `static/app.css`.
 - Static files in `static/` are served directly.
 - **`await prev_server.stop()`** - macOS holds the port in TIME_WAIT briefly, so the old server stop must be awaited before starting a new one across `--watch` reloads.
 - **Translation sync timing:** to prevent premature route reloads before translations are committed:

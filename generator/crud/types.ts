@@ -40,6 +40,8 @@ export interface ColumnDef {
 	readonly?: boolean;
 	/** Include this column as an editable field on generated forms. */
 	form?: boolean;
+	/** Marks a column discovered by schema synchronization until a developer reviews it. */
+	new?: boolean;
 }
 
 export interface ParentInfo {

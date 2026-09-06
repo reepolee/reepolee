@@ -36,7 +36,7 @@
 
 	<div class="grid">
 		<div class="flex items-center justify-between gap-2">
-			<label class="px-3" for="{= field_id }">{= field_label }</label>
+			<label class="px-3 font-semibold" for="{= field_id }">{= field_label }</label>
 			{#if editor_locales.length > 1}
 				<div class="inline-flex items-center gap-1" role="tablist">
 					{#each editor_locales as locale}

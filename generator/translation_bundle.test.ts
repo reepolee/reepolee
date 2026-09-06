@@ -31,4 +31,16 @@ describe("translation archive v2", () => {
 		await install_archived_translation_bundle("zz-zz", project_dir);
 		expect(await Bun.file(join(project_dir, "apps/main/recipes/zz-zz.json")).json()).toEqual({ actions: { save: "Shrani {count}" } });
 	});
+
+	test("installing archive memory preserves target-only and manually edited keys", async () => {
+		const target_file = join(project_dir, "apps/main/recipes/zz-zz.json");
+		await writeFile(target_file, JSON.stringify({ actions: { save: "Ročno shrani {count}" }, legacy: { title: "Ohrani" } }) + "\n");
+
+		await install_archived_translation_bundle("zz-zz", project_dir);
+
+		expect(await Bun.file(target_file).json()).toEqual({
+			actions: { save: "Ročno shrani {count}" },
+			legacy: { title: "Ohrani" },
+		});
+	});
 });

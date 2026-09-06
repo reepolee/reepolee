@@ -8,7 +8,7 @@
 
 <field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= props.attributes.name }">
 	<div class="grid">
-		<label class="px-3" for="{= props.attributes.name }">{= props.attributes.label} ({_ hints.date_format_value})</label>
+		<label class="px-3 font-semibold" for="{= props.attributes.name }">{= props.attributes.label} ({_ hints.date_format_value})</label>
 		<date-input
 			id="{= props.attributes.name }"
 			name="{= props.attributes.name }"

@@ -11,10 +11,12 @@ export async function refresh_crud_fields_only(
 	parent?: string,
 	route_name?: string,
 	translate: boolean = false,
+	reload: boolean = true,
 ): Promise<boolean> {
 	console.log(`\n${color("Running field refresh...", BOLD)}\n`);
 	const success = await generate_crud(table, {
 		refresh_fields: true,
+		reload,
 		translate,
 		prefix,
 		parent_table: parent,

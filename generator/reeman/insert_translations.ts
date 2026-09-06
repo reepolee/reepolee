@@ -25,7 +25,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 import { default_locale, locales } from "$config/supported_locales";
-import { read_all_translation_rows, upsert_file_translation } from "$lib/translation_files";
+import { insert_file_translation, read_all_translation_rows } from "$lib/translation_files";
 
 import { color, confirm, dim, GREEN, header, press_enter, YELLOW } from "./ui";
 import { capitalize_label } from "../schema/field_generator";
@@ -227,7 +227,7 @@ export async function write_missing_translations(missing: MissingKey[], project_
 		const english_value = cleaned_english_value(key_path);
 		for (const locale of locales) {
 			const translation = locale === default_locale ? english_value : `::missing:: ${english_value}`;
-			await upsert_file_translation(locale, namespace, key_path, translation, project_dir);
+			await insert_file_translation(locale, namespace, key_path, translation, project_dir);
 			count++;
 		}
 	}

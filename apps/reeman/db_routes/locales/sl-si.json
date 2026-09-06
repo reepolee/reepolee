@@ -67,6 +67,7 @@
 		"mode": "Način",
 		"module": "Modul",
 		"name": "Ime",
+		"new": "Novo",
 		"no_helper": "Brez (privzeto)",
 		"order_by": "Razvrsti po",
 		"pagination": "Oštevilčenje strani",
@@ -106,6 +107,7 @@
 		"default": "(ohrani trenutno)",
 		"modified": "Spremenjeno",
 		"per_page": "na stran",
+		"root": "Koren (brez modula)",
 		"select_table": "-- Izberi tabelo ali pot --",
 		"untracked": "Brez sledenja"
 	},
@@ -119,6 +121,7 @@
 		"busy": "Obdelava v teku — stran se bo osvežila, ko bo končano.",
 		"clear_all": "Briši vse",
 		"edit_title": "Uredi DB pot",
+		"form_fields_modified_warning": "Ustvarjeni razdelek polj tega obrazca je bil ročno spremenjen. Osvežitev CRUD lahko zamenja ustvarjeno oznako polj.",
 		"filter_not": "NI",
 		"index_title": "DB poti",
 		"loading_count": "Nalagam…",

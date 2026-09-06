@@ -11,12 +11,12 @@ import { MySQLTypeMapper } from "../schema/mysql/mysql_type_mapper";
 import { SQLiteTypeMapper } from "../schema/sqlite/sqlite_type_mapper";
 import type { SchemaObject } from "../schema/types";
 import { sync_single_namespace } from "../translate_namespace";
-import { configured_form_fields, entry_fields } from "../validation_generator";
-import { generate_field_block } from "./form_ree";
-import { find_v_field, log_step, replace_between_markers, route_dir_to_namespace, smart_merge_fields } from "./helpers";
+import { generate_form_ree } from "./form_ree";
+import { find_v_field, log_step, replace_between_markers, route_dir_to_namespace } from "./helpers";
 import { integrate_nested_child } from "./nested_integration";
 import { render_field_cell } from "./render_field_cell";
-import { stamp_generated_ree_hashes } from "./ree_hash";
+import { inspect_form_fields_hash_content, stamp_generated_ree_hashes } from "./ree_hash";
+import { sync_crud_translations, sync_validation_translations } from "./translation_sync";
 import type { ColumnDef, FieldDef, ForeignKeyMap, LocalizedFieldMeta, ParentInfo } from "./types";
 import { MAIN_APP } from "$config/paths";
 
@@ -39,6 +39,7 @@ export interface RefreshFieldsConfig {
 	translate_in_args: boolean;
 	template_tags: "flat" | "tags";
 	localized_fields: LocalizedFieldMeta[];
+	form_hints: boolean;
 	form_details: boolean;
 }
 
@@ -97,6 +98,7 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 			table_name,
 			route_dir,
 			fields,
+			refreshed_v_fields,
 			columns,
 			foreign_keys,
 			route_prefix,
@@ -104,6 +106,7 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 			parent_info,
 			template_tags,
 			localized_fields,
+			config.form_hints,
 			form_details,
 		);
 		await refresh_index_ree(table_name, route_dir, fields, refreshed_v_fields, columns);
@@ -163,6 +166,13 @@ export async function refresh_fields(config: RefreshFieldsConfig): Promise<boole
 		await stamp_generated_ree_hashes(resolved_parent_dir);
 	}
 
+	// Fields refresh skips the full CRUD pipeline, but its locale sync still
+	// rebuilds each target locale from the default-locale tree. Seed that tree
+	// first so target-only CRUD translations are not pruned then reintroduced as
+	// ::missing:: values on a later full regeneration.
+	await sync_crud_translations(table_name, route_dir, fields, is_nested, parent_info, refreshed_v_fields);
+	await sync_validation_translations(table_name, route_dir, fields, foreign_keys);
+
 	const namespace = route_dir_to_namespace(route_dir);
 	const sync_mode = translate_in_args ? "with AI" : "structure only";
 	log_step(`Syncing translations (${sync_mode}) for namespace "${namespace}"...`);
@@ -184,6 +194,7 @@ async function refresh_form_ree(
 	table_name: string,
 	route_dir: string,
 	fields: FieldDef[],
+	v_fields: FieldDef[] | null,
 	columns: Record<string, ColumnDef> | null,
 	foreign_keys: ForeignKeyMap,
 	route_prefix: string,
@@ -191,6 +202,7 @@ async function refresh_form_ree(
 	parent_info: ParentInfo | undefined,
 	template_tags: "flat" | "tags",
 	localized_fields: LocalizedFieldMeta[],
+	form_hints: boolean,
 	form_details: boolean,
 ): Promise<void> {
 	const form_path = join(route_dir, "form.ree");
@@ -206,35 +218,128 @@ async function refresh_form_ree(
 	log_step(`Refreshing form.ree fields`);
 	let form_content = await Bun.file(form_path).text();
 
-	const old_section_match = form_content.match(/<!-- GEN:FIELDS:START -->([\s\S]*?)<!-- GEN:FIELDS:END -->/);
+	const old_section_match = form_content.match(/<!-- GEN:FIELDS:START(?::sha256:[a-f0-9]{64})? -->([\s\S]*?)<!-- GEN:FIELDS:END -->/);
 	if (!old_section_match) { throw new Error("Markers not found in form.ree. Run with --force first to initialize."); }
 	const old_section = old_section_match[1]!;
 
-	const localized_names = new Set(localized_fields.map((field) => field.field_name));
 	const readonly_names = new Set<string>();
 	for (const [name, column] of Object.entries(columns ?? {})) {
 		if (column?.readonly === true) readonly_names.add(name);
 	}
-	const filtered = configured_form_fields(fields, columns);
-	const input_fields_promises = filtered.map((f) => generate_field_block(
-		f,
-		foreign_keys,
+	const fresh_form = await generate_form_ree({
 		table_name,
+		fields,
+		v_fields,
+		foreign_keys,
 		route_prefix,
 		is_nested,
-		parent_info ?? null,
+		parent_info: parent_info ?? null,
+		localized_fields,
 		template_tags,
-		localized_names,
-		readonly_names
-	));
-	const new_field_blocks = await Promise.all(input_fields_promises);
+		form_hints,
+		form_details,
+		readonly_fields: readonly_names,
+		form_columns: columns,
+	});
+	const fresh_section = extract_form_fields_section(fresh_form);
+	if (fresh_section === null) throw new Error("Generated form.ree is missing field markers.");
 
-	const merged = smart_merge_fields(old_section, new_field_blocks, template_tags);
-	form_content = replace_between_markers(form_content, "FIELDS", merged.trim());
+	const preserve_manual_fields = inspect_form_fields_hash_content(form_content) === "modified";
+	const refreshed_section = preserve_manual_fields
+		? form_fields_previous_comment(old_section, fresh_section)
+		: fresh_section.trim();
+	const form_without_previous_fields = remove_form_fields_previous(form_content);
+	form_content = replace_between_markers(form_without_previous_fields, "FIELDS", refreshed_section);
+	if (preserve_manual_fields) {
+		console.log("⚠ Replaced form fields with the current generator output and commented changed previous fields");
+	}
 	form_content = sync_details_container(form_content, form_details);
 
 	await Bun.write(form_path, form_content);
-	console.log("✓ Refreshed form.ree fields (smart merge)");
+	if (!preserve_manual_fields) console.log("✓ Refreshed form.ree fields");
+}
+
+const FORM_FIELDS_SECTION = /<!-- GEN:FIELDS:START(?::sha256:[a-f0-9]{64})? -->([\s\S]*?)<!-- GEN:FIELDS:END -->/;
+const FORM_FIELD_BLOCK = /<localized-field-tabs\b[^>]*\bfield="([^"]*)"[^>]*>[\s\S]*?<\/localized-field-tabs>|<field-wrapper\b[^>]*\bdata-field="([^"]*)"[^>]*>[\s\S]*?<\/field-wrapper>|<[a-z][\w]*-[\w-]+\b(?=[^>]*(?:\bname|\bfield-name)="[^"]*")[^>]*>[\s\S]*?<\/[a-z][\w]*-[\w-]+>/g;
+const FORM_FIELDS_PREVIOUS = /\n*<!-- GEN:FIELDS:PREVIOUS(?::[^\s>]+)?:START -->[\s\S]*?<!-- GEN:FIELDS:PREVIOUS(?::[^\s>]+)?:END -->\n*/g;
+
+function extract_form_fields_section(content: string): string | null {
+	const section = content.match(FORM_FIELDS_SECTION);
+	return section?.[1] ?? null;
+}
+
+function field_name_from_block(block: string): string | undefined {
+	return /(?:\bdata-field|\bfield-name|\bfield|\bname)="([^"]*)"/.exec(block)?.[1];
+}
+
+function extract_form_field_blocks(section: string): Map<string, string> {
+	const field_blocks = new Map<string, string>();
+	let match: RegExpExecArray | null;
+	while ((match = FORM_FIELD_BLOCK.exec(section)) !== null) {
+		const field_name = match[1] ?? match[2] ?? field_name_from_block(match[0]);
+		if (field_name) field_blocks.set(field_name, match[0]);
+	}
+	FORM_FIELD_BLOCK.lastIndex = 0;
+	return field_blocks;
+}
+
+function remove_form_fields_previous(content: string): string {
+	return content.replace(FORM_FIELDS_PREVIOUS, "");
+}
+
+function previous_field_comment(field_name: string, previous_block: string, removed: boolean = false): string {
+	const label = removed ? `Removed field from the previous rendering: ${field_name}` : `Previous rendering for ${field_name}`;
+	const commented_lines = previous_block.trim().split("\n").map((line) => `<!-- ${line.replaceAll("--", "- -")} -->`).join("\n");
+	return `\n<!-- GEN:FIELDS:PREVIOUS:${field_name}:START -->\n<!-- ${label} -->\n${commented_lines}\n<!-- GEN:FIELDS:PREVIOUS:${field_name}:END -->`;
+}
+
+/**
+ * Preserve the previous field layout while replacing every matching field with
+ * its fresh rendering. Changed fields retain their prior markup in comments.
+ * Fields removed from the schema have no replacement anchor, so they are kept
+ * as comments at the end of the generated section.
+ */
+export function form_fields_previous_comment(current: string, generated: string): string {
+	const current_without_previous = remove_form_fields_previous(current);
+	const previous_fields = extract_form_field_blocks(current_without_previous);
+	const generated_fields = extract_form_field_blocks(generated);
+	if (previous_fields.size === 0) return generated.trim();
+
+	const removed_fields: Array<[string, string]> = [];
+	for (const [field_name, previous_block] of previous_fields) {
+		const generated_block = generated_fields.get(field_name);
+		if (!generated_block) {
+			removed_fields.push([field_name, previous_block]);
+		}
+	}
+
+	let preserved_layout = current_without_previous.replace(FORM_FIELD_BLOCK, (previous_block) => {
+		const field_name = field_name_from_block(previous_block);
+		const generated_block = field_name ? generated_fields.get(field_name) : undefined;
+		if (!field_name || !generated_block) return "";
+		if (previous_block.trim() === generated_block.trim()) return generated_block;
+		return `${generated_block}${previous_field_comment(field_name, previous_block)}`;
+	});
+
+	const appended_fields: string[] = [];
+	for (const [field_name, generated_block] of generated_fields) {
+		if (!previous_fields.has(field_name)) appended_fields.push(generated_block);
+	}
+	if (appended_fields.length > 0) preserved_layout = `${preserved_layout.trimEnd()}\n\n${appended_fields.join("\n\n")}`;
+	if (removed_fields.length === 0) return preserved_layout.trim();
+
+	const removed_comments = removed_fields.map(([field_name, previous_block]) => previous_field_comment(field_name, previous_block, true)).join("\n\n");
+	return `${preserved_layout.trim()}\n\n${removed_comments}`;
+}
+
+/** Preserve a manually edited field section as comments during full CRUD regeneration. */
+export function preserve_previous_form_fields(fresh_form: string, existing_form: string): string {
+	if (inspect_form_fields_hash_content(existing_form) !== "modified") return fresh_form;
+	const previous_section = extract_form_fields_section(existing_form);
+	const fresh_section = extract_form_fields_section(fresh_form);
+	if (previous_section === null || fresh_section === null) return fresh_form;
+	const refreshed_section = form_fields_previous_comment(previous_section, fresh_section);
+	return replace_between_markers(fresh_form, "FIELDS", refreshed_section);
 }
 
 /** Keep the generated details slot aligned with the persisted form setting. */

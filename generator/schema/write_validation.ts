@@ -15,7 +15,6 @@ export async function write_validation_file(
 	columns?: Record<string, { form?: boolean; }> | null,
 ): Promise<void> {
 	const validation_path = join(dir, "validation_server.ts");
-	if (await Bun.file(validation_path).exists()) return;
 	let index_schema_source: SchemaObject;
 
 	if (schema_obj.view_columns) {
@@ -109,6 +108,5 @@ export async function write_validation_file(
 	const zod_validate_fields = generate_zod_fields_from_array(configured_form_fields(validate_fields_array, columns), "validate");
 
 	const content = await generate_validation_server_content(zod_index_fields, zod_form_fields, zod_validate_fields);
-
 	await Bun.write(validation_path, content);
 }

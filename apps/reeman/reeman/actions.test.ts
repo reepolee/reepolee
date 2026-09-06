@@ -3,6 +3,8 @@ import { describe, expect, mock, test } from "bun:test";
 const saved_settings: Array<{ path: string; settings: Record<string, unknown>; }> = [];
 const regenerated_routes: Array<{ table: string; options: Record<string, unknown>; }> = [];
 const removed_routes: string[] = [];
+const moved_routes: Array<{ url: string; prefix: string; }> = [];
+const reloads: boolean[] = [];
 
 mock.module("$config/db", () => ({ DB_CONNECTION_STRING: "" }));
 mock.module("$config/paths", () => ({ MAIN_APP: "apps/main", MAIN_APP_POSIX: "apps/main" }));
@@ -25,12 +27,31 @@ mock.module("$generator/schema/write_table", () => ({
 mock.module("$generator/crud/main", () => ({
 	generate_crud: async (table: string, options: Record<string, unknown>) => { regenerated_routes.push({ table, options }); return true; },
 }));
+mock.module("$generator/ddl_cache", () => ({
+	invalidate_cache: () => {},
+	load_ddl_cache: async () => ({}),
+}));
+mock.module("$generator/schema", () => ({
+	generate_schema: async () => true,
+}));
+mock.module("$generator/reeman/db", () => ({
+	get_available_modules: async () => [{ id: 1, code: "system", name: "System" }],
+}));
+mock.module("$generator/reeman/move_route", () => ({
+	move_route_to_prefix: async (url: string, prefix: string) => {
+		moved_routes.push({ url, prefix });
+		return { url: `/${prefix}/metrics` };
+	},
+}));
 mock.module("$generator/reeman/remove_route", () => ({
 	list_removable_routes: async () => [
 		{ url: "/admin/metrics", module: "admin" },
 		{ url: "/admin/metrics/metric_enum_values", module: "admin" },
 	],
 	remove_route: async (url: string) => { removed_routes.push(url); },
+}));
+mock.module("$lib/server_notify", () => ({
+	notify_server_reload: async (restart: boolean) => { reloads.push(restart); },
 }));
 
 const { action_add_nested_children, action_bulk_remove_route, action_save_route_settings, build_bulk_command_args, spawn_add_locale_action, spawn_bulk_action } = await import("./actions");
@@ -149,6 +170,7 @@ describe("build_bulk_command_args", () => {
 	test("saves route settings before fully regenerating CRUD", async () => {
 		saved_settings.length = 0;
 		regenerated_routes.length = 0;
+		reloads.length = 0;
 
 		const result = await action_save_route_settings({
 			url: "/admin/metrics",
@@ -175,6 +197,7 @@ describe("build_bulk_command_args", () => {
 		expect(regenerated_routes).toEqual([{
 			table: "metrics",
 			options: {
+				reload: false,
 				force: true,
 				interactive: false,
 				prefix: "admin",
@@ -182,6 +205,22 @@ describe("build_bulk_command_args", () => {
 				route_name: undefined,
 			},
 		}]);
+		expect(reloads).toEqual([false, true]);
+	});
+
+	test("moves a standalone route after saving its updated settings", async () => {
+		saved_settings.length = 0;
+		moved_routes.length = 0;
+
+		const result = await action_save_route_settings({
+			url: "/admin/metrics",
+			module: "system",
+		});
+
+		expect(result.ok).toBe(true);
+		expect(saved_settings).toHaveLength(1);
+		expect(moved_routes).toEqual([{ url: "/admin/metrics", prefix: "system" }]);
+		expect(result.meta).toEqual({ route_url: "/system/metrics" });
 	});
 
 	test("removes a selected parent once when its nested child is also selected", async () => {

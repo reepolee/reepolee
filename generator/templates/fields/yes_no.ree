@@ -1,6 +1,6 @@
 <field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="__field.name__">
 	<div class="grid">
-		<label class="px-3" for="__field.name__">{_ labels.__field.name__}</label>
+		<label class="px-3 font-semibold" for="__field.name__">{_ labels.__field.name__}</label>
 		<select id="__field.name__" name="__field.name__" value="{= record.__field.name__}" class="w-[20ch]">
 			<option value="-1">{_ selectors.select }</option>
 			<option value="0" {#if String(record.__field.name__) === "0" }selected{/if}>{_ selectors["0"] }</option>

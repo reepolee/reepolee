@@ -120,7 +120,7 @@ function parse_entries(raw: string): ParsedEntry[] {
  * version of the file - a prior removal in the same batch shifts every later entry's
  * line numbers, so the caller-supplied indices on `selected` cannot be trusted here.
  */
-async function remove_single_route(selected: ParsedEntry, force: boolean, notify_server: boolean): Promise<void> {
+async function remove_single_route(selected: ParsedEntry, force: boolean, notify_server: boolean, unload_before_delete: boolean): Promise<void> {
 	const routes_path = join(process.cwd(), MAIN_APP, "routes.ts");
 	const raw = await Bun.file(routes_path).text();
 
@@ -192,6 +192,9 @@ async function remove_single_route(selected: ParsedEntry, force: boolean, notify
 		routes_content = routes_content.replace(/\n{3,}/g, "\n\n");
 		await Bun.write(routes_path, routes_content);
 		console.log(`  ${color("✓", GREEN)} Updated routes.ts`);
+		// A route move needs the main app to drop the old module before deleting
+		// its folder. Windows refuses that deletion while Bun still holds it open.
+		if (unload_before_delete) await notify_server_reload(true, Bun.env.MAIN_APP_URL);
 	}
 
 	// 4. Delete route folder
@@ -297,8 +300,10 @@ export async function list_removable_routes(): Promise<{ url: string; module: st
  * @param force - skip the deletion confirmation prompt (for non-interactive CLI use).
  * @param notify_server - trigger the app route reload after removal. Web callers
  *   defer this until after their redirect response is prepared.
+ * @param unload_before_delete - reload after removing the registry entry but before
+ *   deleting the folder, so a route move can release Windows file handles.
  */
-export async function remove_route(url?: string, force: boolean = false, notify_server: boolean = true): Promise<void> {
+export async function remove_route(url?: string, force: boolean = false, notify_server: boolean = true, unload_before_delete: boolean = false): Promise<void> {
 	const routes_path = join(process.cwd(), MAIN_APP, "routes.ts");
 	const raw = await Bun.file(routes_path).text();
 	const entries = parse_entries(raw);
@@ -328,7 +333,7 @@ export async function remove_route(url?: string, force: boolean = false, notify_
 		if (selected.module === "orphan") {
 			await remove_orphan_folder(selected, force, notify_server);
 		} else {
-			await remove_single_route(selected, force, notify_server);
+			await remove_single_route(selected, force, notify_server, unload_before_delete);
 		}
 		return;
 	}
@@ -371,7 +376,7 @@ export async function remove_route(url?: string, force: boolean = false, notify_
 		if (entry.module === "orphan") {
 			await remove_orphan_folder(entry, force, notify_server);
 		} else {
-			await remove_single_route(entry, force, notify_server);
+			await remove_single_route(entry, force, notify_server, unload_before_delete);
 		}
 	}
 }

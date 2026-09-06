@@ -8,7 +8,7 @@ import { IGNORE_TABLES, INTERNAL_TABLE_PREFIX } from "$config/db_structure";
 import { normalize_prefix } from "$lib/route";
 import { db_type } from "$lib/resolve_db_type";
 import { notify_server_reload } from "$lib/server_notify";
-import { upsert_file_translation } from "$lib/translation_files";
+import { insert_file_translation } from "$lib/translation_files";
 
 import { singularize } from "./naming";
 import { build_table_column_map, capitalize_label, get_and_clear_missing_index_warnings } from "./schema/field_generator";
@@ -30,6 +30,8 @@ import { load_table_module_fresh } from "./schema/table_module_loader";
 // ---------------------------------------------------------------------------
 
 export interface SchemaOptions {
+	/** Let an outer Reeman action reload once after all of its generator steps finish. */
+	reload?: boolean;
 	prefix?: string;
 	parent_table?: string;
 	/** The parent FK selected when a child table has more than one relationship. */
@@ -202,8 +204,9 @@ export async function generate_schema(target: string, options: SchemaOptions = {
 		await update_root_nav_translations(db_cli, table_names, clean_prefix, route_name);
 	}
 
-	// Notify running server to reload translations
-	await notify_server_reload(false);
+	// A composite Reeman action owns its single final reload. Standalone schema
+	// generation keeps the existing behaviour.
+	if (options.reload !== false) await notify_server_reload(false, Bun.env.MAIN_APP_URL);
 
 	return success;
 }
@@ -217,7 +220,7 @@ async function update_root_nav_translations(_db: SQL, table_names: string[], pre
 		const effective = route_name || name;
 		const nav_key = prefix ? `${prefix}.${effective}` : effective;
 		const label = capitalize_label(effective.replace(/[^a-zA-Z0-9 ]/g, " ").replace(/_/g, " "));
-		await upsert_file_translation(default_locale, nav_key, "nav", label);
+		await insert_file_translation(default_locale, nav_key, "nav", label);
 		console.log(`✓ Updated nav file: ${nav_key} = ${label}`);
 	}
 }
@@ -246,7 +249,7 @@ async function update_route_label_translations(
 	const key_path = `actions.${label_key}`;
 	const english_value = `New ${capitalize_label(singular)}`;
 
-	await upsert_file_translation(default_locale, namespace, key_path, english_value);
+	await insert_file_translation(default_locale, namespace, key_path, english_value);
 	console.log(`✓ Updated actions file: ${namespace}:${key_path} = ${english_value}`);
 }
 
@@ -269,7 +272,7 @@ export async function inject_scopes_translations(db: SQL, route_dir: string, tab
 		let injected_count = 0;
 		for (const row of scope_rows) {
 			const key_path = `scopes.${row.scope_key}`;
-			await upsert_file_translation(default_locale, namespace, key_path, row.display_name);
+			await insert_file_translation(default_locale, namespace, key_path, row.display_name);
 			injected_count++;
 		}
 

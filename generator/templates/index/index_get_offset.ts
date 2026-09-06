@@ -14,17 +14,18 @@ export async function get___table.exact___index(req: BunRequest): Promise<Respon
 	__archive.filter_setup__
 
 	// Resolve filter definitions and WHERE clauses from URL params
-	const raw_filter_definitions = get_filter_definitions(columns, fields);
+	const raw_filter_definitions = get_filter_definitions(columns, filter_fields);
 	const filter_clauses = resolve_filters(raw_filter_definitions, filters, filter_not);
 
 	// Load FK filter options for filter panel checkboxes
 	__filter.fk_loader__
 
 	// Enrich filter_definitions with translated labels, option lists, and URL param state
-	const { labels } = ctx.translations;
+	const { labels, v_labels = {} } = ctx.translations;
+	const filter_labels = { ...labels, ...v_labels };
 	const filter_definitions = enrich_filter_definitions(
 		raw_filter_definitions,
-		labels,
+		filter_labels,
 		filters,
 		filter_not,
 		{ __filter.fk_options__ },

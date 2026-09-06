@@ -146,6 +146,34 @@ export { columns, navigation };
 		expect(generated).toContain('section_key: "reeman.nav.generator",');
 		expect(generated).toContain("item_order: 40,");
 	});
+
+	test("syncs columns by removing obsolete entries and marking new ones", async () => {
+		temp_dir = await mkdtemp(join(tmpdir(), "reepolee-table-sync-"));
+		const schema: SchemaObject = {
+			type: "table",
+			name: "reports",
+			columns: [
+				{ name: "id", type_string: "int", comment: "", is_nullable: false, is_primary_key: true, is_auto_increment: true },
+				{ name: "locale_code", type_string: "varchar(10)", comment: "", is_nullable: false, is_primary_key: false, is_auto_increment: false },
+			],
+			foreign_keys: [],
+			has_view: false,
+		};
+		const config_path = join(temp_dir, "config.ts");
+		await Bun.write(config_path, `const columns: Record<string, { width: string; class: string }> = {
+	"checkbox": { width: "10ch", class: "text-center" },
+	"id": { width: "10ch", class: "" },
+	"locale": { width: "auto", class: "" },
+};
+`);
+
+		await write_table_file({ dir: temp_dir, schema_obj: schema, type_mapper: text_mapper });
+		const generated = await Bun.file(config_path).text();
+		expect(generated).not.toContain('"locale":');
+		expect(generated).toMatch(/"locale_code": \{[^}]*new: true \}/);
+		expect(generated).toContain("new?: boolean");
+		expect(generated).toContain('"checkbox":');
+	});
 });
 
 describe("update_table_file_settings", () => {

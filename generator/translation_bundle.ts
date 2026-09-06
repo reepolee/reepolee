@@ -5,7 +5,7 @@ import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { normalize_locale } from "$lib/locale";
 import { default_locale } from "$config/supported_locales";
 import { flatten_translation_object, get_dotted, list_translation_files, set_dotted } from "$lib/translation_files";
-import { is_object, sort_object, type json_obj } from "$lib/translation_merge";
+import { is_object, sort_object, sync_target_to_source, type json_obj } from "$lib/translation_merge";
 
 export const TRANSLATION_ARCHIVE_FORMAT = "reepolee-translations-v2";
 export const TRANSLATION_ARCHIVE_DIR = "locales-archive";
@@ -116,9 +116,6 @@ export async function list_archived_translation_bundles(project_dir: string = pr
 export async function install_archived_translation_bundle(locale: string, project_dir: string = process.cwd()): Promise<TranslationArchive> {
 	const archive = await read_translation_archive(locale, project_dir);
 	for (const source of await default_locale_sources(project_dir)) {
-		const missing: json_obj = {};
-		for (const row of flatten_translation_object(source.translations)) set_dotted(missing, row.key_path, `::missing:: ${row.translation}`);
-		const translated = apply_entries(archive.routes[source.path], source.translations, missing);
 		if (Object.keys(archive.routes[source.path] ?? {}).length === 0) continue;
 		const source_suffix = `${default_locale}.json`;
 		const target_suffix = `${archive.target_locale}.json`;
@@ -126,6 +123,12 @@ export async function install_archived_translation_bundle(locale: string, projec
 			? `${source.path.slice(0, -source_suffix.length)}${target_suffix}`
 			: source.path;
 		const file = resolve(project_dir, ...target_path.split("/"));
+		// Installing archive memory supplements a locale; it must not erase keys
+		// that only exist in that locale. Stale keys are removed exclusively by
+		// the explicit prune workflow.
+		const existing = existsSync(file) ? await Bun.file(file).json() as json_obj : {};
+		const merged = sync_target_to_source(source.translations, existing, false);
+		const translated = apply_entries(archive.routes[source.path], source.translations, merged);
 		await write_json_atomic(file, translated);
 	}
 	return archive;

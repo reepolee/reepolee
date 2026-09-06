@@ -170,6 +170,17 @@ export async function upsert_file_translation(locale: string, namespace: string,
 	});
 }
 
+/** Add a generated key without replacing a file-first translation. */
+export async function insert_file_translation(locale: string, namespace: string, key_path: string, translation: string, project_dir: string = process.cwd()): Promise<boolean> {
+	return await serialize_translation_write(async () => {
+		const obj = await read_namespace_file(namespace, locale, project_dir);
+		if (get_dotted(obj, key_path) !== undefined) return false;
+		set_dotted(obj, key_path, translation);
+		await write_namespace_file(namespace, locale, obj, project_dir);
+		return true;
+	});
+}
+
 export async function delete_file_translation(locale: string, namespace: string, key_path: string, project_dir: string = process.cwd()): Promise<boolean> {
 	return await serialize_translation_write(async () => {
 		const obj = await read_namespace_file(namespace, locale, project_dir);

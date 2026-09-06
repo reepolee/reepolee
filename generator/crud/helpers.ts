@@ -171,7 +171,10 @@ export function escape_regex(str: string): string { return str.replace(/[.*+?^${
 export function replace_between_markers(content: string, marker_name: string, new_content: string): string {
 	const start = `<!-- GEN:${marker_name}:START -->`;
 	const end = `<!-- GEN:${marker_name}:END -->`;
-	const regex = new RegExp(`${escape_regex(start)}[\\s\\S]*?${escape_regex(end)}`);
+	const start_pattern = marker_name === "FIELDS"
+		? "<!-- GEN:FIELDS:START(?::sha256:[a-f0-9]{64})? -->"
+		: escape_regex(start);
+	const regex = new RegExp(`${start_pattern}[\\s\\S]*?${escape_regex(end)}`);
 	if (!regex.test(content)) { throw new Error(`Markers not found: crud:${marker_name}. Run with --force first to initialize.`); }
 	return content.replace(regex, `${start}\n${new_content}\n${end}`);
 }
@@ -357,8 +360,9 @@ function smart_merge_fields_tags(old_section: string, new_field_blocks: string[]
 
 	const new_field_map = new Map();
 	for (const block of new_field_blocks) {
-		const name_match = block.match(/<input-[\w-]+\s[^>]*name="([^"]*)"/);
-		if (name_match) { new_field_map.set(name_match[1], block); }
+		const name_match = block.match(/(?:data-field|field|name)="([^"]*)"/);
+		const field_name = name_match?.[1];
+		if (field_name) { new_field_map.set(field_name, block); }
 	}
 
 	let result = old_section.replace(field_regex, (_full) => {

@@ -1,6 +1,7 @@
 export async function get___table.exact___edit(req: BunRequest): Promise<Response> {
 	const ctx = await create_ctx(req, import.meta.dir);
 	__edit.get_lookup__
+	__edit.merge_view_record__
 
 	if (!record) {
 		return render("notfound", {

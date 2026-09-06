@@ -3,128 +3,146 @@
 	<div class="p-4">
 
 		<div class="flex items-center justify-between">
-			<h1 class="mb-4">{_ ui.edit_title }: {= record.url }</h1>
+			<h1 class="mb-4">{_ ui.edit_title }: <span id="route-title-url">{= record.url }</span></h1>
 		</div>
 
 		{#if busy}
 			<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
 		{/if}
+		{#if form_fields_hash_status === "modified"}
+			<app-banner type="yellow">{_ ui.form_fields_modified_warning}</app-banner>
+		{/if}
 
-		<form method="POST" action="{~ localized_path('/routes/save-settings') }" class="grid grid-cols-1 gap-4 max-w-[120ch]" id="route-refresh-form">
+		<form method="POST" action="{~ localized_path('/routes/save-settings') }" class="grid gap-4" id="route-refresh-form">
 			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
 			<input type="hidden" name="return_to" value="{= route_detail_path }" />
 			<input type="hidden" name="urls" value="{= record.url }" />
 			<input type="hidden" id="route-refresh" name="refresh" value="" />
 			<input type="hidden" name="grid_localized_control" value="1" />
-			{#if route_settings}
-				<field-wrapper class="grid" data-field="grid_columns">
-					<div class="grid">
-						<label class="px-3">{_ labels.index_columns}</label>
-						<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: minmax(0,1fr) 12ch minmax(0,1fr) minmax(0,22ch) auto auto auto auto">
-							<div class="col-span-full grid grid-cols-subgrid gap-2 px-3 py-2 font-semibold border-b border-border bg-surface">
-								<span class="ml-3">{_ labels.name}</span>
-								<span class="ml-3">{_ labels.width}</span>
-								<span class="ml-3">{_ labels.class}</span>
-								<span class="ml-3">{_ labels.helper}</span>
-								<span class="text-center">{_ labels.filter}</span>
-								<span class="text-center">{_ labels.localized}</span>
-								<span class="text-center">{_ labels.readonly}</span>
-								<span class="text-center">{_ labels.form}</span>
-							</div>
-							{#each route_settings.grid_columns as col}
-								<div class="col-span-full grid grid-cols-subgrid items-center gap-2 px-3 py-2 border-b border-border last:border-b-0">
-									<input type="hidden" name="grid_column_name" value="{= col.name }" />
-									<label class="ml-3 flex cursor-pointer items-center gap-1.5">
-										<input type="checkbox" name="grid_columns" value="{= col.name }" {#if col.default_selected}checked{/if} />
-										<span>{= col.name }</span>
-									</label>
-									<input name="grid_column_width" value="{= col.width }" aria-label="{_ labels.width}: {= col.name }" />
-									<input name="grid_column_class" value="{= col.class_name }" aria-label="{_ labels.class}: {= col.name }" />
-									<select name="grid_column_helper" aria-label="{_ labels.helper}: {= col.name }">
-										<option value="" {#if !col.helper}selected{/if}>{#if col.default_helper}{= col.default_helper } {_ labels.default }{:else}{_ labels.no_helper}{/if}</option>
-										{#each helper_names as h}
-											<option value="{= h }" {#if col.helper === h}selected{/if}>{= h }</option>
-										{/each}
-									</select>
-									<input class="justify-self-center" type="checkbox" name="grid_filter_columns" value="{= col.name }" aria-label="{_ labels.filter}: {= col.name }" {#if col.filter}checked{/if} />
-									<input class="justify-self-center" type="checkbox" name="grid_localized_columns" value="{= col.name }" aria-label="{_ labels.localized}: {= col.name }" {#if col.localized}checked{/if} />
-									<input class="justify-self-center" type="checkbox" name="grid_readonly_columns" value="{= col.name }" aria-label="{_ labels.readonly}: {= col.name }" {#if col.readonly}checked{/if} />
-									<input class="justify-self-center" type="checkbox" name="grid_form_columns" value="{= col.name }" aria-label="{_ labels.form}: {= col.name }" {#if col.form}checked{/if} />
+			<div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(22rem,1fr)] lg:gap-x-6">
+				{#if route_settings}
+					<field-wrapper class="grid mt-2" data-field="grid_columns">
+						<div class="grid">
+							<label class="px-3">{_ labels.index_columns}</label>
+							<div class="grid gap-x-2 rounded border border-border bg-surface-raised" style="grid-template-columns: {= route_settings.grid_cols }">
+								<div class="col-span-full grid grid-cols-subgrid gap-2 px-3 py-2 font-semibold border-b border-border bg-surface">
+									{#if route_settings.has_new_columns}<span class="text-center">{_ labels.new}</span>{/if}
+									<span class="ml-3">{_ labels.name}</span>
+									<span class="ml-3">{_ labels.width}</span>
+									<span class="ml-3">{_ labels.class}</span>
+									<span class="ml-3">{_ labels.helper}</span>
+									<span class="text-center">{_ labels.filter}</span>
+									<span class="text-center">{_ labels.localized}</span>
+									<span class="text-center">{_ labels.readonly}</span>
+									<span class="text-center">{_ labels.form}</span>
 								</div>
-							{/each}
+								{#each route_settings.grid_columns as col}
+									<div class="col-span-full grid grid-cols-subgrid items-center gap-2 px-3 py-2 border-b border-border last:border-b-0">
+										<input type="hidden" name="grid_column_name" value="{= col.name }" />
+										{#if route_settings.has_new_columns}<span class="text-center">{#if col.is_new}<mark class="rounded bg-yellow-200 px-1 text-xs font-semibold text-yellow-950">{_ labels.new}</mark>{/if}</span>{/if}
+										<label class="ml-3 flex cursor-pointer items-center gap-1.5">
+											<input type="checkbox" name="grid_columns" value="{= col.name }" {#if col.default_selected}checked{/if} />
+											<span>{= col.name }</span>
+										</label>
+										<input name="grid_column_width" value="{= col.width }" aria-label="{_ labels.width}: {= col.name }" />
+										<input name="grid_column_class" value="{= col.class_name }" aria-label="{_ labels.class}: {= col.name }" />
+										<select name="grid_column_helper" aria-label="{_ labels.helper}: {= col.name }">
+											<option value="" {#if !col.helper}selected{/if}>{#if col.default_helper}{= col.default_helper } {_ labels.default }{:else}{_ labels.no_helper}{/if}</option>
+											{#each helper_names as h}
+												<option value="{= h }" {#if col.helper === h}selected{/if}>{= h }</option>
+											{/each}
+										</select>
+										<input class="justify-self-center" type="checkbox" name="grid_filter_columns" value="{= col.name }" aria-label="{_ labels.filter}: {= col.name }" {#if col.filter}checked{/if} />
+										<input class="justify-self-center" type="checkbox" name="grid_localized_columns" value="{= col.name }" aria-label="{_ labels.localized}: {= col.name }" {#if col.localized}checked{/if} />
+										<input class="justify-self-center" type="checkbox" name="grid_readonly_columns" value="{= col.name }" aria-label="{_ labels.readonly}: {= col.name }" {#if col.readonly}checked{/if} />
+										<input class="justify-self-center" type="checkbox" name="grid_form_columns" value="{= col.name }" aria-label="{_ labels.form}: {= col.name }" {#if col.form}checked{/if} />
+									</div>
+								{/each}
+							</div>
 						</div>
-					</div>
-				</field-wrapper>
-			{/if}
-
-			{#if route_settings}
-				<generator-settings id-prefix="route" pagination="{= route_settings.pagination_strategy }" render-strategy="{= route_settings.render_strategy }" template-tags="{= route_settings.template_tags }"></generator-settings>
-
-				<field-wrapper class="grid max-w-[60ch]" data-field="form_hints">
-					<div class="grid">
-						<label class="flex cursor-pointer items-center gap-1.5 px-3"><input type="checkbox" name="form_hints" value="1" {#if route_settings.form_hints}checked{/if} /> {_ labels.form_hints}</label>
-					</div>
-				</field-wrapper>
-
-				<field-wrapper class="grid max-w-[60ch]" data-field="form_details">
-					<div class="grid">
-						<label class="flex cursor-pointer items-center gap-1.5 px-3"><input type="checkbox" name="form_details" value="1" {#if route_settings.form_details}checked{/if} /> {_ labels.form_details}</label>
-					</div>
-				</field-wrapper>
-			{/if}
-
-
-			<field-wrapper class="grid max-w-[60ch]" data-field="url">
-				<div class="grid">
-					<label class="px-3" for="detail-url">{_ labels.url}</label>
-					<input type="text" id="detail-url" value="{= record.url }" readonly />
-				</div>
-				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
-			</field-wrapper>
-
-			<field-wrapper class="grid max-w-[60ch]" data-field="table_name">
-				<div class="grid">
-					<label class="px-3" for="detail-table-name">{_ labels.table_name}</label>
-					<input type="text" id="detail-table-name" value="{= record.table_name }" readonly />
-				</div>
-				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
-			</field-wrapper>
-
-			<field-wrapper class="grid max-w-[60ch]" data-field="module">
-				<div class="grid">
-					<label class="px-3" for="detail-module">{_ labels.module}</label>
-					<input type="text" id="detail-module" value="{= record.module || '-' }" readonly />
-				</div>
-				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
-			</field-wrapper>
-
-			<field-wrapper class="grid max-w-[60ch]" data-field="removable">
-				<div class="grid">
-					<label class="px-3" for="detail-removable">{_ labels.removable}</label>
-					<input type="text" id="detail-removable" value="{= record.removable ? props.translations.selectors[1] : props.translations.selectors[0] }" readonly />
-				</div>
-				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
-			</field-wrapper>
-
-			<field-wrapper class="grid max-w-[60ch]" data-field="template_hash_status">
-				<div class="grid">
-					<label class="px-3" for="detail-template-hash-status">{_ labels.template_hash_status}</label>
-					<input type="text" id="detail-template-hash-status" value="{= record.template_hash_status || '-' }" readonly />
-				</div>
-				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
-			</field-wrapper>
-
-			<div class="flex gap-2 mt-8 items-center">
-				<button type="submit" onclick="document.getElementById('route-refresh').value='1'" class="as-button-primary" {#if busy || !route_settings}disabled{/if}>{_ actions.refresh_crud}</button>
-				<button type="submit" onclick="document.getElementById('route-refresh').value=''" class="as-button-secondary" {#if busy || !route_settings}disabled{/if}>{_ actions.save}</button>
-				{#if route_settings && !route_settings.route.parent && !route_settings.route.route_name}
-					<a href="{~ localized_path('/routes/children?url=' + encodeURIComponent(record.url)) }" role="button" class="as-button-secondary">{_ actions.add_children}</a>
+					</field-wrapper>
 				{/if}
-				<button type="button" onclick="history.back()" class="as-button-secondary">{_ actions.cancel}</button>
 
-				{#if record.removable}
-					<button type="button" commandfor="remove_dialog" command="show-modal" class="ml-auto as-button-tertiary" {#if busy}disabled{/if}>{_ actions.remove_route}</button>
-				{/if}
+				<aside class="grid content-start gap-4 mt-2">
+					{#if route_settings}
+						<generator-settings id-prefix="route" pagination="{= route_settings.pagination_strategy }" render-strategy="{= route_settings.render_strategy }" template-tags="{= route_settings.template_tags }"></generator-settings>
+
+						<field-wrapper class="grid max-w-none" data-field="form_hints">
+							<div class="grid">
+								<label class="flex cursor-pointer items-center gap-1.5 px-3"><input type="checkbox" name="form_hints" value="1" {#if route_settings.form_hints}checked{/if} /> {_ labels.form_hints}</label>
+							</div>
+						</field-wrapper>
+
+						<field-wrapper class="grid max-w-none" data-field="form_details">
+							<div class="grid">
+								<label class="flex cursor-pointer items-center gap-1.5 px-3"><input type="checkbox" name="form_details" value="1" {#if route_settings.form_details}checked{/if} /> {_ labels.form_details}</label>
+							</div>
+						</field-wrapper>
+					{/if}
+
+
+					<field-wrapper class="grid max-w-none" data-field="url">
+						<div class="grid">
+							<label class="px-3" for="detail-url">{_ labels.url}</label>
+							<input type="text" id="detail-url" value="{= record.url }" readonly />
+						</div>
+						<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+					</field-wrapper>
+
+					<field-wrapper class="grid max-w-none" data-field="table_name">
+						<div class="grid">
+							<label class="px-3" for="detail-table-name">{_ labels.table_name}</label>
+							<input type="text" id="detail-table-name" value="{= record.table_name }" readonly />
+						</div>
+						<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+					</field-wrapper>
+
+					<field-wrapper class="grid max-w-none" data-field="module">
+						<div class="grid">
+							<label class="px-3" for="detail-module">{_ labels.module}</label>
+							{#if route_settings && route_settings.can_move_module}
+								<select id="detail-module" name="module" {#if busy || !record.removable}disabled{/if}>
+									<option value="" {#if !record.module}selected{/if}>{_ selectors.root}</option>
+									{#each modules as available_module}
+										<option value="{= available_module.code }" {#if record.module === available_module.code}selected{/if}>{= available_module.name }</option>
+									{/each}
+								</select>
+							{:else}
+								<input type="text" id="detail-module" value="{= record.module || '-' }" readonly />
+							{/if}
+						</div>
+						<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+					</field-wrapper>
+
+					<field-wrapper class="grid max-w-none" data-field="removable">
+						<div class="grid">
+							<label class="px-3" for="detail-removable">{_ labels.removable}</label>
+							<input type="text" id="detail-removable" value="{= record.removable ? props.translations.selectors[1] : props.translations.selectors[0] }" readonly />
+						</div>
+						<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+					</field-wrapper>
+
+					<field-wrapper class="grid max-w-none" data-field="template_hash_status">
+						<div class="grid">
+							<label class="px-3" for="detail-template-hash-status">{_ labels.template_hash_status}</label>
+							<input type="text" id="detail-template-hash-status" value="{= record.template_hash_status || '-' }" readonly />
+						</div>
+						<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+					</field-wrapper>
+
+					<div class="flex gap-2 mt-8 items-center">
+						<button type="submit" onclick="document.getElementById('route-refresh').value='1'" class="as-button-primary" {#if busy || !route_settings}disabled{/if}>{_ actions.refresh_crud}</button>
+						<button type="submit" onclick="document.getElementById('route-refresh').value=''" class="as-button-secondary" {#if busy || !route_settings}disabled{/if}>{_ actions.save}</button>
+						{#if route_settings && !route_settings.route.parent && !route_settings.route.route_name}
+							<a href="{~ localized_path('/routes/children?url=' + encodeURIComponent(record.url)) }" role="button" class="as-button-secondary">{_ actions.add_children}</a>
+						{/if}
+						<button type="button" onclick="history.back()" class="as-button-secondary">{_ actions.cancel}</button>
+
+						{#if record.removable}
+							<button type="button" commandfor="remove_dialog" command="show-modal" class="ml-auto as-button-tertiary" {#if busy}disabled{/if}>{_ actions.remove_route}</button>
+						{/if}
+					</div>
+				</aside>
 			</div>
 		</form>
 
@@ -143,6 +161,25 @@
 					</div>
 				</form>
 			</dialog>
+		{/if}
+
+		{#if route_settings && route_settings.can_move_module}
+			<script>
+				const module_select = document.getElementById("detail-module");
+				const url_input = document.getElementById("detail-url");
+				const route_title_url = document.getElementById("route-title-url");
+				if (module_select && url_input) {
+					const route_parts = url_input.value.split("/");
+					const route_name = route_parts[route_parts.length - 1] || "";
+					module_select.addEventListener("change", () => {
+						const module_code = module_select.value;
+						const url_parts = module_code ? ["", module_code, route_name] : ["", route_name];
+						const next_url = url_parts.join("/");
+						url_input.value = next_url;
+						if (route_title_url) route_title_url.textContent = next_url;
+					});
+				}
+			</script>
 		{/if}
 
 		<script src="/dialog-confirm.js?v={= version}"></script>

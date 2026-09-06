@@ -7,7 +7,8 @@ import { capitalize_label, generate_fields_object } from "./field_generator";
 import type { TypeMapper } from "./type_mapper";
 import type { SchemaObject } from "./types";
 import { default_locale } from "$config/supported_locales";
-import { write_namespace_file } from "$lib/translation_files";
+import { read_namespace_file, write_namespace_file } from "$lib/translation_files";
+import { merge_missing_source_keys } from "$lib/translation_merge";
 import { MAIN_APP } from "$config/paths";
 
 // Table and validation writers live in dedicated modules; re-exported here so
@@ -90,8 +91,10 @@ export async function write_translation_files(
 		.filter((p) => p !== "translations")
 		.join(".");
 
-	// Write the namespace file only for English.
-	// Other languages will be populated by sync_translations --translate via AI.
-	await write_namespace_file(namespace, default_locale, en_json);
-	console.log(`📄 Wrote translation file for namespace "${namespace}"`);
+	// English is file-first input. Generation may add labels for new fields but
+	// must not remove CRUD keys or overwrite values edited in the locale file.
+	const existing = await read_namespace_file(namespace, default_locale);
+	const merged = merge_missing_source_keys(existing, en_json);
+	await write_namespace_file(namespace, default_locale, merged);
+	console.log(`📄 Synced generated translation keys for namespace "${namespace}"`);
 }

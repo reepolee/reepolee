@@ -72,10 +72,10 @@
 		text-box: trim-both cap alphabetic;
 	}
 
-	/* 2K / 1440p+ displays */
-	@media (min-width: 1681px) {
+	/* 3K / 1440p+ displays - 14px -> 16px root */
+	@media (min-width: 1921px) {
 		html {
-			font-size: 100%; /* Bumps 16px -> 18px root (rem scales up ~12.5%) */
+			font-size: 100%;
 		}
 	}
 

@@ -33,6 +33,7 @@ import { canonical_locale } from "$lib/locale";
 import { detect_locale, resolve_canonical_match } from "$lib/route_map";
 import { default_locale } from "$config/supported_locales";
 import { rebuild_routes_and_state } from "$lib/route_state";
+import { is_reeman_action_active } from "$lib/reeman_activity";
 import { get_base_data, get_route_table, is_first_run, match_route, set_base_data } from "$lib/route_table";
 import { handle_s3_request } from "$lib/s3";
 import { call_route_handler, handle_fallback_requests, handle_internal_endpoints } from "$lib/server_helpers";
@@ -52,8 +53,9 @@ process.on("uncaughtException", (err, origin) => log_error("server", "UNCAUGHT E
 
 Bun.env.TZ = Bun.env.TIME_ZONE;
 
+const hot_reload = !is_first_run();
 const app_started = now_iso_str();
-console.log("Reeman app started at ", app_started);
+if (!hot_reload) console.log("Reeman app started at ", app_started);
 
 // Servers resolve their own paths from import.meta.dir, never process.cwd().
 const project_root = join(import.meta.dir, "..", "..");
@@ -204,8 +206,6 @@ declare global {
 	var __reepolee_server: Bun.Server<WebSocketData> | undefined;
 }
 
-const hot_reload = !is_first_run();
-
 if (!hot_reload) {
 	try {
 		await bootstrap({
@@ -242,19 +242,23 @@ if (!hot_reload) {
 	// HOT RELOAD - rebuild routes/translations in-place, no restart
 	//
 
-	console.log("🔄 Hot reload - rebuilding reeman routes in-place");
+	if (await is_reeman_action_active()) {
+		console.log("⏸️  Hot reload deferred until the active Reeman action finishes");
+	} else {
+		console.log("🔄 Hot reload - rebuilding reeman routes in-place");
 
-	const { nav_groups, routed } = await rebuild_routes_and_state(nav_routes, routes, is_agent, { hot: true });
+		const { nav_groups, routed } = await rebuild_routes_and_state(nav_routes, routes, is_agent, { hot: true });
 
-	const existing_base = get_base_data();
-	set_base_data({ ...existing_base, nav_groups, busy_poller: true });
+		const existing_base = get_base_data();
+		set_base_data({ ...existing_base, nav_groups, busy_poller: true });
 
-	const engine = create_template_engine(is_dev);
-	initialize_render(engine, get_base_data());
+		const engine = create_template_engine(is_dev);
+		initialize_render(engine, get_base_data());
 
-	if (is_dev) { notify_clients(); }
+		if (is_dev) { notify_clients(); }
 
-	console.log(`  ✅ ${Object.keys(routed).length} reeman routes updated`);
+		console.log(`  ✅ ${Object.keys(routed).length} reeman routes updated`);
+	}
 }
 
 export { sql_log } from "$lib/logger";

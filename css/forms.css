@@ -93,11 +93,42 @@ input[type="checkbox"] {
    handwritten forms. Child sections are emitted with `col-span-full`, so a
    form never grows a third details column. */
 
+/* The CRUD generator adds these wrappers only when a form has more than ten
+   editable fields and an unused hints/details track. Each wrapper is one
+   desktop field column; fields within it must stop inheriting the two-track
+   field-plus-hint subgrid used by the one-column layout. */
+@media (min-width: 64rem) {
+	.generated-form-field-column {
+		grid-column: span 1 / span 1;
+		align-content: start;
+	}
+
+	.generated-form-field-column > field-wrapper,
+	.generated-form-field-column > .localized-field-source {
+		grid-column: span 1 / span 1;
+		grid-template-columns: none;
+	}
+
+	.generated-form-field-column > field-wrapper > p:empty {
+		display: none;
+	}
+}
+
 /* Generated validation elements carry the mt-1 utility. Keep that spacing for
    real messages, but do not let an empty row change a field's layout. This is
    intentionally unlayered so it wins over Tailwind's utilities layer. */
 validation-error:empty {
 	margin-top: 0;
+}
+
+/* Readonly CRUD values are rendered as a static div inside the field wrapper.
+   Match the regular control's 2.5rem minimum height and vertical padding so
+   they align with sibling inputs without regenerating the form. */
+field-wrapper > div > div.break-all.bg-surface-sunken {
+	display: flex;
+	min-height: 2.5rem;
+	align-items: center;
+	padding-block: 0.25rem;
 }
 
 /* Dark mode: swap the chevron stroke for the lighter text-secondary token

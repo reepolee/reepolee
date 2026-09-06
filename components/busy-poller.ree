@@ -38,6 +38,7 @@
 		try { dismissed_error_id = localStorage.getItem("reeman-dismissed-error-id") || ""; } catch {}
 		error_dismiss.addEventListener("click", () => {
 			error_banner.hidden = true;
+			dismissed_error_id = current_error_id;
 			try { localStorage.setItem("reeman-dismissed-error-id", current_error_id); } catch {}
 		});
 

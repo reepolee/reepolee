@@ -1,6 +1,6 @@
 <field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= props.attributes.name }">
 	<div class="grid">
-		<label class="px-3" for="{= props.attributes.name }">{= props.attributes.label}</label>
+		<label class="px-3 font-semibold" for="{= props.attributes.name }">{= props.attributes.label}</label>
 		<select id="{= props.attributes.name }" name="{= props.attributes.name }">
 			<option value="">{_ selectors.select}</option>
 			{#each props.attributes.options ?? [] as option}

@@ -24,7 +24,7 @@
 >
 	<div class="px-3 flex items-center justify-between gap-2">
 		{#if label}
-			<label class="block" for="{= input_id }_dropzone">{= label }</label>
+			<label class="block font-semibold" for="{= input_id }_dropzone">{= label }</label>
 		{/if}
 		<div class="image-upload-status hidden text-xs" style="color: var(--color-success)"></div>
 	</div>

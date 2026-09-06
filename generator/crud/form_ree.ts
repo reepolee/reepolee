@@ -53,6 +53,8 @@ const TAGS_MODE_TAG: Record<string, { tag: string; value_expr: (name: string) =>
 	file: { tag: "file-upload", value_expr: (n) => `{= record.${n} }` },
 };
 
+const FORM_SECOND_COLUMN_AFTER = 10;
+
 // Builds the tags-mode ReeTag call in-memory (no fields_tags/*.ree file on disk -
 // see decision 2 in .agents/PLAN_field_kind_consolidation.md).
 function generate_tags_mode_field(field: FieldDef, fk_info: { table: string; column: string; } | undefined, table_name: string, route_prefix: string): string {
@@ -144,13 +146,56 @@ export async function generate_input_field(
  * one-by-one to their own localized input components.
  */
 /**
- * A readonly field's form markup: label plus the raw value as a static box,
- * no editor. Wrapped in the standard <field-wrapper> so the grid layout and
- * the smart-merge regex (helpers.ts) treat it like any other field - the box
- * keeps its position on refresh instead of being dropped and re-appended.
+ * A readonly field's form markup. The component renders a static value box,
+ * not an editor, while keeping the standard field-wrapper structure.
  */
-function generate_readonly_field_block(field: FieldDef): string {
-	return `<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="${field.name}">\n\t<div class="grid gap-1">\n\t\t<div class="ml-3">{_ labels.${field.name}}</div>\n\t\t<div class="px-3 py-2 break-all bg-surface-sunken rounded-sm border border-border">{= props.record.${field.name} }</div>\n\t</div>\n</field-wrapper>`;
+function generate_readonly_field_block(field: FieldDef, is_view_field: boolean): string {
+	const labels = is_view_field ? "v_labels" : "labels";
+	return `<display-readonly name="${field.name}" label="{_ ${labels}.${field.name}}" value="{= props.record.${field.name} }"></display-readonly>`;
+}
+
+/**
+ * Give long generated forms an editable starting layout. The three desktop
+ * tracks are reserved for fields, hints, and details. If either hint or
+ * detail support is absent, its track can become the second field column.
+ * On refresh, a manually arranged previous section is retained in comments so
+ * the live fields continue to match the regenerated route code.
+ */
+function generate_form_body(
+	field_blocks: string[],
+	fields: FieldDef[],
+	readonly_names: ReadonlySet<string>,
+	parent_fk_field: FieldDef | null,
+	form_hints: boolean,
+	form_details: boolean,
+): string {
+	let editable_fields = 0;
+	for (const field of fields) {
+		if (field !== parent_fk_field && !readonly_names.has(field.name)) editable_fields++;
+	}
+
+	if (editable_fields <= FORM_SECOND_COLUMN_AFTER || (form_hints && form_details)) {
+		return field_blocks.join("\n\n");
+	}
+
+	const primary_blocks: string[] = [];
+	const secondary_blocks: string[] = [];
+	let editable_fields_seen = 0;
+	for (const [index, field] of fields.entries()) {
+		const is_editable = field !== parent_fk_field && !readonly_names.has(field.name);
+		if (is_editable) editable_fields_seen++;
+		const target_blocks = editable_fields_seen > FORM_SECOND_COLUMN_AFTER ? secondary_blocks : primary_blocks;
+		target_blocks.push(field_blocks[index]!);
+	}
+
+	const primary_classes = form_hints
+		? "grid gap-4 lg:col-span-2 lg:grid-cols-subgrid"
+		: "generated-form-field-column grid gap-4";
+	const secondary_classes = form_hints
+		? "generated-form-field-column grid gap-4 lg:col-start-3"
+		: "generated-form-field-column grid gap-4";
+
+	return `<div class="${primary_classes}">\n${primary_blocks.join("\n\n")}\n</div>\n\n<div class="${secondary_classes}">\n${secondary_blocks.join("\n\n")}\n</div>`;
 }
 
 export async function generate_field_block(
@@ -163,8 +208,9 @@ export async function generate_field_block(
 	template_tags: "flat" | "tags",
 	localized_names: ReadonlySet<string>,
 	readonly_names: ReadonlySet<string> = new Set(),
+	view_field_names: ReadonlySet<string> = new Set(),
 ): Promise<string> {
-	if (readonly_names.has(field.name)) return generate_readonly_field_block(field);
+	if (readonly_names.has(field.name)) return generate_readonly_field_block(field, view_field_names.has(field.name));
 	if (localized_names.has(field.name) && field.type === "text") {
 		return `<localized-input-text name="${field.name}" label="{_ labels.${field.name}}" localization="{= props.localization }"></localized-input-text>`;
 	}
@@ -177,6 +223,7 @@ export async function generate_field_block(
 export interface FormReeOptions {
 	table_name: string;
 	fields: FieldDef[];
+	v_fields?: FieldDef[] | null;
 	/** Physical table columns - the only reliable source for archive detection. */
 	column_names?: string[];
 	foreign_keys: ForeignKeyMap;
@@ -193,7 +240,7 @@ export interface FormReeOptions {
 	/** Fields whose value is displayed on the form without an editor. */
 	readonly_fields?: ReadonlySet<string>;
 	/** Per-column form settings from config.ts; absent form means included. */
-	form_columns?: Record<string, { form?: boolean; }> | null;
+	form_columns?: Record<string, { form?: boolean; readonly?: boolean; }> | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -241,9 +288,12 @@ function archive_form_restore_ui(has_archive: boolean, route_prefix: string, rou
 }
 
 export async function generate_form_ree(options: FormReeOptions): Promise<string> {
-	const { table_name, fields, column_names = [], foreign_keys, route_prefix = "", route_param_value = "id", is_nested = false, parent_info = null, route_name = "", localization_enabled = false, localized_fields = [], template_tags = "flat", form_hints = false, form_details = false } = options;
+	const { table_name, fields, v_fields = null, column_names = [], foreign_keys, route_prefix = "", route_param_value = "id", is_nested = false, parent_info = null, route_name = "", localization_enabled = false, localized_fields = [], template_tags = "flat", form_hints = false, form_details = false } = options;
 	// For nested CRUD, exclude parent FK from visible form fields, but include it as hidden
 	let filtered = configured_form_fields(fields, options.form_columns);
+	const field_names = new Set(fields.map((field) => field.name));
+	const view_form_fields = (v_fields || []).filter((field) => !field_names.has(field.name) && options.form_columns?.[field.name]?.form === true);
+	filtered = [...filtered, ...view_form_fields];
 	let parent_fk_field: FieldDef | null = null;
 	if (is_nested && parent_info) {
 		parent_fk_field = entry_fields(fields, false).find((f) => f.name === parent_info.fk_column) || null;
@@ -256,7 +306,9 @@ export async function generate_form_ree(options: FormReeOptions): Promise<string
 	const errors_init = filtered.map((f) => `${f.name}: '{= props.errors.${f.name} || \`\` }'`).join(", ");
 
 	const localized_names = new Set(localized_fields.map((field) => field.field_name));
-	const readonly_names = options.readonly_fields ?? new Set<string>();
+	const readonly_names = new Set(options.readonly_fields ?? []);
+	const view_field_names = new Set(view_form_fields.map((field) => field.name));
+	for (const field of view_form_fields) readonly_names.add(field.name);
 	const input_fields_promises = filtered.map(async (field) => generate_field_block(
 		field,
 		foreign_keys,
@@ -266,9 +318,10 @@ export async function generate_form_ree(options: FormReeOptions): Promise<string
 		parent_info,
 		template_tags,
 		localized_names,
-		readonly_names
+		readonly_names,
+		view_field_names,
 	));
-	const input_fields = (await Promise.all(input_fields_promises)).join("\n\n");
+	const input_field_blocks = await Promise.all(input_fields_promises);
 	const original_fields = filtered
 		.filter((field) => !readonly_names.has(field.name))
 		.map((field) => `<input type="hidden" name="_original_${field.name}" value="{= props.record.${field.name} }" />`)
@@ -282,12 +335,13 @@ export async function generate_form_ree(options: FormReeOptions): Promise<string
 	// Each localized field renders its own tab bar and panels inline, right
 	// next to the default-locale input - there is no record-wide locale
 	// switcher, since different fields can have different translated locales.
-	const form_body = input_fields;
+	const form_body = generate_form_body(input_field_blocks, filtered, readonly_names, parent_fk_field, form_hints, form_details);
 
 	// Fields and their optional hints occupy the first two tracks. Details are
 	// placed in the third track by the aside below; the layout collapses through
 	// the responsive Tailwind grid utilities on smaller screens.
-	const form_classes = "grid w-full gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(22rem,2fr)] lg:gap-x-6";
+	const form_classes = "grid w-full gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(22rem,1fr)] lg:gap-x-6";
+	const form_grid_classes = form_hints && !form_details ? "lg:col-span-3" : "lg:col-span-2";
 	const localization_attribute = localization_enabled ? "data-localized-form" : "";
 	const details_classes = form_details ? "grid empty:hidden lg:col-start-3 lg:self-start" : "hidden";
 
@@ -300,6 +354,7 @@ export async function generate_form_ree(options: FormReeOptions): Promise<string
 		"form.input_fields": form_body,
 		"form.original_fields": original_fields,
 		"form.classes": form_classes,
+		"form.grid_classes": form_grid_classes,
 		"form.localization_attribute": localization_attribute,
 		"form.details_classes": details_classes,
 		"form.localization_script": localization_enabled ? `<script src="/localized-form.js?v={= version}" defer></script>` : "",

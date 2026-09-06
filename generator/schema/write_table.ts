@@ -291,6 +291,7 @@ function build_column_lines(
 	localize_content: boolean,
 	grid_columns?: string[],
 	grid_column_definitions?: GridColumnDefinition[],
+	mark_new?: boolean,
 ): ColumnLine[] {
 	const { source_fields, source_commented, base_table_field_names, has_display_field_for_fk } = build_grid_field_sets(
 		schema_obj,
@@ -370,12 +371,13 @@ function build_column_lines(
 		const localized_prop = localized ? ", localized: true" : "";
 		const readonly_prop = definition?.readonly ? ", readonly: true" : "";
 		const form_prop = definition?.form !== undefined ? `, form: ${definition.form}` : "";
+		const new_prop = mark_new ? ", new: true" : "";
 
 		const mismatch_comment = domain_mismatch_comment(f, domain, compliant);
 		const prefix = commented ? "  // " : "  ";
 		const width_value = JSON.stringify(width);
 		const class_value = JSON.stringify(cls);
-		return `${prefix}"${f.name}": { width: ${width_value}, class: ${class_value}${domain_prop}${filter_prop}${helper_prop}${grid_prop}${localized_prop}${readonly_prop}${form_prop} },${mismatch_comment}`;
+		return `${prefix}"${f.name}": { width: ${width_value}, class: ${class_value}${domain_prop}${filter_prop}${helper_prop}${grid_prop}${localized_prop}${readonly_prop}${form_prop}${new_prop} },${mismatch_comment}`;
 	}
 
 	const lines: ColumnLine[] = [];
@@ -559,7 +561,8 @@ export const parent = ${JSON.stringify(schema_obj.parent, null, 2)};
 // form - set to false to omit this column from generated form inputs.
 // helper - built-in template helper applied to this column's index-grid cell, e.g.
 // "js_date_to_locale_string" renders the value as {~ js_date_to_locale_string(record.field) }.
-const columns: Record<string, { width: string; class: string; domain?: string; filter?: boolean; helper?: string; grid?: boolean; localized?: boolean; readonly?: boolean; form?: boolean }> = ${columns_str}
+// new - set to true when a schema refresh discovers the column. Remove after review.
+const columns: Record<string, { width: string; class: string; domain?: string; filter?: boolean; helper?: string; grid?: boolean; localized?: boolean; readonly?: boolean; form?: boolean; new?: boolean }> = ${columns_str}
 
 // Route param for URL paths - change to a different column for URL obscurity.
 ${route_param_export}
@@ -694,6 +697,33 @@ function existing_column_names(body: string): Set<string> {
 }
 
 /**
+ * Remove config entries whose fields are no longer produced by the current table
+ * or its index view. `checkbox` and `id` are generator-owned structural entries.
+ */
+function remove_missing_columns(source: string, expected_names: Set<string>): { source: string; removed_names: string[]; } {
+	const body_range = find_columns_body(source);
+	if (!body_range) return { source, removed_names: [] };
+
+	const body = source.slice(body_range.open + 1, body_range.close);
+	const removed_names: string[] = [];
+	const kept_lines = body.split("\n").filter((line) => {
+		const match = line.match(/^\s*(?:\/\/\s*)?"([^"]+)"\s*:/);
+		if (!match) return true;
+		const name = match[1]!;
+		if (name === "checkbox" || name === "id" || expected_names.has(name)) return true;
+		removed_names.push(name);
+		return false;
+	});
+	if (removed_names.length === 0) return { source, removed_names };
+
+	const updated_body = kept_lines.join("\n");
+	return {
+		source: `${source.slice(0, body_range.open + 1)}${updated_body}${source.slice(body_range.close)}`,
+		removed_names,
+	};
+}
+
+/**
  * Toggle the `grid: false` property on one existing column entry's line,
  * in place, without touching width/class/domain/filter/localized or comments.
  * Returns the line unchanged if it already matches the wanted visibility.
@@ -751,6 +781,14 @@ function ensure_form_column_type(source: string): string {
 		return source.replace(property, `${property}; form?: boolean`);
 	}
 	return source;
+}
+
+/** Add the review marker to legacy config.ts column type declarations. */
+function ensure_new_column_type(source: string): string {
+	if (!source.includes("const columns") || source.includes("new?: boolean")) return source;
+	return source.replace(/(const columns: Record<string, \{)([^}]*)(\}>)/, (_match, start, properties, end) => {
+		return `${start}${String(properties).trimEnd()}; new?: boolean ${end}`;
+	});
 }
 
 /**
@@ -852,9 +890,10 @@ export async function update_table_file_settings(table_ts_path: string, settings
 async function merge_columns_into_table_file(table_ts_path: string, config: WriteTableConfig, navigation: NavigationConfig): Promise<void> {
 	const { schema_obj, type_mapper, all_tables_columns, all_tables_indexes, grid_columns, grid_column_definitions, localize_content: localize_content_override } = config;
 	let source = await Bun.file(table_ts_path).text();
-	const typed_source = grid_column_definitions?.some((definition) => definition.form !== undefined)
+	const form_typed_source = grid_column_definitions?.some((definition) => definition.form !== undefined)
 		? ensure_form_column_type(source)
 		: source;
+	const typed_source = ensure_new_column_type(form_typed_source);
 	if (typed_source !== source) {
 		await Bun.write(table_ts_path, typed_source);
 		source = typed_source;
@@ -892,7 +931,17 @@ async function merge_columns_into_table_file(table_ts_path: string, config: Writ
 	const localize_content = localize_content_override !== undefined
 		? localize_content_override && is_auto_increment_pk
 		: env_switch_on("LOCALIZE_CONTENT") && is_auto_increment_pk;
-	const all_lines = build_column_lines(schema_obj, type_mapper, all_tables_columns, all_tables_indexes, localize_content, grid_columns, grid_column_definitions);
+	const all_lines = build_column_lines(schema_obj, type_mapper, all_tables_columns, all_tables_indexes, localize_content, grid_columns, grid_column_definitions, true);
+	const expected_names = new Set([
+		...all_lines.map((entry) => entry.name),
+		...schema_obj.columns.map((column) => column.name),
+		...(schema_obj.view_columns ?? []).map((column) => column.name),
+	]);
+	const removal_result = remove_missing_columns(source, expected_names);
+	if (removal_result.removed_names.length > 0) {
+		source = removal_result.source;
+		console.log(`  ${Bun.color("green", "ansi")}Removed ${removal_result.removed_names.length} obsolete column(s) from config.ts: ${removal_result.removed_names.join(", ")}`);
+	}
 	const new_lines = all_lines.filter((entry) => !present.has(entry.name));
 
 	const settings_result = apply_table_file_settings(source, config);

@@ -126,6 +126,13 @@ async function refresh_ddl_cache(): Promise<void> {
 	await load_ddl_cache({ force_refresh: true });
 }
 
+/** Reload the main app only after a complete Reeman action has succeeded. */
+async function reload_main_app(): Promise<void> {
+	const { notify_server_reload } = await import("$lib/server_notify");
+	await notify_server_reload(false, Bun.env.MAIN_APP_URL);
+	await notify_server_reload(true, Bun.env.MAIN_APP_URL);
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -258,9 +265,10 @@ export async function action_bulk_schema(params: { tables: string[]; prefix?: st
 		const { generate_schema } = await import("$generator/schema");
 		let fail = 0;
 		for (const table of params.tables) {
-			const ok = await generate_schema(table, { prefix: params.prefix?.trim() || undefined });
+			const ok = await generate_schema(table, { prefix: params.prefix?.trim() || undefined, reload: false });
 			if (!ok) fail++;
 		}
+		if (fail === 0) await reload_main_app();
 		return fail === 0;
 	});
 }
@@ -279,9 +287,10 @@ export async function action_bulk_refresh(params: { tables: string[]; }): Promis
 				fail++;
 				continue;
 			}
-			const ok = await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name);
+			const ok = await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name, false, false);
 			if (!ok) fail++;
 		}
+		if (fail === 0) await reload_main_app();
 		return fail === 0;
 	});
 }
@@ -298,6 +307,7 @@ export async function action_refresh(params: { url: string; }): Promise<ActionRe
 
 export async function action_save_route_settings(params: {
 	url: string;
+	module?: string;
 	pagination?: string;
 	render_strategy?: string;
 	template_tags?: string;
@@ -328,15 +338,44 @@ export async function action_save_route_settings(params: {
 			grid_columns: params.grid_columns,
 			grid_column_definitions: params.grid_column_definitions,
 		});
+		if (params.module !== undefined && params.module !== route.prefix) {
+			const { get_available_modules } = await import("$generator/reeman/db");
+			const modules = await get_available_modules();
+			const module_codes = new Set(modules.map((module) => module.code));
+			if (params.module && !module_codes.has(params.module)) {
+				throw new Error(`Unknown module: ${params.module}`);
+			}
+			const { move_route_to_prefix } = await import("$generator/reeman/move_route");
+			const moved = await move_route_to_prefix(route.url, params.module);
+			return { ok: true, meta: { route_url: moved.url } };
+		}
 		if (params.refresh) {
+			await refresh_ddl_cache();
+			const { generate_schema } = await import("$generator/schema");
+			const schema_ok = await generate_schema(route.table, {
+				reload: false,
+				prefix: route.prefix,
+				parent_table: route.parent,
+				route_name: route.route_name,
+				pagination_strategy: pick(params.pagination, ["cursor", "offset"]),
+				render_strategy: pick(params.render_strategy, ["stream", "load"]),
+				form_hints: params.form_hints,
+				form_details: params.form_details,
+				grid_columns: params.grid_columns,
+				grid_column_definitions: params.grid_column_definitions,
+			});
+			if (!schema_ok) throw new Error(`Schema refresh failed for ${route.table}`);
 			const { generate_crud } = await import("$generator/crud/main");
-			return await generate_crud(route.table, {
+			const generated = await generate_crud(route.table, {
+				reload: false,
 				force: true,
 				interactive: false,
 				prefix: route.prefix,
 				parent_table: route.parent,
 				route_name: route.route_name,
 			});
+			if (generated) await reload_main_app();
+			return generated;
 		}
 		return true;
 	}, params.url);
@@ -558,9 +597,10 @@ export async function action_bulk_refresh_routes(params: { urls: string[]; }): P
 				console.log(`  - Skipped ${url}: not a configured CRUD route`);
 				continue;
 			}
-			const ok = await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name);
+			const ok = await refresh_crud_fields_only(route.table, route.prefix, route.parent, route.route_name, false, false);
 			if (!ok) fail++;
 		}
+		if (fail === 0) await reload_main_app();
 		return fail === 0;
 	});
 }

@@ -22,6 +22,9 @@ import { load_route_settings, route_edit_path } from "./route_settings";
 import type { Record as DbRouteRecord } from "./sql";
 
 import { DEFAULT_HELPER_NAMES } from "$lib/helper_names";
+import { inspect_form_fields_hash } from "$generator/crud/ree_hash";
+import { MAIN_APP } from "$config/paths";
+import { join } from "node:path";
 
 export const reeman_db_routes_crud = {
 	"/routes": { GET: get_db_routes_index },
@@ -133,8 +136,33 @@ export async function get_db_route_edit(req: BunRequest): Promise<Response> {
 	const raw_route_url = request_url.searchParams.get("url");
 	const route_url = raw_route_url?.trim() ?? "";
 
+	if (route_url) await sync_route_schema(route_url);
 	const record = route_url ? await get_route_record_by_url(route_url) : undefined;
 	return render_db_route_detail(req, record);
+}
+
+/** Refresh editable metadata from the live DDL without rebuilding app routes. */
+async function sync_route_schema(route_url: string): Promise<void> {
+	const { with_reeman_file_writes } = await import("$lib/reeman_activity");
+	await with_reeman_file_writes(async () => {
+		const [{ invalidate_cache, load_ddl_cache }, { discover_routes_with_schema }, { generate_schema }] = await Promise.all([
+			import("$generator/ddl_cache"),
+			import("$generator/reeman/utils/route_scan"),
+			import("$generator/schema"),
+		]);
+		invalidate_cache();
+		await load_ddl_cache({ force_refresh: true });
+
+		const route = discover_routes_with_schema().find((candidate) => candidate.url === route_url);
+		if (!route) return;
+		const schema_ok = await generate_schema(route.table, {
+			reload: false,
+			prefix: route.prefix,
+			parent_table: route.parent,
+			route_name: route.route_name,
+		});
+		if (!schema_ok) throw new Error(`Schema refresh failed for ${route.table}`);
+	});
 }
 
 async function render_db_route_detail(req: BunRequest, record: DbRouteRecord | undefined): Promise<Response> {
@@ -147,6 +175,12 @@ async function render_db_route_detail(req: BunRequest, record: DbRouteRecord | u
 		load_reeman_data({ tables: false }),
 		load_route_settings(record.url),
 	]);
+	const form_fields_hash_status = inspect_form_fields_hash(join(process.cwd(), MAIN_APP, ...record.url.split("/").filter(Boolean)));
+	const module_options = [...reeman_data.modules];
+	const has_current_module = module_options.some((module) => module.code === record.module);
+	if (record.module && !has_current_module) {
+		module_options.push({ id: 0, code: record.module, name: record.module });
+	}
 
 	return render("detail", {
 		data: {
@@ -154,6 +188,8 @@ async function render_db_route_detail(req: BunRequest, record: DbRouteRecord | u
 			busy: reeman_data.busy,
 			record,
 			route_settings,
+			form_fields_hash_status,
+			modules: module_options,
 			route_detail_path: route_edit_path(record.url),
 			helper_names: DEFAULT_HELPER_NAMES,
 		},

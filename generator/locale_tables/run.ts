@@ -13,10 +13,11 @@ import { db } from "$config/db";
 import { default_locale, locales } from "$config/supported_locales";
 import { db_type } from "$lib/resolve_db_type";
 
-import { load_ddl_cache, ddl_cache_to_schema_objects } from "../ddl_cache";
+import { get_cached_table, load_ddl_cache, ddl_cache_to_schema_objects } from "../ddl_cache";
+import { parse_view_tables } from "../crud/sql_introspector";
 import type { SchemaObject } from "../schema/types";
 import { discover_routes_with_schema, type RouteSchema } from "../reeman/utils/route_scan";
-import { sync_locale_tables, type SyncAction, type SyncResult } from "./sync";
+import { sync_locale_tables, sync_locale_view, type SyncAction, type SyncResult } from "./sync";
 import { MAIN_APP } from "$config/paths";
 
 export interface LocalizedTableInfo {
@@ -123,6 +124,25 @@ export async function run_locale_table_sync(options: RunSyncOptions = {}): Promi
 			dry_run,
 		});
 		results.push(result);
+	}
+
+	const selected_names = new Set(selected.map((info) => info.table_name));
+	for (const schema of all_schemas) {
+		if (!schema.has_view || selected_names.has(schema.name)) continue;
+		const cached_table = get_cached_table(cache, schema.name);
+		const view_definition = cached_table?.view_definition ?? "";
+		const dependencies = parse_view_tables(view_definition);
+		if (!dependencies.some((dependency) => localized_table_names.has(dependency))) continue;
+		const actions = await sync_locale_view({
+			db,
+			dialect,
+			base_table: schema.name,
+			locale_codes,
+			default_locale_code: default_locale,
+			localized_tables: localized_table_names,
+			dry_run,
+		});
+		results.push({ base_table: schema.name, actions, drift_before: [] });
 	}
 
 	return { results, localized_tables };

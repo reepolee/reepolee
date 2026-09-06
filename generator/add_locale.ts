@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { default_locale, locales } from "$config/supported_locales";
 import { format_bcp47, normalize_locale } from "$lib/locale";
 import { notify_server_reload } from "$lib/server_notify";
-import { get_dotted, read_all_translation_rows, read_namespace_file, upsert_file_translation, write_namespace_file } from "$lib/translation_files";
+import { get_dotted, insert_file_translation, read_all_translation_rows, read_namespace_file, write_namespace_file } from "$lib/translation_files";
 import { apply_translations, extract_untranslated, sync_target_to_source } from "$lib/translation_merge";
 
 import { apply_route_memory, apply_translation_memory, table_for_translation_namespace } from "./translation_memory";
@@ -18,6 +18,8 @@ import { translate_json } from "./translator";
 
 export interface AddLocaleOptions {
 	translate?: boolean;
+	/** Let an outer workflow perform the final reload. */
+	reload?: boolean;
 }
 
 /**
@@ -102,6 +104,7 @@ export async function add_seeded_locale(locale_code: string): Promise<boolean> {
  */
 export async function add_locale_to_system(locale_code: string, options: AddLocaleOptions = {}): Promise<boolean> {
 	const translate = options.translate ?? false;
+	const reload = options.reload ?? true;
 
 	try {
 		locale_code = normalize_locale(locale_code);
@@ -190,7 +193,7 @@ export async function add_locale_to_system(locale_code: string, options: AddLoca
 				try {
 					const file_lang_name = await get_language_name_in_language(locale_code, existing_lang);
 					const key_path = `ui.locale_names.${locale_code}`;
-					await upsert_file_translation(existing_lang, "root", key_path, file_lang_name);
+					await insert_file_translation(existing_lang, "root", key_path, file_lang_name);
 					console.log(`   ✓ Added ${locale_code} to locale_names for ${existing_lang}`);
 				} catch (err) {
 					console.error(`   ❌ Failed to translate language name for ${existing_lang}:`, err);
@@ -201,7 +204,7 @@ export async function add_locale_to_system(locale_code: string, options: AddLoca
 				try {
 					const file_lang_name_to = await get_language_name_to_in_language(locale_code, existing_lang);
 					const key_path = `ui.language_names_to.${locale_code}`;
-					await upsert_file_translation(existing_lang, "root", key_path, file_lang_name_to);
+					await insert_file_translation(existing_lang, "root", key_path, file_lang_name_to);
 					console.log(`   ✓ Added ${locale_code} to language_names_to for ${existing_lang}`);
 				} catch (err) {
 					console.error(`   ❌ Failed to translate language name (to) for ${existing_lang}:`, err);
@@ -212,21 +215,10 @@ export async function add_locale_to_system(locale_code: string, options: AddLoca
 		console.error(`   ❌ Failed to update locale_names:`, err);
 	}
 
-	// Step 4: Reload routes after all new locale files have been written. The
-	// target locale has already consumed its archive memory above, so do not
-	// run a global sync that could translate unrelated locales.
-	console.log(`\n📝 Step 4: Reloading routes for ${locale_code}...`);
-	try {
-		await notify_server_reload();
-	} catch (err) {
-		console.error("Error reloading routes:", err instanceof Error ? err.message : err);
-		return false;
-	}
-
-	// Step 5: Create this locale's clone tables. A new locale has no content
+	// Step 4: Create this locale's clone tables. A new locale has no content
 	// tables until they are cloned from the base tables, so adding a locale is
 	// a DDL operation, not only a config/translation one.
-	console.log(`\n📝 Step 5: Creating locale tables for ${locale_code}...`);
+	console.log(`\n📝 Step 4: Creating locale tables for ${locale_code}...`);
 	try {
 		const { format_sync_actions, run_locale_table_sync } = await import("./locale_tables/run");
 		const { results } = await run_locale_table_sync({ locale_codes: [...locales, locale_code] });
@@ -237,11 +229,13 @@ export async function add_locale_to_system(locale_code: string, options: AddLoca
 			for (const description of descriptions) console.log(`   ✓ ${description}`);
 		}
 		if (changes === 0) console.log("   ✓ No localized tables - nothing to clone");
-		return true;
 	} catch (err) {
 		console.error("Error syncing locale tables:", err instanceof Error ? err.message : err);
 		return false;
 	}
+
+	if (reload) await notify_server_reload();
+	return true;
 }
 
 // ---------------------------------------------------------------------------

@@ -20,7 +20,7 @@ export interface D1ClientConfig {
 	api_base_url?: string;
 }
 
-type D1Fetch = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
+export type D1Fetch = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
 
 export interface D1QueryResult {
 	success: boolean;
@@ -34,8 +34,12 @@ export function d1_client_from_env(env: Record<string, string | undefined> = Bun
 	const api_token = env.CF_API_TOKEN;
 	const account_id = env.CF_ACCOUNT_ID;
 	const database_id = env.CF_D1_DATABASE_ID;
-	if (!api_token || !account_id || !database_id) return null;
+	if (!d1_env_value(api_token) || !d1_env_value(account_id) || !d1_env_value(database_id)) return null;
 	return { api_token, account_id, database_id };
+}
+
+function d1_env_value(value: string | undefined): value is string {
+	return value !== undefined && value.trim() !== "" && value.trim() !== "N/A";
 }
 
 export function d1_query_endpoint(config: D1ClientConfig, path: string): string {
@@ -84,5 +88,8 @@ export async function d1_query_table(
 	table: string,
 	options: { fetch_fn?: D1Fetch } = {},
 ): Promise<Record<string, unknown>[]> {
-	return d1_query(config, `SELECT * FROM ${table}`, [], options);
+	if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(table)) {
+		throw new Error(`D1 table name "${table}" must be a bare SQL identifier.`);
+	}
+	return d1_query(config, `SELECT * FROM "${table}"`, [], options);
 }

@@ -70,9 +70,33 @@ export function apply_translations(lang_obj: json_obj, translated_obj: json_obj)
 	return result;
 }
 
-// Sync a target language file to match the default-locale source structure.
+// Add generator-owned source keys without overwriting file-first translations
+// or removing keys that the generator does not know about. Explicit pruning is
+// the only operation allowed to remove a translation key.
+export function merge_missing_source_keys(existing_obj: json_obj, generated_obj: json_obj): json_obj {
+	const result: json_obj = { ...existing_obj };
+
+	for (const key of Object.keys(generated_obj)) {
+		const generated_val = generated_obj[key];
+		const existing_val = existing_obj[key];
+
+		if (is_object(generated_val)) {
+			result[key] = is_object(existing_val)
+				? merge_missing_source_keys(existing_val, generated_val)
+				: merge_missing_source_keys({}, generated_val);
+		} else if (existing_val === undefined || is_object(existing_val)) {
+			result[key] = generated_val;
+		}
+	}
+
+	return result;
+}
+
+// Sync source keys into a target language file without discarding target-only
+// entries. Deleting stale translations is an explicit prune operation, never a
+// side effect of synchronizing or translating.
 export function sync_target_to_source(source_obj: json_obj, target_obj: json_obj, translate: boolean = false): json_obj {
-	const result: json_obj = {};
+	const result: json_obj = { ...target_obj };
 	const prefix = "::missing:: ";
 
 	for (const key of Object.keys(source_obj)) {
@@ -82,7 +106,7 @@ export function sync_target_to_source(source_obj: json_obj, target_obj: json_obj
 		if (is_object(source_val)) {
 			result[key] = sync_target_to_source(source_val, is_object(target_val) ? target_val : {}, translate);
 		} else {
-			if (target_val === undefined || (typeof target_val === "string" && target_val.startsWith(prefix))) {
+			if (target_val === undefined || is_object(target_val) || (typeof target_val === "string" && target_val.startsWith(prefix))) {
 				if (typeof source_val === "string" && source_val.startsWith(prefix)) {
 					result[key] = source_val;
 				} else if (translate) {

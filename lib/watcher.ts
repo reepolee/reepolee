@@ -8,7 +8,7 @@
  *   Translation files are read into memory once at startup; without this the
  *   running server keeps serving stale strings until a manual
  *   POST /__reload-translations or a restart.
- * - static/app-dev.css -> Tailwind's own `--watch=always` process (run by
+ * - static/app.css -> Tailwind's own `--watch=always` process (run by
  *   scripts/dev_run.ts) rebuilds this file incrementally; we only watch for
  *   it changing and notify the browser once it does.
  * - route-local static .js -> notify browser to reload.
@@ -19,16 +19,13 @@
  * `tailwindcss` CLI invocation pays a ~1s cold start (config parse, full
  * project scan) on every save; `tailwindcss --watch`'s incremental engine
  * rebuilds in single-digit ms once warm. Spawning it once as a long-lived
- * process (in scripts/dev_run.ts) and just watching its output file keeps
- * template-edit-to-browser-reload latency low. The tradeoff: that process
- * also re-triggers itself on its own writes to static/app-dev.css (its
- * watcher can only subscribe to whole directories, not exclude one file
- * within one), producing extra rebuilds with no source change - each is
- * cheap (ms-level) though, so this is preferred over paying the one-shot
- * cold-start cost per real edit.
+ * process (in scripts/dev_run.ts) and watching its output file keeps
+ * template-edit-to-browser-reload latency low. Tailwind scans only the
+ * explicit `@source` paths in css/app.css, which exclude its static/app.css
+ * output, so its output writes do not trigger another Tailwind rebuild.
  */
 
-import { readdirSync, statSync, watch, type Dirent } from "node:fs";
+import { existsSync, readdirSync, readFileSync, watch, type Dirent } from "node:fs";
 import { join } from "node:path";
 
 import { translations } from "$lib/i18n";
@@ -37,7 +34,7 @@ import { now_epoch_ms } from "$lib/temporal";
 
 let watcher: ReturnType<typeof watch> | null = null;
 const file_timestamps = new Map();
-const file_mtimes = new Map<string, number>();
+const file_hashes = new Map<string, string>();
 let reload_timeout: Timer | null = null;
 
 function debounced_reload(work: () => void | Promise<void>, message: string) {
@@ -68,22 +65,25 @@ const locale_json_pattern = /^[a-z]{2,3}-[a-z0-9]{2,8}\.json$/;
 function is_reloadable_file(filename: string): boolean {
 	const basename = filename.split("/").pop() ?? "";
 	if (filename.endsWith(".ree") || locale_json_pattern.test(basename)) return true;
-	if (filename.endsWith("static/app-dev.css")) return true;
+	if (filename.endsWith("static/app.css")) return true;
 	const is_javascript = filename.endsWith(".js");
 	const is_static_file = filename.startsWith("static/") || filename.includes("/static/");
 	return is_javascript && is_static_file;
 }
 
-function get_file_mtime(project_root: string, filename: string): number | null {
+function get_file_hash(project_root: string, filename: string): string | null | undefined {
 	const file_path = join(project_root, filename);
 	try {
-		return statSync(file_path).mtimeMs;
+		const file_content = readFileSync(file_path);
+		const hasher = new Bun.CryptoHasher("sha256");
+		hasher.update(file_content);
+		return hasher.digest("hex");
 	} catch {
-		return null;
+		return existsSync(file_path) ? undefined : null;
 	}
 }
 
-function seed_file_mtimes(project_root: string, dir: string = ""): void {
+function seed_file_hashes(project_root: string, dir: string = ""): void {
 	const dir_path = join(project_root, dir);
 	let entries: Dirent[];
 	try {
@@ -97,25 +97,26 @@ function seed_file_mtimes(project_root: string, dir: string = ""): void {
 		const entry_path = join(dir, entry.name);
 		const normalized_path = entry_path.replaceAll("\\", "/");
 		if (entry.isDirectory()) {
-			seed_file_mtimes(project_root, entry_path);
+			seed_file_hashes(project_root, entry_path);
 			continue;
 		}
 		if (!entry.isFile() || !is_reloadable_file(normalized_path)) continue;
-		const mtime = get_file_mtime(project_root, normalized_path);
-		if (mtime !== null) file_mtimes.set(normalized_path, mtime);
+		const file_hash = get_file_hash(project_root, normalized_path);
+		if (typeof file_hash === "string") file_hashes.set(normalized_path, file_hash);
 	}
 }
 
-function has_file_mtime_changed(project_root: string, filename: string): boolean {
-	const mtime = get_file_mtime(project_root, filename);
-	const previous_mtime = file_mtimes.get(filename);
-	if (mtime === null) {
-		file_mtimes.delete(filename);
-		return previous_mtime !== undefined;
+function has_file_content_changed(project_root: string, filename: string): boolean {
+	const file_hash = get_file_hash(project_root, filename);
+	const previous_hash = file_hashes.get(filename);
+	if (file_hash === undefined) return false;
+	if (file_hash === null) {
+		file_hashes.delete(filename);
+		return previous_hash !== undefined;
 	}
 
-	file_mtimes.set(filename, mtime);
-	return previous_mtime !== mtime;
+	file_hashes.set(filename, file_hash);
+	return previous_hash !== file_hash;
 }
 
 export function start_watcher(notify_clients: () => void) {
@@ -124,17 +125,17 @@ export function start_watcher(notify_clients: () => void) {
 
 	// Watch routes folder
 	const project_root = join(import.meta.dir, "../");
-	seed_file_mtimes(project_root);
+	file_hashes.clear();
+	seed_file_hashes(project_root);
 
-	watcher = watch(project_root, { recursive: true }, async (eventType, filename) => {
+	watcher = watch(project_root, { recursive: true }, (_, filename) => {
 		if (!filename) return;
 		const normalized_filename = filename.replaceAll("\\", "/");
 
 		// Ignore changes in node_modules and .git
 		if (filename.includes("node_modules") || filename.includes(".git")) { return; }
 		if (!is_reloadable_file(normalized_filename)) return;
-		if (eventType === "change" && !has_file_mtime_changed(project_root, normalized_filename)) return;
-		if (eventType !== "change") has_file_mtime_changed(project_root, normalized_filename);
+		if (!has_file_content_changed(project_root, normalized_filename)) return;
 
 		const now = now_epoch_ms();
 		const last_event_time = file_timestamps.get(filename) || 0;
@@ -146,7 +147,7 @@ export function start_watcher(notify_clients: () => void) {
 
 		const basename = normalized_filename.split("/").pop() ?? "";
 
-		if (filename.includes(join("static", "app-dev.css"))) {
+		if (filename.includes(join("static", "app.css"))) {
 			debounced_reload(notify_clients, `🎨 CSS rebuilt: ${filename}`);
 		} else if (filename.endsWith(".ree")) {
 			debounced_reload(notify_clients, `🔄 Template changed: ${filename}`);

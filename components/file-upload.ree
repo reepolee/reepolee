@@ -25,7 +25,7 @@
 >
 	{#if show_folder}
 		<field-wrapper class="grid">
-			<label class="px-3" for="{= folder_input_id }">{_ labels.folder }</label>
+			<label class="px-3 font-semibold" for="{= folder_input_id }">{_ labels.folder }</label>
 			<input type="text" id="{= folder_input_id }" value="{= folder }" class="border border-neutral-300 rounded px-3 py-1.5" />
 		</field-wrapper>
 	{/if}
@@ -36,7 +36,7 @@
 	<field-wrapper class="grid">
 		<div class="px-3 flex items-center justify-between gap-2">
 			{#if label}
-				<label for="{= input_id }_dropzone">{= label }</label>
+				<label class="font-semibold" for="{= input_id }_dropzone">{= label }</label>
 			{/if}
 			<div class="file-upload-status hidden text-xs" style="color: var(--color-success)"></div>
 		</div>

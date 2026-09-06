@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { d1_client_from_env, d1_query, d1_query_endpoint } from "./d1_client";
+import { d1_client_from_env, d1_query, d1_query_endpoint, d1_query_table } from "./d1_client";
 
 type TestFetch = (url: string | URL | Request, init?: RequestInit) => Promise<Response>;
 
@@ -81,5 +81,26 @@ describe("d1_client_from_env", () => {
 			account_id: "a",
 			database_id: "d",
 		});
+	});
+
+	test("treats the documented N/A value as unavailable", () => {
+		expect(d1_client_from_env({ CF_API_TOKEN: "N/A", CF_ACCOUNT_ID: "a", CF_D1_DATABASE_ID: "d" })).toBeNull();
+	});
+});
+
+describe("d1_query_table", () => {
+	test("quotes a bare table identifier", async () => {
+		let sent_body = "";
+		const fetch_fn: TestFetch = async (_url, init) => {
+			sent_body = String(init?.body);
+			return json_response({ success: true, errors: [], result: [{ success: true, results: [] }] });
+		};
+
+		await d1_query_table(config, "registrations", { fetch_fn });
+		expect(sent_body).toContain('"sql":"SELECT * FROM \\\"registrations\\\""');
+	});
+
+	test("rejects a table name that is not a bare identifier", async () => {
+		await expect(d1_query_table(config, "registrations; DELETE FROM teams")).rejects.toThrow("must be a bare SQL identifier");
 	});
 });

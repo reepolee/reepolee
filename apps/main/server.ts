@@ -41,6 +41,7 @@ import { handle_open_request } from "$lib/open_in_editor";
 import { handle_generic_upload_endpoints } from "$lib/upload_endpoints";
 import { detect_locale, resolve_canonical_match } from "$lib/route_map";
 import { rebuild_routes_and_state, set_route_reloader } from "$lib/route_state";
+import { is_reeman_action_active } from "$lib/reeman_activity";
 import { get_base_data, get_route_table, is_first_run, match_route, set_base_data } from "$lib/route_table";
 import { handle_s3_request } from "$lib/s3";
 import { call_route_handler, handle_fallback_requests, handle_internal_endpoints } from "$lib/server_helpers";
@@ -61,8 +62,9 @@ process.on("uncaughtException", (err, origin) => log_error("server", "UNCAUGHT E
 
 Bun.env.TZ = Bun.env.TIME_ZONE;
 
+const hot_reload = !is_first_run();
 const app_started = now_iso_str();
-console.log("App started at ", app_started);
+if (!hot_reload) console.log("App started at ", app_started);
 
 // Servers resolve their own paths from import.meta.dir, never process.cwd().
 const project_root = join(import.meta.dir, "..", "..");
@@ -295,8 +297,6 @@ set_route_reloader(reload_main_routes);
 // globalThis.__reepolee_route_state persists across --hot re-evaluations.
 // If it exists, the server is already running - skip server creation.
 
-const hot_reload = !is_first_run();
-
 if (!hot_reload) {
 	try {
 		await bootstrap({
@@ -332,8 +332,12 @@ if (!hot_reload) {
 	// route reload with the old table.
 	//
 
-	console.log("🔄 Hot reload - rebuilding routes in-place");
-	await reload_main_routes();
+	if (await is_reeman_action_active()) {
+		console.log("⏸️  Hot reload deferred until the active Reeman action finishes");
+	} else {
+		console.log("🔄 Hot reload - rebuilding routes in-place");
+		await reload_main_routes();
+	}
 }
 
 export { sql_log } from "$lib/logger";

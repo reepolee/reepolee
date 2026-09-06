@@ -322,7 +322,8 @@ export async function sync_locale_tables(options: SyncOptions): Promise<SyncResu
 	// v_frameworks with every reference to a localized table swapped for that
 	// locale's clone. Rebuilt unconditionally - a view is cheap to drop and
 	// recreate, and that keeps it correct after any base-view change.
-	const view_actions = await build_view_actions(db, dialect, base_schema.name, expected, localized_tables);
+	const view_suffixes = expected.map((table) => table.name.slice(base_schema.name.length + 1));
+	const view_actions = await build_view_actions(db, dialect, base_schema.name, view_suffixes, localized_tables);
 	actions.push(...view_actions);
 
 	if (!dry_run) {
@@ -334,6 +335,19 @@ export async function sync_locale_tables(options: SyncOptions): Promise<SyncResu
 	return { base_table: base_schema.name, actions, drift_before };
 }
 
+/** Synchronize locale views for a non-localized table whose view joins localized data. */
+export async function sync_locale_view(options: { db: SQL; dialect: DbDialect; base_table: string; locale_codes: readonly string[]; default_locale_code: string; localized_tables: ReadonlySet<string>; dry_run?: boolean; }): Promise<SyncAction[]> {
+	const { db, dialect, base_table, locale_codes, default_locale_code, localized_tables, dry_run = false } = options;
+	const view_suffixes = locale_codes
+		.filter((locale_code) => locale_code !== default_locale_code)
+		.map((locale_code) => locale_code.toLowerCase().replaceAll("-", "_"));
+	const actions = await build_view_actions(db, dialect, base_table, view_suffixes, localized_tables, false);
+	if (!dry_run) {
+		for (const action of actions) await db.unsafe(action.sql);
+	}
+	return actions;
+}
+
 /**
  * Recreate each locale's view from the base view's definition, rewriting the
  * table names it reads. The base view already shapes columns for consumers,
@@ -343,11 +357,12 @@ async function build_view_actions(
 	db: SQL,
 	dialect: DbDialect,
 	base_table: string,
-	expected: readonly ExpectedTable[],
+	view_suffixes: readonly string[],
 	localized_tables: ReadonlySet<string>,
+	include_base_table: boolean = true,
 ): Promise<SyncAction[]> {
 	const base_view = `v_${base_table}`;
-	const expected_view_names = new Set(expected.map((table) => `${base_view}_${table.name.slice(base_table.length + 1)}`));
+	const expected_view_names = new Set(view_suffixes.map((suffix) => `${base_view}_${suffix}`));
 
 	const actions: SyncAction[] = [];
 
@@ -360,19 +375,18 @@ async function build_view_actions(
 		actions.push({ kind: "drop_table", table: view_name, sql: drop_view_sql(view_name, dialect) });
 	}
 
-	if (expected.length === 0) return actions;
+	if (view_suffixes.length === 0) return actions;
 
 	const base_sql = await read_view_sql(db, dialect, base_view);
 	if (!base_sql) return actions;
 
-	for (const expected_table of expected) {
-		const suffix = expected_table.name.slice(base_table.length + 1);
+	for (const suffix of view_suffixes) {
 		const view_name = `${base_view}_${suffix}`;
 		let view_sql = replace_view_name(base_sql, base_view, view_name, dialect);
 
 		// Point the view at this locale's tables. Longest names first so
 		// `developers` does not partially rewrite inside `developers_sl_si`.
-		const rewrite_targets = [base_table, ...localized_tables].filter((name, index, list) => list.indexOf(name) === index);
+		const rewrite_targets = [...(include_base_table ? [base_table] : []), ...localized_tables].filter((name, index, list) => list.indexOf(name) === index);
 		rewrite_targets.sort((left, right) => right.length - left.length);
 
 		for (const target of rewrite_targets) {

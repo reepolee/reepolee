@@ -295,6 +295,7 @@ export async function post_save_route_settings(req: BunRequest): Promise<Respons
 	if (grid_settings.error) return redirect_result(req, "save-route-settings", url, { ok: false, output: "", error: grid_settings.error }, return_to);
 	const result = await action_save_route_settings({
 		url,
+		module: params.has("module") ? get_param(params, "module") : undefined,
 		template_tags: get_param(params, "template_tags"),
 		pagination: get_param(params, "pagination"),
 		render_strategy: get_param(params, "render_strategy"),
@@ -304,7 +305,9 @@ export async function post_save_route_settings(req: BunRequest): Promise<Respons
 		grid_column_definitions: grid_settings.grid_column_definitions,
 		refresh: is_checked(params, "refresh"),
 	});
-	return redirect_result(req, is_checked(params, "refresh") ? "refresh-crud" : "save-route-settings", url, result, return_to);
+	const moved_url = typeof result.meta?.route_url === "string" ? result.meta.route_url : "";
+	const next_return_to = moved_url ? `/routes/edit?url=${encodeURIComponent(moved_url)}` : return_to;
+	return redirect_result(req, is_checked(params, "refresh") ? "refresh-crud" : "save-route-settings", url, result, next_return_to);
 }
 
 export async function post_add_nested_children(req: BunRequest): Promise<Response> {

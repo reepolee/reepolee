@@ -37,7 +37,7 @@ function generate_form_params(fields: FieldDef[], columns: Record<string, { form
 function generate_original_form_params(fields: FieldDef[], columns: Record<string, { form?: boolean; }> | null): string { return configured_form_fields(fields, columns).map((f) => `\t\t${f.name}: params.get(\`_original_${f.name}\`)?.trim() || "",`).join("\n"); }
 function generate_readonly_record_values(readonly_fields: ReadonlySet<string>): string {
 	if (readonly_fields.size === 0) return "";
-	return `\n\tObject.assign(data, {\n${[...readonly_fields].map((field_name) => `\t\t${field_name}: String(current_record.${field_name} ?? ""),`).join("\n")}\n\t});`;
+	return `\n\tconst readonly_record = current_record as unknown as { [key: string]: unknown };\n\tObject.assign(data, {\n${[...readonly_fields].map((field_name) => `\t\t${field_name}: String(readonly_record.${field_name} ?? ""),`).join("\n")}\n\t});`;
 }
 
 function generate_validate_params(fields: FieldDef[], columns: Record<string, { form?: boolean; }> | null): string { return configured_form_fields(fields, columns).map((f) => `\t\t${f.name}: body.${f.name} || "",`).join("\n"); }
@@ -80,10 +80,16 @@ function generate_select_options(foreign_keys: ForeignKeyMap): string {
 	return opts.join("\n");
 }
 
-async function load_list_strategy(has_view: boolean, view_name: string, pagination_strategy: string = "cursor", localized: boolean = false): Promise<string> {
+async function load_list_strategy(has_view: boolean, view_name: string, pagination_strategy: string = "cursor", localized: boolean = false, view_localized: boolean = false): Promise<string> {
 	const parts_dir = join(process.cwd(), "generator", "templates", "index");
 	const suffix = pagination_strategy === "offset" ? "_offset.ts" : ".ts";
-	if (has_view) { return apply_template(await Bun.file(join(parts_dir, `query_view${suffix}`)).text(), { "view.name": view_name, "sql.locale_arg": localized ? ", ctx.locale" : "" }); }
+	if (has_view) {
+		return apply_template(await Bun.file(join(parts_dir, `query_view${suffix}`)).text(), {
+			"view.name": view_name,
+			"sql.locale_arg": localized ? ", ctx.locale" : "",
+			"sql.view_locale_arg": view_localized ? ", ctx.locale" : "",
+		});
+	}
 	return await Bun.file(join(parts_dir, `query_table${suffix}`)).text();
 }
 
@@ -145,6 +151,10 @@ function generate_filter_fk_options(fields: FieldDef[], columns?: Record<string,
 export interface GenerateIndexConfig {
 	table_name: string;
 	fields: FieldDef[];
+	/** View-only fields displayed by the edit form. */
+	v_fields?: FieldDef[] | null;
+	/** Fields available to index filters, including view-only fields. */
+	filter_fields?: FieldDef[];
 	/** Physical table columns - the only reliable source for archive detection. */
 	column_names?: string[];
 	/** The view's physical columns, when the route reads through `v_<table>`.
@@ -156,6 +166,8 @@ export interface GenerateIndexConfig {
 	has_view: boolean;
 	first_field: string;
 	foreign_keys: ForeignKeyMap;
+	/** Foreign keys available to index filters, including view-only fields. */
+	filter_foreign_keys?: ForeignKeyMap;
 	columns?: Record<string, any> | null;
 	route_prefix?: string;
 	crud_name?: string;
@@ -167,6 +179,8 @@ export interface GenerateIndexConfig {
 	route_name?: string;
 	is_auto_increment_pk?: boolean;
 	localization_enabled?: boolean;
+	/** True when the list view projects a localized joined table. */
+	view_localized?: boolean;
 	localized_fields?: LocalizedFieldMeta[];
 	/** Fields displayed on edit forms but never accepted from the request. */
 	readonly_fields?: ReadonlySet<string>;
@@ -179,7 +193,7 @@ export interface GenerateIndexConfig {
 // ---------------------------------------------------------------------------
 
 export async function generate_index_ts(config: GenerateIndexConfig): Promise<string> {
-	const { table_name, fields, column_names = [], view_column_names = [], sort_options, view_name, has_view, first_field, foreign_keys, columns = null, route_prefix = "", crud_name = "", route_param_value = "id", is_nested = false, parent_info = null, pagination_strategy = "cursor", render_strategy = "load", route_name = "", is_auto_increment_pk = true, localization_enabled = false, localized_fields = [], readonly_fields = new Set<string>(), form_columns = columns } = config;
+	const { table_name, fields, filter_fields = fields, column_names = [], view_column_names = [], sort_options, view_name, has_view, first_field, foreign_keys, filter_foreign_keys = foreign_keys, columns = null, route_prefix = "", crud_name = "", route_param_value = "id", is_nested = false, parent_info = null, pagination_strategy = "cursor", render_strategy = "load", route_name = "", is_auto_increment_pk = true, localization_enabled = false, view_localized = false, localized_fields = [], readonly_fields = new Set<string>(), form_columns = columns } = config;
 	const parts_dir = join(process.cwd(), "generator", "templates", "index");
 	const tmpl = select_templates({ pagination_strategy, render_strategy, is_nested, has_view });
 
@@ -200,9 +214,9 @@ export async function generate_index_ts(config: GenerateIndexConfig): Promise<st
 		tmpl.new_get ? read(tmpl.new_get) : Promise.resolve(""),
 		read(tmpl.edit_get),
 		read(tmpl.edit_post),
-		load_list_strategy(has_view, view_name, pagination_strategy, localized),
+		load_list_strategy(has_view, view_name, pagination_strategy, localized, view_localized),
 		load_view_import(has_view),
-		load_select_imports(foreign_keys),
+		load_select_imports(filter_foreign_keys),
 		tmpl.index_bulk_delete ? read(tmpl.index_bulk_delete) : Promise.resolve(""),
 		localization_enabled && !is_nested ? read("copy_locale_post.ts") : Promise.resolve(""),
 		localization_enabled && !is_nested ? read("generate_locale_post.ts") : Promise.resolve(""),
@@ -484,15 +498,16 @@ const LOCALE_PROTECTED_COLUMNS = ${JSON.stringify(fields.filter((field) => colum
 			"edit.get_autocomplete_display": has_autocomplete ? `\n\n\tconst autocomplete_display_values: Record<string, string> = {};\n${autocomplete_display_fetch}` : "",
 			"new.autocomplete_display_options": autocomplete_display_options,
 			"edit.autocomplete_display_options": autocomplete_display_options,
-			"filter.fk_loader": generate_filter_fk_loader(fields, columns, foreign_keys),
-			"filter.fk_options": generate_filter_fk_options(fields, columns),
+			"filter.fk_loader": generate_filter_fk_loader(filter_fields, columns, filter_foreign_keys),
+			"filter.fk_options": generate_filter_fk_options(filter_fields, columns),
 			"import.conditional_helpers": conditional_helpers,
 			"import.crud_routes": crud_routes_import,
 			"import.pagination": pagination_import,
 			"import.bun": bun_import,
 			route_param: route_param_value,
 			"route.param_imports": has_custom_route_param ? `import { get_record_by_route_param, ${archive_record_by_route_param_fn} } from "./sql";\n` : "",
-			"edit.get_lookup": has_custom_route_param ? `const ${route_param_value} = req.params.${route_param_value} || "";\n\tconst record = await get_record_by_route_param(${route_param_value}${archive_route_param_include_arg});` : is_auto_increment_pk ? `const id = Number((req.params as Record<string, string> | undefined)?.id || 0);\n\tconst record = await get_record_by_id(id${read_locale_arg}${archive_include_arg});` : `const id = req.params.id ? String(req.params.id) : "";\n\tconst record = await get_record_by_id(id${read_locale_arg}${archive_include_arg});`,
+			"edit.get_lookup": has_view && !is_nested && !has_custom_route_param ? `const id = Number((req.params as Record<string, string> | undefined)?.id || 0);\n\tconst record = await get_view_record_by_id(id${view_localized ? ", ctx.locale" : ""});` : has_custom_route_param ? `const ${route_param_value} = req.params.${route_param_value} || "";\n\tconst record = await get_record_by_route_param(${route_param_value}${archive_route_param_include_arg});` : is_auto_increment_pk ? `const id = Number((req.params as Record<string, string> | undefined)?.id || 0);\n\tconst record = await get_record_by_id(id${read_locale_arg}${archive_include_arg});` : `const id = req.params.id ? String(req.params.id) : "";\n\tconst record = await get_record_by_id(id${read_locale_arg}${archive_include_arg});`,
+			"edit.merge_view_record": "",
 			"edit.post_lookup": has_custom_route_param ? `const ${route_param_value} = req.params.${route_param_value} || "";\n\tconst lookup_record = await get_record_by_route_param(${route_param_value}${archive_route_param_include_arg});\n\tconst id = lookup_record?.id || "";` : is_auto_increment_pk ? `const id = Number((req.params as Record<string, string> | undefined)?.id || 0);` : `const id = req.params.id ? String(req.params.id) : "";`,
 			"edit.post_delete_call": has_custom_route_param ? `await ${archive_record_by_route_param_fn}(${route_param_value}${archive_delete_arg})` : `await ${archive_record_fn}(id${archive_delete_arg})`,
 			"edit.post_delete_catch_lookup": has_custom_route_param ? `await get_record_by_route_param(${route_param_value})` : `await get_record_by_id(id${read_locale_arg})`,

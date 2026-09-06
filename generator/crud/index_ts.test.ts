@@ -78,7 +78,7 @@ describe("generate_index_ts localized save", () => {
 		expect(source).toContain("(UPDATE_COLUMNS as readonly string[]).includes(field_name)");
 		expect(source).toContain("original_data[field_name as keyof typeof original_data]");
 		expect(source).toContain("const current_record = await get_record_by_id(id);");
-		expect(source).toContain('id: String(current_record.id ?? ""),');
+		expect(source).toContain('id: String(readonly_record.id ?? ""),');
 		expect(source).toContain("await save_locale_values(TABLE_NAME, Number(id), localized_inputs, LOCALE_PROTECTED_COLUMNS);");
 		expect(source).not.toContain('LOCALE_PROTECTED_COLUMNS = ["display"');
 		expect(source).toContain("const has_localized_changes = Object.keys(localized_inputs).length > 0;");
@@ -157,6 +157,77 @@ test("uses a configured route parameter for the save-and-stay redirect", async (
 
 	expect(source).toContain("redirect_url = localized_url(entity_path(code), _lang);");
 	expect(source).not.toContain("redirect_url = localized_url(entity_path(id), _lang);");
+});
+
+test("loads the edit record directly from a view", async () => {
+	const source = await generate_index_ts({
+		table_name: "teams",
+		fields,
+		column_names: ["id", "name"],
+		view_column_names: ["id", "name", "total_amount"],
+		sort_options: "[]",
+		view_name: "v_teams",
+		has_view: true,
+		first_field: "name",
+		foreign_keys: new Map(),
+		view_localized: true,
+	});
+
+	expect(source).toContain('import { get_all_records_view, get_view_record_by_id } from "./sql_view";');
+	expect(source).toContain('const record = await get_view_record_by_id(id, ctx.locale);');
+	expect(source).not.toContain("Object.assign(record, view_record);");
+});
+
+test("uses translated view labels for filters", async () => {
+	const source = await generate_index_ts({
+		table_name: "teams",
+		fields,
+		column_names: ["id", "name"],
+		view_column_names: ["id", "name", "programme_id"],
+		sort_options: "[]",
+		view_name: "v_teams",
+		has_view: true,
+		first_field: "name",
+		foreign_keys: new Map(),
+		pagination_strategy: "offset",
+	});
+
+	expect(source).toContain("const { labels, v_labels = {} } = ctx.translations;");
+	expect(source).toContain("const filter_labels = { ...labels, ...v_labels };");
+	expect(source).toContain("filter_labels,");
+});
+
+test("generates filter options for foreign keys exposed only through a view", async () => {
+	const programme_field: FieldDef = {
+		name: "programme_id",
+		type: "foreign_key",
+		required: false,
+		is_nullable: true,
+		attributes: { foreign_key: { table: "programmes", column: "id" } },
+	};
+	const filter_foreign_keys = new Map([
+		["programme_id", { table: "programmes", column: "id", localized: true }],
+	]);
+	const source = await generate_index_ts({
+		table_name: "teams",
+		fields,
+		filter_fields: [...fields, programme_field],
+		column_names: ["id", "name"],
+		view_column_names: ["id", "name", "programme_id"],
+		sort_options: "[]",
+		view_name: "v_teams",
+		has_view: true,
+		first_field: "name",
+		foreign_keys: new Map(),
+		filter_foreign_keys,
+		columns: { programme_id: { filter: true } },
+	});
+
+	expect(source).toContain('const filter_programme_id_options = await get_programmes_options_by_id(ctx.locale);');
+	expect(source).toContain('programme_id: filter_programme_id_options');
+	expect(source).toContain('import { columns, enable_archive, fields, grid_filler, v_fields } from "./config";');
+	expect(source).toContain('const filter_fields = v_fields ? { ...fields, ...v_fields } : fields;');
+	expect(source).toContain('get_filter_definitions(columns, filter_fields)');
 });
 
 test("reads navigation settings from config.ts", async () => {

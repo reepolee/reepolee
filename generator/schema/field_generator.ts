@@ -289,7 +289,10 @@ export function generate_fields_object(schema_obj: SchemaObject, type_mapper: Ty
 						fk_column = candidate_column;
 
 						// Check indexes on both sides of the implicit FK and warn if missing
-						if (all_tables_indexes) {
+						// View fields can infer a relationship for display/rendering, but
+						// have no physical source index. Index checks apply only to base
+						// table columns, not a view alias such as locale_name.
+						if (all_tables_indexes && schema_obj.type === "table") {
 							const source_index_set = all_tables_indexes.get(schema_obj.name);
 							const target_index_set = all_tables_indexes.get(table_name);
 
@@ -327,7 +330,8 @@ export function generate_fields_object(schema_obj: SchemaObject, type_mapper: Ty
 				fk_table = resolved_table;
 
 				// Check index on the _id source column and warn if missing
-				if (all_tables_indexes) {
+				// A view may expose an _id field without owning a source index.
+				if (all_tables_indexes && schema_obj.type === "table") {
 					const source_index_set = all_tables_indexes.get(schema_obj.name);
 					if (!source_index_set?.has(col.name.toLowerCase())) {
 						_missing_index_warnings.add(

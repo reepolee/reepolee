@@ -18,7 +18,9 @@ import { notify_updates } from "$lib/livereload";
 __import.bun__
 
 import { validate, validate_touched__import.validation_schema__ } from "./validation_server";
-import { columns, enable_archive, fields, grid_filler } from "./config";
+import { columns, enable_archive, fields, grid_filler, v_fields } from "./config";
+
+const filter_fields = v_fields ? { ...fields, ...v_fields } : fields;
 
 __import.localization__
 __import.select_functions__

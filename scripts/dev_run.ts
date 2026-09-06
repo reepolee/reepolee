@@ -68,7 +68,7 @@ async function pipe_prefixed(stream: ReadableStream<Uint8Array>, label: string, 
 	}
 }
 
-// CSS must be built once before the server starts serving static/app-dev.css.
+// CSS must be built once before the server starts serving static/app.css.
 const css_build = Bun.spawnSync(["bun", "run", "css:once"], { stdout: "inherit", stderr: "inherit" });
 if (css_build.exitCode !== 0) {
 	console.error("✗ Initial CSS build failed");

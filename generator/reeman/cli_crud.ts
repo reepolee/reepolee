@@ -141,6 +141,7 @@ export async function run_all_tables(flags: ReturnType<typeof parse_crud_flags>)
 	let success = true;
 	for (const table of tables) {
 		const ok = await run_full_pipeline(table, {
+			reload: false,
 			prefix: flags.prefix,
 			force: flags.force,
 			translate: false,
@@ -154,6 +155,8 @@ export async function run_all_tables(flags: ReturnType<typeof parse_crud_flags>)
 	// subsequent tables when generating many tables at once.
 	if (flags.translate) {
 		await sync_all_namespaces();
+	}
+	if (success) {
 		const { notify_server_reload } = await import("$lib/server_notify");
 		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
 		await notify_server_reload(true, Bun.env.MAIN_APP_URL);

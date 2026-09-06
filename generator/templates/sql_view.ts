@@ -9,6 +9,12 @@ __view.resolver__
 export interface ViewRecord {
 	__interface.fields__
 }
+
+export async function get_view_record_by_id(id: number__sql.view_locale_param__): Promise<ViewRecord | undefined> {
+	const view_source = __view.source__;
+	const records = await db.unsafe(`SELECT * FROM ${view_source} WHERE id = ? LIMIT 1`, [id]) as ViewRecord[];
+	return records[0];
+}
 __sql.archive_helper__
 export async function get_all_records_view(search: string = "", after: string | null = null, before: string | null = null, is_last: boolean = false, limit: number = 20, order_by: string = "id::asc", scope_clause: string = "", filter_clauses: { clause: string; params: any[] }[] = []__sql.view_locale_param____sql.archive_param__): Promise<{ records: ViewRecord[], total: number }> {
 	try {

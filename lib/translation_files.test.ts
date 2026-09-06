@@ -10,6 +10,7 @@ import {
 	list_translation_files,
 	read_namespace_file,
 	translation_file,
+	insert_file_translation,
 	upsert_file_translation,
 } from "$lib/translation_files";
 
@@ -44,6 +45,10 @@ describe("translation file layouts", () => {
 		await upsert_file_translation("en-us", "home", "ui.subtitle", "Welcome", project_dir);
 		const updated = await Bun.file(locale_file).json();
 		expect(updated).toEqual({ ui: { subtitle: "Welcome", title: "Home" } });
+
+		expect(await insert_file_translation("en-us", "home", "ui.title", "Generated title", project_dir)).toBe(false);
+		expect(await insert_file_translation("en-us", "home", "ui.button", "Continue", project_dir)).toBe(true);
+		expect(await Bun.file(locale_file).json()).toEqual({ ui: { button: "Continue", subtitle: "Welcome", title: "Home" } });
 		expect(existsSync(join(project_dir, MAIN_APP, "home", "en-us.json"))).toBe(false);
 	});
 

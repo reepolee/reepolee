@@ -42,7 +42,10 @@ async function load_namespace_from_files(namespace: string): Promise<Record<stri
 export async function sync_single_namespace(namespace: string, translate: boolean): Promise<void> {
 	const display = namespace || "(global)";
 	const queue_mode = is_queue_available() && (await is_worker_alive()) && translate;
-	const table_name = translate ? await table_for_translation_namespace(namespace) : null;
+	// Translation memory is also used by structural sync. A route moved to a
+	// new module needs its previous table-keyed translations restored before
+	// any optional AI work is considered.
+	const table_name = await table_for_translation_namespace(namespace);
 
 	console.log(`   ${display}`);
 

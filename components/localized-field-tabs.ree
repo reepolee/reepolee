@@ -39,7 +39,7 @@
 		{/each}
 
 		<div class="localized-field-heading">
-			<label class="px-3">{= field_label }</label>
+			<label class="px-3 font-semibold">{= field_label }</label>
 			<div class="localized-field-tabbar" role="tablist">
 				<label for="{= group }-{= default_locale }" class="localized-tab-label" data-locale="{= default_locale }" title="{= locale_names[default_locale] || format_bcp47(default_locale) }">{= format_bcp47(default_locale) }</label>
 				{#each other_locales as locale}

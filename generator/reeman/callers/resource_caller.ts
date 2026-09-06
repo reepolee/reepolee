@@ -10,6 +10,8 @@ import { generate_schema } from "../../schema";
 import type { GridColumnDefinition } from "../../schema/types";
 
 export interface ResourceCallOptions {
+	/** Suppress the final reload when this pipeline is one part of a batch. */
+	reload?: boolean;
 	prefix?: string;
 	parent_table?: string;
 	parent_fk_column?: string;
@@ -41,6 +43,7 @@ export async function run_full_pipeline(table: string, options: ResourceCallOpti
 
 	console.log("Step 1: Generating schema...");
 	const schema_success = await generate_schema(table, {
+		reload: false,
 		prefix: options.prefix,
 		parent_table: options.parent_table,
 		parent_fk_column: options.parent_fk_column,
@@ -60,6 +63,7 @@ export async function run_full_pipeline(table: string, options: ResourceCallOpti
 
 	console.log("Step 2: Generating CRUD...\n");
 	const crud_success = await generate_crud(table, {
+		reload: false,
 		force: options.force,
 		interactive: options.interactive,
 		translate: options.translate ?? false,
@@ -75,6 +79,10 @@ export async function run_full_pipeline(table: string, options: ResourceCallOpti
 		return false;
 	}
 
+	if (options.reload !== false) {
+		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
+		await notify_server_reload(true, Bun.env.MAIN_APP_URL);
+	}
 	console.log(`✓ Pipeline complete: ${table} fully generated`);
 	return true;
 }
@@ -101,7 +109,7 @@ export async function run_bulk_generator(
 		const table = tables[i]!;
 		console.log(`\n[${i + 1}/${tables.length}] Processing: ${table}`);
 
-		const ok = await run_full_pipeline(table, { prefix, translate: false, pagination_method, render_strategy, template_tags, interactive });
+		const ok = await run_full_pipeline(table, { prefix, translate: false, pagination_method, render_strategy, template_tags, interactive, reload: false });
 		if (ok) {
 			success_count++;
 		} else {
@@ -113,6 +121,8 @@ export async function run_bulk_generator(
 		console.log(`\nTranslating all namespaces...`);
 		const { sync_all_namespaces } = await import("../../translate_namespace");
 		await sync_all_namespaces();
+	}
+	if (fail_count === 0) {
 		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
 		await notify_server_reload(true, Bun.env.MAIN_APP_URL);
 	}
@@ -141,7 +151,7 @@ export async function run_bulk_nested_generator(
 		const table = tables[i]!;
 		console.log(`\n[${i + 1}/${tables.length}] Processing: ${table}`);
 
-		const ok = await run_full_pipeline(table, { prefix, parent_table, pagination_method, render_strategy, translate: false, template_tags, interactive });
+		const ok = await run_full_pipeline(table, { prefix, parent_table, pagination_method, render_strategy, translate: false, template_tags, interactive, reload: false });
 		if (ok) {
 			success_count++;
 		} else {
@@ -153,6 +163,8 @@ export async function run_bulk_nested_generator(
 		console.log(`\nTranslating all namespaces...`);
 		const { sync_all_namespaces } = await import("../../translate_namespace");
 		await sync_all_namespaces();
+	}
+	if (fail_count === 0) {
 		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
 		await notify_server_reload(true, Bun.env.MAIN_APP_URL);
 	}
@@ -175,6 +187,7 @@ export async function run_selected_nested_children(
 	for (const child of children) {
 		console.log(`\nGenerating nested child ${child.table} through ${child.fk_column}`);
 		const generated = await run_full_pipeline(child.table, {
+			reload: false,
 			prefix,
 			parent_table,
 			parent_fk_column: child.fk_column,
@@ -190,6 +203,8 @@ export async function run_selected_nested_children(
 	if (translate) {
 		const { sync_all_namespaces } = await import("../../translate_namespace");
 		await sync_all_namespaces();
+	}
+	if (fail === 0) {
 		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
 		await notify_server_reload(true, Bun.env.MAIN_APP_URL);
 	}

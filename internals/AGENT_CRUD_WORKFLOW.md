@@ -27,7 +27,7 @@ Read **all** of these before touching any CRUD route:
 | ----------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------- |
 | `config.ts`                   | Route settings, `route_param`, `parent` export, and columns                     | **Yes** - user-editable                      |
 | `schema.generated.ts`         | Auto-generated fields, `indexed_columns`, and types                             | **No** - regenerated                         |
-| `validation_server.ts`        | Server validation schemas                                                       | **Yes** - user-editable and preserved        |
+| `validation_server.ts`        | Server validation schemas                                                       | **No** - regenerated from the current schema and `config.ts` |
 | `sql.ts`                      | SQL query functions (contains `db.unsafe()` in `search_records`)               | **No** - generated                           |
 | `sql_view.ts`                 | View-based queries (if view exists)                                            | **No** - generated                           |
 | `index.ts`                    | Route handlers                                                                 | **Yes** - generated once, never regenerated (skipped by the safe writer) |

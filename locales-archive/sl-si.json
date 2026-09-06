@@ -222,12 +222,17 @@
 			"labels.hero_image": {
 				"placeholders": [],
 				"source": "Hero Image",
-				"translation": "Glavna slika"
+				"translation": "Slika"
 			},
 			"labels.locale": {
 				"placeholders": [],
 				"source": "Locale",
 				"translation": "Jezikovna nastavitev"
+			},
+			"labels.locale_code": {
+				"placeholders": [],
+				"source": "Locale Code",
+				"translation": "Lokalizacija"
 			},
 			"labels.net_price": {
 				"placeholders": [],
@@ -238,6 +243,11 @@
 				"placeholders": [],
 				"source": "Option Display",
 				"translation": "Prikaz možnosti"
+			},
+			"labels.programme_id": {
+				"placeholders": [],
+				"source": "Programme",
+				"translation": "Program"
 			},
 			"labels.programmes_id": {
 				"placeholders": [],
@@ -479,6 +489,16 @@
 				"source": "Locale",
 				"translation": "Jezik"
 			},
+			"v_labels.locale_code": {
+				"placeholders": [],
+				"source": "Locale Code",
+				"translation": "Koda lokacije"
+			},
+			"v_labels.locale_name": {
+				"placeholders": [],
+				"source": "Locale Name",
+				"translation": "Lokalizacija"
+			},
 			"v_labels.net_price": {
 				"placeholders": [],
 				"source": "Net Price",
@@ -493,6 +513,11 @@
 				"placeholders": [],
 				"source": "Programme Display",
 				"translation": "Program"
+			},
+			"v_labels.programme_id": {
+				"placeholders": [],
+				"source": "Programme Id",
+				"translation": "ID programa"
 			},
 			"v_labels.programmes_id": {
 				"placeholders": [],
@@ -528,6 +553,1162 @@
 				"placeholders": [],
 				"source": "Total Amount",
 				"translation": "Skupni znesek"
+			}
+		},
+		"apps/main/admin/registrations/en-us.json": {
+			"actions.accept": {
+				"placeholders": [],
+				"source": "Accept",
+				"translation": "Sprejmi"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_accept": {
+				"placeholders": [],
+				"source": "Accept registration",
+				"translation": "Sprejmi prijavo"
+			},
+			"actions.confirm_decline": {
+				"placeholders": [],
+				"source": "Decline registration",
+				"translation": "Zavrni prijavo"
+			},
+			"actions.decline": {
+				"placeholders": [],
+				"source": "Decline",
+				"translation": "Zavrni"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Registrations",
+				"translation": "Registracije"
+			},
+			"ui.accept_confirmation": {
+				"placeholders": [],
+				"source": "This creates a team in the active season with status Applied.",
+				"translation": "To ustvari ekipo v aktivni sezoni s statusom Prijavljena."
+			},
+			"ui.decline_confirmation": {
+				"placeholders": [],
+				"source": "This marks the registration as declined.",
+				"translation": "To označi prijavo kot zavrnjeno."
+			},
+			"ui.registration": {
+				"placeholders": [],
+				"source": "Registration",
+				"translation": "Prijava"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Registrations",
+				"translation": "Spletne registracije"
+			}
+		},
+		"apps/main/admin/seasons/en-us.json": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected seasons",
+				"translation": "Arhiv izbranih sezon"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_season": {
+				"placeholders": [],
+				"source": "New Season",
+				"translation": "Nova sezona"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Season",
+				"translation": "Uredi sezono"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No seasons found.",
+				"translation": "Sezone niso bile najdene."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Season",
+				"translation": "+ Nova sezona"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Season",
+				"translation": "Nova sezona"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.invalid_date": {
+				"placeholders": [],
+				"source": "Enter a valid date.",
+				"translation": "Vnesite veljaven datum."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.required": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme imeti največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.description": {
+				"placeholders": [],
+				"source": "Description",
+				"translation": "Daljši opis"
+			},
+			"labels.ends_on": {
+				"placeholders": [],
+				"source": "Ends On",
+				"translation": "Konec"
+			},
+			"labels.starts_on": {
+				"placeholders": [],
+				"source": "Starts On",
+				"translation": "Začetek"
+			},
+			"labels.status_id": {
+				"placeholders": [],
+				"source": "Status",
+				"translation": "Stanje"
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v paketu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No seasons selected.",
+				"translation": "Sezone niso izbrane."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No seasons archived|{count} season archived|{count} seasons archived|{count} seasons archived|{count} seasons archived",
+				"translation": "Ni arhiviranih sezon|{count} arhivirana sezona|{count} arhivirane sezone|{count} arhivirane sezone|{count} arhivirane sezone"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} season failed|{count} seasons failed|{count} seasons failed|{count} seasons failed",
+				"translation": "|{count} neuspešna sezona|{count} neuspešnih sezon|{count} neuspešnih sezon|{count} neuspešnih sezon"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Seasons",
+				"translation": "Sezone"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "seasons",
+				"translation": "sezone"
+			},
+			"scopes.__all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"scopes.__archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"scopes.__live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search seasons...",
+				"translation": "Iskanje sezon..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Prijavi se"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Season",
+				"translation": "Uredi sezono"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Seasons",
+				"translation": "Sezone"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spreminjanje"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Season",
+				"translation": "Nova sezona"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No seasons found.",
+				"translation": "Sezone niso bile najdene."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži dejanja"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Season",
+				"translation": "Sezona"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			},
+			"v_labels.archived_by_user_display": {
+				"placeholders": [],
+				"source": "Archived By User Display",
+				"translation": "Arhivirano po prikazu uporabnika"
+			},
+			"v_labels.description": {
+				"placeholders": [],
+				"source": "Description",
+				"translation": "Daljši opis"
+			},
+			"v_labels.ends_on": {
+				"placeholders": [],
+				"source": "Ends On",
+				"translation": "Konec"
+			},
+			"v_labels.starts_on": {
+				"placeholders": [],
+				"source": "Starts On",
+				"translation": "Začetek"
+			},
+			"v_labels.status_id": {
+				"placeholders": [],
+				"source": "Status Id",
+				"translation": "ID stanja"
+			},
+			"v_labels.status_title": {
+				"placeholders": [],
+				"source": "Status Title",
+				"translation": "Naziv stanja"
+			},
+			"v_labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			}
+		},
+		"apps/main/admin/teams/en-us.json": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected teams",
+				"translation": "Arhiv izbranih ekip"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_team": {
+				"placeholders": [],
+				"source": "New Team",
+				"translation": "Nova ekipa"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Team",
+				"translation": "Urejanje ekipe"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No teams found.",
+				"translation": "Ni bilo najdenih ekip."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Team",
+				"translation": "+ Nova ekipa"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Team",
+				"translation": "Nova ekipa"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.address_max": {
+				"placeholders": [],
+				"source": "Address must be at most 255 characters.",
+				"translation": "Naslov sme imeti največ 255 znakov."
+			},
+			"errors.city_max": {
+				"placeholders": [],
+				"source": "City must be at most 255 characters.",
+				"translation": "Ime mesta sme imeti največ 255 znakov."
+			},
+			"errors.coach_2_email_max": {
+				"placeholders": [],
+				"source": "Coach 2 email must be at most 255 characters.",
+				"translation": "E-poštno sporočilo za Vodja 2 sme vsebovati največ 255 znakov."
+			},
+			"errors.coach_2_name_max": {
+				"placeholders": [],
+				"source": "Coach 2 name must be at most 255 characters.",
+				"translation": "Ime »Coach 2« sme imeti največ 255 znakov."
+			},
+			"errors.coach_2_phone_max": {
+				"placeholders": [],
+				"source": "Coach 2 phone must be at most 255 characters.",
+				"translation": "Ime telefona »Coach 2« sme imeti največ 255 znakov."
+			},
+			"errors.coach_email_max": {
+				"placeholders": [],
+				"source": "Coach email must be at most 255 characters.",
+				"translation": "E-poštni naslov trenerja sme vsebovati največ 255 znakov."
+			},
+			"errors.coach_name_max": {
+				"placeholders": [],
+				"source": "Coach name must be at most 255 characters.",
+				"translation": "Ime trenerja sme imeti največ 255 znakov."
+			},
+			"errors.coach_phone_max": {
+				"placeholders": [],
+				"source": "Coach phone must be at most 255 characters.",
+				"translation": "Ime trenerja sme vsebovati največ 255 znakov."
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.invalid_datetime": {
+				"placeholders": [],
+				"source": "Enter a valid date and time.",
+				"translation": "Vnesite veljaven datum in uro."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.postal_code_max": {
+				"placeholders": [],
+				"source": "Postal code must be at most 255 characters.",
+				"translation": "Poštna številka sme imeti največ 255 znakov."
+			},
+			"errors.school_max": {
+				"placeholders": [],
+				"source": "School must be at most 255 characters.",
+				"translation": "Ime šole sme imeti največ 255 znakov."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme vsebovati največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.address": {
+				"placeholders": [],
+				"source": "Address",
+				"translation": "Naslov"
+			},
+			"labels.city": {
+				"placeholders": [],
+				"source": "City",
+				"translation": "Mesto"
+			},
+			"labels.coach_2_email": {
+				"placeholders": [],
+				"source": "Coach 2 Email",
+				"translation": "E-pošta drugega vodje"
+			},
+			"labels.coach_2_name": {
+				"placeholders": [],
+				"source": "Coach 2 Name",
+				"translation": "Vodja 2 -  ime in priimek"
+			},
+			"labels.coach_2_phone": {
+				"placeholders": [],
+				"source": "Coach 2 Phone",
+				"translation": "Telefon drugega vodje"
+			},
+			"labels.coach_email": {
+				"placeholders": [],
+				"source": "Coach Email",
+				"translation": "E-pošta vodje"
+			},
+			"labels.coach_name": {
+				"placeholders": [],
+				"source": "Coach Name",
+				"translation": "Vodja - ime in priimek"
+			},
+			"labels.coach_phone": {
+				"placeholders": [],
+				"source": "Coach Phone",
+				"translation": "Telefonska številka vodje"
+			},
+			"labels.country_code": {
+				"placeholders": [],
+				"source": "Country Code",
+				"translation": "Koda države"
+			},
+			"labels.imported_at": {
+				"placeholders": [],
+				"source": "Imported At",
+				"translation": "Uvoženo dne"
+			},
+			"labels.package_id": {
+				"placeholders": [],
+				"source": "Package",
+				"translation": "Paket"
+			},
+			"labels.paid_on": {
+				"placeholders": [],
+				"source": "Paid On",
+				"translation": "Plačano dne"
+			},
+			"labels.postal_code": {
+				"placeholders": [],
+				"source": "Postal Code",
+				"translation": "Poštna številka"
+			},
+			"labels.registration_id": {
+				"placeholders": [],
+				"source": "Registration",
+				"translation": "Prijava"
+			},
+			"labels.school": {
+				"placeholders": [],
+				"source": "School",
+				"translation": "Šola"
+			},
+			"labels.season_id": {
+				"placeholders": [],
+				"source": "Season",
+				"translation": "Sezona"
+			},
+			"labels.status_id": {
+				"placeholders": [],
+				"source": "Status",
+				"translation": "Stanje"
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.team_status_id": {
+				"placeholders": [],
+				"source": "Team Status",
+				"translation": "Stanje ekipe"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v večjem obsegu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No teams selected.",
+				"translation": "Ni izbrana nobena ekipa."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No teams archived|{count} team archived|{count} teams archived|{count} teams archived|{count} teams archived",
+				"translation": "Ni arhiviranih ekip|{count} arhivirana ekipa|{count} arhivirane ekipe|{count} arhivirane ekipe|{count} arhivirane ekipe"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} team failed|{count} teams failed|{count} teams failed|{count} teams failed",
+				"translation": "|{count} ekipa ni uspela|{count} ekipe niso uspele|{count} ekipe niso uspele|{count} ekipe niso uspele"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Teams",
+				"translation": "Ekipe"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "teams",
+				"translation": "ekipe"
+			},
+			"scopes.__all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"scopes.__archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"scopes.__live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search teams...",
+				"translation": "Iskanje ekip..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Uporabi"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Team",
+				"translation": "Urejanje ekipe"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Teams",
+				"translation": "Ekipe"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spremembo"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Team",
+				"translation": "Nova ekipa"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No teams found.",
+				"translation": "Ni bilo najdenih ekip."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži dejanja"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Team",
+				"translation": "Ekipa"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			},
+			"v_labels.address": {
+				"placeholders": [],
+				"source": "Address",
+				"translation": "Naslov"
+			},
+			"v_labels.archived_by_user_display": {
+				"placeholders": [],
+				"source": "Archived By User Display",
+				"translation": "Arhivirano po prikazu uporabnika"
+			},
+			"v_labels.city": {
+				"placeholders": [],
+				"source": "City",
+				"translation": "Mesto"
+			},
+			"v_labels.coach_2_email": {
+				"placeholders": [],
+				"source": "Coach 2 Email",
+				"translation": "E-pošta - vodja 2"
+			},
+			"v_labels.coach_2_name": {
+				"placeholders": [],
+				"source": "Coach 2 Name",
+				"translation": "Vodja 2"
+			},
+			"v_labels.coach_2_phone": {
+				"placeholders": [],
+				"source": "Coach 2 Phone",
+				"translation": "Telefon - vodja 2"
+			},
+			"v_labels.coach_email": {
+				"placeholders": [],
+				"source": "Coach Email",
+				"translation": "E-pošta vodje"
+			},
+			"v_labels.coach_name": {
+				"placeholders": [],
+				"source": "Coach Name",
+				"translation": "Vodja"
+			},
+			"v_labels.coach_phone": {
+				"placeholders": [],
+				"source": "Coach Phone",
+				"translation": "Telefonska številka vodje"
+			},
+			"v_labels.country_code": {
+				"placeholders": [],
+				"source": "Country Code",
+				"translation": "Koda države"
+			},
+			"v_labels.country_title": {
+				"placeholders": [],
+				"source": "Country Title",
+				"translation": "Država"
+			},
+			"v_labels.imported_at": {
+				"placeholders": [],
+				"source": "Imported At",
+				"translation": "Uvoženo dne"
+			},
+			"v_labels.package_id": {
+				"placeholders": [],
+				"source": "Package Id",
+				"translation": "ID paketa"
+			},
+			"v_labels.package_title": {
+				"placeholders": [],
+				"source": "Package Title",
+				"translation": "Paket"
+			},
+			"v_labels.paid_on": {
+				"placeholders": [],
+				"source": "Paid On",
+				"translation": "Izplačano dne"
+			},
+			"v_labels.postal_code": {
+				"placeholders": [],
+				"source": "Postal Code",
+				"translation": "Poštna številka"
+			},
+			"v_labels.programme_id": {
+				"placeholders": [],
+				"source": "Programme Id",
+				"translation": "ID programa"
+			},
+			"v_labels.programme_title": {
+				"placeholders": [],
+				"source": "Programme Title",
+				"translation": "Program"
+			},
+			"v_labels.registration_display": {
+				"placeholders": [],
+				"source": "Registration",
+				"translation": "Prijava"
+			},
+			"v_labels.registration_id": {
+				"placeholders": [],
+				"source": "Registration Id",
+				"translation": "Identifikacijska številka registracije"
+			},
+			"v_labels.school": {
+				"placeholders": [],
+				"source": "School",
+				"translation": "Šola"
+			},
+			"v_labels.search_text": {
+				"placeholders": [],
+				"source": "Search Text",
+				"translation": "Besedilo za iskanje"
+			},
+			"v_labels.season_id": {
+				"placeholders": [],
+				"source": "Season Id",
+				"translation": "ID sezone"
+			},
+			"v_labels.season_title": {
+				"placeholders": [],
+				"source": "Season Title",
+				"translation": "Naslov sezone"
+			},
+			"v_labels.status_id": {
+				"placeholders": [],
+				"source": "Status Id",
+				"translation": "ID stanja"
+			},
+			"v_labels.status_title": {
+				"placeholders": [],
+				"source": "Status Title",
+				"translation": "Status"
+			},
+			"v_labels.team_status_id": {
+				"placeholders": [],
+				"source": "Team Status Id",
+				"translation": "ID stanja ekipe"
+			},
+			"v_labels.team_status_title": {
+				"placeholders": [],
+				"source": "Team Status Title",
+				"translation": "Status ekipe"
+			},
+			"v_labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Ekipa"
+			},
+			"v_labels.total_amount": {
+				"placeholders": [],
+				"source": "Total Amount",
+				"translation": "Znesek"
 			}
 		},
 		"apps/main/admin/users/en-us.json": {
@@ -1699,6 +2880,388 @@
 				"translation": "Posodobljeni zapisi"
 			}
 		},
+		"apps/main/system/countries/en-us.json": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected countries",
+				"translation": "Arhiv izbranih držav"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_country": {
+				"placeholders": [],
+				"source": "New Country",
+				"translation": "Nova država"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Country",
+				"translation": "Uredi državo"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No countries found.",
+				"translation": "Ni bilo najdenih držav."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Country",
+				"translation": "+ Nova država"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Country",
+				"translation": "Nova država"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.code_max": {
+				"placeholders": [],
+				"source": "Code must be at most 255 characters.",
+				"translation": "Koda sme imeti največ 255 znakov."
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme vsebovati največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.code": {
+				"placeholders": [],
+				"source": "Code",
+				"translation": "Koda"
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v večjem obsegu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No countries selected.",
+				"translation": "Ni izbranih držav."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No countries archived|{count} country archived|{count} countrys archived|{count} countrys archived|{count} countrys archived",
+				"translation": "Ni arhiviranih držav|{count} arhivirana država|{count} arhivirane države|{count} arhivirane države|{count} arhivirane države"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} country failed|{count} countrys failed|{count} countrys failed|{count} countrys failed",
+				"translation": "|{count} država ni uspela|{count} držav ni uspelo|{count} držav ni uspelo|{count} držav ni uspelo"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Countries",
+				"translation": "Države"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "countries",
+				"translation": "države"
+			},
+			"scopes.__all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"scopes.__archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"scopes.__live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search countries...",
+				"translation": "Iskanje držav..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Uporabi"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Country",
+				"translation": "Uredi državo"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Countries",
+				"translation": "Države"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spremembo"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Country",
+				"translation": "Nova država"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No countries found.",
+				"translation": "Ni bilo najdenih držav."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži dejanja"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Country",
+				"translation": "Država"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			}
+		},
 		"apps/main/system/locales/en-us.json": {
 			"nav_prefix_title": {
 				"placeholders": [],
@@ -1709,6 +3272,503 @@
 				"placeholders": [],
 				"source": "system",
 				"translation": "sistem"
+			}
+		},
+		"apps/main/system/packages/en-us.json": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected packages",
+				"translation": "Arhiv izbranih paketov"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_package": {
+				"placeholders": [],
+				"source": "New Package",
+				"translation": "Nov paket"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Package",
+				"translation": "Uredi paket"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No packages found.",
+				"translation": "Paketov ni bilo najdenih."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Package",
+				"translation": "+ Nov paket"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Package",
+				"translation": "Nov paket"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.code_max": {
+				"placeholders": [],
+				"source": "Code must be at most 20 characters.",
+				"translation": "Koda mora imeti največ 20 znakov."
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme vsebovati največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.code": {
+				"placeholders": [],
+				"source": "Code",
+				"translation": "Koda"
+			},
+			"labels.description": {
+				"placeholders": [],
+				"source": "Description",
+				"translation": "Opis"
+			},
+			"labels.hero_image": {
+				"placeholders": [],
+				"source": "Hero Image",
+				"translation": "Slika"
+			},
+			"labels.locale_code": {
+				"placeholders": [],
+				"source": "Locale Code",
+				"translation": "Lokalizacija"
+			},
+			"labels.net_price": {
+				"placeholders": [],
+				"source": "Net Price",
+				"translation": "Neto cena"
+			},
+			"labels.option_display": {
+				"placeholders": [],
+				"source": "Option Display",
+				"translation": "Prikaz možnosti"
+			},
+			"labels.programmes_id": {
+				"placeholders": [],
+				"source": "Programmes",
+				"translation": "Programi"
+			},
+			"labels.shipping_price": {
+				"placeholders": [],
+				"source": "Shipping Price",
+				"translation": "Stroški dostave"
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.tax_percent": {
+				"placeholders": [],
+				"source": "Tax Percent",
+				"translation": "Davčna stopnja"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naziv"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v večjem obsegu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No packages selected.",
+				"translation": "Ni izbranih paketov."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No packages archived|{count} package archived|{count} packages archived|{count} packages archived|{count} packages archived",
+				"translation": "Ni arhiviranih paketov|Arhivirano je {count} paket|Arhivirano je {count} paketov|Arhivirano je {count} paketov|Arhivirano je {count} paketov"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} package failed|{count} packages failed|{count} packages failed|{count} packages failed",
+				"translation": "|{count} paket ni uspel|{count} paketov ni uspelo|{count} paketov ni uspelo|{count} paketov ni uspelo"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Packages",
+				"translation": "Paketi"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "packages",
+				"translation": "paketi"
+			},
+			"scopes.__all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"scopes.__archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"scopes.__live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search packages...",
+				"translation": "Iskanje paketov..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Filtriraj"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Package",
+				"translation": "Uredi paket"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Packages",
+				"translation": "Paketi"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spremembo"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Package",
+				"translation": "Nov paket"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No packages found.",
+				"translation": "Paketov ni bilo najdenih."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži ukrepe"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Package",
+				"translation": "Paket"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			},
+			"v_labels.archived_by_user_display": {
+				"placeholders": [],
+				"source": "Archived By User Display",
+				"translation": "Arhivirano po prikazu uporabnika"
+			},
+			"v_labels.code": {
+				"placeholders": [],
+				"source": "Code",
+				"translation": "Koda"
+			},
+			"v_labels.description": {
+				"placeholders": [],
+				"source": "Description",
+				"translation": "Opis"
+			},
+			"v_labels.hero_image": {
+				"placeholders": [],
+				"source": "Hero Image",
+				"translation": "Glavna slika"
+			},
+			"v_labels.locale_code": {
+				"placeholders": [],
+				"source": "Locale Code",
+				"translation": "Koda lokacije"
+			},
+			"v_labels.locale_name": {
+				"placeholders": [],
+				"source": "Locale Name",
+				"translation": "Lokalizacija"
+			},
+			"v_labels.net_price": {
+				"placeholders": [],
+				"source": "Net Price",
+				"translation": "Neto cena"
+			},
+			"v_labels.option_display": {
+				"placeholders": [],
+				"source": "Option Display",
+				"translation": "Prikaz možnosti"
+			},
+			"v_labels.programme_display": {
+				"placeholders": [],
+				"source": "Programme Display",
+				"translation": "Program"
+			},
+			"v_labels.programmes_id": {
+				"placeholders": [],
+				"source": "Programmes Id",
+				"translation": "ID programov"
+			},
+			"v_labels.search_text": {
+				"placeholders": [],
+				"source": "Search Text",
+				"translation": "Besedilo za iskanje"
+			},
+			"v_labels.shipping_price": {
+				"placeholders": [],
+				"source": "Shipping Price",
+				"translation": "Stroški dostave"
+			},
+			"v_labels.tax_percent": {
+				"placeholders": [],
+				"source": "Tax Percent",
+				"translation": "Davčna stopnja"
+			},
+			"v_labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"v_labels.total_amount": {
+				"placeholders": [],
+				"source": "Total Amount",
+				"translation": "Skupni znesek"
 			}
 		},
 		"apps/main/system/programmes/en-us.json": {
@@ -2162,7 +4222,7 @@
 			"actions.new_season_status": {
 				"placeholders": [],
 				"source": "New Season Status",
-				"translation": " Novo stanje sezone"
+				"translation": " Novo stanja sezone"
 			},
 			"actions.restore": {
 				"placeholders": [],
@@ -2202,7 +4262,7 @@
 			"child_ui.edit_title": {
 				"placeholders": [],
 				"source": "Edit Season_status",
-				"translation": "Uredi stanje sezone"
+				"translation": "Uredi stanja sezone"
 			},
 			"child_ui.empty_text": {
 				"placeholders": [],
@@ -2227,7 +4287,7 @@
 			"child_ui.new_button": {
 				"placeholders": [],
 				"source": "+ New Season_status",
-				"translation": "+ Novo stanje sezone"
+				"translation": "+ Novo stanja sezone"
 			},
 			"child_ui.new_title": {
 				"placeholders": [],
@@ -2352,7 +4412,7 @@
 			"nav": {
 				"placeholders": [],
 				"source": "Season statuses",
-				"translation": "Stanje sezone"
+				"translation": "Stanja sezone"
 			},
 			"route_name": {
 				"placeholders": [],
@@ -2432,7 +4492,7 @@
 			"ui.index_title": {
 				"placeholders": [],
 				"source": "Season statuses",
-				"translation": "Stanje sezone"
+				"translation": "Stanja sezone"
 			},
 			"ui.loading_count": {
 				"placeholders": [],
@@ -2472,7 +4532,801 @@
 			"ui.title": {
 				"placeholders": [],
 				"source": "Season Status",
-				"translation": "Stanje sezone"
+				"translation": "Stanja sezone"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			}
+		},
+		"apps/main/system/seasons/en-us.json": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected seasons",
+				"translation": "Arhiv izbranih sezon"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_season": {
+				"placeholders": [],
+				"source": "New Season",
+				"translation": "Nova sezona"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Season",
+				"translation": "Uredi sezono"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No seasons found.",
+				"translation": "Sezone niso bile najdene."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Season",
+				"translation": "+ Nova sezona"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Season",
+				"translation": "Nova sezona"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.invalid_date": {
+				"placeholders": [],
+				"source": "Enter a valid date.",
+				"translation": "Vnesite veljaven datum."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.required": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme imeti največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.description": {
+				"placeholders": [],
+				"source": "Description",
+				"translation": "Daljši opis"
+			},
+			"labels.ends_on": {
+				"placeholders": [],
+				"source": "Ends On",
+				"translation": "Konec"
+			},
+			"labels.starts_on": {
+				"placeholders": [],
+				"source": "Starts On",
+				"translation": "Začetek"
+			},
+			"labels.status_id": {
+				"placeholders": [],
+				"source": "Status",
+				"translation": "Stanje"
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v paketu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No seasons selected.",
+				"translation": "Sezone niso izbrane."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No seasons archived|{count} season archived|{count} seasons archived|{count} seasons archived|{count} seasons archived",
+				"translation": "Ni arhiviranih sezon|{count} arhivirana sezona|{count} arhivirane sezone|{count} arhivirane sezone|{count} arhivirane sezone"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} season failed|{count} seasons failed|{count} seasons failed|{count} seasons failed",
+				"translation": "|{count} neuspešna sezona|{count} neuspešnih sezon|{count} neuspešnih sezon|{count} neuspešnih sezon"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Seasons",
+				"translation": "Sezone"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "seasons",
+				"translation": "sezone"
+			},
+			"scopes.__all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"scopes.__archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"scopes.__live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search seasons...",
+				"translation": "Iskanje sezon..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Uporabi"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Season",
+				"translation": "Uredi sezono"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Seasons",
+				"translation": "Sezone"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spreminjanje"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Season",
+				"translation": "Nova sezona"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No seasons found.",
+				"translation": "Sezone niso bile najdene."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži dejanja"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Season",
+				"translation": "Sezona"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			},
+			"v_labels.archived_by_user_display": {
+				"placeholders": [],
+				"source": "Archived By User Display",
+				"translation": "Arhivirano po prikazu uporabnika"
+			},
+			"v_labels.description": {
+				"placeholders": [],
+				"source": "Description",
+				"translation": "Daljši opis"
+			},
+			"v_labels.ends_on": {
+				"placeholders": [],
+				"source": "Ends On",
+				"translation": "Konec"
+			},
+			"v_labels.starts_on": {
+				"placeholders": [],
+				"source": "Starts On",
+				"translation": "Začetek"
+			},
+			"v_labels.status_id": {
+				"placeholders": [],
+				"source": "Status Id",
+				"translation": "ID stanja"
+			},
+			"v_labels.status_title": {
+				"placeholders": [],
+				"source": "Status Title",
+				"translation": "Naziv stanja"
+			},
+			"v_labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			}
+		},
+		"apps/main/system/team_statuses/en-us.json": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected team statuses",
+				"translation": "Arhiv izbranih statusov ekip"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_team_status": {
+				"placeholders": [],
+				"source": "New Team Status",
+				"translation": " Novo stanje ekipe"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Team_status",
+				"translation": "Uredi stanje ekipe"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No team statuses found.",
+				"translation": "Ni bilo najdenih statusov ekip."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Team_status",
+				"translation": "+ Nov status ekipe"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Team_status",
+				"translation": "Novo stanje ekipe"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme vsebovati največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v večjem obsegu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No team statuses selected.",
+				"translation": "Ni izbranih statusov ekip."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No team statuses archived|{count} team_status archived|{count} team_statuss archived|{count} team_statuss archived|{count} team_statuss archived",
+				"translation": "Ni arhiviranih statusov ekip|{count} arhiviranih statusov ekip|{count} arhiviranih statusov ekip|{count} arhiviranih statusov ekip|{count} arhiviranih statusov ekip"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} team_status failed|{count} team_statuss failed|{count} team_statuss failed|{count} team_statuss failed",
+				"translation": "|{count} team_status ni uspelo|{count} team_statuss ni uspelo|{count} team_statuss ni uspelo|{count} team_statuss ni uspelo"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Team Statuses",
+				"translation": "Stanja ekip"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "team_statuses",
+				"translation": "stanja_ekip"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search team statuses...",
+				"translation": "Stanje iskalnih ekip..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Prijavi se"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Team status",
+				"translation": "Uredi stanje ekipe"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Team statuses",
+				"translation": "Stanja ekip"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spremembo"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Team status",
+				"translation": "Status »Nova ekipa«"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No team statuses found.",
+				"translation": "Ni bilo najdenih statusov ekip."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži ukrepe"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Team Status",
+				"translation": "Stanje ekipe"
 			},
 			"ui.updated_records": {
 				"placeholders": [],
@@ -3536,6 +6390,11 @@
 				"source": "Name",
 				"translation": "Ime"
 			},
+			"labels.new": {
+				"placeholders": [],
+				"source": "New",
+				"translation": "Novo"
+			},
 			"labels.no_helper": {
 				"placeholders": [],
 				"source": "None (default)",
@@ -3711,6 +6570,11 @@
 				"source": "per page",
 				"translation": "na stran"
 			},
+			"selectors.root": {
+				"placeholders": [],
+				"source": "Root (no module)",
+				"translation": "Koren (brez modula)"
+			},
 			"selectors.select_table": {
 				"placeholders": [],
 				"source": "-- Select table or route --",
@@ -3770,6 +6634,11 @@
 				"placeholders": [],
 				"source": "NOT",
 				"translation": "NI"
+			},
+			"ui.form_fields_modified_warning": {
+				"placeholders": [],
+				"source": "This form's generated field section was manually changed. Refresh CRUD may replace generated field markup.",
+				"translation": "Ustvarjeni razdelek polj tega obrazca je bil ročno spremenjen. Osvežitev CRUD lahko zamenja ustvarjeno oznako polj."
 			},
 			"ui.index_title": {
 				"placeholders": [],
@@ -11031,6 +13900,388 @@
 				"translation": "Posodobljeni zapisi"
 			}
 		},
+		"countries": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected countries",
+				"translation": "Arhiv izbranih držav"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_country": {
+				"placeholders": [],
+				"source": "New Country",
+				"translation": "Nova država"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Country",
+				"translation": "Uredi državo"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No countries found.",
+				"translation": "Ni bilo najdenih držav."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Country",
+				"translation": "+ Nova država"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Country",
+				"translation": "Nova država"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.code_max": {
+				"placeholders": [],
+				"source": "Code must be at most 255 characters.",
+				"translation": "Koda sme imeti največ 255 znakov."
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme vsebovati največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.code": {
+				"placeholders": [],
+				"source": "Code",
+				"translation": "Koda"
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v večjem obsegu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No countries selected.",
+				"translation": "Ni izbranih držav."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No countries archived|{count} country archived|{count} countrys archived|{count} countrys archived|{count} countrys archived",
+				"translation": "Ni arhiviranih držav|{count} arhivirana država|{count} arhivirane države|{count} arhivirane države|{count} arhivirane države"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} country failed|{count} countrys failed|{count} countrys failed|{count} countrys failed",
+				"translation": "|{count} država ni uspela|{count} držav ni uspelo|{count} držav ni uspelo|{count} držav ni uspelo"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Countries",
+				"translation": "Države"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "countries",
+				"translation": "države"
+			},
+			"scopes.__all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"scopes.__archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"scopes.__live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search countries...",
+				"translation": "Iskanje držav..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Uporabi"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Country",
+				"translation": "Uredi državo"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Countries",
+				"translation": "Države"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spremembo"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Country",
+				"translation": "Nova država"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No countries found.",
+				"translation": "Ni bilo najdenih držav."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži dejanja"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Country",
+				"translation": "Država"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			}
+		},
 		"db_routes": {
 			"actions.abort_delete": {
 				"placeholders": [],
@@ -11327,6 +14578,11 @@
 				"source": "Name",
 				"translation": "Ime"
 			},
+			"labels.new": {
+				"placeholders": [],
+				"source": "New",
+				"translation": "Novo"
+			},
 			"labels.no_helper": {
 				"placeholders": [],
 				"source": "None (default)",
@@ -11502,6 +14758,11 @@
 				"source": "per page",
 				"translation": "na stran"
 			},
+			"selectors.root": {
+				"placeholders": [],
+				"source": "Root (no module)",
+				"translation": "Koren (brez modula)"
+			},
 			"selectors.select_table": {
 				"placeholders": [],
 				"source": "-- Select table or route --",
@@ -11561,6 +14822,11 @@
 				"placeholders": [],
 				"source": "NOT",
 				"translation": "NI"
+			},
+			"ui.form_fields_modified_warning": {
+				"placeholders": [],
+				"source": "This form's generated field section was manually changed. Refresh CRUD may replace generated field markup.",
+				"translation": "Ustvarjeni razdelek polj tega obrazca je bil ročno spremenjen. Osvežitev CRUD lahko zamenja ustvarjeno oznako polj."
 			},
 			"ui.index_title": {
 				"placeholders": [],
@@ -12741,12 +16007,17 @@
 			"labels.hero_image": {
 				"placeholders": [],
 				"source": "Hero Image",
-				"translation": "Glavna slika"
+				"translation": "Slika"
 			},
 			"labels.locale": {
 				"placeholders": [],
 				"source": "Locale",
 				"translation": "Jezikovna nastavitev"
+			},
+			"labels.locale_code": {
+				"placeholders": [],
+				"source": "Locale Code",
+				"translation": "Lokalizacija"
 			},
 			"labels.net_price": {
 				"placeholders": [],
@@ -12757,6 +16028,11 @@
 				"placeholders": [],
 				"source": "Option Display",
 				"translation": "Prikaz možnosti"
+			},
+			"labels.programme_id": {
+				"placeholders": [],
+				"source": "Programme",
+				"translation": "Program"
 			},
 			"labels.programmes_id": {
 				"placeholders": [],
@@ -12998,6 +16274,16 @@
 				"source": "Locale",
 				"translation": "Jezik"
 			},
+			"v_labels.locale_code": {
+				"placeholders": [],
+				"source": "Locale Code",
+				"translation": "Koda lokacije"
+			},
+			"v_labels.locale_name": {
+				"placeholders": [],
+				"source": "Locale Name",
+				"translation": "Lokalizacija"
+			},
 			"v_labels.net_price": {
 				"placeholders": [],
 				"source": "Net Price",
@@ -13012,6 +16298,11 @@
 				"placeholders": [],
 				"source": "Programme Display",
 				"translation": "Program"
+			},
+			"v_labels.programme_id": {
+				"placeholders": [],
+				"source": "Programme Id",
+				"translation": "ID programa"
 			},
 			"v_labels.programmes_id": {
 				"placeholders": [],
@@ -13500,7 +16791,7 @@
 			"actions.new_season_status": {
 				"placeholders": [],
 				"source": "New Season Status",
-				"translation": " Novo stanje sezone"
+				"translation": " Novo stanja sezone"
 			},
 			"actions.restore": {
 				"placeholders": [],
@@ -13540,7 +16831,7 @@
 			"child_ui.edit_title": {
 				"placeholders": [],
 				"source": "Edit Season_status",
-				"translation": "Uredi stanje sezone"
+				"translation": "Uredi stanja sezone"
 			},
 			"child_ui.empty_text": {
 				"placeholders": [],
@@ -13565,7 +16856,7 @@
 			"child_ui.new_button": {
 				"placeholders": [],
 				"source": "+ New Season_status",
-				"translation": "+ Novo stanje sezone"
+				"translation": "+ Novo stanja sezone"
 			},
 			"child_ui.new_title": {
 				"placeholders": [],
@@ -13690,7 +16981,7 @@
 			"nav": {
 				"placeholders": [],
 				"source": "Season statuses",
-				"translation": "Stanje sezone"
+				"translation": "Stanja sezone"
 			},
 			"route_name": {
 				"placeholders": [],
@@ -13770,7 +17061,7 @@
 			"ui.index_title": {
 				"placeholders": [],
 				"source": "Season statuses",
-				"translation": "Stanje sezone"
+				"translation": "Stanja sezone"
 			},
 			"ui.loading_count": {
 				"placeholders": [],
@@ -13810,12 +17101,1473 @@
 			"ui.title": {
 				"placeholders": [],
 				"source": "Season Status",
-				"translation": "Stanje sezone"
+				"translation": "Stanja sezone"
 			},
 			"ui.updated_records": {
 				"placeholders": [],
 				"source": "Updated records",
 				"translation": "Posodobljeni zapisi"
+			}
+		},
+		"seasons": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected seasons",
+				"translation": "Arhiv izbranih sezon"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_season": {
+				"placeholders": [],
+				"source": "New Season",
+				"translation": "Nova sezona"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Season",
+				"translation": "Uredi sezono"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No seasons found.",
+				"translation": "Sezone niso bile najdene."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Season",
+				"translation": "+ Nova sezona"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Season",
+				"translation": "Nova sezona"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.invalid_date": {
+				"placeholders": [],
+				"source": "Enter a valid date.",
+				"translation": "Vnesite veljaven datum."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.required": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme imeti največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.description": {
+				"placeholders": [],
+				"source": "Description",
+				"translation": "Daljši opis"
+			},
+			"labels.ends_on": {
+				"placeholders": [],
+				"source": "Ends On",
+				"translation": "Konec"
+			},
+			"labels.starts_on": {
+				"placeholders": [],
+				"source": "Starts On",
+				"translation": "Začetek"
+			},
+			"labels.status_id": {
+				"placeholders": [],
+				"source": "Status",
+				"translation": "Stanje"
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v paketu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No seasons selected.",
+				"translation": "Sezone niso izbrane."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No seasons archived|{count} season archived|{count} seasons archived|{count} seasons archived|{count} seasons archived",
+				"translation": "Ni arhiviranih sezon|{count} arhivirana sezona|{count} arhivirane sezone|{count} arhivirane sezone|{count} arhivirane sezone"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} season failed|{count} seasons failed|{count} seasons failed|{count} seasons failed",
+				"translation": "|{count} neuspešna sezona|{count} neuspešnih sezon|{count} neuspešnih sezon|{count} neuspešnih sezon"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Seasons",
+				"translation": "Sezone"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "seasons",
+				"translation": "sezone"
+			},
+			"scopes.__all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"scopes.__archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"scopes.__live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search seasons...",
+				"translation": "Iskanje sezon..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Uporabi"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Season",
+				"translation": "Uredi sezono"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Seasons",
+				"translation": "Sezone"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spreminjanje"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Season",
+				"translation": "Nova sezona"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No seasons found.",
+				"translation": "Sezone niso bile najdene."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži dejanja"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Season",
+				"translation": "Sezona"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			},
+			"v_labels.archived_by_user_display": {
+				"placeholders": [],
+				"source": "Archived By User Display",
+				"translation": "Arhivirano po prikazu uporabnika"
+			},
+			"v_labels.description": {
+				"placeholders": [],
+				"source": "Description",
+				"translation": "Daljši opis"
+			},
+			"v_labels.ends_on": {
+				"placeholders": [],
+				"source": "Ends On",
+				"translation": "Konec"
+			},
+			"v_labels.starts_on": {
+				"placeholders": [],
+				"source": "Starts On",
+				"translation": "Začetek"
+			},
+			"v_labels.status_id": {
+				"placeholders": [],
+				"source": "Status Id",
+				"translation": "ID stanja"
+			},
+			"v_labels.status_title": {
+				"placeholders": [],
+				"source": "Status Title",
+				"translation": "Naziv stanja"
+			},
+			"v_labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			}
+		},
+		"team_statuses": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected team statuses",
+				"translation": "Arhiv izbranih statusov ekip"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_team_status": {
+				"placeholders": [],
+				"source": "New Team Status",
+				"translation": " Novo stanje ekipe"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Team_status",
+				"translation": "Uredi stanje ekipe"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No team statuses found.",
+				"translation": "Ni bilo najdenih statusov ekip."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Team_status",
+				"translation": "+ Nov status ekipe"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Team_status",
+				"translation": "Novo stanje ekipe"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme vsebovati največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v večjem obsegu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No team statuses selected.",
+				"translation": "Ni izbranih statusov ekip."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No team statuses archived|{count} team_status archived|{count} team_statuss archived|{count} team_statuss archived|{count} team_statuss archived",
+				"translation": "Ni arhiviranih statusov ekip|{count} arhiviranih statusov ekip|{count} arhiviranih statusov ekip|{count} arhiviranih statusov ekip|{count} arhiviranih statusov ekip"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} team_status failed|{count} team_statuss failed|{count} team_statuss failed|{count} team_statuss failed",
+				"translation": "|{count} team_status ni uspelo|{count} team_statuss ni uspelo|{count} team_statuss ni uspelo|{count} team_statuss ni uspelo"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Team Statuses",
+				"translation": "Stanja ekip"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "team_statuses",
+				"translation": "stanja_ekip"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search team statuses...",
+				"translation": "Stanje iskalnih ekip..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Prijavi se"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Team status",
+				"translation": "Uredi stanje ekipe"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Team statuses",
+				"translation": "Stanja ekip"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spremembo"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Team status",
+				"translation": "Status »Nova ekipa«"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No team statuses found.",
+				"translation": "Ni bilo najdenih statusov ekip."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži ukrepe"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Team Status",
+				"translation": "Stanje ekipe"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			}
+		},
+		"teams": {
+			"actions.abort_archive": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_delete": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.abort_restore": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"actions.bulk_action": {
+				"placeholders": [],
+				"source": "Archive selected teams",
+				"translation": "Arhiv izbranih ekip"
+			},
+			"actions.cancel": {
+				"placeholders": [],
+				"source": "Cancel",
+				"translation": "Prekliči"
+			},
+			"actions.confirm_archive": {
+				"placeholders": [],
+				"source": "Yes, archive",
+				"translation": "Da, arhiv"
+			},
+			"actions.confirm_delete": {
+				"placeholders": [],
+				"source": "Yes, delete",
+				"translation": "Da, izbriši"
+			},
+			"actions.confirm_restore": {
+				"placeholders": [],
+				"source": "Yes, restore",
+				"translation": "Da, obnovi"
+			},
+			"actions.delete": {
+				"placeholders": [],
+				"source": "Delete",
+				"translation": "Izbriši"
+			},
+			"actions.do_it": {
+				"placeholders": [],
+				"source": "Yes, do it",
+				"translation": "Da, naredi to"
+			},
+			"actions.new_team": {
+				"placeholders": [],
+				"source": "New Team",
+				"translation": "Nova ekipa"
+			},
+			"actions.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"actions.save": {
+				"placeholders": [],
+				"source": "Save",
+				"translation": "Shrani"
+			},
+			"actions.save_close": {
+				"placeholders": [],
+				"source": "Save & close",
+				"translation": "Shrani in zapri"
+			},
+			"child_ui.actions": {
+				"placeholders": [],
+				"source": "Actions",
+				"translation": "Ukrepi"
+			},
+			"child_ui.archive": {
+				"placeholders": [],
+				"source": "Archive",
+				"translation": "Arhiv"
+			},
+			"child_ui.archiving": {
+				"placeholders": [],
+				"source": "Archiving…",
+				"translation": "Arhiviranje…"
+			},
+			"child_ui.edit": {
+				"placeholders": [],
+				"source": "Edit",
+				"translation": "Uredi"
+			},
+			"child_ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Team",
+				"translation": "Urejanje ekipe"
+			},
+			"child_ui.empty_text": {
+				"placeholders": [],
+				"source": "No teams found.",
+				"translation": "Ni bilo najdenih ekip."
+			},
+			"child_ui.error_archiving": {
+				"placeholders": [],
+				"source": "Error archiving record.",
+				"translation": "Napaka pri arhiviranju zapisa."
+			},
+			"child_ui.error_loading": {
+				"placeholders": [],
+				"source": "Error loading record.",
+				"translation": "Pri nalaganju zapisa je prišlo do napake."
+			},
+			"child_ui.error_saving": {
+				"placeholders": [],
+				"source": "Error saving record.",
+				"translation": "Napaka pri shranjevanju zapisa."
+			},
+			"child_ui.new_button": {
+				"placeholders": [],
+				"source": "+ New Team",
+				"translation": "+ Nova ekipa"
+			},
+			"child_ui.new_title": {
+				"placeholders": [],
+				"source": "New Team",
+				"translation": "Nova ekipa"
+			},
+			"child_ui.restore": {
+				"placeholders": [],
+				"source": "Restore",
+				"translation": "Obnovi"
+			},
+			"counts.archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"counts.live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"counts.total": {
+				"placeholders": [],
+				"source": "Total",
+				"translation": "Skupaj"
+			},
+			"errors.address_max": {
+				"placeholders": [],
+				"source": "Address must be at most 255 characters.",
+				"translation": "Naslov sme imeti največ 255 znakov."
+			},
+			"errors.city_max": {
+				"placeholders": [],
+				"source": "City must be at most 255 characters.",
+				"translation": "Ime mesta sme imeti največ 255 znakov."
+			},
+			"errors.coach_2_email_max": {
+				"placeholders": [],
+				"source": "Coach 2 email must be at most 255 characters.",
+				"translation": "E-poštno sporočilo za Vodja 2 sme vsebovati največ 255 znakov."
+			},
+			"errors.coach_2_name_max": {
+				"placeholders": [],
+				"source": "Coach 2 name must be at most 255 characters.",
+				"translation": "Ime »Coach 2« sme imeti največ 255 znakov."
+			},
+			"errors.coach_2_phone_max": {
+				"placeholders": [],
+				"source": "Coach 2 phone must be at most 255 characters.",
+				"translation": "Ime telefona »Coach 2« sme imeti največ 255 znakov."
+			},
+			"errors.coach_email_max": {
+				"placeholders": [],
+				"source": "Coach email must be at most 255 characters.",
+				"translation": "E-poštni naslov trenerja sme vsebovati največ 255 znakov."
+			},
+			"errors.coach_name_max": {
+				"placeholders": [],
+				"source": "Coach name must be at most 255 characters.",
+				"translation": "Ime trenerja sme imeti največ 255 znakov."
+			},
+			"errors.coach_phone_max": {
+				"placeholders": [],
+				"source": "Coach phone must be at most 255 characters.",
+				"translation": "Ime trenerja sme vsebovati največ 255 znakov."
+			},
+			"errors.duplicate_key": {
+				"placeholders": [],
+				"source": "A record with this value already exists.",
+				"translation": "Zapis s to vrednostjo že obstaja."
+			},
+			"errors.error_creating_record": {
+				"placeholders": [],
+				"source": "An error occurred while saving the record.",
+				"translation": "Pri shranjevanju zapisa je prišlo do napake."
+			},
+			"errors.invalid_datetime": {
+				"placeholders": [],
+				"source": "Enter a valid date and time.",
+				"translation": "Vnesite veljaven datum in uro."
+			},
+			"errors.must_be_selected": {
+				"placeholders": [],
+				"source": "This field is required.",
+				"translation": "To polje je obvezno."
+			},
+			"errors.postal_code_max": {
+				"placeholders": [],
+				"source": "Postal code must be at most 255 characters.",
+				"translation": "Poštna številka sme imeti največ 255 znakov."
+			},
+			"errors.school_max": {
+				"placeholders": [],
+				"source": "School must be at most 255 characters.",
+				"translation": "Ime šole sme imeti največ 255 znakov."
+			},
+			"errors.title_max": {
+				"placeholders": [],
+				"source": "Title must be at most 255 characters.",
+				"translation": "Naslov sme vsebovati največ 255 znakov."
+			},
+			"errors.title_required": {
+				"placeholders": [],
+				"source": "Title is required.",
+				"translation": "Naslov je obvezen."
+			},
+			"errors.value_required_or_use_original": {
+				"placeholders": [],
+				"source": "Enter a translated value or remove this language.",
+				"translation": "Vnesite prevedeno vrednost ali odstranite ta jezik."
+			},
+			"labels.address": {
+				"placeholders": [],
+				"source": "Address",
+				"translation": "Naslov"
+			},
+			"labels.city": {
+				"placeholders": [],
+				"source": "City",
+				"translation": "Mesto"
+			},
+			"labels.coach_2_email": {
+				"placeholders": [],
+				"source": "Coach 2 Email",
+				"translation": "E-pošta drugega vodje"
+			},
+			"labels.coach_2_name": {
+				"placeholders": [],
+				"source": "Coach 2 Name",
+				"translation": "Vodja 2 -  ime in priimek"
+			},
+			"labels.coach_2_phone": {
+				"placeholders": [],
+				"source": "Coach 2 Phone",
+				"translation": "Telefon drugega vodje"
+			},
+			"labels.coach_email": {
+				"placeholders": [],
+				"source": "Coach Email",
+				"translation": "E-pošta vodje"
+			},
+			"labels.coach_name": {
+				"placeholders": [],
+				"source": "Coach Name",
+				"translation": "Vodja - ime in priimek"
+			},
+			"labels.coach_phone": {
+				"placeholders": [],
+				"source": "Coach Phone",
+				"translation": "Telefonska številka vodje"
+			},
+			"labels.country_code": {
+				"placeholders": [],
+				"source": "Country Code",
+				"translation": "Koda države"
+			},
+			"labels.imported_at": {
+				"placeholders": [],
+				"source": "Imported At",
+				"translation": "Uvoženo dne"
+			},
+			"labels.package_id": {
+				"placeholders": [],
+				"source": "Package",
+				"translation": "Paket"
+			},
+			"labels.paid_on": {
+				"placeholders": [],
+				"source": "Paid On",
+				"translation": "Plačano dne"
+			},
+			"labels.postal_code": {
+				"placeholders": [],
+				"source": "Postal Code",
+				"translation": "Poštna številka"
+			},
+			"labels.registration_id": {
+				"placeholders": [],
+				"source": "Registration",
+				"translation": "Prijava"
+			},
+			"labels.school": {
+				"placeholders": [],
+				"source": "School",
+				"translation": "Šola"
+			},
+			"labels.season_id": {
+				"placeholders": [],
+				"source": "Season",
+				"translation": "Sezona"
+			},
+			"labels.status_id": {
+				"placeholders": [],
+				"source": "Status",
+				"translation": "Stanje"
+			},
+			"labels.table": {
+				"placeholders": [],
+				"source": "Table / Route",
+				"translation": "Tabela / Pot"
+			},
+			"labels.team_status_id": {
+				"placeholders": [],
+				"source": "Team Status",
+				"translation": "Stanje ekipe"
+			},
+			"labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Naslov"
+			},
+			"messages.bulk_archive_failed": {
+				"placeholders": [],
+				"source": "Bulk archive failed.",
+				"translation": "Arhiviranje v večjem obsegu ni uspelo."
+			},
+			"messages.bulk_archive_no_ids": {
+				"placeholders": [],
+				"source": "No teams selected.",
+				"translation": "Ni izbrana nobena ekipa."
+			},
+			"messages.bulk_archived": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "No teams archived|{count} team archived|{count} teams archived|{count} teams archived|{count} teams archived",
+				"translation": "Ni arhiviranih ekip|{count} arhivirana ekipa|{count} arhivirane ekipe|{count} arhivirane ekipe|{count} arhivirane ekipe"
+			},
+			"messages.bulk_errors": {
+				"placeholders": [
+					"{count}",
+					"{count}",
+					"{count}",
+					"{count}"
+				],
+				"source": "|{count} team failed|{count} teams failed|{count} teams failed|{count} teams failed",
+				"translation": "|{count} ekipa ni uspela|{count} ekipe niso uspele|{count} ekipe niso uspele|{count} ekipe niso uspele"
+			},
+			"messages.record_archived": {
+				"placeholders": [],
+				"source": "Record archived",
+				"translation": "Zapis arhiviran"
+			},
+			"messages.record_created": {
+				"placeholders": [],
+				"source": "Record created",
+				"translation": "Zapis je bil ustvarjen"
+			},
+			"messages.record_restored": {
+				"placeholders": [],
+				"source": "Record restored",
+				"translation": "Zapis je bil obnovljen"
+			},
+			"messages.record_updated": {
+				"placeholders": [],
+				"source": "Record updated",
+				"translation": "Zapis posodobljen"
+			},
+			"nav": {
+				"placeholders": [],
+				"source": "Teams",
+				"translation": "Ekipe"
+			},
+			"route_name": {
+				"placeholders": [],
+				"source": "teams",
+				"translation": "ekipe"
+			},
+			"scopes.__all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"scopes.__archived": {
+				"placeholders": [],
+				"source": "Archived",
+				"translation": "Arhivirano"
+			},
+			"scopes.__live": {
+				"placeholders": [],
+				"source": "Active",
+				"translation": "Aktivno"
+			},
+			"search.search_term": {
+				"placeholders": [],
+				"source": "Search teams...",
+				"translation": "Iskanje ekip..."
+			},
+			"search.submit": {
+				"placeholders": [],
+				"source": "Search",
+				"translation": "Iskanje"
+			},
+			"selectors.0": {
+				"placeholders": [],
+				"source": "No",
+				"translation": "Ne"
+			},
+			"selectors.1": {
+				"placeholders": [],
+				"source": "Yes",
+				"translation": "Da"
+			},
+			"selectors.all": {
+				"placeholders": [],
+				"source": "All",
+				"translation": "Vse"
+			},
+			"selectors.per_page": {
+				"placeholders": [],
+				"source": "per page",
+				"translation": "na stran"
+			},
+			"selectors.select_table": {
+				"placeholders": [],
+				"source": "-- Select table or route --",
+				"translation": "-- Izberite tabelo ali pot --"
+			},
+			"ui.apply_filters": {
+				"placeholders": [],
+				"source": "Apply",
+				"translation": "Uporabi"
+			},
+			"ui.clear_all": {
+				"placeholders": [],
+				"source": "Clear all",
+				"translation": "Izbriši vse"
+			},
+			"ui.edit_title": {
+				"placeholders": [],
+				"source": "Edit Team",
+				"translation": "Urejanje ekipe"
+			},
+			"ui.filter_not": {
+				"placeholders": [],
+				"source": "NOT",
+				"translation": "NE"
+			},
+			"ui.index_title": {
+				"placeholders": [],
+				"source": "Teams",
+				"translation": "Ekipe"
+			},
+			"ui.loading_count": {
+				"placeholders": [],
+				"source": "Loading…",
+				"translation": "Nalaganje…"
+			},
+			"ui.modifying": {
+				"placeholders": [],
+				"source": "You are about to modify",
+				"translation": "Pripravljate se na spremembo"
+			},
+			"ui.new_title": {
+				"placeholders": [],
+				"source": "New Team",
+				"translation": "Nova ekipa"
+			},
+			"ui.no_records": {
+				"placeholders": [],
+				"source": "No teams found.",
+				"translation": "Ni bilo najdenih ekip."
+			},
+			"ui.records": {
+				"placeholders": [],
+				"source": "record(s)",
+				"translation": "zapis(i)"
+			},
+			"ui.reload": {
+				"placeholders": [],
+				"source": "Reload",
+				"translation": "Osveži"
+			},
+			"ui.show_actions": {
+				"placeholders": [],
+				"source": "Show actions",
+				"translation": "Prikaži dejanja"
+			},
+			"ui.title": {
+				"placeholders": [],
+				"source": "Team",
+				"translation": "Ekipa"
+			},
+			"ui.updated_records": {
+				"placeholders": [],
+				"source": "Updated records",
+				"translation": "Posodobljeni zapisi"
+			},
+			"v_labels.address": {
+				"placeholders": [],
+				"source": "Address",
+				"translation": "Naslov"
+			},
+			"v_labels.archived_by_user_display": {
+				"placeholders": [],
+				"source": "Archived By User Display",
+				"translation": "Arhivirano po prikazu uporabnika"
+			},
+			"v_labels.city": {
+				"placeholders": [],
+				"source": "City",
+				"translation": "Mesto"
+			},
+			"v_labels.coach_2_email": {
+				"placeholders": [],
+				"source": "Coach 2 Email",
+				"translation": "E-pošta - vodja 2"
+			},
+			"v_labels.coach_2_name": {
+				"placeholders": [],
+				"source": "Coach 2 Name",
+				"translation": "Vodja 2"
+			},
+			"v_labels.coach_2_phone": {
+				"placeholders": [],
+				"source": "Coach 2 Phone",
+				"translation": "Telefon - vodja 2"
+			},
+			"v_labels.coach_email": {
+				"placeholders": [],
+				"source": "Coach Email",
+				"translation": "E-pošta vodje"
+			},
+			"v_labels.coach_name": {
+				"placeholders": [],
+				"source": "Coach Name",
+				"translation": "Vodja"
+			},
+			"v_labels.coach_phone": {
+				"placeholders": [],
+				"source": "Coach Phone",
+				"translation": "Telefonska številka vodje"
+			},
+			"v_labels.country_code": {
+				"placeholders": [],
+				"source": "Country Code",
+				"translation": "Koda države"
+			},
+			"v_labels.country_title": {
+				"placeholders": [],
+				"source": "Country Title",
+				"translation": "Država"
+			},
+			"v_labels.imported_at": {
+				"placeholders": [],
+				"source": "Imported At",
+				"translation": "Uvoženo dne"
+			},
+			"v_labels.package_id": {
+				"placeholders": [],
+				"source": "Package Id",
+				"translation": "ID paketa"
+			},
+			"v_labels.package_title": {
+				"placeholders": [],
+				"source": "Package Title",
+				"translation": "Paket"
+			},
+			"v_labels.paid_on": {
+				"placeholders": [],
+				"source": "Paid On",
+				"translation": "Izplačano dne"
+			},
+			"v_labels.postal_code": {
+				"placeholders": [],
+				"source": "Postal Code",
+				"translation": "Poštna številka"
+			},
+			"v_labels.programme_id": {
+				"placeholders": [],
+				"source": "Programme Id",
+				"translation": "ID programa"
+			},
+			"v_labels.programme_title": {
+				"placeholders": [],
+				"source": "Programme Title",
+				"translation": "Program"
+			},
+			"v_labels.registration_display": {
+				"placeholders": [],
+				"source": "Registration",
+				"translation": "Prijava"
+			},
+			"v_labels.registration_id": {
+				"placeholders": [],
+				"source": "Registration Id",
+				"translation": "Identifikacijska številka registracije"
+			},
+			"v_labels.school": {
+				"placeholders": [],
+				"source": "School",
+				"translation": "Šola"
+			},
+			"v_labels.search_text": {
+				"placeholders": [],
+				"source": "Search Text",
+				"translation": "Besedilo za iskanje"
+			},
+			"v_labels.season_id": {
+				"placeholders": [],
+				"source": "Season Id",
+				"translation": "ID sezone"
+			},
+			"v_labels.season_title": {
+				"placeholders": [],
+				"source": "Season Title",
+				"translation": "Naslov sezone"
+			},
+			"v_labels.status_id": {
+				"placeholders": [],
+				"source": "Status Id",
+				"translation": "ID stanja"
+			},
+			"v_labels.status_title": {
+				"placeholders": [],
+				"source": "Status Title",
+				"translation": "Status"
+			},
+			"v_labels.team_status_id": {
+				"placeholders": [],
+				"source": "Team Status Id",
+				"translation": "ID stanja ekipe"
+			},
+			"v_labels.team_status_title": {
+				"placeholders": [],
+				"source": "Team Status Title",
+				"translation": "Status ekipe"
+			},
+			"v_labels.title": {
+				"placeholders": [],
+				"source": "Title",
+				"translation": "Ekipa"
+			},
+			"v_labels.total_amount": {
+				"placeholders": [],
+				"source": "Total Amount",
+				"translation": "Znesek"
 			}
 		},
 		"users": {

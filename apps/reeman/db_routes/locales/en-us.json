@@ -67,6 +67,7 @@
 		"mode": "Mode",
 		"module": "Module",
 		"name": "Name",
+		"new": "New",
 		"no_helper": "None (default)",
 		"order_by": "Order by",
 		"pagination": "Pagination",
@@ -106,6 +107,7 @@
 		"default": "(keep current)",
 		"modified": "Modified",
 		"per_page": "per page",
+		"root": "Root (no module)",
 		"select_table": "-- Select table or route --",
 		"untracked": "Untracked"
 	},
@@ -119,6 +121,7 @@
 		"busy": "Processing — the page will refresh when complete.",
 		"clear_all": "Clear all",
 		"edit_title": "Edit DB route",
+		"form_fields_modified_warning": "This form's generated field section was manually changed. Refresh CRUD may replace generated field markup.",
 		"filter_not": "NOT",
 		"index_title": "DB routes",
 		"loading_count": "Loading…",

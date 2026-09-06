@@ -31,11 +31,15 @@ async function generate_foreign_key_select_functions(foreign_keys: ForeignKeyMap
 		// being generated. Skip it and archived rows keep appearing in every
 		// dropdown that points at them.
 		const fk_archive_where = display_source.has_archive ? ` WHERE ${ARCHIVE_TIMESTAMP_FIELD} IS NULL` : "";
+		const locale_param = fk_info.localized ? 'locale_code: string = ""' : "";
+		const select_options = fk_info.localized
+			? `const option_source = locale_table("${fk_table}", locale_code);\n\t\t\tconst options_query = \`SELECT ${fk_info.column} as option_value, ${option_text_field} as option_text FROM \${option_source}${fk_archive_where} ORDER BY ${option_text_field} ASC\`;\n\t\t\tconst records = await db.unsafe(options_query);`
+			: `const records = await db\`SELECT ${fk_info.column} as option_value, ${option_text_field} as option_text FROM ${fk_table}${fk_archive_where} ORDER BY ${option_text_field} ASC\`;`;
 
-		functions.push(`export async function get_${fk_table}_options_by_${fk_info.column}(): Promise<Options[]> {
+		functions.push(`export async function get_${fk_table}_options_by_${fk_info.column}(${locale_param}): Promise<Options[]> {
 \ttry {
 \t\treturn await timed_query("${fk_table}", "get_${fk_table}_options_by_${fk_info.column}", async () => {
-\t\t\tconst records = await db\`SELECT ${fk_info.column} as option_value, ${option_text_field} as option_text FROM ${fk_table}${fk_archive_where} ORDER BY ${option_text_field} ASC\`;
+\t\t\t${select_options}
 \t\t\treturn records as Options[];
 \t\t});
 \t} catch (error) {
@@ -170,6 +174,7 @@ export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 	} = options;
 
 	const localized = localization_enabled;
+	const has_localized_foreign_keys = [...foreign_keys.values()].some((foreign_key) => foreign_key.localized);
 	const locale_param = localized ? ", locale_code: string = \"\"" : "";
 	const locale_arg = localized ? ", locale_code" : "";
 	const cache_key_locale = localized ? ", locale_code" : "";
@@ -181,7 +186,7 @@ export async function generate_sql_ts(options: SqlTsOptions): Promise<string> {
 		.map((field) => field.name);
 	const localized_import = localized
 		? `import { all_locale_tables, locale_table } from "$lib/locale_tables";\nimport { fan_out_create, fan_out_delete, fan_out_update, invalidate_all_locales } from "$lib/locale_write";\n`
-		: "";
+		: has_localized_foreign_keys ? `import { locale_table } from "$lib/locale_tables";\n` : "";
 	// LOCALIZED_COLUMNS is read by the runtime locale-table guard and by the
 	// write fan-out, which needs to know which columns must NOT be copied
 	// across locales.

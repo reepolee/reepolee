@@ -1,6 +1,6 @@
 <field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="{= props.attributes.name }">
 	<div class="grid">
-		<label class="px-3 mb-1">{= props.attributes.label}</label>
+		<label class="px-3 mb-1 font-semibold">{= props.attributes.label}</label>
 		<input type="hidden" name="{= props.attributes.name }" id="{= props.attributes.name }-input" value="{= props.attributes.value }" />
 		<div class="flex flex-col gap-3 px-3">
 			{#each props.attributes.options ?? [] as tag}

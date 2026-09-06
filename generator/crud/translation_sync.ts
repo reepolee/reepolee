@@ -7,7 +7,21 @@ import { log_step, route_dir_to_namespace } from "./helpers";
 import { apply_template } from "./template_substitutor";
 import type { FieldDef, ParentInfo } from "./types";
 import { default_locale } from "$config/supported_locales";
-import { get_dotted, read_namespace_file, set_dotted, upsert_file_translation, write_namespace_file } from "$lib/translation_files";
+import { get_dotted, insert_file_translation, read_namespace_file, set_dotted, write_namespace_file } from "$lib/translation_files";
+import type { json_obj } from "$lib/translation_merge";
+
+export function insert_missing_translation_rows(
+	obj: json_obj,
+	rows: Array<{ key_path: string; value: string; }>,
+): number {
+	let inserted = 0;
+	for (const row of rows) {
+		if (get_dotted(obj, row.key_path) !== undefined) continue;
+		set_dotted(obj, row.key_path, row.value);
+		inserted++;
+	}
+	return inserted;
+}
 
 // ---------------------------------------------------------------------------
 // Sync nav translations to files
@@ -20,7 +34,7 @@ export async function sync_nav_translations(table_name: string, clean_prefix: st
 	const nav_key = clean_prefix ? `${clean_prefix}.${dir_name}` : dir_name;
 	const normalized_name = dir_name.replace(/[^a-zA-Z0-9 ]/g, " ");
 	const label = capitalize_first(normalized_name.replace(/_/g, " "));
-	await upsert_file_translation(default_locale, nav_key, "nav", label);
+	await insert_file_translation(default_locale, nav_key, "nav", label);
 	log_step(`Nav translations synced to files for "${table_name}"`);
 }
 
@@ -121,10 +135,10 @@ export async function sync_crud_translations(
 		}
 
 		const obj = await read_namespace_file(namespace, default_locale);
-		for (const row of rows) set_dotted(obj, row.key_path, row.value);
-		await write_namespace_file(namespace, default_locale, obj);
+		const inserted = insert_missing_translation_rows(obj, rows);
+		if (inserted > 0) await write_namespace_file(namespace, default_locale, obj);
 
-		log_step(`CRUD translations synced to files for "${table_name}" (${rows.length} keys)`);
+		log_step(`CRUD translations synced to files for "${table_name}" (${inserted} new, ${rows.length - inserted} kept)`);
 	} catch (err) {
 		console.warn(`⚠  CRUD translation sync failed for "${table_name}": ${err instanceof Error ? err.message : err}`);
 	}

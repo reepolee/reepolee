@@ -27,7 +27,7 @@ import { determine_search_field, field_interface_prop, has_archive_column, log_s
 import { archive_row_restore, generate_index_ree } from "./index_ree";
 import { generate_index_ts } from "./index_ts";
 import { integrate_nested_child } from "./nested_integration";
-import { refresh_fields } from "./refresh_fields";
+import { preserve_previous_form_fields, refresh_fields } from "./refresh_fields";
 import { stamp_generated_ree_hashes } from "./ree_hash";
 import { update_routes_ts } from "./route_registrar";
 import { load_table_schema } from "./schema_reader";
@@ -44,6 +44,8 @@ import { MAIN_APP, MAIN_APP_POSIX } from "$config/paths";
 // ---------------------------------------------------------------------------
 
 export interface CrudOptions {
+	/** Let an outer Reeman action reload once after all of its generator steps finish. */
+	reload?: boolean;
 	force?: boolean;
 	/** Allow an overwrite prompt to block on stdin (CLI only). Web/MCP callers pass false. */
 	interactive?: boolean;
@@ -72,12 +74,18 @@ export { refresh_fields } from "./refresh_fields";
 export async function generate_crud_files(meta: TableMeta, safe_writer: (path: string, content: string) => Promise<void>): Promise<void> {
 	const table_name = meta.table_name;
 	const route_prefix = meta.route_prefix;
+	const view_deps = meta.v_fields ? await get_view_dependencies(table_name) : [];
+	const { discover_localized_tables } = await import("../locale_tables/run");
+	const localized_table_names = new Set((await discover_localized_tables()).map((info) => info.table_name));
+	const view_localized = !meta.is_nested && (meta.localization_enabled || view_deps.some((dependency) => localized_table_names.has(dependency)));
 
 	if (!meta.is_nested) {
 		log_step(`Generating form.ree for ${table_name}`);
-		await safe_writer(join(meta.route_dir, "form.ree"), await generate_form_ree({
+		const form_ree_path = join(meta.route_dir, "form.ree");
+		const fresh_form_ree = await generate_form_ree({
 			table_name,
 			fields: meta.fields,
+			v_fields: meta.v_fields,
 			column_names: meta.column_names,
 			foreign_keys: meta.foreign_keys,
 			route_prefix,
@@ -92,7 +100,13 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 			form_details: meta.form_details,
 			readonly_fields: readonly_field_names(meta.columns),
 			form_columns: meta.columns,
-		}));
+		});
+		let form_ree = fresh_form_ree;
+		if (await Bun.file(form_ree_path).exists()) {
+			const existing_form_ree = await Bun.file(form_ree_path).text();
+			form_ree = preserve_previous_form_fields(fresh_form_ree, existing_form_ree);
+		}
+		await safe_writer(form_ree_path, form_ree);
 
 		log_step(`Generating index.ree for ${table_name}`);
 		const { index_html, rows_html } = await generate_index_ree({
@@ -147,11 +161,14 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 	log_step(`Generating index.ts for ${table_name}`);
 	await safe_writer(join(meta.route_dir, "index.ts"), await generate_index_ts({
 		localization_enabled: meta.localization_enabled,
+		view_localized,
 		localized_fields: meta.localized_fields,
 		readonly_fields: readonly_field_names(meta.columns),
 		form_columns: meta.columns,
 		table_name,
 		fields: meta.fields,
+		filter_fields: meta.list_fields,
+		v_fields: meta.v_fields,
 		column_names: meta.column_names,
 		view_column_names: meta.view_column_names,
 		sort_options: meta.sort_options,
@@ -159,6 +176,7 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 		has_view: !!meta.v_fields,
 		first_field: meta.first_field,
 		foreign_keys: meta.foreign_keys,
+		filter_foreign_keys: meta.filter_foreign_keys,
 		columns: meta.columns,
 		route_prefix,
 		crud_name: meta.crud_name,
@@ -178,7 +196,7 @@ export async function generate_crud_files(meta: TableMeta, safe_writer: (path: s
 		fields: meta.fields,
 		search_field: meta.search_field,
 		tags_fields,
-		foreign_keys: meta.foreign_keys,
+		foreign_keys: meta.filter_foreign_keys,
 		id_type: meta.id_type,
 		id_type_interface: meta.id_type_interface,
 		is_auto_increment_pk: meta.is_auto_increment_pk,
@@ -280,7 +298,7 @@ export async function generate_crud(table_name: string, options: CrudOptions = {
 
 		// --- Refresh fields only (no full regeneration) ---
 		if (refresh_fields_flag) {
-			return await refresh_fields({
+			const refreshed = await refresh_fields({
 				table_name,
 				route_dir: meta.route_dir,
 				relative_dir: meta.relative_dir,
@@ -295,8 +313,14 @@ export async function generate_crud(table_name: string, options: CrudOptions = {
 				translate_in_args,
 				template_tags: meta.template_tags,
 				localized_fields: meta.localized_fields,
+				form_hints: meta.form_hints,
 				form_details: meta.form_details,
 			});
+			if (refreshed && options.reload !== false) {
+				await notify_server_reload(false, Bun.env.MAIN_APP_URL);
+				await notify_server_reload(true, Bun.env.MAIN_APP_URL);
+			}
+			return refreshed;
 		}
 
 		// Phase 2: Generate files
@@ -405,16 +429,13 @@ export async function generate_crud(table_name: string, options: CrudOptions = {
 			await format_file(routes_path);
 		}
 
-		// Phase 9: Sync this table's locale clones. A table that just gained (or
-		// lost) a `localized: true` column needs its clone tables created,
-		// altered, or dropped to match - idempotent, so a non-localized table
-		// costs one no-op call.
-		if (meta.localization_enabled) {
-			log_step(`Syncing locale tables for ${table_name}`);
-			const { format_sync_actions, run_locale_table_sync } = await import("../locale_tables/run");
-			const { results } = await run_locale_table_sync({ table: table_name });
-			const result = results.find((entry) => entry.base_table === table_name);
-			if (!result) throw new Error(`Locale table sync did not process localized table "${table_name}"`);
+		// Phase 9: Synchronize every locale table and locale view. A view can join
+		// localized data even when its base table has no localized columns, so a
+		// table-scoped sync would leave its v_<table>_<locale> views missing.
+		log_step("Syncing locale tables and views");
+		const { format_sync_actions, run_locale_table_sync } = await import("../locale_tables/run");
+		const { results } = await run_locale_table_sync();
+		for (const result of results) {
 			for (const description of format_sync_actions(result.actions)) console.log(`  ${description}`);
 		}
 
@@ -424,8 +445,10 @@ export async function generate_crud(table_name: string, options: CrudOptions = {
 		// queue worker the locale files land after that restart, and the worker
 		// calls this same endpoint again once it finishes - but this generator
 		// must target the main app explicitly across the two-app split.
-		await notify_server_reload(false, Bun.env.MAIN_APP_URL);
-		await notify_server_reload(true, Bun.env.MAIN_APP_URL);
+		if (options.reload !== false) {
+			await notify_server_reload(false, Bun.env.MAIN_APP_URL);
+			await notify_server_reload(true, Bun.env.MAIN_APP_URL);
+		}
 		log_step(`CRUD generation finished for ${table_name}`);
 		return true;
 	} catch (error) {
@@ -489,9 +512,13 @@ function archive_clause(archive_filter: ArchiveFilter): string {
 	const view_deps_json = JSON.stringify(view_deps);
 	const view_route_path = meta.route_prefix ? `/${meta.route_prefix}/${meta.route_name || table_name}` : `/${meta.route_name || table_name}`;
 
-	// The base view defines record existence and shared state. A locale view is
-	// joined only to overlay the columns explicitly marked localized.
-	const view_localized = !!meta.localization_enabled && !meta.is_nested;
+	// Locale views already resolve every localized table dependency, including
+	// labels projected through joined foreign-key tables.
+	const { discover_localized_tables } = await import("../locale_tables/run");
+	const localized_table_info = await discover_localized_tables();
+	const localized_table_names = new Set(localized_table_info.map((info) => info.table_name));
+	const view_uses_localized_table = view_deps.some((dependency) => localized_table_names.has(dependency));
+	const view_localized = (meta.localization_enabled || view_uses_localized_table) && !meta.is_nested;
 	const view_locale_param = view_localized ? ", locale_code: string = \"\"" : "";
 	const view_locale_arg = view_localized ? ", locale_code" : "";
 	const view_locale_cache_key = view_localized ? ", locale_code" : "";
@@ -499,17 +526,14 @@ function archive_clause(archive_filter: ArchiveFilter): string {
 	const view_locale_filter_param = "";
 	const view_locale_search_where = "";
 	const view_locale_search_param = "";
-	const view_columns = [...new Set(meta.view_column_names.length > 0 ? meta.view_column_names : ["id", ...(meta.v_fields ?? []).map((field) => field.name)])];
-	const view_localized_column_names = new Set(meta.localized_fields.map((field) => field.field_name));
-	const view_select_list = view_columns.map((column_name) => {
-		const source = view_localized_column_names.has(column_name) ? `COALESCE(localized.${column_name}, canonical.${column_name})` : `canonical.${column_name}`;
-		return `${source} AS ${column_name}`;
-	}).join(", ");
 	const view_source = view_localized ? "resolve_view(locale_code)" : `"v_${table_name}"`;
 	const view_resolver = view_localized
-		? `import { all_locale_tables, locale_table } from "$lib/locale_tables";\n\n/** Base view rows are authoritative; the locale view supplies translated columns only. */\nfunction resolve_view(locale_code: string): string {\n\tconst localized_view = locale_table("v_${table_name}", locale_code);\n\tif (localized_view === "v_${table_name}") return "v_${table_name}";\n\treturn \`(SELECT ${view_select_list} FROM v_${table_name} AS canonical LEFT JOIN \${localized_view} AS localized ON localized.id = canonical.id) AS localized_records\`;\n}\n`
+		? `import { all_locale_tables, locale_table } from "$lib/locale_tables";\n\n/** Locale views already resolve every localized table dependency. */\nfunction resolve_view(locale_code: string): string {\n\treturn locale_table("v_${table_name}", locale_code);\n}\n`
 		: "";
-	const view_cache_dependencies = view_localized ? `all_locale_tables("${table_name}")` : view_deps_json;
+	const localized_view_table_names = [...localized_table_names];
+	const view_cache_dependencies = view_localized
+		? `[...new Set(${view_deps_json}.flatMap((table) => ${JSON.stringify(localized_view_table_names)}.includes(table) ? all_locale_tables(table) : [table]))]`
+		: view_deps_json;
 	const view_cache_import = "";
 
 	const { sql_view: pagination_mode } = select_templates({
