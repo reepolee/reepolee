@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS users (
     email                    VARCHAR(255) NOT NULL COMMENT 'ICU',
     name                     VARCHAR(80)  DEFAULT '' COMMENT 'ICU',
     nickname                 VARCHAR(20)  DEFAULT '' COMMENT 'ICU',
-    avatar_image             VARCHAR(255) DEFAULT '',
+    avatar_filename          VARCHAR(255) DEFAULT '',
     verified_at              TIMESTAMP    NULL DEFAULT NULL,
     hashed_password          VARCHAR(255) DEFAULT NULL,
     invitation_code          VARCHAR(64)  DEFAULT '',

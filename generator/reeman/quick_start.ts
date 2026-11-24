@@ -9,6 +9,7 @@ import { SQL } from "bun";
 
 import { active_locales } from "../../config/supported_locales";
 import { env_available } from "../../config/env_vars";
+import { get_connection_string } from "$lib/env";
 import { create_user } from "../user_lib";
 import { set_db_type } from "./set_db_type";
 import { set_repo } from "./set_repo";
@@ -67,11 +68,8 @@ async function create_admin_user(): Promise<{ username: string; email: string; p
 		return null;
 	}
 
-	const conn_str = Bun.env.DEV_CONNECTION_STRING?.trim();
-	if (!conn_str) {
-		console.log(`  ${color("✗ Failed to create user", RED)}  ${color("DEV_CONNECTION_STRING not found in .env", DIM)}`);
-		return null;
-	}
+	// Resolves MySQL credentials from DEV_DB_USERNAME / DEV_DB_PASSWORD.
+	const conn_str = get_connection_string("DEV");
 
 	console.log(`\n${color("Creating user:", BOLD)} ${dim(username)}\n`);
 
@@ -139,11 +137,8 @@ async function auto_run_sql_files(db_type: "mysql" | "sqlite"): Promise<void> {
 
 	runnable_files.sort((a, b) => a.file.localeCompare(b.file));
 
-	const conn_str = Bun.env.DEV_CONNECTION_STRING?.trim();
-	if (!conn_str) {
-		console.log(`  ${color("DEV_CONNECTION_STRING not found in .env.", RED)}`);
-		return;
-	}
+	// Resolves MySQL credentials from DEV_DB_USERNAME / DEV_DB_PASSWORD.
+	const conn_str = get_connection_string("DEV");
 
 	const normalized = conn_str.toLowerCase();
 	const is_mysql = normalized.startsWith("mysql://");
