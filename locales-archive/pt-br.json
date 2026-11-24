@@ -614,9 +614,7 @@
 				"translation": "Selecione um arquivo .json antes de iniciar a transformação."
 			},
 			"ui.no_sql_files": {
-				"placeholders": [
-					"{dialect}"
-				],
+				"placeholders": ["{dialect}"],
 				"source": "No .sql files found in sql/{dialect}/.",
 				"translation": "Nenhum arquivo .sql encontrado em sql/{dialect}/."
 			},
@@ -933,22 +931,12 @@
 				"translation": "Nenhuma rota de BD selecionada."
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No DB routes deleted|{count} db_route deleted|{count} db_routes deleted|{count} db_routes deleted|{count} db_routes deleted",
 				"translation": "Nenhuma rota de BD excluída|{count} rota de BD excluída|{count} rotas de BD excluídas|{count} rotas de BD excluídas|{count} rotas de BD excluídas"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} db_route failed|{count} db_routes failed|{count} db_routes failed|{count} db_routes failed",
 				"translation": "|{count} rota de BD falhou|{count} rotas de BD falharam|{count} rotas de BD falharam|{count} rotas de BD falharam"
 			},
@@ -1375,22 +1363,12 @@
 				"translation": "Nenhuma tabela de BD selecionada."
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No db tables deleted|{count} db_table deleted|{count} db_tables deleted|{count} db_tables deleted|{count} db_tables deleted",
 				"translation": "Nenhuma tabela de BD excluída|{count} tabela de BD excluída|{count} tabelas de BD excluídas|{count} tabelas de BD excluídas|{count} tabelas de BD excluídas"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} db_table failed|{count} db_tables failed|{count} db_tables failed|{count} db_tables failed",
 				"translation": "|{count} tabela de BD falhou|{count} tabelas de BD falharam|{count} tabelas de BD falharam|{count} tabelas de BD falharam"
 			},
@@ -1687,22 +1665,12 @@
 				"translation": "No translations selected."
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No translations deleted|{count} translation deleted|{count} translations deleted|{count} translations deleted|{count} translations deleted",
 				"translation": "No translations deleted|{count} translation deleted|{count} translations deleted|{count} translations deleted|{count} translations deleted"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} translation failed|{count} translations failed|{count} translations failed|{count} translations failed",
 				"translation": "|{count} translation failed|{count} translations failed|{count} translations failed|{count} translations failed"
 			},
@@ -2398,22 +2366,12 @@
 				"translation": "No global filters selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No global scopes archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "No global scopes archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} global filter failed to delete|{count} global filters failed to delete|{count} global filters failed to delete|{count} global filters failed to delete",
 				"translation": "|{count} filtro global não pôde ser excluído|{count} filtros globais não puderam ser excluídos|{count} filtros globais não puderam ser excluídos|{count} filtros globais não puderam ser excluídos"
 			},
@@ -2635,22 +2593,12 @@
 				"translation": "No images selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No images archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "No images archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} image failed|{count} images failed|{count} images failed|{count} images failed",
 				"translation": "|{count} imagem falhou|{count} imagens falharam|{count} imagens falharam|{count} imagens falharam"
 			},
@@ -3291,22 +3239,12 @@
 				"translation": "No modules selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No modules archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "No modules archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} module failed|{count} modules failed|{count} modules failed|{count} modules failed",
 				"translation": "|{count} módulo falhou|{count} módulos falharam|{count} módulos falharam|{count} módulos falharam"
 			},
@@ -4427,9 +4365,7 @@
 				"translation": "Salvar e fechar"
 			},
 			"messages.delete_namespace_confirm": {
-				"placeholders": [
-					"{namespace}"
-				],
+				"placeholders": ["{namespace}"],
 				"source": "All translations in \"{namespace}\" will be permanently deleted.",
 				"translation": "Todas as traduções em \"{namespace}\" serão excluídas permanentemente."
 			},
@@ -4661,22 +4597,12 @@
 				"translation": "No users selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No users archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "No users archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} user failed|{count} users failed|{count} users failed|{count} users failed",
 				"translation": "|{count} usuário falhou|{count} usuários falharam|{count} usuários falharam|{count} usuários falharam"
 			},
@@ -6515,16 +6441,12 @@
 				"translation": "A senha atual é obrigatória"
 			},
 			"errors.date_max": {
-				"placeholders": [
-					"{max}"
-				],
+				"placeholders": ["{max}"],
 				"source": "Date must be on or before {max}.",
 				"translation": "A data deve ser em ou antes de {max}."
 			},
 			"errors.date_min": {
-				"placeholders": [
-					"{min}"
-				],
+				"placeholders": ["{min}"],
 				"source": "Date must be on or after {min}.",
 				"translation": "A data deve ser em ou após {min}."
 			},
@@ -6964,9 +6886,7 @@
 				"translation": "No results found"
 			},
 			"ui.busy_poller_translating": {
-				"placeholders": [
-					"{count}"
-				],
+				"placeholders": ["{count}"],
 				"source": "{count} translation job(s) running - translations appear when they finish.",
 				"translation": "{count} translation job(s) running - translations appear when they finish."
 			},
@@ -7198,10 +7118,7 @@
 				"translation": "Enviar convite"
 			},
 			"email.body": {
-				"placeholders": [
-					"{url}",
-					"{username}"
-				],
+				"placeholders": ["{url}", "{username}"],
 				"source": "Hi {username},\n\nYou've been invited. Complete your registration here:\n{url}",
 				"translation": "Olá {username},\n\nVocê foi convidado. Conclua seu cadastro aqui:\n{url}"
 			},

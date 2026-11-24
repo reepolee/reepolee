@@ -20,11 +20,11 @@ not matter for the jobs this template ships.
 
 ## Store selection
 
-| `REDIS_ENABLED`    | `REDIS_URL` | Store  | Notes                                                    |
-| ------------------ | ----------- | ------ | -------------------------------------------------------- |
-| `true` / `on`      | set         | Redis  | Explicitly enabled.                                      |
-| anything else      | set         | SQL    | URL alone no longer enables Redis.                       |
-| any                | unset       | SQL    | `jobs` + `queue_meta` tables in the configured database. |
+| `REDIS_ENABLED` | `REDIS_URL` | Store | Notes                                                    |
+| --------------- | ----------- | ----- | -------------------------------------------------------- |
+| `true` / `on`   | set         | Redis | Explicitly enabled.                                      |
+| anything else   | set         | SQL   | URL alone no longer enables Redis.                       |
+| any             | unset       | SQL   | `jobs` + `queue_meta` tables in the configured database. |
 
 There is no in-flight job migration between stores. Switching backends is a
 deliberate act: drain the old queue first, then switch and restart.
@@ -148,7 +148,9 @@ fibres and drains them before starting fresh - exactly one set of fibres is
 ever consuming. `worker.ts` handles the signals:
 
 ```ts
-process.on("SIGTERM", () => { void shutdown("SIGTERM"); });
+process.on("SIGTERM", () => {
+	void shutdown("SIGTERM");
+});
 // shutdown(): log, clear the heartbeat interval, await stop_workers(),
 // close_queue(), exit. A second signal mid-drain hard-exits.
 ```
@@ -217,7 +219,7 @@ Closes the store connection (no-op for SQL - the DB connection is owned by
 
 ## Job lifecycle
 
-```
+````
 enqueue()
     │
     ▼
@@ -271,7 +273,7 @@ init_queue();
 
 // in a route handler:
 const job_id = await enqueue({ type: "send_email", payload: { to, subject, body } });
-```
+````
 
 ### Worker - process jobs
 
@@ -327,16 +329,16 @@ payload encryption and delivery asynchronously.
 
 ### Registered job types
 
-| Type | Producer | Handler |
-| --- | --- | --- |
-| `send_email` | invite flow (`/invite`) | `core_workers` |
-| `translate_batch` | `bun reeman sync-translations --translate` | `core_workers` |
-| `translate_record` | generated CRUD `.../generate-locale` routes | `core_workers` |
-| `image_variants` | image upload pipeline | `core_workers` |
-| `web_push` | `POST /web-push/test` or application notification producers | `core_workers` |
-| `reeqa_suite_run` | ReeQA suite / video-E2E start | `apps/reeqa/workers.ts` |
-| `reeqa_visual_run` | ReeQA visual start | `apps/reeqa/workers.ts` |
-| `reeqa_cancel` | ReeQA cancel | `apps/reeqa/workers.ts` |
+| Type               | Producer                                                    | Handler                 |
+| ------------------ | ----------------------------------------------------------- | ----------------------- |
+| `send_email`       | invite flow (`/invite`)                                     | `core_workers`          |
+| `translate_batch`  | `bun reeman sync-translations --translate`                  | `core_workers`          |
+| `translate_record` | generated CRUD `.../generate-locale` routes                 | `core_workers`          |
+| `image_variants`   | image upload pipeline                                       | `core_workers`          |
+| `web_push`         | `POST /web-push/test` or application notification producers | `core_workers`          |
+| `reeqa_suite_run`  | ReeQA suite / video-E2E start                               | `apps/reeqa/workers.ts` |
+| `reeqa_visual_run` | ReeQA visual start                                          | `apps/reeqa/workers.ts` |
+| `reeqa_cancel`     | ReeQA cancel                                                | `apps/reeqa/workers.ts` |
 
 At startup the worker logs the registered types and **warns about any queue
 with pending jobs but no registered handler** - the `type` string is the only
@@ -365,10 +367,10 @@ no external process manager needed.
 
 ## Configuration
 
-| Env var         | Default | Description                                                    |
-| --------------- | ------- | -------------------------------------------------------------- |
-| `REDIS_ENABLED` | unset   | Must be `true`/`on` for the queue to use Redis.                |
-| `REDIS_URL`     | unset   | Redis connection URL; only read when `REDIS_ENABLED=true`.     |
+| Env var         | Default | Description                                                |
+| --------------- | ------- | ---------------------------------------------------------- |
+| `REDIS_ENABLED` | unset   | Must be `true`/`on` for the queue to use Redis.            |
+| `REDIS_URL`     | unset   | Redis connection URL; only read when `REDIS_ENABLED=true`. |
 
 ---
 
@@ -377,7 +379,7 @@ no external process manager needed.
 - **24 h TTL** - Redis expires job hashes natively. The SQL store sweeps
   expired rows via `cleanup_expired_jobs()`, scheduled hourly by
   `lib/bootstrap.ts` (skipped when Redis backs the queue).
-- **Admin UI** - `/system/queues` (`apps/reeman/queues/index.ts`)    shows
+- **Admin UI** - `/system/queues` (`apps/reeman/queues/index.ts`) shows
   pending/failed jobs, worker liveness and lifecycle state against either
   store, offers a pause/resume toggle (`POST /system/queues/pause`), and a
   per-job delete for failed jobs (`POST /system/queues/delete`).

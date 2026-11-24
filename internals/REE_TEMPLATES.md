@@ -5,14 +5,16 @@ A lightweight rendering layer that wraps a template engine, injects shared conte
 ---
 
 ## Two-layer component architecture (clarified)
+
 The codebase has two distinct things both called "components," and the plan touches only the first:
+
 - **ReeTags** (`.ree` files whose **basename contains a hyphen**, e.g. `star-rating.ree` — in `components/`, the `apps/main/` tree, or mounted module roots) - server-rendered, compiled by the `.ree` engine at request time from `props.attributes`/`props.children`. The hyphen in the tag name is what marks `<tag-name>` as a component invocation: a tag is only eligible if its name contains a hyphen (the preprocessor's `cust_elem_regex` requires it), so a hyphenless file like `apps/main/foo.ree` is a plain template (reachable via `render()`/`{#include}`, never via `<foo>`). Any eligible tag is auto-routed to a component file - `components/<tag-name>.ree` first, then a same-named hyphenated file in the routes tree (see `internals/REE_TEMPLATES.md` "Component includes" for the full resolution order). This is what `tags` mode targets.
 - **Web components** (`static/web-components/*.js`, `static/*.js`) - real browser `customElements.define(...)` elements (`date-input`, `markdown-editor`, `validation-error`, `toasts-area`, `title-display`). These render blank server-side and hydrate client-side; they are loaded via `<script src="...">` and are orthogonal to which server template produced their surrounding HTML. `<field-wrapper>` is not a registered custom element anywhere in `static/` - it's inert markup styled via `app.css`, used identically by both flat templates and ReeTag components.
 
 ---
 
-
 ## Setup
+
 7
 Before calling any render functions, initialize the module once at app startup - typically in your server entry point.
 
@@ -71,13 +73,13 @@ export type RenderOptions = {
 export async function render(template: string, options?: RenderOptions): Promise<Response>;
 ```
 
-| Option      | Type                     | Default | Description                                                         |
-| ----------- | ------------------------ | ------- | ------------------------------------------------------------------- |
-| `data`      | `Record<string, any>`    | `{}`    | Template-specific data variables                                    |
-| `status`    | `number`                 | `200`   | HTTP status code                                                    |
-| `headers`   | `Record<string, string>` | `{}`    | Additional response headers                                         |
-| `ctx`       | `RequestContext`         | -       | Request context from `create_ctx()` (enables URL, lang, user, etc.) |
-| `is_partial`| `boolean`                | `false` | Skip full-document post-processing (used for streaming fragments)    |
+| Option       | Type                     | Default | Description                                                         |
+| ------------ | ------------------------ | ------- | ------------------------------------------------------------------- |
+| `data`       | `Record<string, any>`    | `{}`    | Template-specific data variables                                    |
+| `status`     | `number`                 | `200`   | HTTP status code                                                    |
+| `headers`    | `Record<string, string>` | `{}`    | Additional response headers                                         |
+| `ctx`        | `RequestContext`         | -       | Request context from `create_ctx()` (enables URL, lang, user, etc.) |
+| `is_partial` | `boolean`                | `false` | Skip full-document post-processing (used for streaming fragments)   |
 
 **Returns:** `Promise<Response>` with `Content-Type: text/html`.
 
@@ -85,20 +87,20 @@ export async function render(template: string, options?: RenderOptions): Promise
 
 When `ctx` is provided (from `create_ctx(req)`), the following variables are automatically available in the template:
 
-| Variable            | Source                                 | Description                           |
-| ------------------- | -------------------------------------- | ------------------------------------- |
-| `request_url`       | `ctx.request_url` (pathname + search)  | Relative URL, e.g. `/products?page=2` |
-| `locale`            | `ctx.locale`                           | Active BCP 47 locale, e.g. `"sl-si"`  |
-| `user`              | Session resolved via `resolve_session` | Logged-in user object or `null`       |
-| `toasts`            | `ctx.toasts`                           | Array of pending toast notifications  |
-| `rendered_at`       | ISO timestamp string                   | Render timestamp                      |
-| `prefix`            | `ctx.prefix`                           | Route prefix or `null`                |
-| `csrf_token`        | `X-CSRF-Token` request header          | CSRF token for forms                  |
-| `dark_mode`         | `ctx.dark_mode`                        | Boolean, dark mode preference         |
-| `theme_class`       | `ctx.theme_class`                      | CSS class for theme                   |
-| `active_locales`    | `config/supported_locales.ts`          | Available locales for the locale switcher |
-| `locale_names`      | `config/supported_locales.ts`          | Map of locale codes to display names   |
-| `translations`      | `ctx.translations`                     | Merged translations for this request's UI locale and route namespace. Read via `{_ path }` / `{- path }`, not directly |
+| Variable         | Source                                 | Description                                                                                                            |
+| ---------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `request_url`    | `ctx.request_url` (pathname + search)  | Relative URL, e.g. `/products?page=2`                                                                                  |
+| `locale`         | `ctx.locale`                           | Active BCP 47 locale, e.g. `"sl-si"`                                                                                   |
+| `user`           | Session resolved via `resolve_session` | Logged-in user object or `null`                                                                                        |
+| `toasts`         | `ctx.toasts`                           | Array of pending toast notifications                                                                                   |
+| `rendered_at`    | ISO timestamp string                   | Render timestamp                                                                                                       |
+| `prefix`         | `ctx.prefix`                           | Route prefix or `null`                                                                                                 |
+| `csrf_token`     | `X-CSRF-Token` request header          | CSRF token for forms                                                                                                   |
+| `dark_mode`      | `ctx.dark_mode`                        | Boolean, dark mode preference                                                                                          |
+| `theme_class`    | `ctx.theme_class`                      | CSS class for theme                                                                                                    |
+| `active_locales` | `config/supported_locales.ts`          | Available locales for the locale switcher                                                                              |
+| `locale_names`   | `config/supported_locales.ts`          | Map of locale codes to display names                                                                                   |
+| `translations`   | `ctx.translations`                     | Merged translations for this request's UI locale and route namespace. Read via `{_ path }` / `{- path }`, not directly |
 
 In development mode (`is_dev: true`), two additional debug variables are injected:
 
@@ -129,8 +131,8 @@ yes_no(val: number, type?: "both" | "yes_only", selectors?: Record<string, strin
 
 - `val` - Number or boolean (0/false = "No", non-zero/true = "Yes")
 - `type` - Style variant:
-    - `"yes_only"` (default) - Shows only "Yes" with green background, nothing for "No"
-    - `"both"` - Shows "Yes" in green and "No" in red
+  - `"yes_only"` (default) - Shows only "Yes" with green background, nothing for "No"
+  - `"both"` - Shows "Yes" in green and "No" in red
 - `selectors` - Optional map of `{"0": "No text", "1": "Yes text"}` to customize labels
 
 **Template example:**
@@ -413,21 +415,21 @@ Returns `"font-bold nav-item current"` if the current page matches, otherwise `"
 
 These helpers are also available in every template without passing them:
 
-| Helper | Signature | Description |
-| --- | --- | --- |
-| `pill(text, class_name)` | `(string, string) => string` | Wraps text in a styled `<div>` with the given CSS class |
-| `tags(val, color_class?, tag_translations?)` | `(string, string?, Record<string,string>?) => string` | Renders comma-separated tags as styled pills |
-| `human_bytes(bytes)` | `(number) => string` | Formats bytes as human-readable (e.g. `"1.5 MB"`) |
-| `is_checked(key, value, filter_params)` | `(string, string\|number, Record<string,string>) => boolean` | Checks if a filter value is active in URL params |
-| `urlencode(str)` | `(string) => string` | URL-encodes a string |
-| `urldecode(str)` | `(string) => string` | URL-decodes a string |
-| `md(source)` | `(string) => string` | Renders a `markdown`-type field's stored value to HTML via `Bun.markdown.html()` - use with unescaped output (`{~ md(record.field) }`) |
-| `image_thumbnail(src, size?)` | `(string, number?) => string` | Renders a square thumbnail `<img>` for a stored image path (default 100px), or a placeholder box when empty |
-| `file_link(src)` | `(string) => string` | Renders a filename/download `<a>` link for a stored file path, or an em-dash when empty |
-| `file_icon_name(filename)` | `(string) => string` | Resolves a `<ree-icon>` name from a filename's extension (PDF, Word, Excel, CSV, PowerPoint, Zip), falling back to a generic file icon |
-| `key_values(obj)` | `(Record<string,any>) => string` | Renders object as HTML attribute key=value pairs |
-| `cn(...inputs)` | `(string\|number\|boolean\|null\|undefined\|array\|object)[] => string` | Joins classes conditionally and resolves Tailwind conflicts during SSR |
-| `nav_label(key, nav?)` | `(string, Record<string,any>?) => string` | Looks up a navigation label by dot-separated key |
+| Helper                                       | Signature                                                               | Description                                                                                                                            |
+| -------------------------------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `pill(text, class_name)`                     | `(string, string) => string`                                            | Wraps text in a styled `<div>` with the given CSS class                                                                                |
+| `tags(val, color_class?, tag_translations?)` | `(string, string?, Record<string,string>?) => string`                   | Renders comma-separated tags as styled pills                                                                                           |
+| `human_bytes(bytes)`                         | `(number) => string`                                                    | Formats bytes as human-readable (e.g. `"1.5 MB"`)                                                                                      |
+| `is_checked(key, value, filter_params)`      | `(string, string\|number, Record<string,string>) => boolean`            | Checks if a filter value is active in URL params                                                                                       |
+| `urlencode(str)`                             | `(string) => string`                                                    | URL-encodes a string                                                                                                                   |
+| `urldecode(str)`                             | `(string) => string`                                                    | URL-decodes a string                                                                                                                   |
+| `md(source)`                                 | `(string) => string`                                                    | Renders a `markdown`-type field's stored value to HTML via `Bun.markdown.html()` - use with unescaped output (`{~ md(record.field) }`) |
+| `image_thumbnail(src, size?)`                | `(string, number?) => string`                                           | Renders a square thumbnail `<img>` for a stored image path (default 100px), or a placeholder box when empty                            |
+| `file_link(src)`                             | `(string) => string`                                                    | Renders a filename/download `<a>` link for a stored file path, or an em-dash when empty                                                |
+| `file_icon_name(filename)`                   | `(string) => string`                                                    | Resolves a `<ree-icon>` name from a filename's extension (PDF, Word, Excel, CSV, PowerPoint, Zip), falling back to a generic file icon |
+| `key_values(obj)`                            | `(Record<string,any>) => string`                                        | Renders object as HTML attribute key=value pairs                                                                                       |
+| `cn(...inputs)`                              | `(string\|number\|boolean\|null\|undefined\|array\|object)[] => string` | Joins classes conditionally and resolves Tailwind conflicts during SSR                                                                 |
+| `nav_label(key, nav?)`                       | `(string, Record<string,any>?) => string`                               | Looks up a navigation label by dot-separated key                                                                                       |
 
 ### Custom Ad-hoc Helpers
 
@@ -862,14 +864,14 @@ import { create_template_engine } from "$lib/template";
 const engine = create_template_engine(is_dev);
 ```
 
-| Option         | Dev value     | Prod value    |
-| -------------- | ------------- | ------------- |
-| `views`        | `apps/main`   | `apps/main`   |
-| `shared_views` | `platform`    | `platform`    |
-| `project_root` | repo root     | repo root     |
-| `cache`        | `false`       | `true`        |
-| `ext`          | `.ree`        | `.ree`        |
-| `autoEscape`   | `true`        | `true`        |
+| Option         | Dev value   | Prod value  |
+| -------------- | ----------- | ----------- |
+| `views`        | `apps/main` | `apps/main` |
+| `shared_views` | `platform`  | `platform`  |
+| `project_root` | repo root   | repo root   |
+| `cache`        | `false`     | `true`      |
+| `ext`          | `.ree`      | `.ree`      |
+| `autoEscape`   | `true`      | `true`      |
 
 Templates use the `.ree` extension and are resolved relative to the `apps/main/`
 directory. A name with no file there and no matching mounted module falls back to
@@ -951,18 +953,19 @@ Translation lookup remains separate from direct value rendering so template expr
 `{#switch}` compares the value with each `{#case}` expression using strict equality (`===`) and renders the first matching branch; `{:else}` (optional, must be last) is the default. This covers the `{:else if}` chains the engine deliberately does not support. The switch expression and case values may be any JS expression (`props.status`, `"admin"`, etc.).
 
 {#each list as item, index }
-  ...
+...
 {/each}
 
 {#each list as item, index, key }
-  ...
+...
 {/each}
 
 {#each list as item }
-  ...
+...
 {:else}
-  (rendered when list is empty)
+(rendered when list is empty)
 {/each}
+
 ```
 
 `{#each}` works on both arrays and objects. For objects, `item` is the value and `key` is the property name.
@@ -970,15 +973,19 @@ Translation lookup remains separate from direct value rendering so template expr
 #### Layouts and includes
 
 ```
+
 {#layout('layouts/base') }
 {#layout('layouts/base', { title: 'Home' }) }
+
 ```
 
 Declares the layout for the current template. The rendered body of the current template is passed to the layout as `body`. Only one layout per template is supported, and it should be declared at the top.
 
 ```
+
 {#include('partials/nav') }
 {#include('partials/card', { title, href }) }
+
 ```
 
 Includes another template inline. The included template receives a merged copy of the current data plus any extra data object passed as the second argument.
@@ -990,10 +997,12 @@ Includes another template inline. The included template receives a merged copy o
 **ReeTag - `<tag-name>` custom-element syntax:**
 
 ```
+
 <app-banner type="red">{= props.form_errors }</app-banner>
 <product-card product={= product } badge={= is_new ? 'NEW' : '' }>
-	{= product.name }
+{= product.name }
 </product-card>
+
 ```
 
 Any tag whose name contains **at least one hyphen** is treated as a component invocation. The pre-processor converts it internally to `{#include("<resolved include path>", {children: <compiled slot>, attributes: { "type": "red" }})}`. The include path is resolved by an index built at startup (`precompile_templates()`, self-healed lazily in dev) in this order:
@@ -1015,8 +1024,10 @@ A tag with no matching file anywhere is passed through as literal HTML (e.g. the
 **Attribute spread shorthand - `...expr`:**
 
 ```
+
 <my-h1 ...rest class="foo">{= title }</my-h1>
 <date-input ...props.translations.errors min="1900-01-01"></date-input>
+
 ```
 
 Any `...expr` token in a tag's attribute region is expanded into the key/value pairs of the referenced object, evaluated at render time - equivalent to `{~ key_values(expr) }`. Works on ReeTag component tags, plain hyphen-less HTML elements, and custom elements without a matching `components/*.ree` file (like `<date-input>`). `expr` may be a bare identifier (`...rest`) or a dotted member path (`...props.translations.errors`); it does not support arbitrary expressions like function calls, bracket indexing, or ternaries - assign to a local first (`{{ const x = a[i]; }}`) if the value isn't already a plain path. Literal attributes after a spread win over spread properties, matching HTML's last-wins semantics.
@@ -1024,9 +1035,11 @@ Any `...expr` token in a tag's attribute region is expanded into the key/value p
 **Direct `{#include(...)}` - for computed prop objects:**
 
 ```
+
 {#include("$components/card", { title, href, ...extra_props })}
 {#include("$components/badge", { label: get_badge_label(record), color: get_badge_color(record) })}
-```
+
+````
 
 Use this form when the props object itself must be built dynamically (computed keys, spread operator, conditional inclusion of fields). For static attributes, prefer ReeTag - it reads more like HTML and the component receives `children` naturally.
 
@@ -1059,7 +1072,7 @@ The `<auto-complete>` component (`components/auto-complete.ree`) renders a searc
 	base-url="/partners/legal-entities"
 	rows="8"
 ></auto-complete>
-```
+````
 
 The component inherits `props.labels`, `props.record`, and `props.selectors` from the parent render scope. The hidden input value is pre-populated from `props.record.{fieldName}`, and the search input is pre-populated from `props.record.{fieldName}_display` (set by the edit handler).
 
@@ -1083,13 +1096,13 @@ The `<image-upload>` component (`components/image-upload.ree`, `static/image-upl
 
 **Attributes:**
 
-| Attribute | Required | Description                                                             | Example         |
-| --------- | -------- | ------------------------------------------------------------------------ | --------------- |
-| `name`    | Yes      | Form field name for the hidden input holding the uploaded path            | `portrait_image`|
-| `value`   | No       | Existing stored path, for edit forms                                     | `record.portrait_image` |
-| `label`   | No       | Field label shown above the dropzone                                     | `Portrait Image`|
-| `folder`  | No       | S3/local storage subfolder for the upload                                | `teams/members` |
-| `module`  | No       | Module code required to upload - see Upload authorization below          | `admin`         |
+| Attribute | Required | Description                                                     | Example                 |
+| --------- | -------- | --------------------------------------------------------------- | ----------------------- |
+| `name`    | Yes      | Form field name for the hidden input holding the uploaded path  | `portrait_image`        |
+| `value`   | No       | Existing stored path, for edit forms                            | `record.portrait_image` |
+| `label`   | No       | Field label shown above the dropzone                            | `Portrait Image`        |
+| `folder`  | No       | S3/local storage subfolder for the upload                       | `teams/members`         |
+| `module`  | No       | Module code required to upload - see Upload authorization below | `admin`                 |
 
 **Example:**
 
@@ -1100,6 +1113,7 @@ The `<image-upload>` component (`components/image-upload.ree`, `static/image-upl
 **Upload authorization:** `POST /images/save` always requires an authenticated session (`require_auth`). When `module` is set, the component also sends it as a form field, and the server additionally checks `require_module(auth_ctx, module)` - the request is rejected with `403 Forbidden` if the current user lacks that module. Leaving `module` unset means any authenticated user can upload; it does not bypass auth entirely. The page embedding `<image-upload>` should itself be gated (e.g. via `module` on its `RouteDefinition`, see [routes/AGENTS.md](../apps/main/AGENTS.md)) - the component only protects the upload action, not page visibility.
 
 **Generator integration:** a column whose name ends in `_image` is auto-detected as `field.type === "image"` (see `IMAGE_SUFFIXES` in `config/db_structure.ts`) and gets:
+
 - A form field rendered via `<image-upload>` (`generator/templates/fields/image.ree`).
 - A grid cell rendered via `{~ image_thumbnail(record.field) }` - a 100x100 thumbnail helper (`lib/template_helpers.ts`), falling back to a placeholder box when empty.
 - A `domain: "image"` entry in the generated `config.ts` `columns` map, checked against the canonical `VARCHAR(255)` SQL type by `check_domain_compliance`.
@@ -1114,15 +1128,15 @@ The `<file-upload>` component (`components/file-upload.ree`, `static/file-upload
 
 **Attributes:**
 
-| Attribute       | Required | Description                                                        | Example         |
-| --------------- | -------- | -------------------------------------------------------------------- | --------------- |
-| `name`          | Yes      | Form field name for the hidden input holding the uploaded path       | `attachment_file` |
-| `value`         | No       | Existing stored path, for edit forms                                 | `record.attachment_file` |
-| `label`         | No       | Field label shown above the dropzone                                 | `Attachment`    |
-| `folder`        | No       | S3/local storage subfolder for the upload (static, ignored if `show-folder` is set) | `invoices` |
-| `folder-input`  | No       | ID of an existing input element to read the folder value from instead | `folder_field`  |
-| `show-folder`   | No       | Renders its own folder text input above the dropzone (`"true"`)      | `true`          |
-| `module`        | No       | Module code required to upload - same authorization model as `<image-upload>` | `admin` |
+| Attribute      | Required | Description                                                                         | Example                  |
+| -------------- | -------- | ----------------------------------------------------------------------------------- | ------------------------ |
+| `name`         | Yes      | Form field name for the hidden input holding the uploaded path                      | `attachment_file`        |
+| `value`        | No       | Existing stored path, for edit forms                                                | `record.attachment_file` |
+| `label`        | No       | Field label shown above the dropzone                                                | `Attachment`             |
+| `folder`       | No       | S3/local storage subfolder for the upload (static, ignored if `show-folder` is set) | `invoices`               |
+| `folder-input` | No       | ID of an existing input element to read the folder value from instead               | `folder_field`           |
+| `show-folder`  | No       | Renders its own folder text input above the dropzone (`"true"`)                     | `true`                   |
+| `module`       | No       | Module code required to upload - same authorization model as `<image-upload>`       | `admin`                  |
 
 **Example:**
 
@@ -1133,6 +1147,7 @@ The `<file-upload>` component (`components/file-upload.ree`, `static/file-upload
 **Upload authorization:** identical model to `<image-upload>` - `POST /system/files/save` requires an authenticated session, and setting `module` additionally requires `require_module(auth_ctx, module)` server-side.
 
 **Generator integration:** a column whose name ends in `_file` is auto-detected as `field.type === "file"` (see `FILE_SUFFIXES` in `config/db_structure.ts`) and gets:
+
 - A form field rendered via `<file-upload>` (`generator/templates/fields/file.ree`).
 - A grid cell rendered via `{~ file_link(record.field) }` - a filename/download-link helper (`lib/template_helpers.ts`) that renders an em-dash when empty. A companion `file_icon_name(filename)` helper resolves a `<ree-icon>` name by extension (PDF, Word, Excel, CSV, PowerPoint, Zip), falling back to a generic file icon.
 - A `domain: "file"` entry in the generated `config.ts` `columns` map, checked against the same canonical `VARCHAR(255)` SQL type as image fields by `check_domain_compliance`.
@@ -1141,21 +1156,21 @@ The `<file-upload>` component (`components/file-upload.ree`, `static/file-upload
 
 The Reeman CRUD generator's `--template-tags tags` flag (see [generator/AGENTS.md](../generator/AGENTS.md) "`--template-tags`") renders each form field as a single ReeTag call instead of the default inlined `<input>`/`<select>` markup. Each of the following components self-contains its own `<field-wrapper>`/`<label>`/`<validation-error>` and reads `name`/`label`/`value` from `props.attributes`:
 
-| Component (`components/`)     | Generator field type      | Notes                                                                 |
-| ------------------------------ | -------------------------- | ---------------------------------------------------------------------- |
-| `input-text.ree`               | `input` (default/text)     |                                                                        |
-| `input-select.ree`             | `select`                   | Options via `props.options?.[name]`, not an HTML attribute            |
-| `input-checkbox.ree`           | `checkbox`                 |                                                                        |
-| `input-textarea.ree`           | `textarea`                 |                                                                        |
-| `input-date-masked.ree`        | `date`                     | Wraps the `<date-input>` web component (masked, locale-aware) - pre-existing component, `input-date.ree` is a plain `<input type="date">` and is not used here |
-| `input-datetime-local.ree`     | `datetime`/`timestamp`     | Plain `<input type="datetime-local">`, same as flat mode               |
-| `input-yes-no.ree`             | `yes_no`                   | Hardcoded 0/1 `<select>`, labels via `props.selectors["0"]`/`["1"]`   |
-| `input-markdown.ree`           | `markdown`                 | Wraps the `<markdown-editor>` web component                            |
-| `input-tags-select.ree`        | `tags`                     | Checkbox-group against a fixed vocabulary (`props.tag_options?.[name]`) - **not** the same as `input-tags.ree` (free-text chip entry), a different widget entirely |
-| `input-foreign-key.ree`        | plain foreign key          | Options via `props.fk_options?.[name]`                                |
-| `auto-complete.ree`            | `autocomplete` foreign key | Existing component, unchanged - see dedicated section above           |
-| `image-upload.ree`             | `image`                    | Existing component, unchanged - see dedicated section above           |
-| `file-upload.ree`              | `file`                     | Existing component, unchanged - see dedicated section above           |
+| Component (`components/`)  | Generator field type       | Notes                                                                                                                                                              |
+| -------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `input-text.ree`           | `input` (default/text)     |                                                                                                                                                                    |
+| `input-select.ree`         | `select`                   | Options via `props.options?.[name]`, not an HTML attribute                                                                                                         |
+| `input-checkbox.ree`       | `checkbox`                 |                                                                                                                                                                    |
+| `input-textarea.ree`       | `textarea`                 |                                                                                                                                                                    |
+| `input-date-masked.ree`    | `date`                     | Wraps the `<date-input>` web component (masked, locale-aware) - pre-existing component, `input-date.ree` is a plain `<input type="date">` and is not used here     |
+| `input-datetime-local.ree` | `datetime`/`timestamp`     | Plain `<input type="datetime-local">`, same as flat mode                                                                                                           |
+| `input-yes-no.ree`         | `yes_no`                   | Hardcoded 0/1 `<select>`, labels via `props.selectors["0"]`/`["1"]`                                                                                                |
+| `input-markdown.ree`       | `markdown`                 | Wraps the `<markdown-editor>` web component                                                                                                                        |
+| `input-tags-select.ree`    | `tags`                     | Checkbox-group against a fixed vocabulary (`props.tag_options?.[name]`) - **not** the same as `input-tags.ree` (free-text chip entry), a different widget entirely |
+| `input-foreign-key.ree`    | plain foreign key          | Options via `props.fk_options?.[name]`                                                                                                                             |
+| `auto-complete.ree`        | `autocomplete` foreign key | Existing component, unchanged - see dedicated section above                                                                                                        |
+| `image-upload.ree`         | `image`                    | Existing component, unchanged - see dedicated section above                                                                                                        |
+| `file-upload.ree`          | `file`                     | Existing component, unchanged - see dedicated section above                                                                                                        |
 
 The generator's tag-mode wrapper calls are built in-memory (no `fields_tags/*.ree` files on disk) - see `TAGS_MODE_TAG`/`generate_tags_mode_field()` in `generator/crud/form_ree.ts`. Flat mode (`generator/templates/fields/*.ree`) still loads from disk via `apply_template()`.
 
@@ -1182,7 +1197,9 @@ Including a file with a non-`.ree` extension (e.g. `{#include('./styles.css') }`
 const html = await engine.render("home/index", data);
 
 // Render from a template string directly
-const html = await engine.renderString("<p>{= greeting }</p>", { greeting: "Hello" });
+const html = await engine.renderString("<p>{= greeting }</p>", {
+	greeting: "Hello",
+});
 
 // Clear the compiled template cache (e.g. after hot-reload)
 engine.clearCache();
@@ -1341,16 +1358,16 @@ data: {
 
 `base_data` in `lib/bootstrap.ts` is passed to `initialize_render()` and merged into **every** template render automatically. No need to pass these values per-route.
 
-| Variable                   | Type / Value                           | Description                                         |
-| -------------------------- | -------------------------------------- | --------------------------------------------------- |
-| `site_name`                | `string` - `"reepolee App v<version>"` | App name with version from `package.json`           |
-| `year`                     | `number` - current year                | Useful for copyright footers                        |
-| `is_dev`                   | `boolean`                              | `true` when server started with `--dev`             |
-| `app_name`                 | `"main" \| "reeman" \| "reeqa"`     | Current application identity                         |
-| `version`                  | `string`                               | Package version in production, short timestamp in dev |
-| `dev_apps`                 | `Dev_app_link[]`                       | Local application links in development only          |
-| `nav_groups`               | `NavRouteGroup[]`                      | Navigation groups built from registered routes        |
-| `busy_poller`              | `boolean`                              | Enables busy-state polling for ReeQA                  |
+| Variable      | Type / Value                           | Description                                           |
+| ------------- | -------------------------------------- | ----------------------------------------------------- |
+| `site_name`   | `string` - `"reepolee App v<version>"` | App name with version from `package.json`             |
+| `year`        | `number` - current year                | Useful for copyright footers                          |
+| `is_dev`      | `boolean`                              | `true` when server started with `--dev`               |
+| `app_name`    | `"main" \| "reeman" \| "reeqa"`        | Current application identity                          |
+| `version`     | `string`                               | Package version in production, short timestamp in dev |
+| `dev_apps`    | `Dev_app_link[]`                       | Local application links in development only           |
+| `nav_groups`  | `NavRouteGroup[]`                      | Navigation groups built from registered routes        |
+| `busy_poller` | `boolean`                              | Enables busy-state polling for ReeQA                  |
 
 These merge with any per-render `data` argument. Per-render data takes precedence over `base_data`.
 
@@ -1469,7 +1486,11 @@ export async function GET_products(req: BunRequest) {
 				return '<span class="badge-green">In Stock</span>';
 			},
 			category_color: (category) => {
-				const colors = { electronics: "blue", clothing: "pink", books: "purple" };
+				const colors = {
+					electronics: "blue",
+					clothing: "pink",
+					books: "purple",
+				};
 				return colors[category] || "gray";
 			},
 		},

@@ -70,7 +70,7 @@ import { mock_db, mock_auth_middleware, mock_req, with_temp_dir, setup_template_
 | `mock_auth_middleware()`   | Returns `{ resolve_session, require_auth, require_module }`. All are no-op functions returning null.                                                                          |
 | `mock_req(headers?)`       | Creates a minimal BunRequest-like object with `headers: Map` and `url: "http://localhost/test"`.                                                                              |
 | `with_temp_dir(fn)`        | Creates a temp dir, runs the async callback with the dir path, then cleans up in `finally`.                                                                                   |
-| `setup_template_mocks()`   | Convenience: calls `mock.module("$config/db", mock_db)` + `mock.module("$platform/auth/middleware", mock_auth_middleware)`.                  |
+| `setup_template_mocks()`   | Convenience: calls `mock.module("$config/db", mock_db)` + `mock.module("$platform/auth/middleware", mock_auth_middleware)`.                                                   |
 
 ## Mock patterns
 
@@ -125,7 +125,12 @@ test("mocks fetch", async () => {
 
 ```typescript
 function mock_store(overrides?: Partial<RateLimitStore>): RateLimitStore {
-	return { incr: async () => 1, expire: async () => {}, get: async () => null, ...overrides };
+	return {
+		incr: async () => 1,
+		expire: async () => {},
+		get: async () => null,
+		...overrides,
+	};
 }
 ```
 
@@ -164,7 +169,9 @@ mock.module("$config/db", mock_db);
 mock.module("$platform/auth/middleware", mock_auth_middleware);
 
 test("render returns Response", async () => {
-	const engine = { render: async (name: string, data: any) => "<html>" + name + "</html>" };
+	const engine = {
+		render: async (name: string, data: any) => "<html>" + name + "</html>",
+	};
 	const { initialize_render, render } = await import("./render");
 	initialize_render(engine, { is_dev: false });
 	const result = await render("test", { data: {}, status: 200 });
@@ -192,18 +199,18 @@ rather than running the full pipeline. Use `afterEach` for cleanup with a `clean
 `apps/main/server.test.ts` mocks 10+ config/service modules to test the server module without booting
 a full HTTP server (avoids PID files, S3 checks, Redis connections):
 
-| Module                        | Purpose                |
-| ----------------------------- | ---------------------- |
-| `$config/supported_locales`   | Locale configuration   |
-| `$config/db`                  | DB access (empty mock) |
-| `$main/routes`                | Route definitions      |
-| `$lib/livereload`             | Hot reload (disabled)  |
-| `$lib/modules`                | Module system          |
-| `$lib/logger`                 | File logging           |
-| `$lib/s3`                     | S3 storage             |
-| `$lib/local_storage`          | Local storage          |
-| `$lib/feature_flags`          | Feature flags          |
-| `$queue/index`                | Background job queue   |
+| Module                      | Purpose                |
+| --------------------------- | ---------------------- |
+| `$config/supported_locales` | Locale configuration   |
+| `$config/db`                | DB access (empty mock) |
+| `$main/routes`              | Route definitions      |
+| `$lib/livereload`           | Hot reload (disabled)  |
+| `$lib/modules`              | Module system          |
+| `$lib/logger`               | File logging           |
+| `$lib/s3`                   | S3 storage             |
+| `$lib/local_storage`        | Local storage          |
+| `$lib/feature_flags`        | Feature flags          |
+| `$queue/index`              | Background job queue   |
 
 ## MySQL integration tests
 
@@ -217,8 +224,12 @@ import { get_test_db_connection, make_test_db_mock } from "$root/test_helpers";
 const test_db = get_test_db_connection();
 mock.module("$config/db", () => make_test_db_mock(test_db));
 
-beforeEach(async () => { await test_db.unsafe("START TRANSACTION"); });
-afterEach(async () => { await test_db.unsafe("ROLLBACK"); });
+beforeEach(async () => {
+	await test_db.unsafe("START TRANSACTION");
+});
+afterEach(async () => {
+	await test_db.unsafe("ROLLBACK");
+});
 ```
 
 ## Test isolation (`--parallel`)
@@ -241,22 +252,22 @@ bun test --no-parallel  # Single process (may have cross-file interference)
 Each module path can only be mocked **once** per process. Modules mocked by multiple test
 files (resolved by `--parallel` giving each file its own worker):
 
-| Module path                           | Conflict |
-| ------------------------------------- | -------- |
-| `$config/db`                          | **HIGH** - two incompatible mock types: `mock_db()` (empty void queries) vs `mock_db_real(test_db)` (real in-memory SQLite). |
-| `$config/supported_locales`           | **MEDIUM** - similar configs, may differ in `locale_names` keys.   |
-| `$config/db_structure`                | **LOW** - similar structure constants. |
-| `$platform/auth/middleware` | **LOW** - all use shared `mock_auth_middleware()`. |
-| `$platform/auth/cookies`    | **LOW** - same `get_session_id_from_request` pattern. |
+| Module path                 | Conflict                                                                                                                     |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `$config/db`                | **HIGH** - two incompatible mock types: `mock_db()` (empty void queries) vs `mock_db_real(test_db)` (real in-memory SQLite). |
+| `$config/supported_locales` | **MEDIUM** - similar configs, may differ in `locale_names` keys.                                                             |
+| `$config/db_structure`      | **LOW** - similar structure constants.                                                                                       |
+| `$platform/auth/middleware` | **LOW** - all use shared `mock_auth_middleware()`.                                                                           |
+| `$platform/auth/cookies`    | **LOW** - same `get_session_id_from_request` pattern.                                                                        |
 
 ## Date/time assertion guidelines
 
 - **Prefer specific expected values** over `toBeTruthy()` when the locale is known.
 - For `en-us` locale with `UTC` timezone, formats are deterministic:
-    - `js_date_to_locale_string`: `"MM/DD/YY"` (e.g., `"01/02/26"`)
-    - `js_time_to_locale_string`: `"h:mm AM/PM"` (e.g., `"10:30 AM"`)
-    - `js_datetime_to_locale_string`: `"MM/DD/YY, h:mm AM/PM"`
-    - `js_timestamp_to_locale_string`: `"MM/DD/YY, h:mm:ss AM/PM"`
+  - `js_date_to_locale_string`: `"MM/DD/YY"` (e.g., `"01/02/26"`)
+  - `js_time_to_locale_string`: `"h:mm AM/PM"` (e.g., `"10:30 AM"`)
+  - `js_datetime_to_locale_string`: `"MM/DD/YY, h:mm AM/PM"`
+  - `js_timestamp_to_locale_string`: `"MM/DD/YY, h:mm:ss AM/PM"`
 - Use `toBeTruthy()` only for locale-dependent tests (`sl-si`, `de-de`, no-locale) where the exact format varies by platform.
 
 ## Best practices

@@ -1,11 +1,7 @@
 {
 	"compilerOptions": {
-		"types": [
-			"bun"
-		],
-		"lib": [
-			"ESNext"
-		],
+		"types": ["bun"],
+		"lib": ["ESNext"],
 		"target": "ESNext",
 		"module": "Preserve",
 		"moduleDetection": "force",
@@ -23,45 +19,18 @@
 		"noUnusedParameters": false,
 		"noPropertyAccessFromIndexSignature": false,
 		"paths": {
-			"$config/*": [
-				"./config/*"
-			],
-			"$lib/*": [
-				"./lib/*"
-			],
-			"$root/*": [
-				"./*"
-			],
-			"$queue/*": [
-				"./queue/*"
-			],
-			"$vendor/*": [
-				"./vendor/*"
-			],
-			"$platform/*": [
-				"./platform/*"
-			],
-			"$main/*": [
-				"./apps/main/*"
-			],
-			"$reeman/*": [
-				"./apps/reeman/*"
-			],
-			"$reeqa/*": [
-				"./apps/reeqa/*"
-			],
-			"$generator/*": [
-				"./generator/*"
-			]
+			"$config/*": ["./config/*"],
+			"$lib/*": ["./lib/*"],
+			"$root/*": ["./*"],
+			"$queue/*": ["./queue/*"],
+			"$vendor/*": ["./vendor/*"],
+			"$platform/*": ["./platform/*"],
+			"$main/*": ["./apps/main/*"],
+			"$reeman/*": ["./apps/reeman/*"],
+			"$reeqa/*": ["./apps/reeqa/*"],
+			"$generator/*": ["./generator/*"]
 		}
 	},
-	"include": [
-		"**/*.ts",
-		"**/*.d.ts",
-		"scripts/install/reettier.ts"
-	],
-	"exclude": [
-		"generator/templates/**",
-		"generator/simple-route/**"
-	]
+	"include": ["**/*.ts", "**/*.d.ts", "scripts/install/reettier.ts"],
+	"exclude": ["generator/templates/**", "generator/simple-route/**"]
 }

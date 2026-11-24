@@ -61,10 +61,13 @@ async function download(url: string, out_path: string) {
 	const res = await fetch(url);
 	if (!res.ok) throw new Error(`Download failed: ${res.status}`);
 
-	const buf = Buffer.from(await res.arrayBuffer());
-	fs.writeFileSync(out_path, buf);
-
-	if (PLATFORM !== "win32") { fs.chmodSync(out_path, 0o755); }
+	// Write beside the target, then rename: overwriting a binary in place on
+	// macOS keeps the inode, the kernel's cached code signature no longer
+	// matches, and the next run is SIGKILLed before it prints anything.
+	const tmp_path = `${out_path}.download`;
+	await Bun.write(tmp_path, res);
+	if (PLATFORM !== "win32") { fs.chmodSync(tmp_path, 0o755); }
+	fs.renameSync(tmp_path, out_path);
 
 	log(`Saved: ${out_path}`);
 }
@@ -112,17 +115,16 @@ function bin_path() { return path.join(BIN_DIR, PLATFORM === "win32" ? "tw.exe" 
 // eslint-disable-next-line no-control-regex
 const ANSI_PATTERN = /\x1b\[[0-9;]*m/g;
 
+// Read both streams and ignore the exit code: the version banner isn't
+// guaranteed to land on stdout, and a non-zero exit used to make execSync
+// throw, so every run looked like "unknown" and re-downloaded the binary.
 async function get_installed_version(): Promise<string | null> {
-	const { execSync } = require("node:child_process");
 	try {
-		const output = execSync(`"${bin_path()}" --help`, {
-			encoding: "utf8",
-			stdio: ["ignore", "pipe", "ignore"],
-			env: { ...process.env, NO_COLOR: "1" },
-		});
-		const clean = output.replace(ANSI_PATTERN, "");
-		const match = clean.match(/tailwindcss v(\d+\.\d+\.\d+)/i);
-		return match ? match[1] : null;
+		const proc = Bun.spawnSync([bin_path(), "--help"], { stdout: "pipe", stderr: "pipe", env: { ...process.env, NO_COLOR: "1" } });
+		const output = (proc.stdout.toString() + proc.stderr.toString()).replace(ANSI_PATTERN, "");
+		const version = output.match(/tailwindcss v(\d+\.\d+\.\d+)/i)?.[1] ?? null;
+		if (!version) log(`${bin_path()} --help gave no version (exit ${proc.exitCode}${proc.signalCode ? `, ${proc.signalCode}` : ""})`);
+		return version;
 	} catch {
 		return null;
 	}

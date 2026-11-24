@@ -614,9 +614,7 @@
 				"translation": "変換を開始する前に .json ファイルを選択してください。"
 			},
 			"ui.no_sql_files": {
-				"placeholders": [
-					"{dialect}"
-				],
+				"placeholders": ["{dialect}"],
 				"source": "No .sql files found in sql/{dialect}/.",
 				"translation": "sql/{dialect}/ に .sql ファイルが見つかりません。"
 			},
@@ -933,22 +931,12 @@
 				"translation": "Dbルートが選択されていません。"
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No DB routes deleted|{count} db_route deleted|{count} db_routes deleted|{count} db_routes deleted|{count} db_routes deleted",
 				"translation": "削除されたDbルートはありません|{count} Dbルートを削除しました|{count} Dbルートを削除しました|{count} Dbルートを削除しました|{count} Dbルートを削除しました"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} db_route failed|{count} db_routes failed|{count} db_routes failed|{count} db_routes failed",
 				"translation": "|{count} Dbルートでエラーが発生しました|{count} Dbルートでエラーが発生しました|{count} Dbルートでエラーが発生しました|{count} Dbルートでエラーが発生しました"
 			},
@@ -1375,22 +1363,12 @@
 				"translation": "Dbテーブルが選択されていません。"
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No db tables deleted|{count} db_table deleted|{count} db_tables deleted|{count} db_tables deleted|{count} db_tables deleted",
 				"translation": "削除されたDbテーブルはありません|{count} Dbテーブルを削除しました|{count} Dbテーブルを削除しました|{count} Dbテーブルを削除しました|{count} Dbテーブルを削除しました"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} db_table failed|{count} db_tables failed|{count} db_tables failed|{count} db_tables failed",
 				"translation": "|{count} Dbテーブルでエラーが発生しました|{count} Dbテーブルでエラーが発生しました|{count} Dbテーブルでエラーが発生しました|{count} Dbテーブルでエラーが発生しました"
 			},
@@ -1687,22 +1665,12 @@
 				"translation": "No translations selected."
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No translations deleted|{count} translation deleted|{count} translations deleted|{count} translations deleted|{count} translations deleted",
 				"translation": "No translations deleted|{count} translation deleted|{count} translations deleted|{count} translations deleted|{count} translations deleted"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} translation failed|{count} translations failed|{count} translations failed|{count} translations failed",
 				"translation": "|{count} translation failed|{count} translations failed|{count} translations failed|{count} translations failed"
 			},
@@ -2398,22 +2366,12 @@
 				"translation": "No global filters selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No global scopes archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "No global scopes archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} global filter failed to delete|{count} global filters failed to delete|{count} global filters failed to delete|{count} global filters failed to delete",
 				"translation": "|{count} グローバルフィルターの削除に失敗しました|{count} グローバルフィルターの削除に失敗しました|{count} グローバルフィルターの削除に失敗しました|{count} グローバルフィルターの削除に失敗しました"
 			},
@@ -2635,22 +2593,12 @@
 				"translation": "No images selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No images archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "No images archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} image failed|{count} images failed|{count} images failed|{count} images failed",
 				"translation": "|{count} 画像でエラーが発生しました|{count} 画像でエラーが発生しました|{count} 画像でエラーが発生しました|{count} 画像でエラーが発生しました"
 			},
@@ -3291,22 +3239,12 @@
 				"translation": "No modules selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No modules archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "No modules archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} module failed|{count} modules failed|{count} modules failed|{count} modules failed",
 				"translation": "|{count} モジュールでエラーが発生しました|{count} モジュールでエラーが発生しました|{count} モジュールでエラーが発生しました|{count} モジュールでエラーが発生しました"
 			},
@@ -4427,9 +4365,7 @@
 				"translation": "保存して閉じる"
 			},
 			"messages.delete_namespace_confirm": {
-				"placeholders": [
-					"{namespace}"
-				],
+				"placeholders": ["{namespace}"],
 				"source": "All translations in \"{namespace}\" will be permanently deleted.",
 				"translation": "\"{namespace}\" 内のすべての翻訳が完全に削除されます。"
 			},
@@ -4661,22 +4597,12 @@
 				"translation": "No users selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No users archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "No users archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} user failed|{count} users failed|{count} users failed|{count} users failed",
 				"translation": "|{count} ユーザーでエラーが発生しました|{count} ユーザーでエラーが発生しました|{count} ユーザーでエラーが発生しました|{count} ユーザーでエラーが発生しました"
 			},
@@ -6515,16 +6441,12 @@
 				"translation": "現在のパスワードが必要です"
 			},
 			"errors.date_max": {
-				"placeholders": [
-					"{max}"
-				],
+				"placeholders": ["{max}"],
 				"source": "Date must be on or before {max}.",
 				"translation": "日付は{max}以前である必要があります。"
 			},
 			"errors.date_min": {
-				"placeholders": [
-					"{min}"
-				],
+				"placeholders": ["{min}"],
 				"source": "Date must be on or after {min}.",
 				"translation": "日付は{min}以降である必要があります。"
 			},
@@ -6964,9 +6886,7 @@
 				"translation": "No results found"
 			},
 			"ui.busy_poller_translating": {
-				"placeholders": [
-					"{count}"
-				],
+				"placeholders": ["{count}"],
 				"source": "{count} translation job(s) running - translations appear when they finish.",
 				"translation": "{count} translation job(s) running - translations appear when they finish."
 			},
@@ -7198,10 +7118,7 @@
 				"translation": "招待を送信"
 			},
 			"email.body": {
-				"placeholders": [
-					"{url}",
-					"{username}"
-				],
+				"placeholders": ["{url}", "{username}"],
 				"source": "Hi {username},\n\nYou've been invited. Complete your registration here:\n{url}",
 				"translation": "{username} さん、\n\n招待されました。ここで登録を完了してください:\n{url}"
 			},

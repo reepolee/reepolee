@@ -62,17 +62,17 @@ This is safe by construction, not by validation:
 
 The file defines DB conventions used by generators:
 
-| Constant              | Default                                                                | Purpose                                                            |
-| --------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `IGNORE_TABLES`       | `modules, sessions, email, images, files, users, translations`         | Tables skipped during bulk generation                              |
-| `MAINTENANCE_FIELDS`  | `created_at, updated_at`                                               | Fields managed by DB, excluded from form save                      |
-| `IGNORE_INDEX_FIELDS` | `display, option_display, option_text, search_text, hashed_password, previous_hashed_password` | Fields excluded from index/list column display |
-| `IGNORE_ORDER_FIELDS` | `option_display, search_text, hashed_password, previous_hashed_password` | Fields excluded from sort dropdown                               |
-| `BOOLEAN_PREFIXES`    | `is_, has_, can_`                                                      | Prefixes for boolean fields (shown as yes/no selects)              |
-| `DATE_SUFFIXES`       | `_on, _by`                                                             | Date field suffixes                                                |
-| `DATETIME_SUFFIXES`   | `_at`                                                                  | Datetime field suffixes                                            |
-| `CURRENCY_FIELD`      | `decimal(18,2)`                                                        | Column type treated as currency, renders with `display_currency()` |
-| `PERCENT_FIELD`       | `decimal(12,4)`                                                        | Column type treated as percentage                                  |
+| Constant              | Default                                                                                        | Purpose                                                            |
+| --------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `IGNORE_TABLES`       | `modules, sessions, email, images, files, users, translations`                                 | Tables skipped during bulk generation                              |
+| `MAINTENANCE_FIELDS`  | `created_at, updated_at`                                                                       | Fields managed by DB, excluded from form save                      |
+| `IGNORE_INDEX_FIELDS` | `display, option_display, option_text, search_text, hashed_password, previous_hashed_password` | Fields excluded from index/list column display                     |
+| `IGNORE_ORDER_FIELDS` | `option_display, search_text, hashed_password, previous_hashed_password`                       | Fields excluded from sort dropdown                                 |
+| `BOOLEAN_PREFIXES`    | `is_, has_, can_`                                                                              | Prefixes for boolean fields (shown as yes/no selects)              |
+| `DATE_SUFFIXES`       | `_on, _by`                                                                                     | Date field suffixes                                                |
+| `DATETIME_SUFFIXES`   | `_at`                                                                                          | Datetime field suffixes                                            |
+| `CURRENCY_FIELD`      | `decimal(18,2)`                                                                                | Column type treated as currency, renders with `display_currency()` |
+| `PERCENT_FIELD`       | `decimal(12,4)`                                                                                | Column type treated as percentage                                  |
 
 ---
 
@@ -85,19 +85,19 @@ underlying logic lives in library modules (`generator/schema.ts`, `generator/cru
 (`generator/reeman/cli.ts`) call directly. The CLI-only `install` command is the exception: it deliberately
 runs the unpacked marketplace `install.ps1` or `install.sh` as a subprocess.
 
-| Subcommand                 | Description                                                                                                                                                                                                                 |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `schema <table\|all>`       | `[--prefix <dir>] [--parent <table>]` - introspects DB and writes flat route schema files. `--parent` detects FK and nests child under `apps/main/<parent>/<child>/`.                                                          |
-| `crud <table_name\|all>`    | `[--force] [--prefix <dir>] [--parent <table>]` - full pipeline: schema + CRUD generation for one table, or every table when the target is `all`/`all-tables`.                                                            |
-| `bulk <table...>`           | Full pipeline for a specific set of tables. See [README.md](../README.md#reeman-subcommand-reference) for usage.                                                                                                          |
-| `refresh-crud <table>`      | Refresh generated `.ree` field sections for a configured CRUD route.                                                                                                                                                       |
-| `install <archive.tar.gz>`  | CLI-only. Warns to back up the repository and database, unpacks one folder under `marketplace/`, runs the current platform installer, then asks whether to keep the unpacked folder.                                  |
-| *(bare)* `bun reeman`       | Interactive terminal UI for resource generation, DB ops, locale management, and bulk CRUD generation.                                                                                                                     |
-| `add-locale <locale_code>`  | `[--translate]` - adds a BCP 47 locale to the project.                                                                                                                                                                     |
-| `sync-translations [ns...]` | `[--translate]` - syncs translation structure across configured locales, optionally filling missing translations via AI.                                                                                                 |
-| **User**                    | `bun generator/user.ts` - creates a new user with hashed password (not part of reeman).                                                                                                                                    |
-| **Validation**              | `generator/validation_generator.ts` is a library module (Zod schema generation), called internally by the CRUD generator - not a CLI command.                                                                            |
-| **Simple route**            | `generator/simple-route/` - a skeleton for simple non-CRUD route generation.                                                                                                                                              |
+| Subcommand                  | Description                                                                                                                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `schema <table\|all>`       | `[--prefix <dir>] [--parent <table>]` - introspects DB and writes flat route schema files. `--parent` detects FK and nests child under `apps/main/<parent>/<child>/`.                |
+| `crud <table_name\|all>`    | `[--force] [--prefix <dir>] [--parent <table>]` - full pipeline: schema + CRUD generation for one table, or every table when the target is `all`/`all-tables`.                       |
+| `bulk <table...>`           | Full pipeline for a specific set of tables. See [README.md](../README.md#reeman-subcommand-reference) for usage.                                                                     |
+| `refresh-crud <table>`      | Refresh generated `.ree` field sections for a configured CRUD route.                                                                                                                 |
+| `install <archive.tar.gz>`  | CLI-only. Warns to back up the repository and database, unpacks one folder under `marketplace/`, runs the current platform installer, then asks whether to keep the unpacked folder. |
+| _(bare)_ `bun reeman`       | Interactive terminal UI for resource generation, DB ops, locale management, and bulk CRUD generation.                                                                                |
+| `add-locale <locale_code>`  | `[--translate]` - adds a BCP 47 locale to the project.                                                                                                                               |
+| `sync-translations [ns...]` | `[--translate]` - syncs translation structure across configured locales, optionally filling missing translations via AI.                                                             |
+| **User**                    | `bun generator/user.ts` - creates a new user with hashed password (not part of reeman).                                                                                              |
+| **Validation**              | `generator/validation_generator.ts` is a library module (Zod schema generation), called internally by the CRUD generator - not a CLI command.                                        |
+| **Simple route**            | `generator/simple-route/` - a skeleton for simple non-CRUD route generation.                                                                                                         |
 
 See [README.md](../README.md#generators) for the common flags (`--force`, `--translate`, `--prefix`, `--parent`) and auto-formatting details, or run `bun reeman --help` for the full subcommand reference.
 
@@ -113,10 +113,10 @@ See [README.md](../README.md#generators) for the common flags (`--force`, `--tra
 | All tables           | Full pipeline for every table in the database                                                                                                                                                                |
 | Remove route         | Delete a registered route (folder, imports, nav) - skips system routes                                                                                                                                       |
 | Remove module/prefix | Delete an entire prefixed route folder and all its sub-routes                                                                                                                                                |
-| Set database type    | Switch between MySQL and SQLite, update .env DEV_CONNECTION_STRING                                                                                                                                               |
+| Set database type    | Switch between MySQL and SQLite, update .env DEV_CONNECTION_STRING                                                                                                                                           |
 | Run SQL file         | Select and execute a .sql file (seed, init, etc.) against the database                                                                                                                                       |
-| Set session driver   | Switch session store between Redis and DB-auto (MySQL/SQLite from DEV_CONNECTION_STRING)                                                                                                                         |
-| Quick Start / Reset  | Orchestrated setup: DB type → SQL file → session driver → confirmed admin user, with prompt defaults read from `.env`                                                                                       |
+| Set session driver   | Switch session store between Redis and DB-auto (MySQL/SQLite from DEV_CONNECTION_STRING)                                                                                                                     |
+| Quick Start / Reset  | Orchestrated setup: DB type → SQL file → session driver → confirmed admin user, with prompt defaults read from `.env`                                                                                        |
 | Refresh CRUD         | Regenerate CRUD for an existing route (overwrites files, keeps schema). Detects nested children and passes `--parent` when refreshing them. After refreshing a parent, offers to re-apply child integration. |
 | Add locale           | Add a new BCP 47 locale to the system (database rows, config, etc.)                                                                                                                                          |
 
@@ -293,7 +293,7 @@ This drives:
 - **Form field**: `generate_input_field` (`generator/crud/form_ree.ts`) dispatches to `generator/templates/fields/markdown.ree`, rendering a `<markdown-editor>` custom element (`static/web-components/markdown-editor.js`, styled by `css/markdown-editor.css`).
 - **Grid cell**: `render_field_cell` (`generator/crud/render_field_cell.ts`) emits `{~ md(record.field) }` wrapped in a `line-clamp-5` container - the `md()` helper (`lib/template_helpers.ts`) renders the stored markdown source to HTML via `Bun.markdown.html()`.
 
-Use `md()` for rendering a stored markdown-type field's value; this is distinct from the `{@ path }` template tag, which renders a *translation* value as markdown (see [REE_TEMPLATES.md](REE_TEMPLATES.md)).
+Use `md()` for rendering a stored markdown-type field's value; this is distinct from the `{@ path }` template tag, which renders a _translation_ value as markdown (see [REE_TEMPLATES.md](REE_TEMPLATES.md)).
 
 ### Field hints
 

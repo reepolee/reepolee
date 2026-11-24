@@ -265,22 +265,12 @@
 				"translation": "No packages selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No packages archived|{count} package archived|{count} packages archived|{count} packages archived|{count} packages archived",
 				"translation": "No packages archived|{count} package archived|{count} packages archived|{count} packages archived|{count} packages archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} package failed|{count} packages failed|{count} packages failed|{count} packages failed",
 				"translation": "|{count} package failed|{count} packages failed|{count} packages failed|{count} packages failed"
 			},
@@ -914,22 +904,12 @@
 				"translation": "No teams selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No teams archived|{count} team archived|{count} teams archived|{count} teams archived|{count} teams archived",
 				"translation": "No teams archived|{count} team archived|{count} teams archived|{count} teams archived|{count} teams archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} team failed|{count} teams failed|{count} teams failed|{count} teams failed",
 				"translation": "|{count} team failed|{count} teams failed|{count} teams failed|{count} teams failed"
 			},
@@ -1448,22 +1428,12 @@
 				"translation": "No arena tables selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No arena tables archived|{count} arena_table archived|{count} arena_tables archived|{count} arena_tables archived|{count} arena_tables archived",
 				"translation": "No arena tables archived|{count} arena_table archived|{count} arena_tables archived|{count} arena_tables archived|{count} arena_tables archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} arena_table failed|{count} arena_tables failed|{count} arena_tables failed|{count} arena_tables failed",
 				"translation": "|{count} arena_table failed|{count} arena_tables failed|{count} arena_tables failed|{count} arena_tables failed"
 			},
@@ -1830,22 +1800,12 @@
 				"translation": "No countries selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No countries archived|{count} country archived|{count} countrys archived|{count} countrys archived|{count} countrys archived",
 				"translation": "No countries archived|{count} country archived|{count} countrys archived|{count} countrys archived|{count} countrys archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} country failed|{count} countrys failed|{count} countrys failed|{count} countrys failed",
 				"translation": "|{count} country failed|{count} countrys failed|{count} countrys failed|{count} countrys failed"
 			},
@@ -2224,22 +2184,12 @@
 				"translation": "No programmes selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No programmes archived|{count} programme archived|{count} programmes archived|{count} programmes archived|{count} programmes archived",
 				"translation": "No programmes archived|{count} programme archived|{count} programmes archived|{count} programmes archived|{count} programmes archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} programme failed|{count} programmes failed|{count} programmes failed|{count} programmes failed",
 				"translation": "|{count} programme failed|{count} programmes failed|{count} programmes failed|{count} programmes failed"
 			},
@@ -2596,22 +2546,12 @@
 				"translation": "No season statuses selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No season statuses archived|{count} season_status archived|{count} season_statuss archived|{count} season_statuss archived|{count} season_statuss archived",
 				"translation": "No season statuses archived|{count} season_status archived|{count} season_statuss archived|{count} season_statuss archived|{count} season_statuss archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} season_status failed|{count} season_statuss failed|{count} season_statuss failed|{count} season_statuss failed",
 				"translation": "|{count} season_status failed|{count} season_statuss failed|{count} season_statuss failed|{count} season_statuss failed"
 			},
@@ -2998,22 +2938,12 @@
 				"translation": "No seasons selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No seasons archived|{count} season archived|{count} seasons archived|{count} seasons archived|{count} seasons archived",
 				"translation": "No seasons archived|{count} season archived|{count} seasons archived|{count} seasons archived|{count} seasons archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} season failed|{count} seasons failed|{count} seasons failed|{count} seasons failed",
 				"translation": "|{count} season failed|{count} seasons failed|{count} seasons failed|{count} seasons failed"
 			},
@@ -3526,9 +3456,7 @@
 				"translation": "Select a file to inspect its contents before choosing what to import."
 			},
 			"ui.no_sql_files": {
-				"placeholders": [
-					"{dialect}"
-				],
+				"placeholders": ["{dialect}"],
 				"source": "No .sql files found in sql/{dialect}/.",
 				"translation": "No .sql files found in sql/{dialect}/."
 			},
@@ -3935,22 +3863,12 @@
 				"translation": "No DB routes selected."
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No DB routes deleted|{count} db_route deleted|{count} db_routes deleted|{count} db_routes deleted|{count} db_routes deleted",
 				"translation": "No DB routes deleted|{count} db_route deleted|{count} db_routes deleted|{count} db_routes deleted|{count} db_routes deleted"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} db_route failed|{count} db_routes failed|{count} db_routes failed|{count} db_routes failed",
 				"translation": "|{count} db_route failed|{count} db_routes failed|{count} db_routes failed|{count} db_routes failed"
 			},
@@ -4487,22 +4405,12 @@
 				"translation": "No db tables selected."
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No db tables deleted|{count} db_table deleted|{count} db_tables deleted|{count} db_tables deleted|{count} db_tables deleted",
 				"translation": "No db tables deleted|{count} db_table deleted|{count} db_tables deleted|{count} db_tables deleted|{count} db_tables deleted"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} db_table failed|{count} db_tables failed|{count} db_tables failed|{count} db_tables failed",
 				"translation": "|{count} db_table failed|{count} db_tables failed|{count} db_tables failed|{count} db_tables failed"
 			},
@@ -4859,22 +4767,12 @@
 				"translation": "No translations selected."
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No translations deleted|{count} translation deleted|{count} translations deleted|{count} translations deleted|{count} translations deleted",
 				"translation": "No translations deleted|{count} translation deleted|{count} translations deleted|{count} translations deleted|{count} translations deleted"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} translation failed|{count} translations failed|{count} translations failed|{count} translations failed",
 				"translation": "|{count} translation failed|{count} translations failed|{count} translations failed|{count} translations failed"
 			},
@@ -5590,22 +5488,12 @@
 				"translation": "No global filters selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No global scopes archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "No global scopes archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} global filter failed to delete|{count} global filters failed to delete|{count} global filters failed to delete|{count} global filters failed to delete",
 				"translation": "|{count} global filter failed to delete|{count} global filters failed to delete|{count} global filters failed to delete|{count} global filters failed to delete"
 			},
@@ -5842,22 +5730,12 @@
 				"translation": "No images selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No images archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "No images archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} image failed|{count} images failed|{count} images failed|{count} images failed",
 				"translation": "|{count} image failed|{count} images failed|{count} images failed|{count} images failed"
 			},
@@ -6558,22 +6436,12 @@
 				"translation": "No modules selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No modules archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "No modules archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} module failed|{count} modules failed|{count} modules failed|{count} modules failed",
 				"translation": "|{count} module failed|{count} modules failed|{count} modules failed|{count} modules failed"
 			},
@@ -7750,9 +7618,7 @@
 				"translation": "Save & close"
 			},
 			"messages.delete_namespace_confirm": {
-				"placeholders": [
-					"{namespace}"
-				],
+				"placeholders": ["{namespace}"],
 				"source": "All translations in \"{namespace}\" will be permanently deleted.",
 				"translation": "All translations in \"{namespace}\" will be permanently deleted."
 			},
@@ -7989,22 +7855,12 @@
 				"translation": "No users selected."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No users archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "No users archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} user failed|{count} users failed|{count} users failed|{count} users failed",
 				"translation": "|{count} user failed|{count} users failed|{count} users failed|{count} users failed"
 			},
@@ -9893,16 +9749,12 @@
 				"translation": "Current password is required"
 			},
 			"errors.date_max": {
-				"placeholders": [
-					"{max}"
-				],
+				"placeholders": ["{max}"],
 				"source": "Date must be on or before {max}.",
 				"translation": "Date must be on or before {max}."
 			},
 			"errors.date_min": {
-				"placeholders": [
-					"{min}"
-				],
+				"placeholders": ["{min}"],
 				"source": "Date must be on or after {min}.",
 				"translation": "Date must be on or after {min}."
 			},
@@ -10352,9 +10204,7 @@
 				"translation": "No results found"
 			},
 			"ui.busy_poller_translating": {
-				"placeholders": [
-					"{count}"
-				],
+				"placeholders": ["{count}"],
 				"source": "{count} translation job(s) running - translations appear when they finish.",
 				"translation": "{count} translation job(s) running - translations appear when they finish."
 			},
@@ -10626,10 +10476,7 @@
 				"translation": "Send invitation"
 			},
 			"email.body": {
-				"placeholders": [
-					"{url}",
-					"{username}"
-				],
+				"placeholders": ["{url}", "{username}"],
 				"source": "Hi {username},\n\nYou've been invited. Complete your registration here:\n{url}",
 				"translation": "Hi {username},\n\nYou've been invited. Complete your registration here:\n{url}"
 			},

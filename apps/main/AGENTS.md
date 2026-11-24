@@ -23,19 +23,19 @@
 
 ## Layout
 
-| Path                  | Role                                                           |
-| --------------------- | -------------------------------------------------------------- |
-| `routes.ts`           | The route registry - aggregates module `route_definitions: RouteDefinition[]`. Appended by generators. |
-| `types.ts`            | Shared route types                                             |
-| `home/`               | Home page                                                      |
-| `examples/`           | Example routes: `kitchen_sink/`, `signals/` |
-| `system/`             | Hand-written admin/system routes (see below)                  |
-| `<table>/`            | **Generated** CRUD route folders                              |
+| Path        | Role                                                                                                   |
+| ----------- | ------------------------------------------------------------------------------------------------------ |
+| `routes.ts` | The route registry - aggregates module `route_definitions: RouteDefinition[]`. Appended by generators. |
+| `types.ts`  | Shared route types                                                                                     |
+| `home/`     | Home page                                                                                              |
+| `examples/` | Example routes: `kitchen_sink/`, `signals/`                                                            |
+| `system/`   | Hand-written admin/system routes (see below)                                                           |
+| `<table>/`  | **Generated** CRUD route folders                                                                       |
 
 ## `system/` routes (hand-written)
 
-| Folder  | Purpose                                                            |
-| ------- | ----------------------------------------------------------------- |
+| Folder  | Purpose                                                                                                                                                                    |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `auth/` | Login, logout, register (invite-only), profile, password, invite. Multi-file barrel module. Session-type stack: `types.ts` -> `sql.ts` -> `helpers.ts` -> `middleware.ts`. |
 
 The former admin pages under `system/` (users, images, files, queues, translations,

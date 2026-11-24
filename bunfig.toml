@@ -4,3 +4,14 @@ noOrphans = true
 
 [test]
 coveragePathIgnorePatterns = ["generator/templates/**", "vendor/**"]
+
+[fmt]
+useTabs = true
+printWidth = 180
+# reettier owns these; bun fmt handles json/jsonc/md/yaml/toml
+ignorePatterns = ["*.ts", "*.js", "*.mjs", "*.cjs", "*.css", "*.ree", "*.html", "vendor/**", "static/**", "marketplace/**", ".agents/**", "logs/**"]
+
+# VS Code / wrangler reject trailing commas in jsonc
+[[fmt.overrides]]
+files = ["*.jsonc"]
+options = { trailingComma = "none" }

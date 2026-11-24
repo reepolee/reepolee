@@ -39,9 +39,9 @@ Bypass with `git commit --no-verify` (or `-n`) for WIP/emergency commits.
 - Static files in `static/` are served directly.
 - **`await prev_server.stop()`** - macOS holds the port in TIME_WAIT briefly, so the old server stop must be awaited before starting a new one across `--watch` reloads.
 - **Translation sync timing:** to prevent premature route reloads before translations are committed:
-    - The CRUD generator defers writing `apps/main/routes.ts` until AFTER `sync_all_namespaces()` completes (stored in `_deferred_routes_content`, written just before `notify_server_reload()`).
-    - The reeman calls `notify_server_reload()` after `sync_all_namespaces()` so the server picks up newly translated nav labels and CRUD keys.
-    - `notify_server_reload()` requests `POST /__reload-routes`, which imports the latest registry, rebuilds the live route table, and updates Bun's native production routes without restarting the process. The reload endpoint requires `INTERNAL_ADMIN_ENDPOINTS=true` and `RELOAD_SECRET`. If it is unavailable, development falls back to stamping `apps/main/routes.ts` for Bun `--hot`.
+  - The CRUD generator defers writing `apps/main/routes.ts` until AFTER `sync_all_namespaces()` completes (stored in `_deferred_routes_content`, written just before `notify_server_reload()`).
+  - The reeman calls `notify_server_reload()` after `sync_all_namespaces()` so the server picks up newly translated nav labels and CRUD keys.
+  - `notify_server_reload()` requests `POST /__reload-routes`, which imports the latest registry, rebuilds the live route table, and updates Bun's native production routes without restarting the process. The reload endpoint requires `INTERNAL_ADMIN_ENDPOINTS=true` and `RELOAD_SECRET`. If it is unavailable, development falls back to stamping `apps/main/routes.ts` for Bun `--hot`.
 
 ## SQL connection-pool gotcha
 
@@ -73,7 +73,10 @@ async function run() {
 	process.exit(0);
 }
 
-run().catch((err) => { console.error(err); process.exit(1); });
+run().catch((err) => {
+	console.error(err);
+	process.exit(1);
+});
 ```
 
 **Option B - `sql.reserve()` to hold a dedicated, persistent connection:**
@@ -110,8 +113,8 @@ See [CONTEXT.md](CONTEXT.md#redis) for glossary definitions. API docs:
 Use the proper import syntax - never `Bun.RedisClient` or `(Bun as any).RedisClient`:
 
 ```typescript
-import { redis } from "bun";        // default client (reads REDIS_URL env var)
-import { RedisClient } from "bun";  // explicit client type
+import { redis } from "bun"; // default client (reads REDIS_URL env var)
+import { RedisClient } from "bun"; // explicit client type
 const client = new RedisClient("redis://..."); // custom connection
 ```
 
@@ -171,14 +174,14 @@ Middleware `lib/middleware/csrf.ts` signs tokens with `Bun.CSRF`. See
 
 | Var           | Required            | Default | Purpose                                  |
 | ------------- | ------------------- | ------- | ---------------------------------------- |
-| `CSRF_SECRET` | **Yes in `--prod`** | *unset* | HMAC signing key, minimum 32 characters. |
+| `CSRF_SECRET` | **Yes in `--prod`** | _unset_ | HMAC signing key, minimum 32 characters. |
 
 `CSRF_SECRET` is resolved at boot by `assert_csrf_secret()` (called from
 `lib/bootstrap.ts`), so a production server missing it **fails to start** rather than
 403ing every form submission. It must stay the same across deploys: a secret
 regenerated per boot invalidates every form that was open across a restart. Generate
 once with `openssl rand -base64 48` and set it in the systemd unit
-([operations/reepolee.service](../operations/reepolee.service)) *before* deploying.
+([operations/reepolee.service](../operations/reepolee.service)) _before_ deploying.
 Development and tests fall back to an ephemeral per-process secret and log a warning,
 so a fresh checkout needs no setup.
 
@@ -189,7 +192,7 @@ only way to accept one is the old "submitted field equals cookie" comparison, an
 comparison is transplantable by construction - keeping it would leave the binding
 inert, since a token lifted from one identity would still validate for another.
 
-Upgrading a *live* deployment would have needed a dual-accept window, or every form
+Upgrading a _live_ deployment would have needed a dual-accept window, or every form
 already open in a browser would 403 at deploy. This app has no public users yet, so
 that window was dropped and the weaker path does not exist at all. Anyone holding a
 stale token gets one 403 and a fresh signed token on the next GET.

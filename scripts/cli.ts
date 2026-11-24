@@ -1,7 +1,6 @@
 import { install_reettier } from "./install/reettier";
 import { install_reesql } from "./install/reesql";
 import { install_tailwind } from "./install/tailwind";
-import { install_tsc } from "./install/tsc";
 import { install_vips } from "./install/vips";
 import { install_zod_types } from "./install/zod_types";
 import { set_verbose } from "./install/reporter";
@@ -58,17 +57,6 @@ switch (command) {
 			process.exit(0);
 			break;
 		}
-	case "tsc":
-		{
-			const version_arg = args.find((a) => a.startsWith("--version="));
-			const version = version_arg?.split("=")[1] ?? "latest";
-
-			const detail = await install_tsc({ version, get_task: `get:${command}` });
-			await record_added_tool("typescript", detail);
-			console.log(`[tsc] ${detail}`);
-			process.exit(0);
-			break;
-		}
 	case "zod-types":
 		{
 			const detail = await install_zod_types();
@@ -85,8 +73,6 @@ Usage:
   bun scripts/cli.ts reesql
   bun scripts/cli.ts tw --version=latest
   bun scripts/cli.ts tw --version=4.3.3
-  bun scripts/cli.ts tsc --version=latest
-  bun scripts/cli.ts tsc --version=7.0.2
   bun scripts/cli.ts zod-types
 		`);
 }

@@ -81,23 +81,23 @@ apps/main/users/
 
 ### Safe to Customize (Preserved)
 
-| File | Zone | Safe? | How |
-|------|------|-------|-----|
-| **form.ree** | Inside `<!-- GEN:FIELDS:START/END -->` | ✅ | Edit HTML, add CSS, add event listeners |
-| **index.ree** | Inside `<!-- GEN:FIELDS:*:START/END -->` | ✅ | Edit headers, cells, add styling |
-| **index.ts** | Anywhere (never regenerated) | ✅ | Add business logic, validation, side effects |
-| **sql.custom.ts** | Entire file | ✅ | Add custom queries (separate file) |
-| **table.ts** | Entire file | ✅ | Edit config, add custom attributes |
+| File              | Zone                                     | Safe? | How                                          |
+| ----------------- | ---------------------------------------- | ----- | -------------------------------------------- |
+| **form.ree**      | Inside `<!-- GEN:FIELDS:START/END -->`   | ✅    | Edit HTML, add CSS, add event listeners      |
+| **index.ree**     | Inside `<!-- GEN:FIELDS:*:START/END -->` | ✅    | Edit headers, cells, add styling             |
+| **index.ts**      | Anywhere (never regenerated)             | ✅    | Add business logic, validation, side effects |
+| **sql.custom.ts** | Entire file                              | ✅    | Add custom queries (separate file)           |
+| **table.ts**      | Entire file                              | ✅    | Edit config, add custom attributes           |
 
 ### Unsafe to Customize (Lost on Regeneration)
 
-| File | Zone | Safe? | Solution |
-|------|------|-------|----------|
-| **form.ree** | Outside markers | ❌ | Move to inside markers or sql.custom.ts |
-| **index.ree** | Outside markers | ❌ | Move to inside markers |
-| **sql.ts** | Anywhere | ❌ | Use sql.custom.ts instead |
-| **schema.generated.ts** | Anywhere | ❌ | Edit config.ts instead |
-| **Markers** | Delete/move markers | ❌ | Never delete markers |
+| File                    | Zone                | Safe? | Solution                                |
+| ----------------------- | ------------------- | ----- | --------------------------------------- |
+| **form.ree**            | Outside markers     | ❌    | Move to inside markers or sql.custom.ts |
+| **index.ree**           | Outside markers     | ❌    | Move to inside markers                  |
+| **sql.ts**              | Anywhere            | ❌    | Use sql.custom.ts instead               |
+| **schema.generated.ts** | Anywhere            | ❌    | Edit config.ts instead                  |
+| **Markers**             | Delete/move markers | ❌    | Never delete markers                    |
 
 ---
 
@@ -235,6 +235,7 @@ FROM users;
 ```
 
 **Result:**
+
 - `fields` = all table columns (for form)
 - `v_fields` = view columns (for list)
 
@@ -352,19 +353,19 @@ SELECT * FROM orders WHERE status = 'pending' AND id > 50000 LIMIT 20;  -- Still
 
 ```html
 <!-- GEN:FIELDS:START -->
-  <input name="email" id="email" />
-  
-  <script>
-    document.getElementById('email').addEventListener('blur', async (e) => {
-      const exists = await fetch(`/api/check-email?email=${e.target.value}`)
-        .then(r => r.json())
-        .then(d => d.exists);
-      
-      if (exists) {
-        e.target.classList.add('is-invalid');
-      }
-    });
-  </script>
+<input name="email" id="email" />
+
+<script>
+	document.getElementById("email").addEventListener("blur", async (e) => {
+		const exists = await fetch(`/api/check-email?email=${e.target.value}`)
+			.then((r) => r.json())
+			.then((d) => d.exists);
+
+		if (exists) {
+			e.target.classList.add("is-invalid");
+		}
+	});
+</script>
 <!-- GEN:FIELDS:END -->
 ```
 
@@ -372,16 +373,16 @@ SELECT * FROM orders WHERE status = 'pending' AND id > 50000 LIMIT 20;  -- Still
 
 ```html
 <!-- GEN:FIELDS:START -->
-  <input name="price" id="price" />
-  
-  <script>
-    document.getElementById('price').addEventListener('input', (e) => {
-      const value = parseFloat(e.target.value);
-      if (value < 0) {
-        e.target.value = 0;
-      }
-    });
-  </script>
+<input name="price" id="price" />
+
+<script>
+	document.getElementById("price").addEventListener("input", (e) => {
+		const value = parseFloat(e.target.value);
+		if (value < 0) {
+			e.target.value = 0;
+		}
+	});
+</script>
 <!-- GEN:FIELDS:END -->
 ```
 
@@ -390,22 +391,19 @@ SELECT * FROM orders WHERE status = 'pending' AND id > 50000 LIMIT 20;  -- Still
 ```typescript
 // apps/main/users/index.ts
 export async function post(req: Request, ctx: RequestContext) {
-  const body = await req.json();
-  
-  // Custom validation
-  if (body.email.includes('+')) {
-    return new Response(
-      JSON.stringify({ error: "Email aliases not allowed" }),
-      { status: 400 }
-    );
-  }
-  
-  // Custom side effect
-  await send_welcome_email(body.email);
-  
-  // Standard create
-  const user = await sql.create_record(body);
-  return render(req, "index.ree", { created: user });
+	const body = await req.json();
+
+	// Custom validation
+	if (body.email.includes("+")) {
+		return new Response(JSON.stringify({ error: "Email aliases not allowed" }), { status: 400 });
+	}
+
+	// Custom side effect
+	await send_welcome_email(body.email);
+
+	// Standard create
+	const user = await sql.create_record(body);
+	return render(req, "index.ree", { created: user });
 }
 ```
 
@@ -414,15 +412,15 @@ export async function post(req: Request, ctx: RequestContext) {
 ```typescript
 // apps/main/users/sql.custom.ts
 export async function get_active_users() {
-  return await db`SELECT * FROM users WHERE status = 'active'`;
+	return await db`SELECT * FROM users WHERE status = 'active'`;
 }
 
 // apps/main/users/index.ts
 import * as sql_custom from "./sql.custom.js";
 
 export async function get(req: Request, ctx: RequestContext) {
-  const users = await sql_custom.get_active_users();
-  return render(req, "index.ree", { users });
+	const users = await sql_custom.get_active_users();
+	return render(req, "index.ree", { users });
 }
 ```
 
@@ -430,28 +428,28 @@ export async function get(req: Request, ctx: RequestContext) {
 
 ## Troubleshooting Quick Fixes
 
-| Problem | Quick Fix |
-|---------|-----------|
-| Column not appearing in form | Run `bun reeman refresh-crud <table> --mode fields` |
-| Marker not found error | Check markers exist, don't delete `<!-- GEN:FIELDS:START/END -->` |
-| FK dropdown empty | Verify FK table exists and has data |
-| Slow pagination | Check table size; if > 100k rows, switch to cursor |
-| Customizations lost | Ensure they're inside markers |
-| Can't edit after regeneration | Check if edits are outside markers |
-| View doesn't have new column | Update view SQL, then regenerate |
-| Merge conflict in CRUD files | Accept regenerated version, re-apply customizations |
+| Problem                       | Quick Fix                                                         |
+| ----------------------------- | ----------------------------------------------------------------- |
+| Column not appearing in form  | Run `bun reeman refresh-crud <table> --mode fields`               |
+| Marker not found error        | Check markers exist, don't delete `<!-- GEN:FIELDS:START/END -->` |
+| FK dropdown empty             | Verify FK table exists and has data                               |
+| Slow pagination               | Check table size; if > 100k rows, switch to cursor                |
+| Customizations lost           | Ensure they're inside markers                                     |
+| Can't edit after regeneration | Check if edits are outside markers                                |
+| View doesn't have new column  | Update view SQL, then regenerate                                  |
+| Merge conflict in CRUD files  | Accept regenerated version, re-apply customizations               |
 
 ---
 
 ## File Sizes & Performance
 
-| Item | Typical Size | Notes |
-|------|--------------|-------|
-| form.ree | 2-5 KB | Grows with fields |
-| index.ree | 3-8 KB | Grows with columns in view |
-| index.ts | 15-30 KB | Grows with custom logic |
-| sql.ts | 8-15 KB | Grows with FK count and features |
-| Total per CRUD | ~50 KB | Minimal overhead |
+| Item           | Typical Size | Notes                            |
+| -------------- | ------------ | -------------------------------- |
+| form.ree       | 2-5 KB       | Grows with fields                |
+| index.ree      | 3-8 KB       | Grows with columns in view       |
+| index.ts       | 15-30 KB     | Grows with custom logic          |
+| sql.ts         | 8-15 KB      | Grows with FK count and features |
+| Total per CRUD | ~50 KB       | Minimal overhead                 |
 
 ---
 

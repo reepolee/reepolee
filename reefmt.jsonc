@@ -1,31 +1,16 @@
 {
 	// Directories to skip when formatting - any folder matching a name
 	// in this list is skipped, regardless of its location in the project.
-	"skipDirs": [
-		"node_modules",
-		"vendor",
-		"vendors",
-		"dist",
-		"static",
-		"templates"
-	],
+	"skipDirs": ["node_modules", "vendor", "vendors", "dist", "static", "templates"],
 	// Glob patterns for files to skip (e.g. "generator/templates/**/*.ts").
 	// Matches file paths relative to the project root.
 	"skipFiles": [],
 	// Compound extensions to always skip, regardless of "extensions".
 	// A file ending in ".min.js" is skipped even if "js" is in extensions.
-	"skipExtensions": [
-		"min.js",
-		"min.css"
-	],
+	"skipExtensions": ["min.js", "min.css"],
 	// File extensions to format. Only files with these extensions will be
 	// picked up during recursive directory walks or glob matching.
-	"extensions": [
-		"ree",
-		"ts",
-		"js",
-		"css"
-	],
+	"extensions": ["ree", "ts", "js", "css"],
 	// Whether to skip dot-directories (folders starting with '.',
 	// like .git, .next, .cache, .svelte-kit, etc.).
 	"skipDotDirs": true,

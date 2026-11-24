@@ -21,6 +21,7 @@ Reepolee uses a **two-field architecture** to separate table-backed data from vi
 - **`v_fields`** - Columns from an optional database view (used for list/grid display only)
 
 This allows:
+
 - Forms to work with real table data (validation, updates)
 - Lists to show computed/derived columns without touching the table
 - Cleaner list UX (hide internal fields, show derived fields)
@@ -36,11 +37,13 @@ This allows:
 ### Field Filtering Rules
 
 **`IGNORE_INDEX_FIELDS`** (in `config/db_structure.ts`):
+
 - Central list of readable fields omitted from default grids, including `display`, `option_display`, `option_text`, `search_text`, and password hashes
 - Maintenance fields such as `created_at` and `updated_at` are handled separately; `id` remains visible by default
 - Not per-project configurable (would require modifying config directly)
 
 **FK `_id` field hiding:**
+
 - Automatically hidden if the view exposes the standardized corresponding `_display` field (e.g., `author_id` is hidden when `author_display` is present)
 - Can be restored later by editing `columns` in `table.ts`
 
@@ -56,6 +59,7 @@ Display columns are **optional everywhere** - the generator works with or withou
 Canonical `display` and optional `option_display`, when present, remain available to generated read, search, sort, select, and autocomplete code but are omitted from default index grids. FK `<fk_stem>_display` columns remain visible and use the relationship stem as their header label.
 
 **Visibility precedence** (highest to lowest):
+
 1. A field in `IGNORE_INDEX_FIELDS` is omitted from the generated grid
 2. `omit_index: true` in schema means the field is emitted only as a commented customization
 3. A view column is preferred when a view exists
@@ -64,6 +68,7 @@ Canonical `display` and optional `option_display`, when present, remain availabl
 ### Real-World Example
 
 **Setup:**
+
 ```sql
 CREATE TABLE contacts (
   id INT PRIMARY KEY AUTO_INCREMENT,
@@ -87,24 +92,33 @@ FROM contacts;
 ```
 
 **Generated Schema:**
+
 ```typescript
 export const fields = {
-  email, first_name, last_name, display, created_at, updated_at
+	email,
+	first_name,
+	last_name,
+	display,
+	created_at,
+	updated_at,
 };
 
 export const v_fields = {
-  display, email, joined_date
+	display,
+	email,
+	joined_date,
 };
 
 export const columns = {
-  "id": { width: "80px" },
-  "email": { width: "300px" },
-  "joined_date": { width: "120px" }
-  // display is readable but centrally omitted from the default grid
+	id: { width: "80px" },
+	email: { width: "300px" },
+	joined_date: { width: "120px" },
+	// display is readable but centrally omitted from the default grid
 };
 ```
 
 **Result:**
+
 - Form writes `email`, `first_name`, and `last_name`
 - Generated writes omit `display`, `created_at`, and `updated_at`
 - List shows `id`, `email`, and `joined_date`
@@ -113,6 +127,7 @@ export const columns = {
 ### Adding New Columns
 
 **Workflow:**
+
 ```bash
 # 1. Add column via migration
 ALTER TABLE users ADD COLUMN phone_number VARCHAR(20);
@@ -138,30 +153,36 @@ bun reeman crud users --pagination offset
 Reepolee respects existing database FK constraints but enhances with code-level detection if they don't exist.
 
 **Hard FKs (database constraints) - RESPECTED:**
+
 ```sql
 CREATE TABLE order_items (
   order_id INT NOT NULL,
   FOREIGN KEY (order_id) REFERENCES orders(id)
 );
 ```
+
 The generator recognizes these and works with them as-is.
 
 **Soft FKs (code-level, by naming convention) - ENHANCED IF MISSING:**
+
 ```sql
 CREATE TABLE order_items (
   order_id INT  -- No FK constraint, but name matches pattern
 );
 ```
+
 If no database constraint exists, the generator detects that `order_id` maps to `orders.id` via naming convention.
 
 ### Why Hybrid?
 
 **Respect existing constraints** because:
+
 - If your team uses hard FKs, the generator won't interfere
 - Your schema investment is preserved
 - Database integrity is enforced at the database level
 
 **Enhance with soft detection** because:
+
 - Not every schema has hard FKs defined (and that's okay)
 - Changing column types fails when hard constraints are involved
 - Soft FKs give flexibility to evolve schema without DB constraint friction
@@ -178,11 +199,13 @@ If no database constraint exists, the generator detects that `order_id` maps to 
 ### Cascading Deletes
 
 **Current behavior:**
+
 - Generator does NOT create migration files with `ON DELETE CASCADE`
 - FK constraints are user responsibility via separate migrations
 - Database must be in fully working order before generator runs
 
 **Parent deletion:**
+
 - Parent record is deleted
 - Child records remain in database (orphaned)
 - If child has `NOT NULL fk_parent_id`, database rejects parent delete (catches bugs early)
@@ -205,6 +228,7 @@ export async function delete_order_with_items(order_id: number) {
 ```
 
 This gives you:
+
 - ✅ Freedom to evolve schema (no hard constraint friction)
 - ✅ Clean DB rejection if constraint is violated (catches bugs)
 - ✅ Control over cascading logic (decide per-operation)
@@ -213,6 +237,7 @@ This gives you:
 ### Soft Deletes (Planned)
 
 Not yet implemented, but planned for the future. When available:
+
 - Per-table configuration: `enable_soft_delete: true`
 - Soft delete will mark records as deleted instead of removing them
 - Routes will automatically filter out soft-deleted records
@@ -229,43 +254,43 @@ Generated files are **committed to git** and treated as part of your codebase, w
 
 ### File Update Strategy
 
-| File | Regenerated? | Preserved? | How |
-|------|--------------|-----------|-----|
-| **form.ree** | Yes | Marker content preserved | Inside `<!-- GEN:FIELDS:START/END -->` |
-| **index.ree** | Yes | Marker content preserved | Inside `<!-- GEN:FIELDS:*:START/END -->` |
-| **index.ts** | No | All customizations preserved | Never regenerated after initial creation |
-| **sql.ts** | Yes (full file) | None | Entire file is replaced; use sql.custom.ts for extensions |
-| **schema.generated.ts** | Yes (full file) | None | Always regenerated from DB introspection |
-| **table.ts** | No (first run only) | All customizations preserved | Create once, edit forever |
+| File                    | Regenerated?        | Preserved?                   | How                                                       |
+| ----------------------- | ------------------- | ---------------------------- | --------------------------------------------------------- |
+| **form.ree**            | Yes                 | Marker content preserved     | Inside `<!-- GEN:FIELDS:START/END -->`                    |
+| **index.ree**           | Yes                 | Marker content preserved     | Inside `<!-- GEN:FIELDS:*:START/END -->`                  |
+| **index.ts**            | No                  | All customizations preserved | Never regenerated after initial creation                  |
+| **sql.ts**              | Yes (full file)     | None                         | Entire file is replaced; use sql.custom.ts for extensions |
+| **schema.generated.ts** | Yes (full file)     | None                         | Always regenerated from DB introspection                  |
+| **table.ts**            | No (first run only) | All customizations preserved | Create once, edit forever                                 |
 
 ### Protected Zones (Markers)
 
 **Safe to customize inside markers:**
+
 ```html
 <!-- GEN:FIELDS:START -->
-  <!-- Users can edit HTML, CSS, event handlers here -->
-  <input name="email" class="email-input" />
-  <script>
-    // Custom validation
-    document.querySelector('input[name="email"]').addEventListener('blur', validate);
-  </script>
-  <style>
-    input[name="email"] { border: 2px solid blue; }
-  </style>
-  <div class="admin-only" style="display: ${user.is_admin ? 'block' : 'none'}">
-    Admin field
-  </div>
+<!-- Users can edit HTML, CSS, event handlers here -->
+<input name="email" class="email-input" />
+<script>
+	// Custom validation
+	document.querySelector('input[name="email"]').addEventListener("blur", validate);
+</script>
+<style>
+	input[name="email"] {
+		border: 2px solid blue;
+	}
+</style>
+<div class="admin-only" style="display: ${user.is_admin ? 'block' : 'none'}">Admin field</div>
 <!-- GEN:FIELDS:END -->
 ```
 
 Everything inside markers is preserved on regeneration.
 
 **Regenerated on each update:**
+
 ```html
 <!-- Edits here WILL be wiped on regeneration -->
-<div class="custom-section">
-  User edits lost
-</div>
+<div class="custom-section">User edits lost</div>
 ```
 
 ### Route Handler (`index.ts`) Lifecycle
@@ -273,11 +298,13 @@ Everything inside markers is preserved on regeneration.
 Once generated, the route handler is **never regenerated**. Users extend it directly without touching templates.
 
 **Workflow:**
+
 1. Generator creates `apps/main/users/index.ts` with GET, POST, DELETE handlers
 2. User adds custom logic directly to `index.ts` (validation, side effects, etc.)
 3. User never re-runs generator for this file
 
 **If heavy DB changes occur:**
+
 ```bash
 # Stash user changes
 git stash
@@ -299,18 +326,19 @@ Generated `sql.ts` is regenerated entirely. Best practice: keep custom queries i
 
 // apps/main/users/sql.custom.ts (user-owned, never regenerated)
 export async function get_users_by_status(status: string) {
-  return await db`SELECT * FROM users WHERE status = ${status}`;
+	return await db`SELECT * FROM users WHERE status = ${status}`;
 }
 
 // apps/main/users/index.ts
-import * as sql from './sql.js';
-import * as sql_custom from './sql.custom.js';
+import * as sql from "./sql.js";
+import * as sql_custom from "./sql.custom.js";
 
 const all_users = await sql.get_all_records();
-const active_users = await sql_custom.get_users_by_status('active');
+const active_users = await sql_custom.get_users_by_status("active");
 ```
 
 This way:
+
 - ✅ `sql.ts` can be regenerated freely
 - ✅ Custom queries are preserved in `sql.custom.ts`
 - ✅ No manual stashing needed
@@ -322,14 +350,15 @@ When nested CRUD is added to an existing parent, markers are injected into paren
 ```html
 <!-- Parent form.ree -->
 <!-- GEN:CHILDREN:START -->
-  <!-- Nested child section injected here -->
-  <div class="nested-items">
-    <!-- Child form and list -->
-  </div>
+<!-- Nested child section injected here -->
+<div class="nested-items">
+	<!-- Child form and list -->
+</div>
 <!-- GEN:CHILDREN:END -->
 ```
 
 Nested CRUD injection works reliably when:
+
 - Parent and child are generated together (all in one run)
 - Markers are present in expected positions
 - Parent structure wasn't dramatically restructured
@@ -337,6 +366,7 @@ Nested CRUD injection works reliably when:
 ### Regeneration Frequency
 
 **Typical workflow:**
+
 ```bash
 # Initial generation
 bun reeman crud users
@@ -358,6 +388,7 @@ bun reeman refresh-crud users --mode fields
 **Files are committed.** Conflicts are rare because regeneration is infrequent.
 
 When conflicts occur:
+
 - Accept the new version from regeneration
 - Manually re-apply customizations from the conflicting branch
 - Commit the resolved version
@@ -367,6 +398,7 @@ Markers help resolve conflicts automatically because they act as clear boundarie
 ### Adding New Columns
 
 **Workflow:**
+
 ```bash
 # 1. Database change
 ALTER TABLE users ADD COLUMN phone_number VARCHAR(20);
@@ -392,33 +424,36 @@ bun reeman refresh-crud users --mode fields
 ### Strategy Overview
 
 **Offset Pagination (default):**
+
 - Simple, easy to understand
 - Good for small tables (< 100k rows)
 - Slow at deep offsets (page 1000+)
 
 **Cursor Pagination:**
+
 - More complex (cursor encoding/decoding)
 - Fast at any scroll depth
 - Requires sortable primary key
 - 50-100x faster than offset at scale
 
 **Streaming:**
+
 - Sends rows as they're fetched (no pagination)
 - Good for heavy data fetching operations
 - Works with pagination
 
 ### Decision Matrix
 
-| Scenario | Recommended | Reason |
-|----------|-------------|--------|
-| **< 100k rows, typical usage** | Offset | Simpler, fast enough |
-| **100k - 1M rows, deep scrolling** | Cursor | Better performance at scale |
-| **> 1M rows** | Cursor | Mandatory for acceptable performance |
-| **Heavy data fetching** | Streaming | Start showing results immediately |
-| **Real-time updates expected** | Cursor | Stable under mutations |
-| **External data consumers** | Views | Single source of truth |
-| **Nested CRUD (children)** | No pagination | Load all children inline |
-| **Nested CRUD (parent)** | Offset or Cursor | Parent-level strategy only |
+| Scenario                           | Recommended      | Reason                               |
+| ---------------------------------- | ---------------- | ------------------------------------ |
+| **< 100k rows, typical usage**     | Offset           | Simpler, fast enough                 |
+| **100k - 1M rows, deep scrolling** | Cursor           | Better performance at scale          |
+| **> 1M rows**                      | Cursor           | Mandatory for acceptable performance |
+| **Heavy data fetching**            | Streaming        | Start showing results immediately    |
+| **Real-time updates expected**     | Cursor           | Stable under mutations               |
+| **External data consumers**        | Views            | Single source of truth               |
+| **Nested CRUD (children)**         | No pagination    | Load all children inline             |
+| **Nested CRUD (parent)**           | Offset or Cursor | Parent-level strategy only           |
 
 ### Cursor Implementation
 
@@ -432,12 +467,14 @@ Cursor: [50, "2024-01-15"]
 ### Performance Characteristics
 
 **Offset:**
+
 - Time: O(n) where n = offset value
 - Space: O(limit)
 - Best for: Small tables, shallow scrolling
 - Worst for: Large offsets (page 1000+)
 
 **Cursor:**
+
 - Time: O(log n) - index lookup
 - Space: O(limit)
 - Best for: Large tables, any scroll depth
@@ -446,6 +483,7 @@ Cursor: [50, "2024-01-15"]
 ### Cursor Stability
 
 Cursors are stable under mutations:
+
 ```
 Page 1: id > 0 ORDER BY id ASC → [1, 2, 3, ..., 20]
 Cursor: 20
@@ -461,11 +499,13 @@ IDs are auto-increment (always growing), so new records don't interfere with exi
 ### View-Based Pagination
 
 Views serve as a **single source of truth** for:
+
 1. External data consumption (Excel, Tableau, other departments)
 2. Soft FK definition in DDL
 3. Derived/computed columns for list display
 
 Views with JOINs paginate efficiently because:
+
 - Database optimizes the JOIN
 - Pagination (LIMIT/WHERE) happens after JOIN
 - Indexes on underlying tables are used effectively
@@ -473,11 +513,13 @@ Views with JOINs paginate efficiently because:
 ### Nested CRUD Pagination
 
 **Current behavior:**
+
 - Only parent uses pagination
 - Children are fetched in full (no pagination on children)
 - If parent has 100 children, all 100 are loaded into memory
 
 **Future enhancement:**
+
 - Streaming parent header + streamed child records
 - Parent header displays immediately
 - Children stream in as they're fetched
@@ -487,6 +529,7 @@ Views with JOINs paginate efficiently because:
 Indexes are **not automatically created** by the generator. User/DBA responsibility via migrations.
 
 **Recommended indexes for pagination:**
+
 ```sql
 -- Cursor pagination queries benefit greatly from indexes
 CREATE INDEX idx_orders_id ON orders(id);
@@ -521,6 +564,7 @@ git stash pop
 **Scenario:** 500k orders, 5M order items (nested under orders). Offset pagination causing slow page loads at deep offsets.
 
 **Solution:**
+
 ```
 Before (offset at order #450,000):
   SELECT * FROM orders LIMIT 20 OFFSET 100000  -- 1000-2000ms
@@ -532,6 +576,7 @@ Improvement: 50-100x faster
 ```
 
 **Implementation:**
+
 1. Stash customizations
 2. Switch to cursor via reeman
 3. Restore customizations

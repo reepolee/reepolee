@@ -26,7 +26,7 @@
 			"reepolee/ree-templates"
 		]
 	},
-	"version": "26.09.17",
+	"version": "26.09.18",
 	"license": "MIT",
 	"private": false,
 	"description": "Long-lived Apps without deps and build on Bun",
@@ -58,7 +58,8 @@
 		"css:once": "tw -i ./css/app.css -o ./static/app.css --minify",
 		"css:watch": "tw -i ./css/app.css -o ./static/app.css --watch=always --minify",
 		"css:build": "tw -i ./css/app.css -o ./static/app.css --minify",
-		"format": "reettier",
+		"format": "reettier && bun fmt",
+		"format:check": "bun fmt --check",
 		"service:install": "sudo journalctl --rotate -u reepolee && sudo journalctl --vacuum-time=1s -u reepolee && sudo cp ./operations/reepolee.service /etc/systemd/system/reepolee.service",
 		"service:autostart": "sudo systemctl enable reepolee",
 		"service:start": "sudo systemctl start reepolee",
@@ -66,28 +67,25 @@
 		"service:remove": "sudo systemctl stop reepolee && sudo systemctl disable reepolee && sudo rm /etc/systemd/system/reepolee.service && sudo systemctl daemon-reload",
 		"service:reload": "sudo systemctl daemon-reload",
 		"service:logs": "journalctl -u reepolee -f",
-		"get:cn": "mkdir -p vendor && curl -fsSL 'https://esm.sh/cn@0.2.5/es2022/cn.bundle.mjs' -o vendor/cn.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/cn@0.2.5/LICENSE -o vendor/cn.min.js.LICENSE.txt",
-		"get:zod": "mkdir -p vendor && curl -fsSL https://cdn.jsdelivr.net/npm/zod@4.5.4/+esm -o vendor/zod.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/zod@4.5.4/LICENSE -o vendor/zod.min.js.LICENSE.txt",
-		"get:zod-types": "bun scripts/cli.ts zod-types",
+		"get:cn": "mkdir -p vendor && curl -fsSL 'https://esm.sh/cn@0.5.2/es2022/cn.bundle.mjs' -o vendor/cn.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/cn@0.5.2/LICENSE -o vendor/cn.min.js.LICENSE.txt",
+		"get:zod": "mkdir -p vendor && curl -fsSL https://cdn.jsdelivr.net/npm/zod@4.6.7/+esm -o vendor/zod.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/zod@4.6.7/LICENSE -o vendor/zod.min.js.LICENSE.txt && bun scripts/cli.ts zod-types",
 		"get:hljs": "mkdir -p vendor && curl -fsSL https://cdn.jsdelivr.net/npm/highlight.js@11.12.0/+esm -o vendor/highlight.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/highlight.js@11.12.0/LICENSE -o vendor/highlight.min.js.LICENSE.txt",
 		"get:xlsx": "mkdir -p vendor && curl -fsSL https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js -o vendor/xlsx.full.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/xlsx@0.18.5/LICENSE -o vendor/xlsx.full.min.js.LICENSE.txt",
 		"get:temporal": "mkdir -p vendor && curl -fsSL https://esm.sh/@js-temporal/polyfill@0.5.1/es2022/polyfill.bundle.mjs -o vendor/temporal.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/@js-temporal/polyfill@0.5.1/LICENSE -o vendor/temporal.min.js.LICENSE.txt",
 		"get:signals": "mkdir -p static && curl -L https://esm.sh/alien-deepsignals@0.4.3/es2022/alien-deepsignals.bundle.mjs -o static/alien-deepsignals.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/alien-deepsignals@0.4.3/LICENSE -o static/alien-deepsignals.min.js.LICENSE.txt",
 		"get:dpu": "mkdir -p static && curl -fsSL https://raw.githubusercontent.com/GoogleChromeLabs/html-setters-polyfill/main/index.min.js -o static/dpu.min.js && curl -fsSL https://cdn.jsdelivr.net/npm/html-setters-polyfill/LICENSE -o static/dpu.min.js.LICENSE.txt",
-		"get:tsc": "bun scripts/cli.ts tsc --version=7.0.2",
-		"get:tw": "bun scripts/cli.ts tw --version=4.3.3",
-		"get:vips": "bun scripts/cli.ts vips --version=8.18.6",
+		"get:tw": "bun scripts/cli.ts tw --version=4.3.5",
+		"get:vips": "bun scripts/cli.ts vips --version=8.18.7",
 		"get:reettier": "bun scripts/cli.ts reettier",
 		"get:reesql": "bun scripts/cli.ts reesql",
 		"get:pre": "bun scripts/install/prerequisites.ts",
 		"naming:check": "bun scripts/naming_check.ts",
 		"docs:check": "bun scripts/docs_check.ts",
-		"test": "bun test --parallel",
+		"test": "bun test --parallel --check",
 		"test:dev": "bun test --parallel ./tests-dev/ ./marketplace/",
 		"test:user": "bun test --parallel ./lib/ ./apps/main/ ./platform/ ./config/ ./components/ ./integration.test.ts",
 		"test:coverage": "bun test --parallel --coverage",
-		"typecheck": "tsc --noEmit",
-		"typecheck:ratchet": "bun scripts/typecheck_ratchet.ts",
+		"typecheck": "bun check",
 		"git:hooks": "git config core.hooksPath .githooks",
 		"git:ship": "bun scripts/git_ship.ts",
 		"git:production": "git push origin main:production --force",
@@ -114,6 +112,6 @@
 		"postinstall": "bun scripts/install.ts"
 	},
 	"devDependencies": {
-		"@types/bun": "1.4.0"
+		"@types/bun": "1.4.5"
 	}
 }

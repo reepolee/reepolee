@@ -14,40 +14,40 @@ Everything runs through `reeman`, the Reepolee Resource Manager - interactively 
 `install` is CLI-only and deliberately runs the unpacked platform installer as a subprocess.
 `generator/reeman/cli.ts` is the subcommand dispatcher; `generator/reeman/index.ts` is the interactive menu.
 
-| File                              | Role                                                              |
-| --------------------------------- | ---------------------------------------------------------------- |
-| `reeman.ts`                       | The actual entry point (`bun reeman` in package.json) - delegates to `reeman/cli.ts` for subcommands, `reeman/index.ts` for the interactive menu |
-| `schema.ts`                       | Library: introspect DB -> flat route schema files (called by `bun reeman schema`/`crud`) |
-| `crud/main.ts`                    | Library: generate CRUD routes + `.ree` templates from an existing schema (called by `bun reeman crud`/`refresh-crud`) |
-| `add_locale.ts` / `remove_locale.ts` | Add/remove a configured BCP 47 locale (called by `bun reeman add-locale`/`remove-locale`) |
-| `validation_generator.ts`         | Generate Zod validation schemas (called internally by the CRUD generator) |
-| `user.ts`                         | Create a user with a hashed password - the one script still run directly (`bun generator/user.ts`), not part of reeman |
-| `ai-provider.ts`, `openrouter.ts`, `translator.ts`, `translate_namespace.ts` | AI translation plumbing |
-| `ddl_cache.ts`                    | DDL cache for introspection (`ddl_cache_types.ts`)               |
-| `reeman/install_archive.ts`       | Validate and unpack one `.tar.gz` marketplace folder, then run its platform installer |
+| File                                                                         | Role                                                                                                                                             |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `reeman.ts`                                                                  | The actual entry point (`bun reeman` in package.json) - delegates to `reeman/cli.ts` for subcommands, `reeman/index.ts` for the interactive menu |
+| `schema.ts`                                                                  | Library: introspect DB -> flat route schema files (called by `bun reeman schema`/`crud`)                                                         |
+| `crud/main.ts`                                                               | Library: generate CRUD routes + `.ree` templates from an existing schema (called by `bun reeman crud`/`refresh-crud`)                            |
+| `add_locale.ts` / `remove_locale.ts`                                         | Add/remove a configured BCP 47 locale (called by `bun reeman add-locale`/`remove-locale`)                                                        |
+| `validation_generator.ts`                                                    | Generate Zod validation schemas (called internally by the CRUD generator)                                                                        |
+| `user.ts`                                                                    | Create a user with a hashed password - the one script still run directly (`bun generator/user.ts`), not part of reeman                           |
+| `ai-provider.ts`, `openrouter.ts`, `translator.ts`, `translate_namespace.ts` | AI translation plumbing                                                                                                                          |
+| `ddl_cache.ts`                                                               | DDL cache for introspection (`ddl_cache_types.ts`)                                                                                               |
+| `reeman/install_archive.ts`                                                  | Validate and unpack one `.tar.gz` marketplace folder, then run its platform installer                                                            |
 
 ## Subfolders
 
-| Folder              | Role                                                                       |
-| ------------------- | -------------------------------------------------------------------------- |
-| `crud/`             | CRUD pipeline: `main.ts`, `file_writer.ts`, `index_ts.ts`, `form_ree.ts`, `index_ree.ts`, `sql_ts.ts`, `schema_reader.ts`, `route_registrar.ts`, `template_substitutor.ts`, `translation_sync.ts`, `child_section.ts` (nested), `refresh_fields.ts` |
-| `schema/`           | Schema introspection: `introspector.ts`, `field_generator.ts`, `type_mapper.ts`, `file_writer.ts`, plus `mysql/` and `sqlite/` dialect introspectors |
-| `reeman/`           | Everything reeman: `cli.ts` (non-interactive subcommand dispatcher), `index.ts` (interactive menu), `ui.ts` (prompts, session replay log), flows, callers, and utilities (`flows/`, `callers/`, `utils/`) |
-| `templates/`        | **The actual codegen templates** (`.ree` and `.ts` with placeholders). NOT valid standalone TS - ignore for type-checking. |
-| `simple-page/`, `simple-route/` | Scaffolds for non-CRUD pages/routes                            |
+| Folder                          | Role                                                                                                                                                                                                                                                |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `crud/`                         | CRUD pipeline: `main.ts`, `file_writer.ts`, `index_ts.ts`, `form_ree.ts`, `index_ree.ts`, `sql_ts.ts`, `schema_reader.ts`, `route_registrar.ts`, `template_substitutor.ts`, `translation_sync.ts`, `child_section.ts` (nested), `refresh_fields.ts` |
+| `schema/`                       | Schema introspection: `introspector.ts`, `field_generator.ts`, `type_mapper.ts`, `file_writer.ts`, plus `mysql/` and `sqlite/` dialect introspectors                                                                                                |
+| `reeman/`                       | Everything reeman: `cli.ts` (non-interactive subcommand dispatcher), `index.ts` (interactive menu), `ui.ts` (prompts, session replay log), flows, callers, and utilities (`flows/`, `callers/`, `utils/`)                                           |
+| `templates/`                    | **The actual codegen templates** (`.ree` and `.ts` with placeholders). NOT valid standalone TS - ignore for type-checking.                                                                                                                          |
+| `simple-page/`, `simple-route/` | Scaffolds for non-CRUD pages/routes                                                                                                                                                                                                                 |
 
 ## Common flags
 
-| Flag               | Meaning                                                        | Supported by                                    |
-| ------------------ | -------------------------------------------------------------- | ------------------------------------------------ |
-| `--force`          | Overwrite existing generated files without prompting           | `crud`, `bulk`                                   |
-| `--translate`      | AI-translate generated keys into configured locales            | `crud`, `bulk`, `sync-translations`              |
-| `--prefix <dir>`   | Nest generated routes under a subdirectory                     | `schema`, `crud`, `bulk`                         |
-| `--parent <table>` | Mark as nested child of `<table>` (auto-detects FK, scopes)    | `schema`, `crud`, `refresh-crud`                 |
-| `--pagination`     | `cursor` or `offset` (default: offset)                         | `schema`, `crud`, `bulk`, `refresh-crud`         |
-| `--render-strategy`| `stream` or `load` (default: load)                              | `crud`, `bulk`                                   |
-| `--template-tags`  | `flat` or `tags` (default: flat) - form field rendering mode, see below | `crud`, `bulk`, `refresh-crud`           |
-| `--mode fields`    | Regenerate only field sections in `form.ree`/`index.ree`       | `refresh-crud`                                   |
+| Flag                | Meaning                                                                 | Supported by                             |
+| ------------------- | ----------------------------------------------------------------------- | ---------------------------------------- |
+| `--force`           | Overwrite existing generated files without prompting                    | `crud`, `bulk`                           |
+| `--translate`       | AI-translate generated keys into configured locales                     | `crud`, `bulk`, `sync-translations`      |
+| `--prefix <dir>`    | Nest generated routes under a subdirectory                              | `schema`, `crud`, `bulk`                 |
+| `--parent <table>`  | Mark as nested child of `<table>` (auto-detects FK, scopes)             | `schema`, `crud`, `refresh-crud`         |
+| `--pagination`      | `cursor` or `offset` (default: offset)                                  | `schema`, `crud`, `bulk`, `refresh-crud` |
+| `--render-strategy` | `stream` or `load` (default: load)                                      | `crud`, `bulk`                           |
+| `--template-tags`   | `flat` or `tags` (default: flat) - form field rendering mode, see below | `crud`, `bulk`, `refresh-crud`           |
+| `--mode fields`     | Regenerate only field sections in `form.ree`/`index.ree`                | `refresh-crud`                           |
 
 `crud <table>` runs the full pipeline for one table; `crud all` (or `all-tables`) runs it for every table.
 

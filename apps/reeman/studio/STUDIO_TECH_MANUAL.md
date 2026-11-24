@@ -55,15 +55,15 @@ require_module_mw and publisher signaling to every Studio route.
 
 Routes:
 
-| Method | Path | Purpose |
-| --- | --- | --- |
-| GET | /studio | File chooser, table form, or view |
-| POST | /studio/table/save | Validate and rewrite one table |
-| POST | /studio/table/new | Add a default table |
-| POST | /studio/table/copy | Clone a table definition |
-| POST | /studio/table/delete | Remove table-related statements |
-| POST | /studio/view/generate | Generate or replace v_<table> |
-| POST | /studio/preview | Validate form data and return DDL text |
+| Method | Path                  | Purpose                                |
+| ------ | --------------------- | -------------------------------------- |
+| GET    | /studio               | File chooser, table form, or view      |
+| POST   | /studio/table/save    | Validate and rewrite one table         |
+| POST   | /studio/table/new     | Add a default table                    |
+| POST   | /studio/table/copy    | Clone a table definition               |
+| POST   | /studio/table/delete  | Remove table-related statements        |
+| POST   | /studio/view/generate | Generate or replace v_<table>          |
+| POST   | /studio/preview       | Validate form data and return DDL text |
 
 The module seed contains studio. Users also need studio in modules_tags.
 

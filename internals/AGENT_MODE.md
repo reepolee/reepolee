@@ -33,11 +33,11 @@ The configured user must have the module access required by the route. For examp
 Each application has its own agent command and required dedicated port. Agent commands start
 their server with both `--dev` and `--agent`; none falls back to a normal application port.
 
-| Target | Command | Required environment variable |
-| --- | --- | --- |
-| Main | `bun run agent` | `AGENT_SERVER_PORT` |
-| Reeman | `bun run agent:reeman` | `AGENT_REEMAN_SERVER_PORT` |
-| ReeQA | `bun run agent:reeqa` | `AGENT_REEQA_SERVER_PORT` |
+| Target                   | Command                 | Required environment variable                      |
+| ------------------------ | ----------------------- | -------------------------------------------------- |
+| Main                     | `bun run agent`         | `AGENT_SERVER_PORT`                                |
+| Reeman                   | `bun run agent:reeman`  | `AGENT_REEMAN_SERVER_PORT`                         |
+| ReeQA                    | `bun run agent:reeqa`   | `AGENT_REEQA_SERVER_PORT`                          |
 | Main and Reeman together | `bun run dev:all:agent` | `AGENT_SERVER_PORT` and `AGENT_REEMAN_SERVER_PORT` |
 
 `dev:all:agent` starts Main, Reeman, and the Main CSS watcher. It does not start ReeQA;
@@ -100,12 +100,12 @@ until that runtime contract is changed and the script is updated.
 
 ## Key files
 
-| File | Role |
-| --- | --- |
-| `apps/main/server.ts` | Validates Main agent mode and uses `AGENT_SERVER_PORT`. |
-| `apps/reeman/server.ts` | Validates Reeman agent mode and uses `AGENT_REEMAN_SERVER_PORT`. |
-| `apps/reeqa/server.ts` | Validates ReeQA agent mode and uses `AGENT_REEQA_SERVER_PORT`. |
-| `scripts/dev_run.ts` | Starts Main and Reeman together for `dev:all:agent`. |
+| File                          | Role                                                                 |
+| ----------------------------- | -------------------------------------------------------------------- |
+| `apps/main/server.ts`         | Validates Main agent mode and uses `AGENT_SERVER_PORT`.              |
+| `apps/reeman/server.ts`       | Validates Reeman agent mode and uses `AGENT_REEMAN_SERVER_PORT`.     |
+| `apps/reeqa/server.ts`        | Validates ReeQA agent mode and uses `AGENT_REEQA_SERVER_PORT`.       |
+| `scripts/dev_run.ts`          | Starts Main and Reeman together for `dev:all:agent`.                 |
 | `platform/auth/middleware.ts` | Resolves header or environment identity and verifies `AGENT_SECRET`. |
-| `lib/route_state.ts` | Excludes CSRF middleware when `is_agent` is true. |
-| `lib/server_startup.ts` | Binds agent servers to the loopback interface. |
+| `lib/route_state.ts`          | Excludes CSRF middleware when `is_agent` is true.                    |
+| `lib/server_startup.ts`       | Binds agent servers to the loopback interface.                       |

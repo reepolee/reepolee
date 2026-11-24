@@ -8,12 +8,12 @@ This document describes the exact workflow an agent should follow before editing
 
 CRUD routes are either **generated** (by `bun reeman crud`, which runs `generator/crud/main.ts` + `generator/schema.ts` together) or **hand-written system routes**.
 
-| Aspect           | Generated CRUD                                                                                             | Hand-written system route                                 |
-| ---------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| Location         | `apps/main/<table>/` (non-system)                                                                             | `apps/reeman/*/`                                        |
-| `db.unsafe()`    | Only in generated `search_records` (approved - see §3)                                                     | Only existing reviewed uses are permitted                 |
-| Regenerate-safe? | Yes - `--force` overwrites                                                                                 | No - edit directly                                        |
-| Templates used   | `generator/templates/sql.ts`, `sql_view.ts`, `nested_sql.ts`, `form.ree`, `index.ree`, `details_index.ree` | N/A                                                       |
+| Aspect           | Generated CRUD                                                                                             | Hand-written system route                 |
+| ---------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| Location         | `apps/main/<table>/` (non-system)                                                                          | `apps/reeman/*/`                          |
+| `db.unsafe()`    | Only in generated `search_records` (approved - see §3)                                                     | Only existing reviewed uses are permitted |
+| Regenerate-safe? | Yes - `--force` overwrites                                                                                 | No - edit directly                        |
+| Templates used   | `generator/templates/sql.ts`, `sql_view.ts`, `nested_sql.ts`, `form.ree`, `index.ree`, `details_index.ree` | N/A                                       |
 
 ---
 
@@ -23,17 +23,17 @@ Read **all** of these before touching any CRUD route:
 
 ### For a generated CRUD route (`apps/main/<table>/`)
 
-| File                          | Purpose                                                                        | Edit-safe?                                   |
-| ----------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------- |
-| `config.ts`                   | Route settings, `route_param`, `parent` export, and columns                     | **Yes** - user-editable                      |
-| `schema.generated.ts`         | Auto-generated fields, `indexed_columns`, and types                             | **No** - regenerated                         |
-| `validation_server.ts`        | Server validation schemas                                                       | **No** - regenerated from the current schema and `config.ts` |
-| `sql.ts`                      | SQL query functions (contains `db.unsafe()` in `search_records`)               | **No** - generated                           |
-| `sql_view.ts`                 | View-based queries (if view exists)                                            | **No** - generated                           |
-| `index.ts`                    | Route handlers                                                                 | **Yes** - generated once, never regenerated (skipped by the safe writer) |
-| `form.ree`                    | Create/edit form template (has marker comments `<!-- GEN:FIELDS:START -->`)   | **Limited** - between markers is regenerated |
-| `index.ree`                   | List/index template (has marker comments `<!-- GEN:FIELDS:HEADERS:START -->`) | **Limited** - between markers is regenerated |
-| `{locale}.json`             | Generated UI translation keys, editable directly or via the `/translations` admin UI | Co-located files are the source of truth. See [AGENTS.md Translations](../AGENTS.md#translations-file-first-authoritative-policy) |
+| File                   | Purpose                                                                              | Edit-safe?                                                                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| `config.ts`            | Route settings, `route_param`, `parent` export, and columns                          | **Yes** - user-editable                                                                                                           |
+| `schema.generated.ts`  | Auto-generated fields, `indexed_columns`, and types                                  | **No** - regenerated                                                                                                              |
+| `validation_server.ts` | Server validation schemas                                                            | **No** - regenerated from the current schema and `config.ts`                                                                      |
+| `sql.ts`               | SQL query functions (contains `db.unsafe()` in `search_records`)                     | **No** - generated                                                                                                                |
+| `sql_view.ts`          | View-based queries (if view exists)                                                  | **No** - generated                                                                                                                |
+| `index.ts`             | Route handlers                                                                       | **Yes** - generated once, never regenerated (skipped by the safe writer)                                                          |
+| `form.ree`             | Create/edit form template (has marker comments `<!-- GEN:FIELDS:START -->`)          | **Limited** - between markers is regenerated                                                                                      |
+| `index.ree`            | List/index template (has marker comments `<!-- GEN:FIELDS:HEADERS:START -->`)        | **Limited** - between markers is regenerated                                                                                      |
+| `{locale}.json`        | Generated UI translation keys, editable directly or via the `/translations` admin UI | Co-located files are the source of truth. See [AGENTS.md Translations](../AGENTS.md#translations-file-first-authoritative-policy) |
 
 > **Note:** `apps/reeman/users/sql.ts` uses **offset-based pagination** (`LIMIT ? OFFSET ?`) and does not export `VIEW_DEPENDENCIES`. It is a hand-written system route, not a template for generated CRUD routes.
 

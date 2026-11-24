@@ -96,13 +96,23 @@ async function installed_tool_version(tool: string): Promise<string | null> {
 	}
 }
 
+// Installer file for a scripts/cli.ts tool. The case name can differ from the file
+// ("tw" -> install/tailwind.ts), so follow the install_* call to its import.
+function installer_file(tool: string): string {
+	try {
+		const cli = readFileSync(resolve(root, "scripts/cli.ts"), "utf8");
+		const fn = cli.match(new RegExp(`case "${tool}":[\\s\\S]*?\\b(install_\\w+)\\(`))?.[1];
+		const from = fn && cli.match(new RegExp(`import \\{[^}]*\\b${fn}\\b[^}]*\\} from "\\./install/([\\w-]+)"`))?.[1];
+		if (from) return resolve(root, "scripts/install", `${from}.ts`);
+	} catch {}
+	return resolve(root, `scripts/install/${tool}.ts`);
+}
+
 // Read the GitHub repo a CLI-tool installer targets, e.g. scripts/install/reettier.ts -> reepolee/reettier.
 function repo_from_installer(tool: string): string | null {
 	try {
-		const src = readFileSync(resolve(root, `scripts/install/${tool}.ts`), "utf8");
-		const m = src.match(
-			/github\.com\/repos\/([^/]+\/[^/]+)\//
-		);
+		const src = readFileSync(installer_file(tool), "utf8");
+		const m = src.match(/github\.com\/repos\/([^/]+\/[^/]+)\//);
 		return m?.[1] ?? null;
 	} catch {
 		return null;

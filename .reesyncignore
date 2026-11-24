@@ -128,7 +128,6 @@ scripts/install/reettier.ts
 scripts/install/reporter.ts
 scripts/install/run_step.ts
 scripts/install/tailwind.ts
-scripts/install/tsc.ts
 scripts/install/vips.test.ts
 scripts/install/vips.ts
 scripts/mcp/capabilities.test.ts

@@ -155,24 +155,44 @@ function add_to_user_path(dir: string) {
 
 /* ---------------- PLATFORM INSTALLERS ---------------- */
 
-async function install_mac(): Promise<string> {
-	const installed_version = await get_installed_version();
-	if (installed_version) {
-		log(`vips ${installed_version} already installed`);
-		return "already installed";
-	}
-
-	log("macOS detected -> brew install --no-ask vips");
-	await run("brew", ["install", "--no-ask", "vips"]);
-	return "added";
+/* brew/apt can't pin an exact version, so only "missing" and "older" act. */
+function installed_state(installed: string | null, requested: string): "ok" | "older" | "missing" {
+	if (!installed) return "missing";
+	if (requested === "latest" || compare_versions(installed, requested) >= 0) return "ok";
+	return "older";
 }
 
-async function install_linux(): Promise<string> {
-	log("Linux detected");
-	const installed_version = await get_installed_version();
-	if (installed_version) {
-		log(`vips ${installed_version} already installed`);
+async function install_mac(version: string): Promise<string> {
+	const installed = await get_installed_version();
+	const state = installed_state(installed, version);
+	if (state === "ok") {
+		log(`vips ${installed} already installed`);
 		return "already installed";
+	}
+	if (state === "missing") {
+		log("macOS detected -> brew install --no-ask vips");
+		await run("brew", ["install", "--no-ask", "vips"]);
+		return "added";
+	}
+
+	log(`vips ${installed} is older than requested ${version} -> brew upgrade vips`);
+	await run("brew", ["upgrade", "vips"]);
+	const upgraded = await get_installed_version();
+	if (upgraded && compare_versions(upgraded, version) >= 0) return "updated";
+	return `${upgraded ?? installed} (Homebrew has no ${version} yet)`;
+}
+
+async function install_linux(version: string): Promise<string> {
+	log("Linux detected");
+	const installed = await get_installed_version();
+	const state = installed_state(installed, version);
+	if (state === "ok") {
+		log(`vips ${installed} already installed`);
+		return "already installed";
+	}
+	if (state === "older") {
+		log(`vips ${installed} is older than requested ${version}; the distro package manager decides the version`);
+		return `${installed} (older than requested ${version})`;
 	}
 
 	try {
@@ -280,8 +300,8 @@ export async function install_vips(opts: InstallOpts): Promise<string> {
 	log(`Platform: ${PLATFORM}`);
 	log(`Version: ${opts.version}`);
 
-	if (PLATFORM === "darwin") return install_mac();
-	if (PLATFORM === "linux") return install_linux();
+	if (PLATFORM === "darwin") return install_mac(opts.version);
+	if (PLATFORM === "linux") return install_linux(opts.version);
 	if (PLATFORM === "win32") return install_windows(opts.version, opts.get_task);
 
 	throw new Error(`Unsupported platform: ${PLATFORM}`);

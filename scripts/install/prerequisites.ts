@@ -18,7 +18,6 @@ import { section, set_verbose, step_done, step_fail, step_start } from "./report
 import { install_reesql } from "./reesql";
 import { install_reettier } from "./reettier";
 import { install_tailwind } from "./tailwind";
-import { install_tsc } from "./tsc";
 import { install_vips } from "./vips";
 import { install_zod_types } from "./zod_types";
 import { record_global_tool, type global_tool_name } from "./ownership";
@@ -85,7 +84,6 @@ async function main() {
 	const temporal_version = extract_version(scripts["get:temporal"] ?? "", "@js-temporal/polyfill");
 	const xlsx_version = extract_version(scripts["get:xlsx"] ?? "", "xlsx");
 	const tw_version = extract_flag_version(scripts["get:tw"] ?? "", "tailwindcss");
-	const tsc_version = extract_flag_version(scripts["get:tsc"] ?? "", "typescript");
 	const vips_version = extract_flag_version(scripts["get:vips"] ?? "", "vips");
 
 	await Promise.all([
@@ -172,7 +170,6 @@ async function main() {
 	section("Global tools");
 
 	await run_tool("tailwindcss", "tailwindcss", () => install_tailwind({ version: tw_version, get_task: "get:tw" }));
-	await run_tool("typescript", "typescript", () => install_tsc({ version: tsc_version, get_task: "get:tsc" }));
 	await run_tool("libvips", "libvips", () => install_vips({ version: vips_version, get_task: "get:vips" }));
 	await run_tool("reettier", "reettier", install_reettier);
 	await run_tool("reesql", "reesql", install_reesql);

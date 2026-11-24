@@ -16,7 +16,7 @@ An MIT-licensed, database-first framework for long-lived business applications o
 
 Reepolee has one hard prerequisite - Bun. Use the official installer:
 
-**macOS / Linux / WSL**  
+**macOS / Linux / WSL**
 
 ```bash
 curl -fsSL https://bun.sh/install | bash       
@@ -143,18 +143,17 @@ reettier --version
 
 If some are already installed, pick individual scripts:
 
-| Purpose                  | Script            | What it does                                                                                                                                                                |
-| ------------------------ | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Tailwind CSS          | `bun get:tw`      | Downloads standalone Tailwind v4 binary to `~/bin/tw` (avoids npm collision issues)                                                                                        |
-| reettier                 | `bun get:reettier` | Downloads & installs the `reettier` binary from GitHub releases                                                                                                            |
-| reesql                   | `bun get:reesql`  | Downloads & installs the `reesql` binary from GitHub releases                                                                                                              |
-| Zod (vendored)           | `bun get:zod`     | Downloads `vendor/zod.min.js` from jsDelivr ESM                                                                                                                             |  
-| Zod types (vendored)     | `bun get:zod-types` | Fetches the matching zod npm tarball and copies only its `.d.ts` files into `vendor/zod-types/`, so `vendor/zod.min.js` type-checks against zod's real API              |
-| highlight.js (vendored)  | `bun get:hljs`    | Downloads `vendor/highlight.min.js` from jsDelivr ESM                                                                                                                       |
-| Temporal polyfill (vendored) | `bun get:temporal` | Downloads `vendor/temporal.min.js` from esm.sh                                                                                                                           |
-| Alien DeepSignals (vendored) | `bun get:signals` | Downloads `static/alien-deepsignals.min.js` from esm.sh                                                                                                                    |
-| DPU polyfill (vendored)  | `bun get:dpu`     | Downloads `static/dpu.min.js` (HTML `<template>` setters polyfill from GoogleChromeLabs) for DPU streaming support                                                          |
-| libvips (installed)      | `bun get:vips`    | Downloads & installs libvips for image processing (crop, resize). Supports Windows (from GitHub releases), macOS (Homebrew), and Linux (apt/dnf/pacman). Auto-adds to PATH. |
+| Purpose                      | Script             | What it does                                                                                                                                                                |
+| ---------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tailwind CSS                 | `bun get:tw`       | Downloads standalone Tailwind v4 binary to `~/bin/tw` (avoids npm collision issues)                                                                                         |
+| reettier                     | `bun get:reettier` | Downloads & installs the `reettier` binary from GitHub releases                                                                                                             |
+| reesql                       | `bun get:reesql`   | Downloads & installs the `reesql` binary from GitHub releases                                                                                                               |
+| Zod (vendored)               | `bun get:zod`      | Downloads `vendor/zod.min.js` from jsDelivr ESM, then the matching npm tarball's `.d.ts` files into `vendor/zod-types/`                                                     |
+| highlight.js (vendored)      | `bun get:hljs`     | Downloads `vendor/highlight.min.js` from jsDelivr ESM                                                                                                                       |
+| Temporal polyfill (vendored) | `bun get:temporal` | Downloads `vendor/temporal.min.js` from esm.sh                                                                                                                              |
+| Alien DeepSignals (vendored) | `bun get:signals`  | Downloads `static/alien-deepsignals.min.js` from esm.sh                                                                                                                     |
+| DPU polyfill (vendored)      | `bun get:dpu`      | Downloads `static/dpu.min.js` (HTML `<template>` setters polyfill from GoogleChromeLabs) for DPU streaming support                                                          |
+| libvips (installed)          | `bun get:vips`     | Downloads & installs libvips for image processing (crop, resize). Supports Windows (from GitHub releases), macOS (Homebrew), and Linux (apt/dnf/pacman). Auto-adds to PATH. |
 
 We need vips from [libvips](https://github.com/libvips/libvips) for image manipulation. Yes, we know `Bun.Image()` exists, but we need the crop function.
 
@@ -186,12 +185,12 @@ Treat `.ree` as HTML. The HTML syntax highlighter handles most of Ree fine - the
 
 ## Optional tooling
 
-| Tool | Command | Purpose |
-| ---- | ------- | ------- |
-| **oxlint** | `bun add -g oxlint` | JS/TS linting (not required, nothing depends on it) |
+| Tool                | Command              | Purpose                                                            |
+| ------------------- | -------------------- | ------------------------------------------------------------------ |
+| **oxlint**          | `bun add -g oxlint`  | JS/TS linting (not required, nothing depends on it)                |
 | **gh** (GitHub CLI) | Per-platform install | Create pull requests, manage issues, run deploy workflows from CLI |
-| **jq** | Per-platform install | Filter NDJSON SQL logs |
-| **certbot** | Per-platform install | TLS certificates on the production server (reverse proxy) |
+| **jq**              | Per-platform install | Filter NDJSON SQL logs                                             |
+| **certbot**         | Per-platform install | TLS certificates on the production server (reverse proxy)          |
 
 Install whichever fits your workflow. None are needed to run Reepolee.
 
@@ -307,17 +306,20 @@ From the logged-in browser's DevTools console, run:
 
 ```js
 fetch("/web-push/test", {
-  method: "POST",
-  headers: {
-    "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
-  },
-}).then(async (response) => ({ status: response.status, body: await response.json() }))
+	method: "POST",
+	headers: {
+		"X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
+	},
+}).then(async (response) => ({
+	status: response.status,
+	body: await response.json(),
+}));
 ```
 
 A successful response looks like:
 
 ```json
-{"ok":true,"queued":1}
+{ "ok": true, "queued": 1 }
 ```
 
 `queued: 0` means the admin account has no saved browser subscriptions. A `401`/`303`
@@ -332,9 +334,9 @@ Application code can enqueue its own notification with:
 import { queue_web_push_notification } from "$lib/web_push";
 
 await queue_web_push_notification(user_id, {
-  title: "Invoice ready",
-  message: "Your invoice is ready to review.",
-  link: "/invoices/",
+	title: "Invoice ready",
+	message: "Your invoice is ready to review.",
+	link: "/invoices/",
 });
 ```
 
@@ -378,10 +380,10 @@ bun start						# bun apps/main/server.ts --prod
 
 `bun start` (`--prod`) refuses to boot unless these are set:
 
-| Var             | Value                        | Notes                                                                   |
-| --------------- | ---------------------------- | ----------------------------------------------------------------------- |
-| `CSRF_SECRET`   | 32+ chars                    | HMAC key for CSRF tokens. Must not change between deploys.               |
-| `RATE_LIMITING` | `true`                       | Plus `TRUST_PROXY` - see [RUNTIME.md](internals/RUNTIME.md#rate-limiting). |
+| Var             | Value     | Notes                                                                      |
+| --------------- | --------- | -------------------------------------------------------------------------- |
+| `CSRF_SECRET`   | 32+ chars | HMAC key for CSRF tokens. Must not change between deploys.                 |
+| `RATE_LIMITING` | `true`    | Plus `TRUST_PROXY` - see [RUNTIME.md](internals/RUNTIME.md#rate-limiting). |
 
 Generate the CSRF secret once and keep it stable - a value that changes on restart
 invalidates every form open in a browser:
@@ -554,32 +556,32 @@ The CRUD generator runs `reettier` on the generated route directory automaticall
 
 ### Common flags
 
-| Flag               | Description                                                                                  | Supported by                        |
-| ------------------ | -------------------------------------------------------------------------------------------- | ------------------------------------ |
-| `--force`          | Overwrite existing generated files without prompting.                                        | `crud`, `all`, `bulk`               |
+| Flag               | Description                                                                                          | Supported by                               |
+| ------------------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `--force`          | Overwrite existing generated files without prompting.                                                | `crud`, `all`, `bulk`                      |
 | `--translate`      | Use the configured AI provider to auto-translate generated translation keys into configured locales. | `crud`, `all`, `bulk`, `sync-translations` |
-| `--prefix`         | Nest generated routes under a subdirectory (e.g. `--prefix admin`).                          | `schema`, `crud`, `all`, `bulk`     |
-| `--parent`         | Mark as nested child of `<table>`. Auto-detects FK, scopes routes/queries.                   | `schema`, `crud`, `refresh-crud`    |
-| `--pagination`     | Pagination strategy: `cursor` or `offset` (default: offset).                                 | `schema`, `crud`, `all`, `bulk` |
-| `--refresh-fields` | Regenerate only field sections in form.ree/index.ree using CRUD markers.                     | `refresh-crud --mode fields`        |
+| `--prefix`         | Nest generated routes under a subdirectory (e.g. `--prefix admin`).                                  | `schema`, `crud`, `all`, `bulk`            |
+| `--parent`         | Mark as nested child of `<table>`. Auto-detects FK, scopes routes/queries.                           | `schema`, `crud`, `refresh-crud`           |
+| `--pagination`     | Pagination strategy: `cursor` or `offset` (default: offset).                                         | `schema`, `crud`, `all`, `bulk`            |
+| `--refresh-fields` | Regenerate only field sections in form.ree/index.ree using CRUD markers.                             | `refresh-crud --mode fields`               |
 
 ### Reeman subcommand reference
 
 `bun reeman <subcommand> [table] [--force] [--translate] [--prefix <dir>] [--pagination <type>] [--parent <table>]`
 
-| Subcommand      | Description                                                                                  |
-| --------------- | ---------------------------------------------------------------------------------------------- |
-| `schema all`    | Generate schemas for all eligible tables (introspects DB).                                    |
-| `schema <name>` | Generate schema for a single table.                                                           |
-| `crud <name>`   | Full pipeline for a single table: schema + CRUD.                                              |
-| `crud all`      | Full pipeline for every table in the database.                                                |
-| `bulk <t...>`   | Full pipeline for a specific set of tables (e.g. ones without CRUD yet). Same as reeman's interactive Bulk CRUD flow. |
-| `refresh-crud <name>` | Refresh generated `.ree` field sections from the existing `config.ts`.                  |
-| `install <archive.tar.gz>` | Unpack and run a platform-specific marketplace installer.                       |
+| Subcommand                                       | Description                                                                                                              |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `schema all`                                     | Generate schemas for all eligible tables (introspects DB).                                                               |
+| `schema <name>`                                  | Generate schema for a single table.                                                                                      |
+| `crud <name>`                                    | Full pipeline for a single table: schema + CRUD.                                                                         |
+| `crud all`                                       | Full pipeline for every table in the database.                                                                           |
+| `bulk <t...>`                                    | Full pipeline for a specific set of tables (e.g. ones without CRUD yet). Same as reeman's interactive Bulk CRUD flow.    |
+| `refresh-crud <name>`                            | Refresh generated `.ree` field sections from the existing `config.ts`.                                                   |
+| `install <archive.tar.gz>`                       | Unpack and run a platform-specific marketplace installer.                                                                |
 | `sync-translations [namespace...] [--translate]` | Sync translation structure across configured locales, optionally filling missing values with the configured AI provider. |
-| `add-locale <locale_code> [--translate]` | Add a BCP 47 locale to `config/supported_locales.ts` and initialize its `{locale}.json` files. |
-| `insert-translations` | Scan `.ree` templates and add referenced translation keys missing from the co-located locale files. |
-| `prune-translations` | Scan `.ree` templates and report (optionally delete) locale-file keys no longer referenced. |
+| `add-locale <locale_code> [--translate]`         | Add a BCP 47 locale to `config/supported_locales.ts` and initialize its `{locale}.json` files.                           |
+| `insert-translations`                            | Scan `.ree` templates and add referenced translation keys missing from the co-located locale files.                      |
+| `prune-translations`                             | Scan `.ree` templates and report (optionally delete) locale-file keys no longer referenced.                              |
 
 Run `bun reeman --help` for the complete list, including route removal, DB/session config, and translation subcommands.
 
@@ -655,16 +657,16 @@ CONTAINER_ENGINE=container ../containers/seaweed.sh
 cmd mcp add --transport stdio reepolee -- bun run scripts/mcp/index.ts
 ```
 
-
 ## 💖 Support & Sponsor Reepolee Framework
 
-Reepolee Framework is built to keep web development fast, simple, and free of `node_modules` bloat. It is 100% free and open source. 
+Reepolee Framework is built to keep web development fast, simple, and free of `node_modules` bloat. It is 100% free and open source.
 
 If Reepolee Framework saves you time, powers your projects, or helps you ship clean static sites faster, consider supporting its ongoing maintenance and development!
 
 [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-GitHub-easypink?style=for-the-badge&logo=github)](https://github.com/sponsors/alesvaupotic)
 
 ### How your support helps:
+
 - 🛠️ Maintenance & Bun compatibility updates
 - 🚀 New features (plugin architecture, recipes)
 - 📚 Continuous documentation improvements

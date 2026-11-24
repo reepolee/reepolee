@@ -245,31 +245,31 @@ Canonical column type taxonomy. These are the agreed conventions for all new tab
 
 Generic type aliases (not business domains) used by Studio's "basic type" column picker and default table scaffolding. Reachable via exact column-name match, same as any other domain.
 
-| Domain Type        | SQL             |
-| ------------------- | --------------- |
-| `integer`            | `INT`            |
-| `unsigned_integer`   | `INT UNSIGNED`   |
-| `bigint`             | `BIGINT`         |
-| `real`               | `DOUBLE`         |
-| `numeric`            | `DECIMAL(18,6)`  |
-| `decimal`            | `DECIMAL(10, 2)` |
-| `float`              | `FLOAT`          |
-| `double`             | `DOUBLE`         |
-| `varchar`            | `VARCHAR(255)`   |
-| `char`               | `CHAR(1)`        |
-| `binary`             | `BINARY(16)`     |
-| `blob`               | `BLOB`           |
-| `longtext`           | `LONGTEXT`       |
-| `datetime`           | `DATETIME`       |
-| `json`               | `JSON`           |
+| Domain Type        | SQL              |
+| ------------------ | ---------------- |
+| `integer`          | `INT`            |
+| `unsigned_integer` | `INT UNSIGNED`   |
+| `bigint`           | `BIGINT`         |
+| `real`             | `DOUBLE`         |
+| `numeric`          | `DECIMAL(18,6)`  |
+| `decimal`          | `DECIMAL(10, 2)` |
+| `float`            | `FLOAT`          |
+| `double`           | `DOUBLE`         |
+| `varchar`          | `VARCHAR(255)`   |
+| `char`             | `CHAR(1)`        |
+| `binary`           | `BINARY(16)`     |
+| `blob`             | `BLOB`           |
+| `longtext`         | `LONGTEXT`       |
+| `datetime`         | `DATETIME`       |
+| `json`             | `JSON`           |
 
 ### PK & ID
 
-| Domain Type   | SQL                            | Notes                                                                                                                                                                                                                                  |
-| ------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pk_id`       | `INT UNSIGNED AUTO_INCREMENT`  | Canonical primary key. Migrate `INT` (signed) and `BIGINT UNSIGNED` to this.                                                                                                                                                           |
-| `uuid_v7`     | `BINARY(16)`                   | Time-ordered UUID (RFC 9562). 48-bit ms timestamp + randomness. Generated via `Bun.randomUUIDv7()` (returns hex string) or `Bun.randomUUIDv7Bytes()` (returns `Uint8Array(16)` for DB storage). Native Bun API - no dependency needed. |
-| `foreign_key` | `INT UNSIGNED`                 | FK columns; type matches the referenced PK.                                                                                                                                                                                             |
+| Domain Type   | SQL                           | Notes                                                                                                                                                                                                                                  |
+| ------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pk_id`       | `INT UNSIGNED AUTO_INCREMENT` | Canonical primary key. Migrate `INT` (signed) and `BIGINT UNSIGNED` to this.                                                                                                                                                           |
+| `uuid_v7`     | `BINARY(16)`                  | Time-ordered UUID (RFC 9562). 48-bit ms timestamp + randomness. Generated via `Bun.randomUUIDv7()` (returns hex string) or `Bun.randomUUIDv7Bytes()` (returns `Uint8Array(16)` for DB storage). Native Bun API - no dependency needed. |
+| `foreign_key` | `INT UNSIGNED`                | FK columns; type matches the referenced PK.                                                                                                                                                                                            |
 
 ### Names
 
@@ -285,22 +285,22 @@ Name column widths are per-table (no universal convention). Use these when the s
 ### Text & Descriptions
 
 | Domain Type         | SQL              | Purpose                                                                        |
-| -------------------- | ---------------- | ------------------------------------------------------------------------------ |
-| `short_description`  | `VARCHAR(255)`   | Brief label, tagline, module description                                       |
-| `long_description`   | `TEXT`           | Fuller comment, description, note                                              |
-| `short_text`         | `VARCHAR(255)`   | Short free-form text value                                                     |
-| `text`               | `TEXT`           | Unbounded long text (JSON blobs, translations, contract clauses, session data) |
-| `markdown`           | `TEXT` (comment) | Rich text authored and stored as Markdown                                      |
-| `slug`               | `VARCHAR(255)`   | URL-safe identifier derived from a title or name                               |
-| `url`                | `VARCHAR(2048)`  | Full external or website link                                                  |
+| ------------------- | ---------------- | ------------------------------------------------------------------------------ |
+| `short_description` | `VARCHAR(255)`   | Brief label, tagline, module description                                       |
+| `long_description`  | `TEXT`           | Fuller comment, description, note                                              |
+| `short_text`        | `VARCHAR(255)`   | Short free-form text value                                                     |
+| `text`              | `TEXT`           | Unbounded long text (JSON blobs, translations, contract clauses, session data) |
+| `markdown`          | `TEXT` (comment) | Rich text authored and stored as Markdown                                      |
+| `slug`              | `VARCHAR(255)`   | URL-safe identifier derived from a title or name                               |
+| `url`               | `VARCHAR(2048)`  | Full external or website link                                                  |
 
 ### Monetary, Percent & Quantities
 
-| Domain Type  | SQL              | Config constant                                                                                                    |
-| ------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `amount`     | `DECIMAL(18,2)`  | `CURRENCY_FIELD` - all monetary values. Migrate `DECIMAL(10,2)` → this.                                            |
-| `percentage` | `DECIMAL(12,4)`   | `PERCENT_FIELD` - all percentage/commission rates. Migrate `DECIMAL(4,2)`, `DECIMAL(5,2)`, `DECIMAL(10,3)` → this. |
-| `quantity`   | `DECIMAL(12,3)`  | Order/inventory quantity, whole or fractional (e.g. `2 pcs`, `0.5 liter`). Unit lives in a separate column.        |
+| Domain Type  | SQL             | Config constant                                                                                                    |
+| ------------ | --------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `amount`     | `DECIMAL(18,2)` | `CURRENCY_FIELD` - all monetary values. Migrate `DECIMAL(10,2)` → this.                                            |
+| `percentage` | `DECIMAL(12,4)` | `PERCENT_FIELD` - all percentage/commission rates. Migrate `DECIMAL(4,2)`, `DECIMAL(5,2)`, `DECIMAL(10,3)` → this. |
+| `quantity`   | `DECIMAL(12,3)` | Order/inventory quantity, whole or fractional (e.g. `2 pcs`, `0.5 liter`). Unit lives in a separate column.        |
 
 ### Temporal
 
@@ -327,49 +327,49 @@ Config constant: `BOOLEAN_PREFIXES = ["is_", "has_", "can_"]`.
 ### Contact
 
 | Domain Type    | SQL            | Purpose                              |
-| -------------- | -------------- | ------------------------------------- |
-| `email`        | `VARCHAR(255)` |                                        |
-| `phone_number` | `VARCHAR(30)`  | E.164 international standard          |
+| -------------- | -------------- | ------------------------------------ |
+| `email`        | `VARCHAR(255)` |                                      |
+| `phone_number` | `VARCHAR(30)`  | E.164 international standard         |
 | `locale`       | `VARCHAR(10)`  | BCP-47 language/region tag (`en-US`) |
 
 ### Code / Identifier
 
 | Domain Type   | SQL           | Examples                                                    |
-| ------------- | ------------- | ------------------------------------------------------------ |
-| `code_short`  | `VARCHAR(5)`  | ISO country codes, currency codes                            |
-| `code`        | `VARCHAR(20)` | Lookup codes (equipment, articles, languages)                |
-| `code_long`   | `VARCHAR(64)` | Machine-generated tokens (scope keys, invitation codes)      |
-| `status_enum` | `VARCHAR(30)` | State-machine status names                                   |
-| `sku`         | `VARCHAR(64)` | Product/inventory stock-keeping unit                         |
+| ------------- | ------------- | ----------------------------------------------------------- |
+| `code_short`  | `VARCHAR(5)`  | ISO country codes, currency codes                           |
+| `code`        | `VARCHAR(20)` | Lookup codes (equipment, articles, languages)               |
+| `code_long`   | `VARCHAR(64)` | Machine-generated tokens (scope keys, invitation codes)     |
+| `status_enum` | `VARCHAR(30)` | State-machine status names                                  |
+| `sku`         | `VARCHAR(64)` | Product/inventory stock-keeping unit                        |
 | `gtin`        | `VARCHAR(14)` | Global Trade Item Number - EAN-8/13, UPC-A, GTIN-14 barcode |
-| `tax_id`      | `VARCHAR(30)` | VAT/company tax identifier (format varies by country)        |
+| `tax_id`      | `VARCHAR(30)` | VAT/company tax identifier (format varies by country)       |
 
 Widths are per-domain, not forced - these are recommended buckets.
 
 ### Address
 
-| Domain Type      | SQL            | Notes                       |
-| ----------------- | -------------- | ----------------------------- |
-| `street_line_1`   | `VARCHAR(150)` |                                |
-| `street_line_2`   | `VARCHAR(100)` |                                |
-| `city`            | `VARCHAR(100)` |                                |
-| `state_province`  | `VARCHAR(100)` | Regional subdivision          |
-| `postal_code`     | `VARCHAR(20)`  |                                |
-| `country_code`    | `CHAR(3)`      | ISO 3166-1 alpha-2 / alpha-3  |
-| `country_name`    | `VARCHAR(100)` | Full display country name     |
+| Domain Type      | SQL            | Notes                        |
+| ---------------- | -------------- | ---------------------------- |
+| `street_line_1`  | `VARCHAR(150)` |                              |
+| `street_line_2`  | `VARCHAR(100)` |                              |
+| `city`           | `VARCHAR(100)` |                              |
+| `state_province` | `VARCHAR(100)` | Regional subdivision         |
+| `postal_code`    | `VARCHAR(20)`  |                              |
+| `country_code`   | `CHAR(3)`      | ISO 3166-1 alpha-2 / alpha-3 |
+| `country_name`   | `VARCHAR(100)` | Full display country name    |
 
 ### Security & System
 
 | Domain Type     | SQL            | Purpose                                |
-| ---------------- | -------------- | ----------------------------------------- |
-| `password_hash`  | `VARCHAR(255)` | Argon2id / PHC formatted password hash    |
-| `ip_address`     | `VARCHAR(45)`  | IPv4/IPv6 address stored as text          |
-| `json_data`      | `JSON`         | Serialized structured application data    |
+| --------------- | -------------- | -------------------------------------- |
+| `password_hash` | `VARCHAR(255)` | Argon2id / PHC formatted password hash |
+| `ip_address`    | `VARCHAR(45)`  | IPv4/IPv6 address stored as text       |
+| `json_data`     | `JSON`         | Serialized structured application data |
 
 ### Media
 
 | Domain Type  | SQL            | Suffix Convention                              |
-| ------------ | -------------- | ------------------------------------------------ |
+| ------------ | -------------- | ---------------------------------------------- |
 | `image_path` | `VARCHAR(512)` | `_image` (e.g. `portrait_image`, `logo_image`) |
 | `file_path`  | `VARCHAR(512)` | `_file` (e.g. `contract_file`, `invoice_file`) |
 
@@ -501,7 +501,7 @@ created_by = ::session.user.email
 Exported from `lib/global_scopes.ts`. Picks the `scope_key` an index request should filter by, precedence URL param `?scope=` > `scope_<table>` cookie > the table's default scope (`global_scopes.find(s => s.is_default)`):
 
 ```ts
-export function resolve_scope_key(global_scopes: ScopeDef[], url_scope: string, cookie_scope: string | null): string
+export function resolve_scope_key(global_scopes: ScopeDef[], url_scope: string, cookie_scope: string | null): string;
 ```
 
 Both the URL param and the cookie are user-controlled, so `resolve_scope_key()` validates each against the `global_scopes` list already loaded for that table/route and only accepts a known `scope_key` - an unrecognized value is skipped rather than passed through. This matters because `get_scope_clause()` returns an empty (unfiltered) WHERE clause when a `scope_key` matches no row, so accepting an arbitrary `?scope=` value here would let a request silently drop the admin-configured filter instead of falling back to the table's default. `get_global_scopes()` also forces `is_default = true` when a table has exactly one scope - a single scope is an admin-imposed restriction, not a menu choice, so it always applies regardless of the stored flag.
@@ -556,7 +556,7 @@ export function resolve_session_variables(clause: string, ctx?: RequestContext):
 **Variable registry** (`SESSION_VARIABLES`):
 
 | Key                         | Resolver                         |
-| --------------------------- | --------------------------------- |
+| --------------------------- | -------------------------------- |
 | `session.user.id`           | `ctx.user?.id ?? null`           |
 | `session.user.email`        | `ctx.user?.email ?? null`        |
 | `session.user.name`         | `ctx.user?.name ?? null`         |
@@ -630,7 +630,7 @@ locale-suffixed tables. Design record: `.agents/PLAN_locale_suffixed_tables.md`.
 - **A single-locale app is unaffected.** No suffix, no clone, no flag - the
   generated output is identical to a non-localized app.
 - **Opt in per column** with `localized: true` in `config.ts`. That flag
-  is the only generation-time localization decision; *which* locales exist is
+  is the only generation-time localization decision; _which_ locales exist is
   config, resolved per request.
 
 ### Reads

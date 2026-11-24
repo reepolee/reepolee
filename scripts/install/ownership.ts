@@ -1,6 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 
+// "typescript" is no longer installed (bun check replaced tsc); kept so older receipts still uninstall it.
 export const global_tool_names = ["tailwindcss", "typescript", "libvips", "reettier", "reesql"] as const;
 
 export type global_tool_name = (typeof global_tool_names)[number];

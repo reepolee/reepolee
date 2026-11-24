@@ -290,22 +290,12 @@
 				"translation": "Ni izbranih paketov."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No packages archived|{count} package archived|{count} packages archived|{count} packages archived|{count} packages archived",
 				"translation": "Ni arhiviranih paketov|Arhivirano je {count} paket|Arhivirano je {count} paketov|Arhivirano je {count} paketov|Arhivirano je {count} paketov"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} package failed|{count} packages failed|{count} packages failed|{count} packages failed",
 				"translation": "|{count} paket ni uspel|{count} paketov ni uspelo|{count} paketov ni uspelo|{count} paketov ni uspelo"
 			},
@@ -839,22 +829,12 @@
 				"translation": "Sezone niso izbrane."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No seasons archived|{count} season archived|{count} seasons archived|{count} seasons archived|{count} seasons archived",
 				"translation": "Ni arhiviranih sezon|{count} arhivirana sezona|{count} arhivirane sezone|{count} arhivirane sezone|{count} arhivirane sezone"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} season failed|{count} seasons failed|{count} seasons failed|{count} seasons failed",
 				"translation": "|{count} neuspešna sezona|{count} neuspešnih sezon|{count} neuspešnih sezon|{count} neuspešnih sezon"
 			},
@@ -1391,22 +1371,12 @@
 				"translation": "Ni izbrana nobena ekipa."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No teams archived|{count} team archived|{count} teams archived|{count} teams archived|{count} teams archived",
 				"translation": "Ni arhiviranih ekip|{count} arhivirana ekipa|{count} arhivirane ekipe|{count} arhivirane ekipe|{count} arhivirane ekipe"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} team failed|{count} teams failed|{count} teams failed|{count} teams failed",
 				"translation": "|{count} ekipa ni uspela|{count} ekipe niso uspele|{count} ekipe niso uspele|{count} ekipe niso uspele"
 			},
@@ -2008,22 +1978,12 @@
 				"translation": "Ni izbranih uporabnikov."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No users archived|{count} user archived|{count} users archived|{count} users archived|{count} users archived",
 				"translation": "Ni arhiviranih uporabnikov|{count} arhiviranih uporabnikov|{count} arhiviranih uporabnikov|{count} arhiviranih uporabnikov|{count} arhiviranih uporabnikov"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} user failed|{count} users failed|{count} users failed|{count} users failed",
 				"translation": "|{count} uporabnikov ni uspelo|{count} uporabnikov ni uspelo|{count} uporabnikov ni uspelo|{count} uporabnikov ni uspelo"
 			},
@@ -2710,22 +2670,12 @@
 				"translation": "Ni izbranih tabel za arene."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No arena tables archived|{count} arena_table archived|{count} arena_tables archived|{count} arena_tables archived|{count} arena_tables archived",
 				"translation": "Ni arhiviranih arenarskih tabel|{count} arhivirana arenarska tabela|{count} arhivirane arenarske tabele|{count} arhivirane arenarske tabele|{count} arhivirane arenarske tabele"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} arena_table failed|{count} arena_tables failed|{count} arena_tables failed|{count} arena_tables failed",
 				"translation": "|{count} arena_table ni uspelo|{count} arena_tables ni uspelo|{count} arena_tables ni uspelo|{count} arena_tables ni uspelo"
 			},
@@ -3092,22 +3042,12 @@
 				"translation": "Ni izbranih držav."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No countries archived|{count} country archived|{count} countrys archived|{count} countrys archived|{count} countrys archived",
 				"translation": "Ni arhiviranih držav|{count} arhivirana država|{count} arhivirane države|{count} arhivirane države|{count} arhivirane države"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} country failed|{count} countrys failed|{count} countrys failed|{count} countrys failed",
 				"translation": "|{count} država ni uspela|{count} držav ni uspelo|{count} držav ni uspelo|{count} držav ni uspelo"
 			},
@@ -3526,22 +3466,12 @@
 				"translation": "Ni izbranih paketov."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No packages archived|{count} package archived|{count} packages archived|{count} packages archived|{count} packages archived",
 				"translation": "Ni arhiviranih paketov|Arhivirano je {count} paket|Arhivirano je {count} paketov|Arhivirano je {count} paketov|Arhivirano je {count} paketov"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} package failed|{count} packages failed|{count} packages failed|{count} packages failed",
 				"translation": "|{count} paket ni uspel|{count} paketov ni uspelo|{count} paketov ni uspelo|{count} paketov ni uspelo"
 			},
@@ -3993,22 +3923,12 @@
 				"translation": "Ni izbranih programov."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No programmes archived|{count} programme archived|{count} programmes archived|{count} programmes archived|{count} programmes archived",
 				"translation": "Ni arhiviranih oddaj|{count} arhivirana oddaja|{count} arhivirane oddaje|{count} arhivirane oddaje|{count} arhivirane oddaje"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} programme failed|{count} programmes failed|{count} programmes failed|{count} programmes failed",
 				"translation": "|{count} program ni uspel|{count} programi niso uspeli|{count} programi niso uspeli|{count} programi niso uspeli"
 			},
@@ -4370,22 +4290,12 @@
 				"translation": "Ni izbranih statusov sezone."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No season statuses archived|{count} season_status archived|{count} season_statuss archived|{count} season_statuss archived|{count} season_statuss archived",
 				"translation": "Ni arhiviranih statusov sezone|{count} arhiviranih statusov sezone|{count} arhiviranih statusov sezone|{count} arhiviranih statusov sezone|{count} arhiviranih statusov sezone"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} season_status failed|{count} season_statuss failed|{count} season_statuss failed|{count} season_statuss failed",
 				"translation": "|{count} season_status ni uspelo|{count} season_statuss ni uspelo|{count} season_statuss ni uspelo|{count} season_statuss ni uspelo"
 			},
@@ -4772,22 +4682,12 @@
 				"translation": "Sezone niso izbrane."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No seasons archived|{count} season archived|{count} seasons archived|{count} seasons archived|{count} seasons archived",
 				"translation": "Ni arhiviranih sezon|{count} arhivirana sezona|{count} arhivirane sezone|{count} arhivirane sezone|{count} arhivirane sezone"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} season failed|{count} seasons failed|{count} seasons failed|{count} seasons failed",
 				"translation": "|{count} neuspešna sezona|{count} neuspešnih sezon|{count} neuspešnih sezon|{count} neuspešnih sezon"
 			},
@@ -5179,22 +5079,12 @@
 				"translation": "Ni izbranih statusov ekip."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No team statuses archived|{count} team_status archived|{count} team_statuss archived|{count} team_statuss archived|{count} team_statuss archived",
 				"translation": "Ni arhiviranih statusov ekip|{count} arhiviranih statusov ekip|{count} arhiviranih statusov ekip|{count} arhiviranih statusov ekip|{count} arhiviranih statusov ekip"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} team_status failed|{count} team_statuss failed|{count} team_statuss failed|{count} team_statuss failed",
 				"translation": "|{count} team_status ni uspelo|{count} team_statuss ni uspelo|{count} team_statuss ni uspelo|{count} team_statuss ni uspelo"
 			},
@@ -5631,22 +5521,12 @@
 				"translation": "Ni izbranih uporabnikov."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No users archived|{count} user archived|{count} users archived|{count} users archived|{count} users archived",
 				"translation": "Ni arhiviranih uporabnikov|{count} arhiviranih uporabnikov|{count} arhiviranih uporabnikov|{count} arhiviranih uporabnikov|{count} arhiviranih uporabnikov"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} user failed|{count} users failed|{count} users failed|{count} users failed",
 				"translation": "|{count} uporabnikov ni uspelo|{count} uporabnikov ni uspelo|{count} uporabnikov ni uspelo|{count} uporabnikov ni uspelo"
 			},
@@ -6077,9 +5957,7 @@
 				"translation": "Izberite datoteko, preglejte njeno vsebino in nato določite uvoz."
 			},
 			"ui.no_sql_files": {
-				"placeholders": [
-					"{dialect}"
-				],
+				"placeholders": ["{dialect}"],
 				"source": "No .sql files found in sql/{dialect}/.",
 				"translation": "V mapi sql/{dialect}/ ni datotek .sql."
 			},
@@ -6486,22 +6364,12 @@
 				"translation": "Ni izbranih db poti."
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No DB routes deleted|{count} db_route deleted|{count} db_routes deleted|{count} db_routes deleted|{count} db_routes deleted",
 				"translation": "Ni izbrisanih db poti|{count} db pot izbrisana|{count} db poti izbrisani|{count} db poti izbrisanih|{count} db poti izbrisanih"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} db_route failed|{count} db_routes failed|{count} db_routes failed|{count} db_routes failed",
 				"translation": "|{count} db pot ni uspela|{count} db poti nista uspeli|{count} db poti niso uspele|{count} db poti ni uspelo"
 			},
@@ -7038,22 +6906,12 @@
 				"translation": "Ni izbranih db tabel."
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No db tables deleted|{count} db_table deleted|{count} db_tables deleted|{count} db_tables deleted|{count} db_tables deleted",
 				"translation": "Ni izbrisanih db tabel|{count} db tabela izbrisana|{count} db tabeli izbrisani|{count} db tabele izbrisane|{count} db tabel izbrisanih"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} db_table failed|{count} db_tables failed|{count} db_tables failed|{count} db_tables failed",
 				"translation": "|{count} db tabela ni uspela|{count} db tabeli nista uspeli|{count} db tabele niso uspele|{count} db tabel ni uspelo"
 			},
@@ -7410,22 +7268,12 @@
 				"translation": "Ni izbranih prevedov."
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No translations deleted|{count} translation deleted|{count} translations deleted|{count} translations deleted|{count} translations deleted",
 				"translation": "Ni prevedov izbranih|{count} preveden brisan|{count} prevedov brisan|{count} prevedov brisan|{count} prevedov brisan"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} translation failed|{count} translations failed|{count} translations failed|{count} translations failed",
 				"translation": "|{count} prevedjen pa ješe|{count} prevedov ješe pa ješe|{count} prevedov ješe pa ješe|{count} prevedov ješe pa ješe"
 			},
@@ -8141,22 +7989,12 @@
 				"translation": "Ni izbranih globalnih filtrov."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No global scopes archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "Ni arhiviranih obsegov|{count} obseg arhiviran|{count} obsega arhivirana|{count} obsegi arhivirani|{count} obsegov arhiviranih"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} global filter failed to delete|{count} global filters failed to delete|{count} global filters failed to delete|{count} global filters failed to delete",
 				"translation": "|{count} globalni filter ni uspel|{count} globalna filtra nista uspela|{count} globalni filtri niso uspeli|{count} globalnim filtrom ni uspelo"
 			},
@@ -8393,22 +8231,12 @@
 				"translation": "Nobena slika ni izbrana."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No images archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "Ni arhiviranih slik|{count} slika arhivirana|{count} sliki arhivirani|{count} slike arhivirane|{count} slik arhiviranih"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} image failed|{count} images failed|{count} images failed|{count} images failed",
 				"translation": "|{count} slika neuspešna|{count} sliki neuspešni|{count} slike neuspešne|{count} slik neuspešnih"
 			},
@@ -9109,22 +8937,12 @@
 				"translation": "Ni izbranih modulov."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No modules archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "Ni arhiviranih modulov|{count} modul arhiviran|{count} modula arhivirana|{count} moduli arhivirani|{count} modulov arhiviranih"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} module failed|{count} modules failed|{count} modules failed|{count} modules failed",
 				"translation": "|{count} modul ni uspel|{count} modula ni uspelo|{count} modulov ni uspelo|{count} modulov ni uspelo"
 			},
@@ -10316,9 +10134,7 @@
 				"translation": "Shrani in zapri"
 			},
 			"messages.delete_namespace_confirm": {
-				"placeholders": [
-					"{namespace}"
-				],
+				"placeholders": ["{namespace}"],
 				"source": "All translations in \"{namespace}\" will be permanently deleted.",
 				"translation": "Vsi prevodi v \"{namespace}\" bodo trajno izbrisani."
 			},
@@ -10555,22 +10371,12 @@
 				"translation": "Niso izbrani uporabniki."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No users archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "Ni arhiviranih uporabnikov|{count} uporabnik arhiviran|{count} uporabnika arhivirana|{count} uporabniki arhivirani|{count} uporabnikov arhiviranih"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} user failed|{count} users failed|{count} users failed|{count} users failed",
 				"translation": "|{count} uporabnik ni uspel|{count} uporabnika nista uspela|{count} uporabniki niso uspeli|{count} uporabnikov ni uspelo"
 			},
@@ -12459,16 +12265,12 @@
 				"translation": "Trenutno geslo je obvezno"
 			},
 			"errors.date_max": {
-				"placeholders": [
-					"{max}"
-				],
+				"placeholders": ["{max}"],
 				"source": "Date must be on or before {max}.",
 				"translation": "Datum mora biti {max} ali zgodnejši."
 			},
 			"errors.date_min": {
-				"placeholders": [
-					"{min}"
-				],
+				"placeholders": ["{min}"],
 				"source": "Date must be on or after {min}.",
 				"translation": "Datum mora biti {min} ali kasnejši."
 			},
@@ -12918,9 +12720,7 @@
 				"translation": "Ni najdenih zadetkov."
 			},
 			"ui.busy_poller_translating": {
-				"placeholders": [
-					"{count}"
-				],
+				"placeholders": ["{count}"],
 				"source": "{count} translation job(s) running - translations appear when they finish.",
 				"translation": "{count} prevajalskih opravil se izvaja - prevodi se prikažejo, ko se zaključijo."
 			},
@@ -13192,10 +12992,7 @@
 				"translation": "Pošlji povabilo"
 			},
 			"email.body": {
-				"placeholders": [
-					"{url}",
-					"{username}"
-				],
+				"placeholders": ["{url}", "{username}"],
 				"source": "Hi {username},\n\nYou've been invited. Complete your registration here:\n{url}",
 				"translation": "Pozdravljeni {username},\n\nPovabljeni ste bili. Dokončajte registracijo tukaj:\n{url}"
 			},
@@ -13730,22 +13527,12 @@
 				"translation": "Ni izbranih tabel za arene."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No arena tables archived|{count} arena_table archived|{count} arena_tables archived|{count} arena_tables archived|{count} arena_tables archived",
 				"translation": "Ni arhiviranih arenarskih tabel|{count} arhivirana arenarska tabela|{count} arhivirane arenarske tabele|{count} arhivirane arenarske tabele|{count} arhivirane arenarske tabele"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} arena_table failed|{count} arena_tables failed|{count} arena_tables failed|{count} arena_tables failed",
 				"translation": "|{count} arena_table ni uspelo|{count} arena_tables ni uspelo|{count} arena_tables ni uspelo|{count} arena_tables ni uspelo"
 			},
@@ -14112,22 +13899,12 @@
 				"translation": "Ni izbranih držav."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No countries archived|{count} country archived|{count} countrys archived|{count} countrys archived|{count} countrys archived",
 				"translation": "Ni arhiviranih držav|{count} arhivirana država|{count} arhivirane države|{count} arhivirane države|{count} arhivirane države"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} country failed|{count} countrys failed|{count} countrys failed|{count} countrys failed",
 				"translation": "|{count} država ni uspela|{count} držav ni uspelo|{count} držav ni uspelo|{count} držav ni uspelo"
 			},
@@ -14674,22 +14451,12 @@
 				"translation": "Ni izbranih db poti."
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No DB routes deleted|{count} db_route deleted|{count} db_routes deleted|{count} db_routes deleted|{count} db_routes deleted",
 				"translation": "Ni izbrisanih db poti|{count} db pot izbrisana|{count} db poti izbrisani|{count} db poti izbrisanih|{count} db poti izbrisanih"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} db_route failed|{count} db_routes failed|{count} db_routes failed|{count} db_routes failed",
 				"translation": "|{count} db pot ni uspela|{count} db poti nista uspeli|{count} db poti niso uspele|{count} db poti ni uspelo"
 			},
@@ -15226,22 +14993,12 @@
 				"translation": "Ni izbranih db tabel."
 			},
 			"messages.bulk_deleted": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No db tables deleted|{count} db_table deleted|{count} db_tables deleted|{count} db_tables deleted|{count} db_tables deleted",
 				"translation": "Ni izbrisanih db tabel|{count} db tabela izbrisana|{count} db tabeli izbrisani|{count} db tabele izbrisane|{count} db tabel izbrisanih"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} db_table failed|{count} db_tables failed|{count} db_tables failed|{count} db_tables failed",
 				"translation": "|{count} db tabela ni uspela|{count} db tabeli nista uspeli|{count} db tabele niso uspele|{count} db tabel ni uspelo"
 			},
@@ -15643,22 +15400,12 @@
 				"translation": "Ni izbranih modulov."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No modules archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
 				"translation": "Ni arhiviranih modulov|{count} modul arhiviran|{count} modula arhivirana|{count} moduli arhivirani|{count} modulov arhiviranih"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} module failed|{count} modules failed|{count} modules failed|{count} modules failed",
 				"translation": "|{count} modul ni uspel|{count} modula ni uspelo|{count} modulov ni uspelo|{count} modulov ni uspelo"
 			},
@@ -16075,22 +15822,12 @@
 				"translation": "Ni izbranih paketov."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No packages archived|{count} package archived|{count} packages archived|{count} packages archived|{count} packages archived",
 				"translation": "Ni arhiviranih paketov|Arhivirano je {count} paket|Arhivirano je {count} paketov|Arhivirano je {count} paketov|Arhivirano je {count} paketov"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} package failed|{count} packages failed|{count} packages failed|{count} packages failed",
 				"translation": "|{count} paket ni uspel|{count} paketov ni uspelo|{count} paketov ni uspelo|{count} paketov ni uspelo"
 			},
@@ -16562,22 +16299,12 @@
 				"translation": "Ni izbranih programov."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No programmes archived|{count} programme archived|{count} programmes archived|{count} programmes archived|{count} programmes archived",
 				"translation": "Ni arhiviranih oddaj|{count} arhivirana oddaja|{count} arhivirane oddaje|{count} arhivirane oddaje|{count} arhivirane oddaje"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} programme failed|{count} programmes failed|{count} programmes failed|{count} programmes failed",
 				"translation": "|{count} program ni uspel|{count} programi niso uspeli|{count} programi niso uspeli|{count} programi niso uspeli"
 			},
@@ -16939,22 +16666,12 @@
 				"translation": "Ni izbranih statusov sezone."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No season statuses archived|{count} season_status archived|{count} season_statuss archived|{count} season_statuss archived|{count} season_statuss archived",
 				"translation": "Ni arhiviranih statusov sezone|{count} arhiviranih statusov sezone|{count} arhiviranih statusov sezone|{count} arhiviranih statusov sezone|{count} arhiviranih statusov sezone"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} season_status failed|{count} season_statuss failed|{count} season_statuss failed|{count} season_statuss failed",
 				"translation": "|{count} season_status ni uspelo|{count} season_statuss ni uspelo|{count} season_statuss ni uspelo|{count} season_statuss ni uspelo"
 			},
@@ -17341,22 +17058,12 @@
 				"translation": "Sezone niso izbrane."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No seasons archived|{count} season archived|{count} seasons archived|{count} seasons archived|{count} seasons archived",
 				"translation": "Ni arhiviranih sezon|{count} arhivirana sezona|{count} arhivirane sezone|{count} arhivirane sezone|{count} arhivirane sezone"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} season failed|{count} seasons failed|{count} seasons failed|{count} seasons failed",
 				"translation": "|{count} neuspešna sezona|{count} neuspešnih sezon|{count} neuspešnih sezon|{count} neuspešnih sezon"
 			},
@@ -17748,22 +17455,12 @@
 				"translation": "Ni izbranih statusov ekip."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No team statuses archived|{count} team_status archived|{count} team_statuss archived|{count} team_statuss archived|{count} team_statuss archived",
 				"translation": "Ni arhiviranih statusov ekip|{count} arhiviranih statusov ekip|{count} arhiviranih statusov ekip|{count} arhiviranih statusov ekip|{count} arhiviranih statusov ekip"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} team_status failed|{count} team_statuss failed|{count} team_statuss failed|{count} team_statuss failed",
 				"translation": "|{count} team_status ni uspelo|{count} team_statuss ni uspelo|{count} team_statuss ni uspelo|{count} team_statuss ni uspelo"
 			},
@@ -18250,22 +17947,12 @@
 				"translation": "Ni izbrana nobena ekipa."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No teams archived|{count} team archived|{count} teams archived|{count} teams archived|{count} teams archived",
 				"translation": "Ni arhiviranih ekip|{count} arhivirana ekipa|{count} arhivirane ekipe|{count} arhivirane ekipe|{count} arhivirane ekipe"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} team failed|{count} teams failed|{count} teams failed|{count} teams failed",
 				"translation": "|{count} ekipa ni uspela|{count} ekipe niso uspele|{count} ekipe niso uspele|{count} ekipe niso uspele"
 			},
@@ -18867,22 +18554,12 @@
 				"translation": "Ni izbranih uporabnikov."
 			},
 			"messages.bulk_archived": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "No users archived|{count} user archived|{count} users archived|{count} users archived|{count} users archived",
 				"translation": "Ni arhiviranih uporabnikov|{count} arhiviranih uporabnikov|{count} arhiviranih uporabnikov|{count} arhiviranih uporabnikov|{count} arhiviranih uporabnikov"
 			},
 			"messages.bulk_errors": {
-				"placeholders": [
-					"{count}",
-					"{count}",
-					"{count}",
-					"{count}"
-				],
+				"placeholders": ["{count}", "{count}", "{count}", "{count}"],
 				"source": "|{count} user failed|{count} users failed|{count} users failed|{count} users failed",
 				"translation": "|{count} uporabnikov ni uspelo|{count} uporabnikov ni uspelo|{count} uporabnikov ni uspelo|{count} uporabnikov ni uspelo"
 			},

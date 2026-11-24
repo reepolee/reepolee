@@ -4,7 +4,7 @@
 		"titleBar.activeBackground": "#272822",
 		"titleBar.activeForeground": "#ffffff",
 		"titleBar.inactiveBackground": "#272822",
-		"titleBar.inactiveForeground": "#ffff00",
+		"titleBar.inactiveForeground": "#ffff00"
 	},
 	"[html]": {
 		"editor.defaultFormatter": "vscode.html-language-features"
@@ -38,18 +38,14 @@
 	"vsicons.associations.files": [
 		{
 			"icon": "ree",
-			"extensions": [
-				"ree"
-			],
+			"extensions": ["ree"],
 			"format": "svg"
 		}
 	],
 	"vsicons.associations.folders": [
 		{
 			"icon": "ree",
-			"extensions": [
-				"ree-templates"
-			],
+			"extensions": ["ree-templates"],
 			"format": "svg"
 		}
 	],
@@ -62,5 +58,5 @@
 		"**/CVS": true,
 		"**/.DS_Store": true,
 		"**/Thumbs.db": true
-	},
+	}
 }

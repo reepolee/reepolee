@@ -67,6 +67,7 @@ This creates `apps/main/users/config.ts`, `schema.generated.ts`, and `validation
 ### Step 4: Verify Generated Files
 
 Check that generation created:
+
 - `apps/main/users/form.ree` (Create/Edit form)
 - `apps/main/users/index.ree` (List/grid view)
 - `apps/main/users/index.ts` (Route handler)
@@ -78,9 +79,9 @@ Routes should be auto-registered. Verify in `apps/main/routes.ts`:
 
 ```typescript
 export const users_crud = {
-  get: route('/users', users.get),
-  post: route('/users', users.post),
-  delete: route('/users/:id', users.delete),
+	get: route("/users", users.get),
+	post: route("/users", users.post),
+	delete: route("/users/:id", users.delete),
 };
 ```
 
@@ -103,47 +104,40 @@ bun run dev
 
 ```html
 <form method="POST">
-  <!-- GEN:FIELDS:START -->
-    <div class="form-group">
-      <label for="email">Email Address</label>
-      <input 
-        id="email" 
-        name="email" 
-        type="email" 
-        required 
-        class="form-control email-input"
-      />
-      <small class="help-text">We'll never share your email.</small>
-    </div>
-    
-    <div class="form-group">
-      <label for="first_name">First Name</label>
-      <input 
-        id="first_name" 
-        name="first_name" 
-        type="text"
-        class="form-control"
-      />
-    </div>
+	<!-- GEN:FIELDS:START -->
+	<div class="form-group">
+		<label for="email">Email Address</label>
+		<input id="email" name="email" type="email" required class="form-control email-input" />
+		<small class="help-text">We'll never share your email.</small>
+	</div>
 
-    <script>
-      // Custom validation
-      const emailInput = document.querySelector('input[name="email"]');
-      emailInput.addEventListener('blur', async (e) => {
-        const exists = await checkEmailExists(e.target.value);
-        if (exists) {
-          e.target.classList.add('is-invalid');
-        }
-      });
-    </script>
+	<div class="form-group">
+		<label for="first_name">First Name</label>
+		<input id="first_name" name="first_name" type="text" class="form-control" />
+	</div>
 
-    <style>
-      .email-input { border: 2px solid #007bff; }
-      .form-group { margin-bottom: 1.5rem; }
-    </style>
-  <!-- GEN:FIELDS:END -->
+	<script>
+		// Custom validation
+		const emailInput = document.querySelector('input[name="email"]');
+		emailInput.addEventListener("blur", async (e) => {
+			const exists = await checkEmailExists(e.target.value);
+			if (exists) {
+				e.target.classList.add("is-invalid");
+			}
+		});
+	</script>
 
-  <button type="submit" class="btn btn-primary">Save</button>
+	<style>
+		.email-input {
+			border: 2px solid #007bff;
+		}
+		.form-group {
+			margin-bottom: 1.5rem;
+		}
+	</style>
+	<!-- GEN:FIELDS:END -->
+
+	<button type="submit" class="btn btn-primary">Save</button>
 </form>
 ```
 
@@ -153,22 +147,20 @@ Everything inside `<!-- GEN:FIELDS:START/END -->` is preserved on regeneration.
 
 ```html
 <table class="table">
-  <thead>
-    <!-- GEN:FIELDS:HEADERS -->
-      <th>
-        Email <span class="required">*</span>
-      </th>
-      <th>Full Name</th>
-      <th class="text-right">Joined Date</th>
-    <!-- GEN:FIELDS:HEADERS -->
-  </thead>
-  <tbody>
-    <!-- GEN:FIELDS:CELLS -->
-      <td>{{email}}</td>
-      <td>{{full_name}}</td>
-      <td class="text-right">{{joined_date}}</td>
-    <!-- GEN:FIELDS:CELLS -->
-  </tbody>
+	<thead>
+		<!-- GEN:FIELDS:HEADERS -->
+		<th>Email <span class="required">*</span></th>
+		<th>Full Name</th>
+		<th class="text-right">Joined Date</th>
+		<!-- GEN:FIELDS:HEADERS -->
+	</thead>
+	<tbody>
+		<!-- GEN:FIELDS:CELLS -->
+		<td>{{email}}</td>
+		<td>{{full_name}}</td>
+		<td class="text-right">{{joined_date}}</td>
+		<!-- GEN:FIELDS:CELLS -->
+	</tbody>
 </table>
 ```
 
@@ -241,25 +233,25 @@ Create a separate file for custom queries:
 import { db } from "$config/db";
 
 export async function get_users_by_status(status: string) {
-  try {
-    return await timed_query("users", "get_users_by_status", async () => {
-      return await db`SELECT * FROM users WHERE status = ${status}`;
-    });
-  } catch (error) {
-    console.error("Error fetching users by status:", error);
-    return [];
-  }
+	try {
+		return await timed_query("users", "get_users_by_status", async () => {
+			return await db`SELECT * FROM users WHERE status = ${status}`;
+		});
+	} catch (error) {
+		console.error("Error fetching users by status:", error);
+		return [];
+	}
 }
 
 export async function search_users_by_email_domain(domain: string) {
-  try {
-    return await timed_query("users", "search_users_by_domain", async () => {
-      return await db`SELECT * FROM users WHERE email LIKE ${'%@' + domain}`;
-    });
-  } catch (error) {
-    console.error("Error searching users by domain:", error);
-    return [];
-  }
+	try {
+		return await timed_query("users", "search_users_by_domain", async () => {
+			return await db`SELECT * FROM users WHERE email LIKE ${"%@" + domain}`;
+		});
+	} catch (error) {
+		console.error("Error searching users by domain:", error);
+		return [];
+	}
 }
 ```
 
@@ -270,40 +262,41 @@ import * as sql from "./sql.js";
 import * as sql_custom from "./sql.custom.js";
 
 export async function get(req: Request, ctx: RequestContext) {
-  const { domain } = Object.fromEntries(new URL(req.url).searchParams);
-  
-  if (domain) {
-    // Use custom query
-    const users = await sql_custom.search_users_by_email_domain(domain);
-    return render(req, "index.ree", { users });
-  }
-  
-  // Use standard query
-  const { records } = await sql.search_records();
-  return render(req, "index.ree", { users: records });
+	const { domain } = Object.fromEntries(new URL(req.url).searchParams);
+
+	if (domain) {
+		// Use custom query
+		const users = await sql_custom.search_users_by_email_domain(domain);
+		return render(req, "index.ree", { users });
+	}
+
+	// Use standard query
+	const { records } = await sql.search_records();
+	return render(req, "index.ree", { users: records });
 }
 ```
 
 ### Unsafe Customizations (Lost on Regeneration)
 
 ❌ **Outside markers:**
+
 ```html
 <!-- This will be lost -->
-<div class="custom-header">
-  My custom section
-</div>
+<div class="custom-header">My custom section</div>
 <!-- GEN:FIELDS:START -->
-  ...
+...
 <!-- GEN:FIELDS:END -->
 ```
 
 ❌ **Modifying sql.ts directly:**
+
 ```typescript
 // This will be lost on regeneration
 export async function custom_query() { ... }
 ```
 
 ❌ **Deleting markers:**
+
 ```html
 <!-- DON'T delete these comments -->
 <!-- GEN:FIELDS:START -->
@@ -317,6 +310,7 @@ export async function custom_query() { ... }
 ### Adding a Column
 
 **Workflow:**
+
 ```bash
 # 1. Add column to database
 ALTER TABLE users ADD COLUMN phone_number VARCHAR(20);
@@ -336,6 +330,7 @@ bun reeman refresh-crud users --mode fields
 ### Removing a Column
 
 **Workflow:**
+
 ```bash
 # 1. Remove column from database
 ALTER TABLE users DROP COLUMN phone_number;
@@ -355,6 +350,7 @@ bun reeman refresh-crud users --mode fields
 ### Renaming a Column
 
 **Workflow:**
+
 ```bash
 # 1. Rename in database
 ALTER TABLE users RENAME COLUMN phone_number TO contact_number;
@@ -372,6 +368,7 @@ bun reeman refresh-crud users --mode fields
 ### Changing Column Type
 
 **Workflow:**
+
 ```bash
 # 1. Change type
 ALTER TABLE users MODIFY COLUMN age INT;
@@ -411,6 +408,7 @@ bun run dev
 ### When to Switch from Offset to Cursor Pagination
 
 **Signs you need to switch:**
+
 - Table has > 100k rows
 - Users frequently scroll deep into results
 - Page load times slow down at page 100+
@@ -460,6 +458,7 @@ CREATE FULLTEXT INDEX idx_users_search ON users(first_name, last_name, email);
 ### Monitoring Query Performance
 
 Check slow queries in MySQL:
+
 ```sql
 -- Enable slow query log
 SET GLOBAL slow_query_log = 'ON';
@@ -470,6 +469,7 @@ SHOW VARIABLES LIKE 'slow_query_log_file';
 ```
 
 Compare offset vs cursor performance:
+
 ```sql
 -- Offset query (slow at deep offsets)
 SELECT * FROM users LIMIT 20 OFFSET 50000;  -- 500-2000ms
@@ -498,6 +498,7 @@ This sends data to the client as it's fetched, reducing perceived load time.
 **Problem:** `Error: Marker "GEN:FIELDS:START" not found in form.ree`
 
 **Solution:**
+
 ```bash
 # Option 1: Restore the marker manually
 # Edit form.ree and add markers back:
@@ -515,6 +516,7 @@ bun reeman crud users --force
 **Problem:** You added a column but it doesn't appear in the form.
 
 **Solution:**
+
 ```bash
 # Refresh fields only (preserves layout/CSS customizations)
 bun reeman refresh-crud users --mode fields
@@ -528,6 +530,7 @@ bun reeman crud users --force
 **Problem:** Create/Edit form doesn't show FK dropdown for orders.
 
 **Solution:**
+
 1. Verify the foreign table exists and has data
 2. Check that the FK column is properly named (e.g., `order_id`)
 3. Regenerate to re-detect FK:
@@ -540,6 +543,7 @@ bun reeman crud users --force
 **Problem:** List takes 10+ seconds to load.
 
 **Solutions:**
+
 1. **Check row count:** `SELECT COUNT(*) FROM users;`
    - If > 100k, switch to cursor pagination (see section above)
 2. **Check indexes:** `SHOW INDEX FROM users;`
@@ -552,6 +556,7 @@ bun reeman crud users --force
 **Problem:** Git merge conflict in form.ree after regenerating in another branch.
 
 **Solution:**
+
 ```bash
 # View the conflict
 git diff form.ree
@@ -570,27 +575,28 @@ git commit -m "Resolve CRUD merge conflict"
 
 **Problem:** `bun reeman refresh-crud <table> --mode fields` lost your custom validation event listeners.
 
-**Cause:** The content *between* the CRUD markers is generator-owned. On refresh it is regenerated and replaced - anything you add there (like a standalone `<script>`) is overwritten. Markers preserve **outside** content, not inside content.
+**Cause:** The content _between_ the CRUD markers is generator-owned. On refresh it is regenerated and replaced - anything you add there (like a standalone `<script>`) is overwritten. Markers preserve **outside** content, not inside content.
 
-**Solution:** Put custom code *outside* the markers:
+**Solution:** Put custom code _outside_ the markers:
 
 ```html
 <!-- GEN:FIELDS:START -->
-  <input name="email" />
+<input name="email" />
 <!-- GEN:FIELDS:END -->
 
 <script>
-  // Outside the managed section → preserved across refresh
-  document.querySelector('input[name="email"]').addEventListener('change', validate);
+	// Outside the managed section → preserved across refresh
+	document.querySelector('input[name="email"]').addEventListener("change", validate);
 </script>
 ```
 
 If still lost, double-check:
+
 1. Markers exist and aren't deleted
 2. Your custom code is **outside** `<!-- GEN:FIELDS:START -->` … `<!-- GEN:FIELDS:END -->`
 3. No nested generators running (they overwrite, then you refresh, losing changes)
 
-> **Note:** Within the managed section, `bun reeman refresh-crud <table> --mode fields` does a *smart merge*: per-field edits inside an existing `<field-wrapper>` are preserved as long as the field's template type and element signature are unchanged. But this only protects field-wrapper blocks - never put standalone scripts or other custom markup between the markers.
+> **Note:** Within the managed section, `bun reeman refresh-crud <table> --mode fields` does a _smart merge_: per-field edits inside an existing `<field-wrapper>` are preserved as long as the field's template type and element signature are unchanged. But this only protects field-wrapper blocks - never put standalone scripts or other custom markup between the markers.
 
 ---
 

@@ -10,12 +10,15 @@ if [ $? -ne 0 ]; then
   echo "Formatting check failed. Commit aborted."
   exit 1
 fi
+
+echo "Running bun fmt on staged json/md/yaml/toml"
+bun fmt --staged || { echo "bun fmt failed. Commit aborted."; exit 1; }
 git add -u
 
-echo "Running typecheck ratchet"
-bun run typecheck:ratchet
+echo "Running bun check"
+bun run typecheck
 if [ $? -ne 0 ]; then
-  echo "Typecheck ratchet failed. Commit aborted."
+  echo "Typecheck failed. Commit aborted."
   exit 1
 fi
 
