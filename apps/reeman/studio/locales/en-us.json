@@ -1,0 +1,64 @@
+{
+	"actions": {
+		"adapt_schema": "Adapt schema",
+		"add_column": "Add column",
+		"add_foreign_key": "Add foreign key",
+		"cancel": "Cancel",
+		"copy": "Copy",
+		"create": "Create",
+		"delete": "Delete",
+		"delete_column": "Delete column",
+		"favorite": "Favorite",
+		"generate": "Generate",
+		"generate_view": "Generate view",
+		"hide_system": "Hide system columns",
+		"new_table": "New table",
+		"save": "Save",
+		"undo": "Undo"
+	},
+	"labels": {
+		"all_types": "All types",
+		"auto_increment": "Auto increment",
+		"current": "current",
+		"ddl_preview": "DDL preview",
+		"default": "Default",
+		"domain_type": "Domain type",
+		"domain_types": "Domain types",
+		"expected_type": "Expected type",
+		"file": "File",
+		"generated": "Generated",
+		"name": "Name",
+		"nonstandard_sql": "Nonstandard SQL",
+		"nullability": "Nullability",
+		"other_fields": "Other fields",
+		"sql_type": "SQL type",
+		"suggested": "suggested",
+		"table": "Table",
+		"table_ids": "Table IDs",
+		"tables": "Tables",
+		"unique": "Unique",
+		"view": "View",
+		"views": "Views"
+	},
+	"messages": {
+		"adapt_schema": "Adapt the schema to the current model?",
+		"delete_column": "Delete this column?",
+		"delete_table": "Delete this table?",
+		"delete_view": "Delete this view?",
+		"generate_view": "Generate a view for this table?"
+	},
+	"nav": "DDL Studio",
+	"nav_prefix_title": "Studio",
+	"route_name": "studio",
+	"selectors": {
+		"custom": "Custom",
+		"select_file": "Select a file"
+	},
+	"ui": {
+		"description": "Visual SQL model editor",
+		"empty_text": "Open a file from the list to start editing.",
+		"empty_title": "No model loaded",
+		"no_objects": "Select a table or view",
+		"title": "Studio"
+	}
+}

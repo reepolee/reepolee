@@ -1,0 +1,36 @@
+{{ const attrs = props.attributes || {}; }}
+{{ const id_prefix = attrs["id-prefix"] || "generator"; }}
+{{ const pagination = attrs.pagination || "offset"; }}
+{{ const render_strategy = attrs["render-strategy"] || "load"; }}
+{{ const template_tags = attrs["template-tags"] || "tags"; }}
+<div class="grid grid-cols-1 gap-4">
+	<field-wrapper class="grid" data-field="pagination">
+		<div class="grid">
+			<label class="px-3" for="{= id_prefix }-pagination">{_ labels.pagination}</label>
+			<select id="{= id_prefix }-pagination" name="pagination">
+				<option value="offset" {#if pagination === "offset"}selected{/if}>offset</option>
+				<option value="cursor" {#if pagination === "cursor"}selected{/if}>cursor</option>
+			</select>
+		</div>
+	</field-wrapper>
+
+	<field-wrapper class="grid" data-field="render_strategy">
+		<div class="grid">
+			<label class="px-3" for="{= id_prefix }-render-strategy">{_ labels.render_strategy}</label>
+			<select id="{= id_prefix }-render-strategy" name="render_strategy">
+				<option value="load" {#if render_strategy === "load"}selected{/if}>load</option>
+				<option value="stream" {#if render_strategy === "stream"}selected{/if}>stream</option>
+			</select>
+		</div>
+	</field-wrapper>
+
+	<field-wrapper class="grid" data-field="template_tags">
+		<div class="grid">
+			<label class="px-3" for="{= id_prefix }-template-tags">{_ labels.template_tags}</label>
+			<select id="{= id_prefix }-template-tags" name="template_tags">
+				<option value="flat" {#if template_tags === "flat"}selected{/if}>flat</option>
+				<option value="tags" {#if template_tags === "tags"}selected{/if}>tags</option>
+			</select>
+		</div>
+	</field-wrapper>
+</div>

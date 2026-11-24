@@ -1,0 +1,65 @@
+{
+	"actions": {
+		"accept": "Sprejmi trenutno",
+		"accept_change": "Sprejmi spremembo",
+		"back": "Nazaj na poročila",
+		"cancel": "Prekliči",
+		"clear": "Počisti poročila",
+		"confirm_remove": "Odstrani",
+		"delete": "Odstrani",
+		"promote_to_docs": "Objavi v dokumentaciji",
+		"record_evidence": "Zabeleži dokaze",
+		"record_recording": "Posnemi video",
+		"show_all": "Pokaži vse",
+		"view_full_page": "Prikaži zajeme celih strani",
+		"watch_recording": "Oglej si posnetek",
+		"watch_video": "Oglej si označeno primerjavo"
+	},
+	"breadcrumbs": {
+		"report": "Vizualna primerjava",
+		"results": "Zagon in rezultati"
+	},
+	"confirm": {
+		"accept": "Posodobim shranjeno vizualno izhodišče za to stran?",
+		"clear": "Odstranim vsa poročila o dokončanih primerjavah in njihove artefakte?",
+		"delete": "Odstranim to poročilo o primerjavi in njegove artefakte?"
+	},
+	"labels": {
+		"actions": "Dejanja",
+		"added": "Dodano",
+		"baseline": "Izhodišče",
+		"capture_size": "Velikost zajema",
+		"changed": "Spremenjeno",
+		"changed_elements": "Spremenjeni elementi",
+		"current": "Trenutno",
+		"diff": "Razlika",
+		"new": "Novo",
+		"page_set": "Nabor strani",
+		"pages": "Strani",
+		"pixels_differ": "slikovnih pik se razlikuje",
+		"project": "Projekt",
+		"px_changed": "px spremenjeno",
+		"removed": "Odstranjeno",
+		"started": "Začeto",
+		"status": "Stanje",
+		"unchanged": "Nespremenjeno",
+		"zoomed": "povečano"
+	},
+	"nav": "Poročila",
+	"route_name": "porocila",
+	"status": {
+		"accepted": "Sprejeto",
+		"evidence_failed": "Snemanje dokazov ni uspelo",
+		"evidence_recording": "Snemanje dokazov…",
+		"promoted": "Objavljeno kot",
+		"recording_failed": "Snemanje ni uspelo",
+		"recording_recording": "Snemanje…"
+	},
+	"ui": {
+		"description": "Preglejte trenutne zajeme glede na shranjeno vizualno izhodišče.",
+		"docs_filename_placeholder": "ime-videa.mp4",
+		"filtered_by": "Filtrirano po:",
+		"no_reports": "Še ni poročil o vizualnih primerjavah.",
+		"title": "Poročila o primerjavah"
+	}
+}

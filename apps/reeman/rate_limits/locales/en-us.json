@@ -1,0 +1,19 @@
+{
+	"actions": {
+		"reset_all_counters": "Reset All Counters"
+	},
+	"nav": "Rate Limits",
+	"route_name": "rate-limits",
+	"ui": {
+		"blocked": "BLOCKED",
+		"no_active_counters": "No active rate limit counters",
+		"ok": "OK",
+		"requests": "req",
+		"reset_confirm": "Reset all active rate limit counters? This cannot be undone.",
+		"seconds": "s",
+		"status": "Status",
+		"title": "Rate Limits",
+		"total_redis_keys": "total Redis keys",
+		"ttl": "TTL"
+	}
+}

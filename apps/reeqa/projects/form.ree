@@ -1,0 +1,73 @@
+{#layout("dashboard/layout")}
+{#with props}
+	<div class="p-4">
+		<h1 class="mb-4">{#if form_mode === "new"}{_ actions.add}{:else}{_ actions.edit}{/if}</h1>
+		<p class="mb-4 text-sm text-text-secondary">{_ ui.description}</p>
+
+		{#if project_form_error}
+			<div class="py-4">
+				<app-banner type="red">{= props.project_form_error }</app-banner>
+			</div>
+		{/if}
+
+		<form method="POST" action="{~ localized_path(form_action) }" class="grid gap-4 max-w-[60ch] lg:max-w-[100ch] lg:grid-cols-2 lg:gap-x-6" id="entry-form">
+
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="name">
+				<div class="grid">
+					<label class="px-3" for="name">{_ labels.name}</label>
+					<input type="text" id="name" name="name" value="{= project_form.name }" required maxlength="80" autofocus />
+					<validation-error class="mt-1" id="error-name"></validation-error>
+				</div>
+				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+			</field-wrapper>
+
+			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="path">
+				<div class="grid">
+					<label class="px-3" for="path">{_ labels.path}</label>
+					<input type="text" id="path" name="path" value="{= project_form.path }" required placeholder="/absolute/path/to/bun-project" />
+					<validation-error class="mt-1" id="error-path"></validation-error>
+				</div>
+				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center">{_ ui.path_hint}</p>
+			</field-wrapper>
+
+			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="base_url">
+				<div class="grid">
+					<label class="px-3" for="base_url">{_ labels.base_url}</label>
+					<input type="url" id="base_url" name="base_url" value="{= project_form.base_url }" required placeholder="http://127.0.0.1:3110" />
+					<validation-error class="mt-1" id="error-base_url"></validation-error>
+				</div>
+				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center">{_ ui.base_url_hint}</p>
+			</field-wrapper>
+
+			<div class="flex gap-2 mt-8 items-center">
+				<button type="submit" class="as-button-primary">{_ actions.save}</button>
+				<button type="button" class="as-button-secondary" data-skip-validation onclick="history.back()">{_ actions.cancel}</button>
+			</div>
+		</form>
+	</div>
+
+	<script src="/form-controller.js?v={= version}" defer></script>
+	<script>
+		const project_form = document.querySelector("#entry-form");
+		let skip_project_validation = false;
+		project_form?.addEventListener("pointerdown", (event) => {
+			const target = event.target instanceof Element ? event.target.closest("[data-skip-validation]") : null;
+			if (target) skip_project_validation = true;
+		});
+		project_form?.addEventListener("focusout", (event) => {
+			const related_target = event.relatedTarget instanceof Element ? event.relatedTarget : null;
+			if (!skip_project_validation && !related_target?.closest("[data-skip-validation]")) return;
+			skip_project_validation = false;
+			event.stopPropagation();
+		}, true);
+		document.addEventListener("DOMContentLoaded", () => {
+			new FormController({
+				form: "#entry-form",
+				validate_url: "{~ localized_path('/projects/validate') }",
+				submitted_text: "{_ actions.submitted}",
+			});
+		});
+	</script>
+{/with}

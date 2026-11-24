@@ -1,0 +1,40 @@
+{
+	"actions": {
+		"add_project": "Dodaj projekt",
+		"capture_baselines": "Zajemi izhodišča",
+		"create_page_set": "Ustvari nabor strani",
+		"run_tests": "Zaženi teste",
+		"view_all": "Prikaži vse"
+	},
+	"labels": {
+		"duration": "Trajanje",
+		"pages": "strani",
+		"started": "Začeto",
+		"status": "Stanje",
+		"suite": "Sklop"
+	},
+	"nav": "ReeQA",
+	"ui": {
+		"active_project": "Aktivni projekt",
+		"active_run": "Aktivni zagon",
+		"baselines_description": "Preglejte in zamenjajte shranjene vizualne reference.",
+		"baselines_title": "Vizualna izhodišča",
+		"description": "Zagotavljanje kakovosti za aplikacijo Reepolee in njeno orodje.",
+		"no_runs": "Še ni zagonov QA.",
+		"page_sets_description": "Shranite poimenovane izbore strani izhodišča za osredotočene zagone.",
+		"page_sets_title": "Nabori strani",
+		"projects_description": "Registrirajte imenike projektov Bun, proti katerim lahko ReeQA teče.",
+		"projects_title": "Projekti QA",
+		"recent_runs": "Nedavni zagoni",
+		"results_description": "Preglejte vizualne primerjave, dnevnike ukazov, videe in težave GitHub.",
+		"results_title": "Rezultati",
+		"run_tests_description": "Zaženite vizualne primerjave in dovoljena preverjanja ukazov.",
+		"run_tests_title": "Zaženi teste",
+		"stats_failed": "Neuspešno",
+		"stats_passed": "Uspešno",
+		"stats_projects": "Projekti",
+		"stats_results": "Rezultati",
+		"stats_suites": "Preverjanja ukazov",
+		"title": "ReeQA"
+	}
+}

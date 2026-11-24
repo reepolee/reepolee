@@ -1,0 +1,21 @@
+{
+	"actions": {
+		"cancel": "Prekliči",
+		"clear": "Počisti zgodovino",
+		"confirm_clear": "Počisti dokončane"
+	},
+	"confirm": {
+		"clear": "Odstranim vse zapise dokončanih zagonov QA in poročila o vizualnih primerjavah? Shranjena izhodišča ostanejo."
+	},
+	"nav": "Rezultati",
+	"route_name": "rezultati",
+	"ui": {
+		"description": "Preglejte vizualne primerjave in izhod ukazov na enem mestu.",
+		"history_description": "Vizualne primerjave in zagoni ukazov QA, najnovejši najprej.",
+		"history_title": "Zgodovina rezultatov",
+		"no_results": "Še ni rezultatov QA.",
+		"qa_run_active": "Zagon QA v teku",
+		"title": "Rezultati",
+		"visual_run_active": "Vizualni zagon v teku"
+	}
+}

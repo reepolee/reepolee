@@ -1,0 +1,29 @@
+{
+	"actions": {
+		"cancel": "Prekliči",
+		"cancel_run": "Prekliči zagon",
+		"do_it": "Ustavi zagon",
+		"open_report": "Odpri poročilo o primerjavi"
+	},
+	"breadcrumbs": {
+		"baselines": "Vizualna izhodišča",
+		"run_tests": "Zagon in rezultati",
+		"visual_run": "Vizualni zagon"
+	},
+	"confirm": {
+		"cancel_run": "Ustavim aktivni postopek zajema brskalnika?"
+	},
+	"labels": {
+		"changed": "Spremenjeno",
+		"duration": "Trajanje",
+		"new": "Novo",
+		"output": "Dnevnik zagona",
+		"page_set": "Nabor strani",
+		"pages": "Zajete strani",
+		"removed": "Odstranjeno"
+	},
+	"route_name": "vizualni-zagoni",
+	"ui": {
+		"waiting_output": "Čakanje na izhod zajema..."
+	}
+}

@@ -1,0 +1,263 @@
+{#layout("layout") }
+{#with props}
+
+	<div class="py-4">
+
+		{#if busy}
+			<div class="px-4 mb-4">
+				<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
+			</div>
+		{/if}
+
+		<!-- TABLE DISPLAY CONTROLLER -->
+		<div class="flex items-center gap-1 justify-between w-full flex-wrap px-4">
+
+			<div class="pagination-info">
+				{#if first_url }
+					<a href="{~ localized_path(first_url) }" role="button" class="as-icon">
+						<ree-icon name="chevrons_left"></ree-icon>
+					</a>
+				{:else }
+					<ree-icon name="chevrons_left"></ree-icon>
+				{/if}
+
+				{#if prev_url }
+					<a href="{~ localized_path(prev_url) }" role="button" class="as-icon"><ree-icon name="chevron_left"></ree-icon></a>
+				{:else }
+					<ree-icon name="chevron_left"></ree-icon>
+				{/if}
+
+				{#if total > 0 }
+					<div style="width: {= total.toString().length * 3 + 4 }ch; text-align: center">{= offset + 1 }-{= Math.min(offset + (limit === 'all' ? total : limit), total) } / {= total}</div>
+				{:else }
+					<div style="width: 7ch; text-align: center">0 / 0</div>
+				{/if}
+
+				{#if next_url }
+					<a href="{~ localized_path(next_url) }" role="button" class="as-icon">
+						<ree-icon name="chevron_right"></ree-icon>
+					</a>
+				{:else }
+					<ree-icon name="chevron_right"></ree-icon>
+				{/if}
+
+				{#if last_url }
+					<a href="{~ localized_path(last_url) }" role="button" class="as-icon">
+						<ree-icon name="chevrons_right"></ree-icon>
+					</a>
+				{:else }
+					<ree-icon name="chevrons_right"></ree-icon>
+				{/if}
+			</div>
+
+			<div class="flex items-center gap-2">
+				<select id="limit" class="w-[20ch]" onchange="navigate_to('limit', this.value)">
+					{#each limit_options as option }
+						<option value="{= option }" {#if option === limit }selected{/if}>
+							{#if option==="all"}
+								{_ selectors.all}
+							{:else}
+								{= option } {_ selectors.per_page}
+							{/if}
+						</option>
+					{/each}
+				</select>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<select id="list_filter" class="w-[30ch]" onchange="navigate_to('list_filter', this.value)">
+					<option value="non_system" {#if list_filter === 'non_system' } selected{/if}>{_ selectors.non_system_tables}</option>
+					<option value="all" {#if list_filter === 'all' } selected{/if}>{_ selectors.all_tables}</option>
+				</select>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<select id="order_by" class="w-[40ch]" onchange="navigate_to('order_by', this.value)">
+					{#each sort_options as option }
+						<option value="{= option.value }" {#if option.value === order_by }selected{/if}>{= props.translations.labels?.[option.field] || option.field } ({= option.direction === 'asc' ? props.translations.selectors.ascending : props.translations.selectors.descending })</option>
+					{/each}
+				</select>
+			</div>
+
+			<ree-filters action-url="/tables"></ree-filters>
+
+			{#if enable_archive }
+				<!-- BULK ACTIONS -->
+				<div class="flex items-center gap-4 justify-start w-full flex-wrap px-4 my-4">
+					<a id="action" role="button" aria-disabled="true" class="as-button-primary pointer-events-none opacity-50">{_ actions.generate_crud}</a>
+					<button id="action_2" commandfor="refresh_dialog" command="show-modal" disabled class="as-button-secondary">{_ actions.refresh_crud}</button>
+					<button id="action_3" commandfor="schema_dialog" command="show-modal" disabled class="as-button-secondary">{_ actions.schema_only}</button>
+				</div>
+			{/if}
+
+		</div>
+
+		<!-- TABLE GRID -->
+
+		{#if (records.length === 0) }
+			<p class="p-4">{_ ui.no_records}</p>
+
+		{:else }
+
+			<div class="grid gap-x-4 w-full bg-surface-raised shadow-lg mt-4" style="grid-template-columns: {= grid_cols }">
+
+				<div class="col-span-full grid grid-cols-subgrid bg-neutral-200 font-semibold *:px-2 *:py-2 sticky top-0">
+					{#if enable_archive }
+						<div class="grid grid-cols-2 place-items-center p-0!">
+							<button id="deselect_all" class="as-icon size-6 text-brand"><ree-icon name="x" class="size-6"></ree-icon></button>
+							<label class="w-full h-full grid place-items-center hover:bg-brand rounded">
+								<input type="checkbox" name="select_all" id="select_all">
+							</label>
+						</div>
+					{/if}
+					<!-- GEN:FIELDS:HEADERS:START -->
+					<div class="{= columns.name.class }">{_ labels.name }</div>
+					<div class="{= columns.column_count.class }">{_ labels.column_count }</div>
+					<div class="{= columns.fk_count.class }">{_ labels.fk_count }</div>
+					<div class="{= columns.has_crud.class }">{_ labels.has_crud }</div>
+					<div class="{= columns.template_hash_status.class }">{_ labels.template_hash_status }</div>
+					<div class="{= columns.actions.class }">{_ labels.actions }</div>
+					<!-- GEN:FIELDS:HEADERS:END -->
+					<!-- filler cell for the trailing grid_filler track in grid_cols -->
+					<div class="grid-filler"></div>
+				</div>
+				{#each records as record }
+					<div role="link" tabindex="0" onclick="window.location.href='{~ localized_path(route_edit_paths[record.name] || '/tables/' + record.name) }'" onkeydown="if (event.key === 'Enter') window.location.href='{~ localized_path(route_edit_paths[record.name] || '/tables/' + record.name) }'" class="col-span-full *:py-2 grid cursor-pointer grid-cols-subgrid items-center border-b border-b-neutral-200 *:px-2 hover:bg-primary hover:text-white">
+
+						{#if enable_archive }
+							<div class="grid grid-cols-2 place-items-center p-0! m-0!">
+								<div></div>
+								<label class="w-full h-full grid place-items-center hover:bg-brand rounded" onclick="event.stopPropagation()">
+									<input type="checkbox" name="checkboxes[]" value="{= record.name}" onclick="event.stopPropagation()">
+								</label>
+							</div>
+						{/if}
+
+						<!-- GEN:FIELDS:CELLS:START -->
+						<div class="{= props.columns.name.class }">{= record.name }</div>
+						<div class="{= props.columns.column_count.class }">{= record.column_count }</div>
+						<div class="{= props.columns.fk_count.class }">{= record.fk_count }</div>
+						<div class="{= props.columns.has_crud.class }">{~ yes_no(record.has_crud) }</div>
+						<div class="{= props.columns.template_hash_status.class }">
+							{#if record.template_hash_status === "modified"}
+								<span class="pill-layout bg-red-700 text-white">{_ selectors.modified}</span>
+							{/if}
+							{#if record.template_hash_status === "untracked"}
+								<span class="pill-layout bg-yellow-500 text-black">{_ selectors.untracked}</span>
+							{/if}
+							{#if record.template_hash_status === "clean"}
+								<span class="pill-layout bg-green-700 text-white">{_ selectors.clean}</span>
+							{/if}
+						</div>
+						<div class="{= props.columns.actions.class }">
+							{#if record.has_crud}
+								<a href="{~ localized_path('/tables/' + record.name + '?new_route=1') }" role="button" class="as-button-secondary" onclick="event.stopPropagation()">{_ actions.add_another_route}</a>
+							{/if}
+						</div>
+						<!-- GEN:FIELDS:CELLS:END -->
+						<!-- filler cell for the trailing grid_filler track in grid_cols -->
+						<div class="grid-filler"></div>
+					</div>
+				{/each}
+
+			</div>
+		{/if}
+
+		{#if enable_archive }
+			<!-- REFRESH CRUD DIALOG -->
+			<dialog id="refresh_dialog" class="p-0 rounded-xl shadow-2xl w-120">
+				<form method="POST" action="{~ localized_path('/tables/bulk-refresh') }" id="refresh_form" class="p-6">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<input type="hidden" name="return_to" value="/tables" />
+					<h2 class="text-lg font-semibold">{_ actions.refresh_crud}</h2>
+					<p class="text-slate-600 mt-2">{_ ui.modifying} <span class="font-semibold text-brand" id="refresh_count">0</span> {_ ui.records}.</p>
+					<p class="text-sm text-text-secondary mt-1">{_ ui.refresh_skip_hint}</p>
+					<div class="mt-6 flex justify-end gap-2">
+						<button type="button" class="as-button-secondary" commandfor="refresh_dialog" command="close">{_ actions.cancel}</button>
+						<button type="submit" class="as-button-primary">{_ actions.do_it}</button>
+					</div>
+				</form>
+			</dialog>
+
+			<!-- SCHEMA ONLY DIALOG -->
+			<dialog id="schema_dialog" class="p-0 rounded-xl shadow-2xl w-120">
+				<form method="POST" action="{~ localized_path('/tables/bulk-schema') }" id="schema_form" class="p-6">
+					<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+					<input type="hidden" name="return_to" value="/tables" />
+					<h2 class="text-lg font-semibold">{_ actions.schema_only}</h2>
+					<p class="text-slate-600 mt-2">{_ ui.modifying} <span class="font-semibold text-brand" id="schema_count">0</span> {_ ui.records}.</p>
+					<div class="grid gap-3 mt-4">
+						<field-wrapper class="grid" data-field="prefix">
+							<div class="grid">
+								<label class="px-3" for="schema-bulk-prefix">{_ labels.prefix}</label>
+								<select id="schema-bulk-prefix" name="prefix" title="{_ hints.prefix }">
+									<option value=""></option>
+									{#each modules as module}
+										<option value="{= module.code }">{= module.code } - {= module.name }</option>
+									{/each}
+								</select>
+							</div>
+						</field-wrapper>
+					</div>
+					<div class="mt-6 flex justify-end gap-2">
+						<button type="button" class="as-button-secondary" commandfor="schema_dialog" command="close">{_ actions.cancel}</button>
+						<button type="submit" class="as-button-primary">{_ actions.do_it}</button>
+					</div>
+				</form>
+			</dialog>
+
+			<script src="/checkbox-group.js?v={= version}"></script>
+			<script src="/dialog-confirm.js?v={= version}"></script>
+			<script>
+				const bulkCheckboxes = document.getElementById("select_all")
+					? new CheckboxGroup({ buttonSelectors: ["#action_2", "#action_3"] })
+					: null;
+				const generateLink = document.getElementById("action");
+				const generatePath = "{~ localized_path('/tables/new') }";
+				const tablesPath = "{~ localized_path('/tables') }";
+
+				// Inject one hidden "tables" input per checked checkbox into a dialog's
+				// form right before submit - the reeman action handlers read
+				// params.getAll("tables").
+				function inject_selected_tables(form) {
+					form.querySelectorAll('input[name="tables"]').forEach((el) => el.remove());
+					const selected = $$('input[name="checkboxes[]"]:checked');
+					for (const cb of selected) {
+						const hidden = document.createElement("input");
+						hidden.type = "hidden";
+						hidden.name = "tables";
+						hidden.value = cb.value;
+						form.appendChild(hidden);
+					}
+				}
+
+				for (const [form_id] of [["refresh_form"], ["schema_form"]]) {
+					document.getElementById(form_id).addEventListener("submit", (e) => {
+						inject_selected_tables(e.currentTarget);
+					});
+				}
+
+				document.addEventListener("change", (e) => {
+					if (e.target.name === "select_all" || e.target.name === "checkboxes[]") {
+						const selectedCheckboxes = $$('input[name="checkboxes[]"]:checked');
+						const selected = selectedCheckboxes.length;
+						const searchParams = new URLSearchParams();
+						for (const checkbox of selectedCheckboxes) searchParams.append("tables", checkbox.value);
+						const singleTablePath = selected === 1
+							? `${tablesPath}/${encodeURIComponent(selectedCheckboxes[0].value)}`
+							: "";
+						generateLink.href = selected === 1
+							? singleTablePath
+							: selected ? `${generatePath}?${searchParams.toString()}` : "";
+						generateLink.setAttribute("aria-disabled", selected ? "false" : "true");
+						generateLink.classList.toggle("pointer-events-none", !selected);
+						generateLink.classList.toggle("opacity-50", !selected);
+						for (const id of ["refresh_count", "schema_count"]) {
+							document.getElementById(id).textContent = selected;
+						}
+					}
+				});
+			</script>
+		{/if}
+	</div>
+{/with}

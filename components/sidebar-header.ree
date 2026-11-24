@@ -1,0 +1,12 @@
+<header class="top flex flex-col">
+
+	<div class="flex items-center justify-between gap-2 px-4 py-4">
+		<a href="/">
+			<img class="w-24" src="{= props.dark_mode ? '/logo-light.svg' : '/logo-dark.svg' }" alt="Reepolee logo" />
+		</a>
+		<app-switcher></app-switcher>
+	</div>
+
+	{~ props.children }
+
+</header>

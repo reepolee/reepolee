@@ -1,0 +1,26 @@
+@layer components {
+	date-input {
+		display: inline-block;
+		width: 20ch;
+
+		.date-input-display {
+			@apply bg-surface-raised rounded-sm border border-border px-3 py-1;
+			display: inline-flex;
+			width: 100%;
+			box-sizing: border-box;
+			gap: 0.125rem;
+			font-family: monospace;
+			cursor: text;
+			outline: none;
+		}
+
+		.date-input-segment {
+			border-radius: var(--radius-sm);
+			padding: 0 0.125rem;
+
+			&.is-active {
+				background: color-mix(in oklab, var(--color-primary) 20%, transparent);
+			}
+		}
+	}
+}
