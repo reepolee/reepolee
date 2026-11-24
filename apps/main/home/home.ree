@@ -1,0 +1,5 @@
+{#layout("layout")}
+
+<div class="p-4">
+	<h1>{_ ui.title}</h1>
+</div>

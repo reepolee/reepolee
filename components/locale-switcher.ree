@@ -1,0 +1,19 @@
+{{
+	const class_name = props.attributes?.class ?? "";
+	const locale_switch_url = (locale) => {
+		const url = new URL(props.request_url, "http://locale-switcher.local");
+		url.searchParams.set("locale", locale);
+		return url.pathname + url.search;
+	};
+	const nav_class = class_name ? `${class_name} grid gap-1` : "grid gap-1";
+}}
+
+<nav aria-label="Language" class="{= nav_class }">
+	{#each props.active_locales as locale}
+		{#if props.locale === locale}
+			<span aria-current="true" class="rounded bg-surface-sunken text-text-primary px-3 py-2 text-xs font-semibold">{= props.locale_names?.[locale] || locale}</span>
+		{:else}
+			<a href="{= locale_switch_url(locale) }" class="rounded px-3 py-2 text-xs text-text-primary no-underline hover:bg-surface-sunken">{= props.locale_names?.[locale] || locale}</a>
+		{/if}
+	{/each}
+</nav>

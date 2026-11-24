@@ -1,0 +1,90 @@
+@layer components {
+	.studio-field {
+		@apply grid min-w-0 gap-1;
+	}
+
+	.studio-field-label {
+		@apply ml-3 text-sm font-semibold uppercase tracking-wider text-text-secondary;
+	}
+
+	.studio-domain-group > .studio-domain-group-body {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 0.2s ease;
+	}
+
+	.studio-domain-group[open] > .studio-domain-group-body {
+		grid-template-rows: 1fr;
+	}
+
+	.studio-domain-group > .studio-domain-group-body > div {
+		overflow: hidden;
+		min-height: 0;
+	}
+
+	.domain-select-menu {
+		inset: auto;
+		margin: 0;
+		top: anchor(bottom);
+		left: anchor(left);
+		width: anchor-size(width);
+		margin-top: 0.25rem;
+
+		@apply rounded border border-border bg-surface-raised shadow-lg;
+
+		max-height: min(70vh, 560px);
+		overflow-y: auto;
+		scroll-behavior: smooth;
+		overscroll-behavior: contain;
+		scroll-padding-top: 1.75rem;
+	}
+
+	.domain-select-group-header {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+
+		@apply bg-surface-sunken px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-text-secondary;
+	}
+
+	.domain-select-option {
+		@apply cursor-pointer px-2 py-1.5 text-[11px];
+	}
+
+	.domain-select-option:hover,
+	.domain-select-option:focus {
+		@apply bg-primary text-white outline-none;
+	}
+
+	.domain-select-option[aria-selected="true"] {
+		@apply bg-primary/20 font-medium;
+	}
+
+	/*
+	 * The domain types toolbox always floats (it never docks into the page
+	 * flow) - position it here so it never renders in static flow even for
+	 * an instant before JS runs, which would otherwise flash/reflow the page.
+	 */
+	#studio-domain-toolbox {
+		position: fixed;
+		z-index: 50;
+		top: 6rem;
+		right: 0.5rem;
+		width: min(64ch, calc(100vw - 1rem));
+		height: min(70vh, calc(100vh - 1rem));
+		min-width: min(18rem, calc(100vw - 1rem));
+		min-height: min(12rem, calc(100vh - 1rem));
+		max-width: calc(100vw - 1rem);
+		max-height: calc(100vh - 1rem);
+		overflow: auto;
+		resize: both;
+		/* Stays invisible until JS has applied any remembered position/size -
+		   floating means nothing else depends on its box, so hiding it causes
+		   no layout shift, unlike hiding something in document flow would. */
+		visibility: hidden;
+	}
+
+	#studio-domain-toolbox.studio-toolbox-ready {
+		visibility: visible;
+	}
+}

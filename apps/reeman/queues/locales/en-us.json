@@ -1,0 +1,48 @@
+{
+	"actions": {
+		"cancel": "Cancel",
+		"clear_all": "Clear all",
+		"clear_pending": "Pending",
+		"confirm": "Confirm",
+		"delete": "Delete",
+		"pause": "Pause worker",
+		"resume": "Resume worker",
+		"retry": "Retry"
+	},
+	"labels": {
+		"actions": "Actions",
+		"attempts": "Attempts",
+		"created": "Created",
+		"error": "Error",
+		"id": "ID",
+		"last_run": "Last run",
+		"payload": "Payload",
+		"pending": "Pending",
+		"queue": "Queue",
+		"scheduled": "Scheduled",
+		"type": "Type"
+	},
+	"nav": "Queues",
+	"route_name": "queues",
+	"ui": {
+		"backend": "Backend",
+		"confirm_clear_all": "Clear all jobs from this queue? This cannot be undone.",
+		"confirm_clear_pending": "Clear all pending jobs from this queue?",
+		"confirm_delete_job": "Delete this failed job permanently? This cannot be undone.",
+		"error_loading": "Failed to load queue data",
+		"failed_heading": "Failed Jobs",
+		"no_failed": "No failed jobs",
+		"no_pending": "No pending jobs",
+		"no_queues": "No queues active",
+		"queues_heading": "Queues",
+		"redis_unavailable": "Redis is not available - queue features are disabled. Emails are sent directly via SMTP instead of being queued.",
+		"running_heading": "Running Jobs",
+		"title": "Queue Manager",
+		"worker_draining": "draining",
+		"worker_offline": "No queue worker detected - jobs will not be processed",
+		"worker_online": "Queue worker is running",
+		"worker_paused": "paused",
+		"worker_running": "running",
+		"worker_stopped": "stopped"
+	}
+}

@@ -1,0 +1,384 @@
+# reepolee (Reepolee Bun Apps)
+
+> A full-stack Bun application template with zero runtime dependencies - featuring a custom template engine (.ree files), server-side rendering with Tailwind v4, database generators (MySQL/SQLite via Bun SQL API), cookie-based auth, URL localization, and CRUD/resource scaffolding.
+
+Important notes:
+
+- **Zero runtime dependencies.** Only dev dependencies: `tailwindcss`, `@types/bun`. Bun's built-in APIs handle everything - SQL, HTTP server, file I/O, crypto, websockets, Redis.
+- **Not a framework.** reepolee is a project template and toolkit that gives you a starting point for Bun applications with reusable generators, not a framework you install as a dependency.
+- **Three peer apps share one checkout.** `apps/main/` (main app, target of generated CRUD), `apps/reeman/` (generator UI + sysadmin pages), `apps/reeqa/` (QA dashboard) - one `package.json`, one `node_modules`, one `tsconfig.json`. `platform/` holds routes every app shares (auth, `notfound.ree`) and serves no port. Folder names come from `config/paths.ts` (`MAIN_APP`, `REEMAN_APP`, `REEQA_APP`, `PLATFORM_DIR`) - never hard-code them in a filesystem path.
+- **Custom template engine.** Templates use the `.ree` extension with tags like `{= expr }` (escaped output), `{~ expr }` (raw HTML), `{_ path }` (translation lookup, escaped), `{- path }` (translation lookup, raw HTML), `{@ path }` (translation lookup rendered through markdown), `{{ code }}`, `{#if}`, `{#each}`, `{#layout()}`, `{#include()}`, and `<ree-tag></ree-tag>` custom-element syntax for component includes. The `<app-banner type=\"red\">content</app-banner>` HTML-like form is the form for all component invocation; for cases where the props object itself must be computed, use `{#include(\"$components/name\", computedProps)}` directly.
+- **snake_case** on the server side (`.ts` files); kebab-case for client JavaScript (`.js` files).
+- **Supports MySQL and SQLite** via config swap in `config/db.ts`. Connection string driven by `DEV_CONNECTION_STRING` (`PROD_CONNECTION_STRING` under `--prod`).
+- **File-first translations.** All translation values live in co-located `{locale}.json` files beside the route directory they belong to (for example `apps/main/home/locales/en-us.json`), where `locale` is a full BCP 47 identifier. Root-namespace fallback strings live in `{locale}.json` files at the repository root or in the root `locales/` directory. Use `bun reeman sync-translations --translate` (AI-powered), the `/translations` admin UI in the reeman app, direct JSON edits, or the mutation-gated MCP tools. `bun reeman insert-translations` and `prune-translations` write the JSON files in place.
+- **URL localization** is driven by the `route_name` translation key for each locale.
+- **Test + agent ports are reserved.** Tests use `TEST_PORT`, agent mode uses `AGENT_SERVER_PORT`. The dev server always runs on `2338` - everything else binds to a different port. No exceptions.
+
+## Architecture
+
+**Entry point:** [apps/main/server.ts](https://github.com/reepolee/reepolee/blob/main/apps/main/server.ts) (main app), [apps/reeman/server.ts](https://github.com/reepolee/reepolee/blob/main/apps/reeman/server.ts) (reeman app), [apps/reeqa/server.ts](https://github.com/reepolee/reepolee/blob/main/apps/reeqa/server.ts) (reeqa app)
+**Output:** A running HTTP server (no static files are written to disk)
+**Start with:** `bun dev` / `bun start`
+
+This is a full-stack web app with server-side rendering, a database, and CRUD operations.
+
+[Server entry point](https://github.com/reepolee/reepolee/blob/main/apps/main/server.ts): Bun.serve() with route table, static file serving, S3 proxy, WebSocket live reload, and fallback 404 handler.
+
+### Core responsibilities
+
+- **Database-backed CRUD** - Reads and writes data via Bun's SQL API (MySQL or SQLite). Route handlers in `apps/main/` perform create, read, update, delete operations on database tables. Generators in `generator/` (schema, CRUD, resource) introspect the DB and auto-generate route files, SQL queries, Zod validation schemas, and translations.
+- **Server-side rendering** - Renders `.ree` templates from the app route directories using the custom template engine. Templates receive data from route handlers, DB queries, and co-located translation JSON files.
+- **Middleware pipeline** - Global chain `rate_limit_mw → set_locale → csrf_mw` applied to every route by `wrap_all_routes()`; per-route guards `require_auth_mw` / `require_module_mw` and helpers `timing` / `add_cors` compose via `with_middleware()` / `mount_prefix()`.
+- **Multi-locale** - Translations are stored in co-located `{locale}.json` files. A visitor locale is resolved per request and merged with route-specific translations; UI-string aliases can point one locale at another configured locale.
+- **Live reload** - In dev mode, a WebSocket at `/__reload` notifies the browser on file changes.
+- **S3 / local storage** - Serves media files (avatars, images) from S3-compatible storage or a local directory.
+- **Background worker** - [worker.ts](https://github.com/reepolee/reepolee/blob/main/worker.ts) processes async tasks from a queue (translation jobs, etc.). Started separately with `bun run worker`.
+- **Module system** - External development route modules can be mounted from sibling folders via `lib/route_module.ts` (`mount_route_module`, `mount_route_modules_from_dir`); first-party app module folders under `apps/reeman/` and `apps/reeqa/` are auto-mounted by default. Per-user admin access is enforced by the "system" module via `require_module_mw`.
+### Key files
+
+| File                                                                                            | Role                                         |
+| ----------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| [apps/main/server.ts](https://github.com/reepolee/reepolee/blob/main/apps/main/server.ts)         | Main app entry point, starts Bun.serve()     |
+| [apps/main/routes.ts](https://github.com/reepolee/reepolee/blob/main/apps/main/routes.ts)         | Route definitions (flat array of RouteDef)   |
+| `apps/main/*.ree`                                                                                | SSR templates rendered at request time       |
+| `apps/main/*/index.ts`                                                                           | Route handlers (CRUD operations)             |
+| [lib/template_engine.ts](https://github.com/reepolee/reepolee/blob/main/lib/template_engine.ts) | Custom .ree template engine                  |
+| [lib/render.ts](https://github.com/reepolee/reepolee/blob/main/lib/render.ts)                   | Wraps template rendering into HTTP Response  |
+| [lib/i18n.ts](https://github.com/reepolee/reepolee/blob/main/lib/i18n.ts)                       | Translation loading from co-located JSON     |
+| [config/db.ts](https://github.com/reepolee/reepolee/blob/main/config/db.ts)                     | Database connection config (MySQL or SQLite) |
+| `generator/*.ts`                                                                                | Code generators (schema, CRUD, resource)     |
+
+## Translations
+
+Translations use a structured group convention stored in co-located `{locale}.json` files. Each locale is a full BCP 47 identifier such as `en-us`, each route directory is a namespace, and `root` (files at the repository root or in `locales/`) serves as fallback.
+
+Files are discovered under the app trees (`apps/main/`, `apps/reeman/`, `apps/reeqa/`) and `platform/`. For a namespace, the loader accepts either `{namespace_dir}/locales/{locale}.json` or `{namespace_dir}/{locale}.json` - having both for the same namespace and locale is an error. Keep files sorted, tab-indented, and newline-terminated.
+
+**Top-level key groups:**
+
+| Group       | Purpose                                                               | Example keys                                             |
+| ----------- | --------------------------------------------------------------------- | -------------------------------------------------------- |
+| `labels`    | Form input labels                                                     | `email`, `name`, `password`                              |
+| `v_labels`  | View column labels (when using DB views for list pages)               | `user_name`, `order_count`                               |
+| `actions`   | Buttons, CTAs, dialog actions                                         | `save`, `delete`, `cancel`, `new_country`, `bulk_action` |
+| `selectors` | UI selector/option labels (yes/no, pagination, dropdown placeholders) | `all`, `per_page`, `select`, `0`, `1`, `descending`      |
+| `messages`  | Success/feedback toasts                                               | `record_created`, `record_deleted`, `record_updated`     |
+| `errors`    | Validation and user-facing error messages                             | `required`, `email_invalid`, `duplicate_key`             |
+| `ui`        | Page titles, headings, static display text                            | `title`, `page_not_found`, `lang_mismatch_title`         |
+| `nav`       | Navigation menu labels (root namespace fallback)                      | `home`, `users`, `email`                                 |
+| `search`    | Search form labels and placeholders                                   | `search_term`, `submit`                                  |
+| `route_name` | Localized URL segment - never inherited across locales               | `prijava`, `drzave`                                      |
+
+The `root` namespace is a special namespace treated as `namespace = ""` at merge time. It serves as a fallback - if a template references `{= actions.cancel }` and the route's namespace doesn't have that key, the system falls back to `root::actions.cancel`.
+
+Templates access translations via `props.translations`, resolved once per request in `create_ctx()`. Route-level keys override root-level keys.
+
+**Manage translations via:**
+- `bun reeman sync-translations --translate` - AI-powered sync and translate
+- `/translations` - Admin UI in the reeman app (`bun run dev:reeman` / `apps/reeman/server.ts`)
+- `bun reeman insert-translations` - add template keys missing from the JSON files
+- `bun reeman prune-translations` - remove unused keys from the JSON files
+- Direct edit of the co-located JSON file, e.g. `apps/main/home/locales/en-us.json`:
+
+```json
+{
+	"ui": {
+		"title": "Startseite"
+	}
+}
+```
+
+### Translation Reload Endpoint
+
+The server exposes a `POST /__reload-translations` endpoint called after writing translated values to the JSON files (e.g., by sync generators or queue worker). This triggers `translations.reload()` and `reload_route_maps()` on the running server so navigation labels, route names, and translations update immediately without a server restart.
+
+Enabled only when `INTERNAL_ADMIN_ENDPOINTS=true` and a generated `RELOAD_SECRET` (32+ chars) are set in `.env`; callers pass `X-Reload-Secret`. Without both settings the endpoint is not registered (404).
+
+## Routing & Rendering
+
+- [Route system](https://github.com/reepolee/reepolee/blob/main/lib/route_builder.ts): RouteDef registration - supports handler, methods, resource (sub-route table), crud (auto-mounted sub-routes), nav_title_key, module scoping, and is_menu_entry flag.
+- [Route map / URL localization](https://github.com/reepolee/reepolee/blob/main/lib/route_map.ts): O(1) canonical to localized URL resolution for all configured locales using pre-built Maps at app start.
+- [Middlewares](https://github.com/reepolee/reepolee/blob/main/lib/middleware): Global chain `rate_limit_mw → set_locale → csrf_mw` applied by `wrap_all_routes()`; per-route `require_auth_mw`, `require_module_mw`, `timing`, `add_cors`.
+- [Render system](https://github.com/reepolee/reepolee/blob/main/lib/render.ts): `render()` function returning HTML Response with automatic context injection (locale, user, toasts, URL), live reload in dev, and script/style hoisting to `<head>`.
+- [Template engine](https://github.com/reepolee/reepolee/blob/main/lib/template_engine.ts): File-based compiler compiling .ree files to async functions. Supports layouts, includes with path aliases (`$components/`, `$lib/`), the `<ree-tag></ree-tag>` custom-element syntax for component includes, locale-specific template variants, and caching in production.
+- [Template helpers](https://github.com/reepolee/reepolee/blob/main/lib/template_helpers.ts): Built-in helpers - `format_datetime`, `url`, `localized_path`, `localized_path_for_locale`, `nav_label`, `is_current`, `pill`, `yes_no`, `tags`, `key_values`, `image_thumbnail`, `file_icon_name`, `file_link`, `human_bytes`, `is_checked`, `urlencode`, `urldecode`, `md`.
+- [Translations / i18n](https://github.com/reepolee/reepolee/blob/main/lib/i18n.ts): File-first translations loaded from co-located `{locale}.json` files (see `lib/translation_files.ts`). Automatically merged with root-namespace fallback. Sync with `bun reeman sync-translations`.
+- [Request context](https://github.com/reepolee/reepolee/blob/main/lib/request_context.ts): Creates immutable request context object with locale, ui_locale, preferred_locale, user, toasts, prefix, route_dir, and request_url.
+- [Temporal utilities](https://github.com/reepolee/reepolee/blob/main/lib/temporal.ts): Timezone-aware date/datetime formatting helpers using `Temporal` API (Bun-native).
+
+## Prerequisites & Services
+
+### System binaries (must be pre-installed)
+
+| Tool                               | Purpose                                                                           | Where used                               |
+| ---------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------- |
+| **libvips** (`vips`, `vipsheader`) | Image processing (crop, resize, sharpen, format conversion to jpeg/png/webp/avif) | `lib/image_processor.ts`, avatar uploads |
+| **Bun**                            | Runtime - the entire project runs on Bun                                          | Everything                               |
+
+Note: libvips is required even though `Bun.Image()` exists - `vips` is needed for crop operations that Bun's native API doesn't expose.
+
+### Globally installed CLI tools (via `bun get:pre`)
+
+`bun get:pre` installs these (written to `~/bin`, not `bun add -g`):
+
+| Tool                  | Purpose                                                                          | Installed via      |
+| --------------------- | -------------------------------------------------------------------------------- | ----------------- |
+| **reettier**            | Code formatter - formats .ree, .ts, .js, .css                                    | `bun get:reettier`  |
+| **@tailwindcss/cli**  | Tailwind v4 CSS compilation (`css:watch`, `css:once`, `css:build`)               | `bun get:tw`      |
+
+### Vendored packages (no npm install needed at runtime)
+
+Downloaded via `bun get:pre` scripts into `vendor/` and imported via `$vendor/` path alias. Zero runtime npm dependencies.
+
+| Package                          | Source            | Local path                    | Purpose                                                            |
+| -------------------------------- | ----------------- | ----------------------------- | ------------------------------------------------------------------ |
+| **Zod v4.5.4**                   | jsDelivr CDN      | `vendor/zod.min.js`           | Runtime schema validation                                          |
+| **highlight.js v11.11.1**        | jsDelivr CDN      | `vendor/highlight.min.js`     | Code syntax highlighting                                           |
+| **@js-temporal/polyfill v0.5.1** | jsDelivr CDN      | `vendor/temporal.min.js`      | Temporal API polyfill                                              |
+
+These are committed to the repo - no npm install or CDN fetch needed after setup.
+
+### External services (all optional, configured via `.env`)
+
+| Service                 | When needed                                                       | Env var                              |
+| ----------------------- | ----------------------------------------------------------------- | ------------------------------------ |
+| **MySQL** or **SQLite** | Required (one of them)                                            | `DEV_CONNECTION_STRING` / `PROD_CONNECTION_STRING` |
+| **Redis / Valkey**      | Optional - queue (SQL is the default store), session store, feature flags | `REDIS_ENABLED`, `REDIS_URL` |
+| **S3 / MinIO**          | Optional - image/avatar storage (falls back to local disk)        | `S3_HOSTNAME`, `S3_PORT`, `S3_*`     |
+| **SMTP**                | Optional - email delivery                                         | `SMTP_HOST`, `SMTP_PORT`, `SMTP_*`   |
+| **AI translation**      | Optional - configure exactly one provider                         | `OLLAMA_URL`, `GEMINI_API_KEY`, `OPENAI_API_KEY`, `CLAUDE_API_KEY`, `XAI_API_KEY`, `HF_TOKEN`, or `OPENROUTER_KEY` |
+
+## Job Queue
+
+A zero-dependency job queue (`queue/index.ts`) with a pluggable store: **Redis when it is enabled (`REDIS_ENABLED=true` and a real `REDIS_URL`), the SQL database otherwise** (no Redis means no extra service - it works on any platform Bun runs on). Jobs are persisted across restarts and processed by a standalone worker process (`worker.ts`).
+
+- **SQL store** - `jobs` + `queue_meta` tables (`sql/{mysql,sqlite}/init/06-init-queue.sql`); the worker polls (default 500 ms) and claims atomically.
+- **Redis store** - `job:{id}` (HASH), `queue:{name}` (LIST), `queue:{name}:delayed` (ZSET), `queue:{name}:failed` (ZSET), `queue:running` (SET for orphan reaping); the worker blocks on `BRPOP`.
+
+**API:**
+
+- `init_queue(url?)` - Resolves the store: Redis when `REDIS_ENABLED=true` and `REDIS_URL` is set, SQL otherwise.
+- `enqueue({type, payload, queue?, max_attempts?, scheduled_for?})` - Returns job ID (UUID v7).
+- `start_worker(type, handler, {concurrency?, poll_interval_ms?})` - Spawns fibres consuming jobs; Redis blocks on `BRPOP`, SQL polls. Each dequeued job is passed to `handler`. Errors are caught, logged, and retried up to `max_attempts` (default 3) before dead-letter.
+- `reap_orphans(timeout_ms?)` - Re-enqueues jobs stuck in `running` with `last_run_at` older than timeout (default 5 min). Call at worker startup to recover jobs from a previous crash.
+- `get_job(job_id)`, `get_failed_job_ids()`, `get_pending_job_ids()`, `queue_length()`, `retry_job()`, `delete_job()`, `set_worker_heartbeat()`, `is_worker_alive()` - Monitoring and admin.
+
+**Job lifecycle:** `pending → running → completed/failed`. Claims are atomic on both stores (single UPDATE..RETURNING / SELECT..FOR UPDATE SKIP LOCKED on SQL; BRPOP + running-set on Redis), so a crash leaves a `running` row the reaper re-enqueues. Delayed jobs (with `scheduled_for`) run at or after their timestamp on the SQL store; the Redis store still needs the planned delayed-job sweeper.
+
+See [queue/README.md](https://github.com/reepolee/reepolee/blob/main/queue/README.md) for the full lifecycle diagram and orphan-reaping details.
+
+## Commands
+
+- **Development**: `bun dev` (tailwind watch + hot server), `bun dev:worker` (dev server + queue worker), `bun dev:reeman` (reeman app only), `bun dev:reeqa` (reeqa app only), `bun dev:all` (main + reeman + reeqa apps + queue worker + CSS watcher), `bun run worker` (background worker only). The worker is opt-in: it runs only when `--worker` is passed, never implicitly alongside the app. `dev:all` passes `--worker`; `dev:reeman` and `dev:reeqa` do not.
+- **CSS**: `bun run css:watch`, `bun run css:once`, `bun run css:build` (minified).
+- **Production**: `bun start` (production mode), `bun run release` (minified CSS + npm version bump), `bun run git:production` (force-push to production branch).
+- **Testing & formatting**: `bun test` (parallel), `bun run format` (reettier).
+- **Translations**: `bun reeman add-locale <locale_code>`, `sync-translations`, `insert-translations`, and `prune-translations`.
+- **MCP server**: `bun run mcp` (runs [scripts/mcp/start.ts](https://github.com/reepolee/reepolee/blob/main/scripts/mcp/start.ts), which loads `scripts/mcp/index.ts`).
+
+## Generators
+
+All generation goes through `reeman` - `bun reeman` for the interactive menu, or `bun reeman <subcommand> [args]` for
+non-interactive/scripted use. There are no standalone `generator/*.ts` CLI entry points; both paths call the same
+underlying functions directly (no subprocess spawning).
+
+| Commands                                                                                                                                                                                            | Description                                                |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `bun reeman crud <table> [--force] [--translate] [--prefix <dir>] [--parent <table>]`                                                                                                               | Full pipeline: schema + CRUD for a single table |
+| `bun reeman crud all [--force] [--translate] [--prefix <dir>]`                                                                                                                                       | Full pipeline for all tables                               |
+| `bun reeman bulk <table...> [--prefix <dir>]`                                                                                                                                                        | Full pipeline for a specific set of tables (e.g. ones without CRUD yet) |
+| `bun reeman schema <table\|all> [--prefix <dir>] [--parent <table>]`                                                                                                                                 | Introspect DB and write flat route schema files            |
+| `bun reeman refresh-crud <table> [--mode fields]`                                                                                                                                                    | Refresh generated field sections for a configured route   |
+| `bun reeman sync-translations [namespace...] [--translate]`                                                                                                                                          | Sync translation keys across configured locales            |
+| `bun reeman add-locale <locale_code> [--translate]`                                                                                                                                                  | Add a BCP 47 locale to the project                         |
+| `bun reeman insert-translations`                                                                                                                                                                      | Add template keys missing from the translation JSON files   |
+| `bun reeman prune-translations`                                                                                                                                                                       | Remove unused keys from the translation JSON files          |
+| `bun reeman` (`bun generator/reeman.ts`)                                                                                                                                                             | Interactive resource manager: scaffold, configure, and maintain (recommended entry) |
+| `bun reeman --help`                                                                                                                                                                                  | Full subcommand reference                                  |
+| `bun generator/user.ts`                                                                                                                                                                              | Create a user with hashed password (not part of reeman)    |
+
+**Common flags:** `--force` (overwrite without prompting), `--translate` (AI auto-translate), `--prefix <dir>` (nest under subdirectory), `--parent <table>` (mark as nested child), `refresh-crud --mode fields` (regenerate only field sections within markers).
+
+**Auto-formatting:** The CRUD generator runs `reettier` on the generated route directory automatically.
+
+**`route_param`:** Every generated `config.ts` exports `route_param = "id"`. For non-integer PKs, change this value to use a different column for URL routing. The CRUD generator adapts all layers (links, delete forms, SQL).
+
+### Nested CRUD (Master-Detail)
+
+Creates a parent-child relationship where child records are scoped to a parent and managed via nested URLs. Generate with `--parent <table>`.
+
+**Structure:** Child is placed directly under parent's directory (e.g. `apps/main/equipment/equipment_items/`). No `form.ree` or `index.ree` for child - UI lives on parent's edit form inside `<!-- GEN:CHILDREN:START -->` markers.
+
+**Child SQL** - All queries accept a parent ID and filter by FK. Record lookups verify the parent FK for security.
+
+**Parent integration** - Generator modifies parent's `sql.ts` (adds child query), `index.ts` (loads child records), and `form.ree` (appends inline child list table).
+
+**Routes generated:**
+
+```ts
+export const system_images_crud = {
+	"/images": { GET: get_images_index },
+	"/images/new": get_images_new,
+	"/images/validate": { POST: post_images_validate },
+	"/images/process": { POST: post_images_process },
+	"/images/save": { POST: post_images_save },
+	"/images/:id/edit": { GET: get_images_edit, POST: post_images_edit },
+	"/images/bulk-archive": { POST: post_images_bulk_archive },
+};
+```
+
+Each URL maps to its handler(s) - single handlers inline, multiple handlers in `{ }`.
+
+Nested children follow the same pattern:
+
+- `POST /orders/:order_id/items` - create new child
+- `GET /orders/:order_id/items/new` - standalone create form (FK hidden, pre-filled)
+- `GET /orders/:order_id/items/:item_id/edit` - edit form
+- `POST /orders/:order_id/items/:item_id/edit` - update/delete (via `_action=delete`)
+- No dedicated child index page, no bulk-delete
+
+**Return URL flow:** Child forms auto-set `_return_url` to the parent's edit page. On success, user is redirected back to the parent edit page.
+
+**Parent export:** The child's `config.ts` exports a `parent` object: `{ table, fk_column, route_param }`. Auto-detected from DB foreign key constraints, overridable.
+
+### Cursor-based pagination (keyset pagination)
+
+Generated CRUD index views use keyset pagination instead of offset-based.
+
+| Action | URL              | SQL strategy                                                                             |
+| ------ | ---------------- | ---------------------------------------------------------------------------------------- |
+| First  | (no cursor)      | `ORDER BY sort ASC, id ASC LIMIT limit`                                                  |
+| Next   | `?after=id,val`  | `WHERE (sort > val OR (sort = val AND id > id)) ORDER BY sort ASC, id ASC LIMIT limit`   |
+| Prev   | `?before=id,val` | `WHERE (sort < val OR (sort = val AND id < id)) ORDER BY sort DESC, id DESC LIMIT limit` |
+| Last   | `?last`          | `ORDER BY sort DESC, id DESC LIMIT limit`                                                |
+
+URL params: `?after=id,value`, `?before=id,value`, `?last`, `?limit=N` / `?limit=all`, `?order_by=field::dir`, `?query=...`. `COUNT(*)` still runs alongside for `"21-40 / 100"` display. Changing `limit` or `order_by` resets the cursor.
+
+### Tags translation
+
+Tags fields (columns ending in `_tags`) render checkboxes whose labels are looked up through the route's translation namespace. The tag code (e.g. `admin`) is the lookup key; the translated label is displayed if it exists, falling back to `tag_value`. Example entries:
+
+Root fallback in `locales/en-us.json` at the repository root:
+
+```json
+{
+	"labels": {
+		"modules_tags": {
+			"admin": "Administrator"
+		}
+	}
+}
+```
+
+Route-level override in `apps/main/system/users/locales/en-us.json`:
+
+```json
+{
+	"labels": {
+		"modules_tags": {
+			"editor": "Editor"
+		}
+	}
+}
+```
+
+### Column comment-driven field type
+
+The generator reads DB column comments at introspection to determine field types. Two formats: **plain word** (e.g. `autocomplete`, `textarea`, `markdown`) or **JSON** (e.g. `{type: "autocomplete", rows: 6}`). JSON takes precedence over plain-word.
+
+### Markdown fields
+
+`field.type === "markdown"` when the SQLite column type is `MARKDOWN` or a MySQL column has `COMMENT 'MARKDOWN'`. Form field renders a `<markdown-editor>` custom element; grid cell renders via the `md()` helper (`Bun.markdown.html()`), line-clamped to 5 lines. See `internals/GENERATOR_INTERNALS.md`.
+
+### File upload fields
+
+Columns ending in `_file` (`FILE_SUFFIXES`) are auto-detected as `field.type === "file"`. Form field renders `<file-upload>` (`components/file-upload.ree`, uploads to `POST /system/files/save`); grid cell renders via the `file_link()` helper. Same generator mechanism and authorization model as `_image` fields. See `internals/REE_TEMPLATES.md`.
+
+### CRUD refresh (field-only)
+
+Marker-based mechanism to regenerate only the field sections in `form.ree` and `index.ree` without overwriting user customizations. Uses HTML comment markers (`<!-- GEN:FIELDS:START -->` / `<!-- GEN:FIELDS:END -->`) to delimit managed sections. Content outside markers is user-owned and preserved. Available via `bun reeman refresh-crud <table> --mode fields` and as a reeman interactive sub-option. Requires an initial `--force` generation to inject markers.
+
+### Generated folder structure (single table CRUD)
+
+```
+apps/main/<table>/
+├-- config.ts                # User-editable route settings
+├-- schema.generated.ts      # Auto-generated field definitions
+├-- validation_server.ts     # User-editable server validation
+├-- index.ts                 # CRUD route handlers
+├-- sql.ts                   # SQL query functions
+├-- sql_view.ts              # View-based queries (if view exists)
+├-- form.ree                 # Create/edit form template
+└-- index.ree                # List/index template
+```
+
+## Template Reference (.ree files)
+
+- [Full template engine reference](https://github.com/reepolee/reepolee/blob/main/internals/REE_TEMPLATES.md): Complete documentation of all template tags, helpers, layouts, includes, components, path resolution, and troubleshooting.
+- [Template engine compiler](https://github.com/reepolee/reepolee/blob/main/lib/template_engine.ts): Core compiler implementation - supports escaped output `{= expr }`, raw HTML `{~ expr }`, translation lookups `{_ path }` (escaped) / `{- path }` (raw HTML) / `{@ path }` (markdown), raw JS `{{ code }}`, control flow `{#if}`/`{#each}`, layouts `{#layout()}`, includes `{#include()}`, and the `<ree-tag></ree-tag>` custom-element syntax for component includes.
+- [Template helpers](https://github.com/reepolee/reepolee/blob/main/lib/template_helpers.ts): Reusable helpers - format_datetime, url, localized_path, localized_path_for_locale, nav_label, is_current, pill, yes_no, tags, key_values, image_thumbnail, file_icon_name, file_link, human_bytes, is_checked, urlencode, urldecode, md.
+- [Template test suite](https://github.com/reepolee/reepolee/blob/main/lib/template_engine.test.ts): Comprehensive tests covering all template features, edge cases, and error conditions.
+- [Render module](https://github.com/reepolee/reepolee/blob/main/lib/render.ts): High-level render API - `render()` returns HTML Response, `get_render()` returns raw render function. Automatic locale resolution, user context, and toast notifications.
+
+## Database
+
+- [Database config](https://github.com/reepolee/reepolee/blob/main/config/db.ts): Creates a Bun `SQL` connection from `DEV_CONNECTION_STRING` (or `PROD_CONNECTION_STRING` under `--prod`; SQLite or MySQL prefix) with `TIME_ZONE` required. Schema and seed SQL live under `sql/sqlite/` and `sql/mysql/`.
+- [MySQL schema](https://github.com/reepolee/reepolee/blob/main/sql/mysql): MySQL schema and initialization SQL.
+- [SQLite schema](https://github.com/reepolee/reepolee/blob/main/sql/sqlite): Equivalent SQLite schema.
+- [DB structure conventions](https://github.com/reepolee/reepolee/blob/main/config/db_structure.ts): Column naming conventions - boolean prefixes (`is_`, `has_`), date suffixes (`_at`, `_on`), ignored tables/fields, maintenance field detection.
+- [DB type resolver](https://github.com/reepolee/reepolee/blob/main/lib/resolve_db_type.ts): Auto-detects mysql vs sqlite from the active connection string.
+
+### SQL Cache
+
+Redis-backed cache for `search_records` query results, using dependency-set invalidation. Config: `config/db.ts`, implementation in `$lib/cache.ts`.
+
+- **`cache.search()`** - Wraps a `search_records` query: checks Redis first, caches result + tracks dependencies on miss. Falls back to query function on Redis error.
+- **`cache.invalidate(table_name)`** - Deletes all cached results depending on a given table via Redis SET membership.
+- **`CACHE_ENABLED`** - Env var to activate caching. Fails loud with `process.exit(1)` if enabled without a usable store.
+- **Cache key format** - `sql:cache:{route}:{search}:{after}:{before}:{limit}:{order_by}:{scope}` (no hashing - human-readable).
+- **Cache TTL** - Default 300s (5 minutes), configurable via `DEFAULT_TTL_S` in `$lib/cache.ts`.
+- **Invalidation triggers** - Every write handler (create, update, delete, bulk delete) calls `cache.invalidate(TABLE_NAME)` after DB mutation.
+- **`TABLE_NAME`** - Exported constant in each generated `sql.ts`, used as the dependency key.
+- **`VIEW_DEPENDENCIES`** - Exported array listing all tables a search query depends on (the table itself + joined FK tables), used for cache registration.
+
+### DB conventions (from CONTEXT.md)
+
+- **Generated columns** - MySQL VIRTUAL/STORED and SQLite generated columns are excluded from form inputs (cannot be INSERTed/UPDATEed) but remain in view columns for display.
+- **Fulltext search** - Tables with a `search_text` column produce `MATCH(search_text) AGAINST(? IN BOOLEAN MODE)` queries instead of `LIKE '%term%'`. Requires a MySQL FULLTEXT index.
+- **Sort options** - The CRUD generator builds sort options from **every column with a DB index** (stored as `indexed_columns` in `schema.generated.ts`), always providing `id` and the canonical `display` field.
+- **`IGNORE_ORDER_FIELDS`** - Global constant in `config/db_structure.ts`: `["option_display", "search_text", "hashed_password", "previous_hashed_password"]` - excluded from sort dropdown.
+- **`CRUD-ignore` table tag** - MySQL table comment containing `crud-ignore` (case-insensitive) excludes the table from reeman listings, bulk CRUD, and `all` schema generation. MySQL-only (SQLite does not support table comments).
+
+### Auth
+
+Login/logout/register (invite-only), profile editing, password change, avatar upload, session management with SQL/Redis stores. Implementation at `platform/auth/`.
+
+| Route                         | Access        | Description                   |
+| ----------------------------- | ------------- | ----------------------------- |
+| `/login`                               | Public        | Login form                    |
+| `/logout`                              | Any session   | Clear session and redirect    |
+| `/register/:username/:invitation_code` | Invite link   | Register with invitation code |
+| `/profile`                             | Authenticated | Edit name, nickname, avatar   |
+| `/password`                            | Authenticated | Change password               |
+| `/invite`                              | Admin         | Generate invitation links     |
+| `/invite/confirm/:token`               | Admin         | View invitation details       |
+
+API: `resolve_session()`, `require_auth()`, `require_tag()`, `create_user_session()`, `destroy_session()`, `refresh_session()` from `platform/auth/`. Password hashing with `Bun.password.hash()` / `Bun.password.verify()`. Middleware: `require_auth_mw()`, `require_module_mw()` in `$lib/middleware`.
+
+## System Modules
+
+Admin pages live in `apps/reeman/` and are served by the reeman app (`apps/reeman/server.ts`) at root URLs, gated by the "system" module:
+
+- [Image management](https://github.com/reepolee/reepolee/blob/main/apps/reeman/images): S3/image bucket upload, drag-and-drop, image editor (crop, resize, rotate), Web Component editor.
+- [Queue management](https://github.com/reepolee/reepolee/blob/main/apps/reeman/queues): Background job queue monitoring UI.
+- [User management](https://github.com/reepolee/reepolee/blob/main/apps/reeman/users): Admin user management CRUD.
+- [Translations](https://github.com/reepolee/reepolee/blob/main/apps/reeman/translations): Translation management UI, mounted at `/translations`. Reads and writes the co-located `{locale}.json` files.
+
+## Optional / Reference
+
+- [Bun Redis client reference](https://bun.sh/docs/api/redis): Bun's built-in Redis client API for session store (alternative to SQL store).
+- [Bun SQL API reference](https://bun.sh/docs/runtime/sql): Bun's built-in SQL API used for all database access - supports MySQL and SQLite.
+- [Bun SQL guide](https://bun.sh/docs/runtime/sql#statements): SQL statement API - prepared statements, parameters, streaming, transactions.
+- [Temporal API reference](https://tc39.es/proposal-temporal/docs): TC39 Temporal proposal used for timezone-aware date/time handling (Bun-native).
+- [Zod validation reference](https://zod.dev): Runtime validation library used for form validation (vendored at `vendor/zod.min.js`).
+- [Tailwind CSS v4](https://tailwindcss.com/docs): CSS framework for styling (standalone CLI, not a bundler plugin).

@@ -1,0 +1,80 @@
+{
+	"actions": {
+		"save": "Save",
+		"save_close": "Save & close",
+		"cancel": "Cancel",
+		"do_it": "Yes, do it",
+		"bulk_action": "Archive selected __translation.plural_label__",
+		"archive": "Archive",
+		"abort_archive": "Cancel",
+		"confirm_archive": "Yes, archive",
+		"restore": "Restore",
+		"abort_restore": "Cancel",
+		"confirm_restore": "Yes, restore",
+		"delete": "Delete",
+		"abort_delete": "Cancel",
+		"confirm_delete": "Yes, delete"
+	},
+	"search": {
+		"search_term": "Search __translation.plural_label__...",
+		"submit": "Search"
+	},
+	"selectors": {
+		"all": "All",
+		"per_page": "per page",
+		"select_table": "-- Select table or route --",
+		"0": "No",
+		"1": "Yes"
+	},
+	"labels": {
+		"table": "Table / Route"
+	},
+	"errors": {
+		"duplicate_key": "A record with this value already exists.",
+		"error_creating_record": "An error occurred while saving the record.",
+		"title_required": "Title is required.",
+		"must_be_selected": "This field is required.",
+		"value_required_or_use_original": "Enter a translated value or remove this language."
+	},
+	"messages": {
+		"record_updated": "Record updated",
+		"record_created": "Record created",
+		"bulk_archived": "No __translation.plural_label__ archived|{count} __translation.singular_label__ archived|{count} __translation.singular_label__s archived|{count} __translation.singular_label__s archived|{count} __translation.singular_label__s archived",
+		"bulk_errors": "|{count} __translation.singular_label__ failed|{count} __translation.singular_label__s failed|{count} __translation.singular_label__s failed|{count} __translation.singular_label__s failed",
+		"bulk_archive_no_ids": "No __translation.plural_label__ selected.",
+		"bulk_archive_failed": "Bulk archive failed.",
+		"record_archived": "Record archived",
+		"record_restored": "Record restored"
+	},
+	"ui": {
+		"edit_title": "Edit __translation.singular_label_display_cap__",
+		"index_title": "__translation.plural_label_cap__",
+		"loading_count": "Loading…",
+		"new_title": "New __translation.singular_label_display_cap__",
+		"clear_all": "Clear all",
+		"apply_filters": "Apply",
+		"filter_not": "NOT",
+		"show_actions": "Show actions",
+		"updated_records": "Updated records",
+		"reload": "Reload"
+	},
+	"child_ui": {
+		"actions": "Actions",
+		"edit": "Edit",
+		"archive": "Archive",
+		"new_button": "+ New __translation.singular_label_cap__",
+		"edit_title": "Edit __translation.singular_label_cap__",
+		"new_title": "New __translation.singular_label_cap__",
+		"archiving": "Archiving…",
+		"empty_text": "No __translation.plural_label__ found.",
+		"error_loading": "Error loading record.",
+		"error_saving": "Error saving record.",
+		"error_archiving": "Error archiving record.",
+		"restore": "Restore"
+	},
+	"counts": {
+		"total": "Total",
+		"live": "Active",
+		"archived": "Archived"
+	}
+}

@@ -1,0 +1,48 @@
+{
+	"actions": {
+		"add": "Add page set",
+		"add_project": "Add a project",
+		"cancel": "Cancel",
+		"clear": "Clear selection",
+		"confirm_delete": "Remove",
+		"create": "Create page set",
+		"delete": "Remove page set",
+		"manage_baseline": "Manage baseline",
+		"only_selected": "Only selected",
+		"save": "Save changes",
+		"select_visible": "Select visible",
+		"sort_alpha": "Sort: A–Z",
+		"sort_newest": "Sort: Newest first"
+	},
+	"confirm": {
+		"delete": "Remove this saved page set? Existing reports are kept."
+	},
+	"labels": {
+		"auto_evidence": "Automatically record evidence for failed runs",
+		"auto_recording": "Also record clean video for passing runs",
+		"baseline_pages": "baseline pages",
+		"capture_size": "Capture size",
+		"filter": "Filter sitemap pages",
+		"name": "Page set name",
+		"pages": "pages"
+	},
+	"nav": "Page sets",
+	"route_name": "page-sets",
+	"status": {
+		"no_baseline": "No baseline"
+	},
+	"ui": {
+		"active": "Active",
+		"auto_evidence_hint": "Records a narrated video for every changed or new page after each compare run, instead of requiring a manual click.",
+		"auto_recording_hint": "Records a plain, un-annotated video for every unchanged page after each compare run - the only way to get a video for a passing dynamic test.",
+		"description": "Save named selections of sitemap pages for focused visual and video runs.",
+		"edited_today": "Today",
+		"no_baseline": "Capture a baseline before selecting pages for this project.",
+		"no_projects": "Register a project before creating page sets.",
+		"no_sets": "No saved page sets yet. Create one to start running tests.",
+		"saved_sets": "Saved page sets",
+		"sitemap_error": "Could not load the project sitemap:",
+		"stale_pages": "saved page(s) are no longer in the current sitemap. Save the set to remove them.",
+		"title": "Page sets"
+	}
+}

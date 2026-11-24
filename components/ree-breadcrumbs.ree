@@ -1,0 +1,27 @@
+{{
+	const attributes = props.attributes ?? {};
+	const items = attributes.items ?? [];
+	const aria_label = attributes["aria-label"] ?? "Breadcrumb";
+}}
+{#if items.length > 0}
+	<nav aria-label="{= aria_label }">
+		<ol class="flex flex-wrap items-center gap-2 text-sm">
+			{#each items as item, index}
+				<li class="flex min-w-0 items-center gap-2">
+					{#if index > 0}
+						<ree-icon name="chevron_right" class="size-5 shrink-0 text-text-tertiary"></ree-icon>
+					{/if}
+					{#if item.href}
+						<a href="{~ localized_path(item.href) }" class="truncate font-semibold underline underline-offset-2 hover:text-brand">{= item.label }</a>
+					{:else}
+						{#if index === items.length - 1}
+							<span class="truncate font-semibold" aria-current="page">{= item.label }</span>
+						{:else}
+							<span class="truncate font-semibold">{= item.label }</span>
+						{/if}
+					{/if}
+				</li>
+			{/each}
+		</ol>
+	</nav>
+{/if}

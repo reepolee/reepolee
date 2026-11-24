@@ -1,0 +1,63 @@
+{
+	"actions": {
+		"abort_archive": "Prekliči",
+		"abort_restore": "Prekliči",
+		"archive": "Arhiviraj",
+		"bulk_action": "Arhiviraj izbrane uporabnike",
+		"bulk_action_2": "Masovna akcija 2",
+		"confirm_archive": "Da, arhiviraj",
+		"confirm_restore": "Da, obnovi",
+		"new_user": "Nov uporabnik",
+		"restore": "Obnovi"
+	},
+	"counts": {
+		"archived": "Arhivirani",
+		"live": "Aktivni",
+		"total": "Skupaj"
+	},
+	"labels": {
+		"avatar_filename": "Ime datoteke avatarja",
+		"email": "E-pošta",
+		"hashed_password": "Kodirano geslo",
+		"invitation_code": "Povabilna koda",
+		"modules_tags": "Moduli",
+		"name": "Ime",
+		"previous_hashed_password": "Prejšnje kodirano geslo",
+		"username": "Uporabniško ime",
+		"verified_at": "Preverjeno ob"
+	},
+	"messages": {
+		"bulk_archive_no_ids": "Niso izbrani uporabniki.",
+		"bulk_archived": "Ni arhiviranih uporabnikov|{count} uporabnik arhiviran|{count} uporabnika arhivirana|{count} uporabniki arhivirani|{count} uporabnikov arhiviranih",
+		"bulk_errors": "|{count} uporabnik ni uspel|{count} uporabnika nista uspela|{count} uporabniki niso uspeli|{count} uporabnikov ni uspelo",
+		"record_archived": "Zapis arhiviran",
+		"record_restored": "Zapis obnovljen"
+	},
+	"modules_tags": {
+		"admin": "Administracija",
+		"default": "Javno",
+		"examples": "Primeri",
+		"system": "Sistem",
+		"user": "Uporabnik"
+	},
+	"nav": "Uporabniki",
+	"route_name": "uporabniki",
+	"scopes": {
+		"__all": "Vsi",
+		"__archived": "Arhivirani"
+	},
+	"search": {
+		"search_term": "Poišči uporabnike...",
+		"submit": "Išči"
+	},
+	"selectors": {
+		"all": "Vse"
+	},
+	"ui": {
+		"edit_title": "Uredi uporabnika",
+		"index_title": "Uporabniki",
+		"new_title": "Nov uporabnik",
+		"no_records": "Ni najdenih uporabnikov.",
+		"title": "Uporabniki"
+	}
+}

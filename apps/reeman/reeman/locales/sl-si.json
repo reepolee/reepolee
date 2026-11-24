@@ -1,0 +1,29 @@
+{
+	"actions": {
+		"reload_routes": "Osveži poti",
+		"view_all": "Prikaži vse"
+	},
+	"confirm": {
+		"reload_routes": "Osvežim poti? Pobira nove poti in prevode brez ponovnega zagona."
+	},
+	"labels": {
+		"action": "Akcija",
+		"finished": "Zaključeno",
+		"status": "Stanje",
+		"target": "Cilj"
+	},
+	"nav": "Reeman",
+	"nav_prefix_title": "Reeman",
+	"ui": {
+		"busy": "Obdelava v teku — stran se bo osvežila, ko bo končano.",
+		"description": "Spletni vmesnik za Reepolee resource manager",
+		"last_runs": "Nedavni zagoni",
+		"no_runs": "Še ni zagonov - izberite dejanje zgoraj.",
+		"reload_routes_hint": "Znova zgradi tabelo poti in navigacijo ter osveži prevode. V razvoju ni potreben ponovni zagon strežnika.",
+		"stats_crud": "S CRUD",
+		"stats_locales": "Jeziki",
+		"stats_modules": "Moduli",
+		"stats_tables": "Tabele",
+		"title": "Reeman"
+	}
+}

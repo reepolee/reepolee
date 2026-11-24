@@ -1,0 +1,143 @@
+{#layout("layout") }
+
+{#with props}
+	<div class="p-4">
+
+		<div class="flex items-center justify-between">
+			<h1 class="mb-4">{#if record.id}{_ ui.edit_title}{:else}{_ ui.new_title}{/if}</h1>
+			<div class="text-sm">{~ js_timestamp_to_locale_string(record.updated_at ?? record.created_at)}</div>
+		</div>
+
+		{#if form_errors}
+			<div class="py-4">
+				<app-banner type="red">{= props.form_errors}</app-banner>
+			</div>
+		{/if}
+
+		<form method="POST" action="{~ localized_path(action) }" class="grid gap-4 max-w-[60ch] lg:max-w-[100ch] lg:grid-cols-2 lg:gap-x-6" id="entry-form">
+
+			<!-- CSRF token -->
+			<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+
+			<!-- GEN:FIELDS:START -->
+			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="code">
+				<div class="grid">
+					<label class="px-3" for="code">{_ labels.code}</label>
+					<input type="text" id="code" name="code" value="{= record.code}" />
+					<validation-error class="mt-1" id="error-code"></validation-error>
+				</div>
+				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+			</field-wrapper>
+
+			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="name">
+				<div class="grid">
+					<label class="px-3" for="name">{_ labels.name}</label>
+					<input type="text" id="name" name="name" value="{= record.name}" />
+					<validation-error class="mt-1" id="error-name"></validation-error>
+				</div>
+				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+			</field-wrapper>
+
+			<field-wrapper class="grid lg:col-span-2 lg:grid-cols-subgrid" data-field="description">
+				<div class="grid">
+					<label class="px-3" for="description">{_ labels.description}</label>
+					<input type="text" id="description" name="description" value="{= record.description}" />
+					<validation-error class="mt-1" id="error-description"></validation-error>
+				</div>
+				<p class="text-xs text-neutral-500 px-3 mt-1 lg:mt-0 lg:self-center"></p>
+			</field-wrapper>
+
+			<!-- GEN:FIELDS:END -->
+
+			<!-- Store referrer URL as hidden field -->
+			<input type="hidden" id="return_url" name="_return_url" value="" />
+
+
+
+			<!-- Save action: hidden field set by onclick on save buttons -->
+			<input type="hidden" name="_save_action" id="save_action" value="" />
+
+			<div class="flex gap-2 mt-8 items-center">
+				<button id="btn-submit" type="submit" onclick="document.getElementById('save_action').value='stay'" class="as-button-primary">{_ actions.save}</button>
+				<button id="btn-save-close" type="submit" onclick="document.getElementById('save_action').value='close'" class="as-button-secondary">{_ actions.save_close}</button>
+				<button id="btn-cancel" type="button" onclick="history.back()" class="as-button-secondary">{_ actions.cancel}</button>
+
+				{#if (record.id) && enable_archive}
+					<button id="action_archive" type="button" command="show-modal" commandfor="action_archive_dialog" class="ml-auto as-button-tertiary">{_ actions.archive}</button>
+				{/if}
+
+				{#if (record.id) && record.archived_at}
+					<button id="action_restore" type="button" command="show-modal" commandfor="action_restore_dialog" class="as-button-secondary">{_ actions.restore}</button>
+				{/if}
+			</div>
+		</form>
+
+		{#if (record.id) && enable_archive}
+			<form id="archive-form" method="POST" action="{~ localized_path('/modules/' + record.id + '/edit') }" style="display: none;">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="_action" value="archive" />
+			</form>
+			<form id="restore-form" method="POST" action="{~ localized_path('/modules/' + record.id + '/edit') }" style="display: none;">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="_action" value="restore" />
+			</form>
+		{/if}
+
+	</div>
+
+	{#if enable_archive}
+		<dialog id="action_archive_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.archive}</h2>
+				<div class="mt-6 flex justify-end gap-2">
+					<button class="as-button-secondary" type="button" commandfor="action_archive_dialog" command="close">{_ actions.abort_archive}</button>
+					<button class="as-button-danger" type="button" command="--confirm" commandfor="action_archive_dialog">{_ actions.confirm_archive}</button>
+				</div>
+			</div>
+		</dialog>
+
+		<dialog id="action_restore_dialog" class="p-0 rounded-xl shadow-2xl w-100">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.restore}</h2>
+				<div class="mt-6 flex justify-end gap-2">
+					<button class="as-button-secondary" type="button" commandfor="action_restore_dialog" command="close">{_ actions.abort_restore}</button>
+					<button class="as-button-primary" type="button" command="--confirm" commandfor="action_restore_dialog">{_ actions.confirm_restore}</button>
+				</div>
+			</div>
+		</dialog>
+	{/if}
+	<script src="/dialog-confirm.js?v={= version}"></script>
+	<script src="/form-controller.js?v={= version}" defer></script>
+
+	<script>
+		const return_url_field = $("#return_url");
+		if (return_url_field && document.referrer) {
+			try {
+				const referer_url = new URL(document.referrer);
+				return_url_field.value = referer_url.pathname + referer_url.search;
+			} catch (e) {}
+		}
+		{#if enable_archive}
+			$("#action_archive_dialog").addEventListener("command", (e) => {
+				if (e.command !== "--confirm") return;
+				e.currentTarget.close();
+				$("#archive-form").submit();
+			});
+			const restore_dialog = $("#action_restore_dialog");
+			if (restore_dialog) {
+				restore_dialog.addEventListener("command", (e) => {
+					if (e.command !== "--confirm") return;
+					e.currentTarget.close();
+					$("#restore-form").submit();
+				});
+			}
+		{/if}
+		document.addEventListener("DOMContentLoaded", () => {
+			new FormController({
+				form: "#entry-form",
+				validate_url: "{~ localized_path('/modules/validate') }",
+				submitted_text: "{- actions.submitted}"
+			});
+		});
+	</script>
+{/with}

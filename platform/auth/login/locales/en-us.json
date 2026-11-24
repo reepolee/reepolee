@@ -1,0 +1,18 @@
+{
+	"actions": {
+		"submit": "Login"
+	},
+	"errors": {
+		"account_not_verified": "Your account is not yet verified.",
+		"invalid_username_or_password": "Invalid username or password."
+	},
+	"labels": {
+		"email": "Email",
+		"password": "Password",
+		"username": "Username (can be email)"
+	},
+	"route_name": "login",
+	"ui": {
+		"title": "Login"
+	}
+}

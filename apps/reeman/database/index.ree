@@ -1,0 +1,132 @@
+{#layout("layout")}
+{#with props}
+	<div class="w-full p-4 space-y-6">
+
+		<header class="flex flex-wrap items-center justify-between gap-3">
+			<div>
+				<h1 class="text-xl font-bold">{_ ui.database_title}</h1>
+				<p class="text-sm text-text-secondary mt-1">{_ ui.database_description}</p>
+			</div>
+		</header>
+
+		{#if form_error}
+			<app-banner type="red">{= form_error}</app-banner>
+		{/if}
+
+		{#if busy}
+			<app-banner type="yellow">{_ ui.busy}{#if busy.target}: <code>{= busy.target }</code>{/if}</app-banner>
+		{/if}
+
+		{#if props.broken_views.length > 0}
+			<app-banner type="yellow">
+				<div class="flex flex-col gap-1.5">
+					<div class="flex flex-wrap items-center gap-2">
+						<span class="font-semibold">{_ ui.broken_views_title}</span>
+						<span class="rounded-full bg-black/10 px-2 py-0.5 text-xs font-bold">{= props.broken_views.length }</span>
+					</div>
+					<p class="text-sm font-normal">{_ ui.broken_views_hint}</p>
+					<ul class="flex flex-wrap gap-1.5 font-mono text-xs font-normal">
+						{#each props.broken_views as name}
+							<li class="rounded bg-black/10 px-1.5 py-0.5"><code>{= name }</code></li>
+						{/each}
+					</ul>
+				</div>
+			</app-banner>
+		{/if}
+
+		<section class="grid reeman-card-grid gap-4">
+
+			<form
+				id="run-sql-form"
+				method="POST"
+				action="{~ localized_path('/run-sql') }"
+				class="flex flex-col gap-3 rounded-md border border-border bg-surface-raised p-4"
+			>
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="return_to" value="/database" />
+				<div class="flex items-center justify-between gap-2">
+					<h2 class="font-semibold">{_ actions.run_sql}</h2>
+					<span class="pill-layout bg-neutral-200 text-xs">sql</span>
+				</div>
+				{#if sql_files.length === 0}
+					<p class="text-sm text-text-secondary">{_ ui.no_sql_files}</p>
+				{:else}
+					<field-wrapper class="grid" data-field="path">
+						<div class="grid">
+							<label class="px-3" for="sql-file-select">{_ labels.sql_file}</label>
+							<select id="sql-file-select" name="path" required>
+								<option value="">{_ selectors.select_sql}</option>
+								{#each sql_files as file}
+									<option value="{= file.path }">{= file.path }</option>
+								{/each}
+							</select>
+							<validation-error class="mt-1" id="error-path"></validation-error>
+						</div>
+					</field-wrapper>
+					<button type="button" command="show-modal" commandfor="run-sql-dialog" class="as-button-primary mt-auto">{_ actions.run_sql}</button>
+				{/if}
+			</form>
+
+			<form method="POST" action="{~ localized_path('/check-compliance') }" class="flex flex-col gap-3 rounded-md border border-border bg-surface-raised p-4">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="return_to" value="/logs" />
+				<h2 class="font-semibold">{_ actions.check_compliance}</h2>
+				<p class="text-sm text-text-secondary">{_ ui.compliance_hint}</p>
+				<button type="submit" class="as-button-primary mt-auto">{_ actions.check_compliance}</button>
+			</form>
+
+			<form method="POST" action="{~ localized_path('/data-to-sql') }" enctype="multipart/form-data" class="flex flex-col gap-3 rounded-md border border-border bg-surface-raised p-4">
+				<input type="hidden" name="_csrf_token" value="{= csrf_token }" />
+				<input type="hidden" name="return_to" value="/database" />
+				<div class="flex items-center justify-between gap-2">
+					<h2 class="font-semibold">{_ actions.data_to_sql}</h2>
+					<span class="pill-layout bg-neutral-200 text-xs">sql</span>
+				</div>
+				<field-wrapper class="grid" data-field="json_file">
+					<div class="grid">
+						<label class="px-3" for="json-file">{_ labels.json_file}</label>
+						<input id="json-file" type="file" name="json_file" accept=".json,.xls,.xlsx,application/json,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required />
+						<validation-error class="mt-1" id="error-json_file"></validation-error>
+					</div>
+				</field-wrapper>
+				<div class="grid grid-cols-2 gap-2">
+					<field-wrapper class="grid" data-field="table_name">
+						<div class="grid">
+							<label class="px-3" for="json-table-name">{_ labels.table_name}</label>
+							<input id="json-table-name" name="table_name" required pattern="[a-z][a-z0-9]*" title="{_ hints.slug_safe_table }" />
+							<validation-error class="mt-1" id="error-table_name"></validation-error>
+						</div>
+					</field-wrapper>
+					<field-wrapper class="grid" data-field="slug">
+						<div class="grid">
+							<label class="px-3" for="json-slug">{_ labels.slug}</label>
+							<input id="json-slug" name="slug" pattern="[a-z][a-z0-9\-]*" title="{_ hints.slug }" />
+							<validation-error class="mt-1" id="error-slug"></validation-error>
+						</div>
+					</field-wrapper>
+				</div>
+				<button type="submit" class="as-button-primary mt-auto">{_ actions.data_to_sql}</button>
+			</form>
+		</section>
+
+		<dialog id="run-sql-dialog" class="p-0 rounded-xl shadow-2xl w-100">
+			<div class="p-6">
+				<h2 class="text-lg font-semibold">{_ actions.run_sql}</h2>
+				<p class="text-slate-600 mt-2">{_ confirm.run_sql}</p>
+				<div class="mt-6 flex justify-end gap-2">
+					<button class="as-button-secondary" type="button" commandfor="run-sql-dialog" command="close">{_ actions.cancel}</button>
+					<button class="as-button-danger" type="button" command="--confirm" commandfor="run-sql-dialog">{_ actions.do_it}</button>
+				</div>
+			</div>
+		</dialog>
+
+		<script>
+			document.getElementById("run-sql-dialog").addEventListener("command", (e) => {
+				if (e.command !== "--confirm") return;
+				e.currentTarget.close();
+				document.getElementById("run-sql-form").submit();
+			});
+		</script>
+		<script src="/dialog-confirm.js?v={= version}"></script>
+	</div>
+{/with}

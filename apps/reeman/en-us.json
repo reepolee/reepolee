@@ -1,0 +1,74 @@
+{
+	"actions": {
+		"bulk_action": "Delete selected translations",
+		"bulk_action_2": "Bulk action 2",
+		"cancel": "Cancel",
+		"do_it": "Yes, do it",
+		"new_translation": "New Translation",
+		"save": "Save",
+		"save_close": "Save & close"
+	},
+	"child_ui": {
+		"actions": "Actions",
+		"delete": "Delete",
+		"deleting": "Deleting…",
+		"edit": "Edit",
+		"edit_title": "Edit Translation",
+		"empty_text": "No translations found.",
+		"error_deleting": "Error deleting record.",
+		"error_loading": "Error loading record.",
+		"error_saving": "Error saving record.",
+		"new_button": "+ New Translation",
+		"new_title": "New Translation"
+	},
+	"errors": {
+		"duplicate_key": "A record with this value already exists.",
+		"error_creating_record": "An error occurred while saving the record.",
+		"key_path_required": "Key path is required.",
+		"locale_required": "Locale is required.",
+		"must_be_selected": "This field is required.",
+		"namespace_required": "Namespace is required.",
+		"title_required": "Title is required.",
+		"translation_required": "Translation is required.",
+		"value_required_or_use_original": "Enter a translated value or remove this language."
+	},
+	"labels": {
+		"display": "Display",
+		"key_path": "Key Path",
+		"locale": "Locale",
+		"namespace": "Namespace",
+		"table": "Table / Route",
+		"translation": "Translation"
+	},
+	"messages": {
+		"bulk_delete_failed": "Bulk delete failed.",
+		"bulk_delete_no_ids": "No translations selected.",
+		"bulk_deleted": "No translations deleted|{count} translation deleted|{count} translations deleted|{count} translations deleted|{count} translations deleted",
+		"bulk_errors": "|{count} translation failed|{count} translations failed|{count} translations failed|{count} translations failed",
+		"record_created": "Record created",
+		"record_updated": "Record updated"
+	},
+	"nav_prefix_title": "Admin",
+	"route_name": "translations",
+	"search": {
+		"search_term": "Search translations...",
+		"submit": "Search"
+	},
+	"selectors": {
+		"0": "No",
+		"1": "Yes",
+		"all": "All",
+		"per_page": "per page",
+		"select_table": "-- Select table or route --"
+	},
+	"ui": {
+		"apply_filters": "Apply",
+		"clear_all": "Clear all",
+		"filter_not": "NOT",
+		"loading_count": "Loading…",
+		"modifying": "You are about to modify",
+		"no_records": "No translations found.",
+		"records": "record(s)",
+		"title": "Translation"
+	}
+}

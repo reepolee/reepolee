@@ -1,0 +1,11 @@
+<field-wrapper class="grid">
+	<label class="px-3" for="{= props.attributes.name }">{= props.attributes.label }</label>
+	<input
+		type="color"
+		id="{= props.attributes.name }"
+		name="{= props.attributes.name }"
+		value="{~ props.attributes.value || '#000000' }"
+		class="h-10 w-20 cursor-pointer rounded border border-neutral-300"
+	/>
+	<validation-error class="mt-1" id="error-{= props.attributes.name }"></validation-error>
+</field-wrapper>

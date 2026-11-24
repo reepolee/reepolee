@@ -1,0 +1,39 @@
+{#layout("layout")}
+
+{#with props}
+	<div class="p-4">
+		<h1 class="mb-4">{_ ui.edit_title}: <code>{= record.key}</code></h1>
+
+		<form method="POST" action="{~ localized_path(record.edit_url) }" class="grid gap-4 max-w-[80ch]" id="entry-form">
+			<input type="hidden" name="_csrf_token" value="{= csrf_token}" />
+
+			<field-wrapper class="grid" data-field="key">
+				<div class="grid">
+					<label class="px-3" for="key">{_ labels.key}</label>
+					<input type="text" id="key" value="{= record.key}" disabled />
+				</div>
+			</field-wrapper>
+
+			<field-wrapper class="grid" data-field="value">
+				<div class="grid">
+					<label class="px-3" for="value">{_ labels.value}</label>
+					<textarea id="value" name="value" rows="5" class="font-mono" spellcheck="false" autocomplete="off">{= record.value}</textarea>
+				</div>
+				<p class="text-xs text-text-secondary px-3 mt-1">{_ hints.value}</p>
+			</field-wrapper>
+
+			<field-wrapper class="grid " data-field="description">
+				<div class="grid md-inline">
+					<label class="px-3" for="description">{_ labels.description}</label>
+					<div id="description" rows="1" class="min-h-1lh resize-none p-3 bg-surface-overlay/5 rounded-sm border border-border" disabled>{~ md(record.description)}</d>
+				</div>
+				<p class="text-xs text-text-secondary px-3 mt-1">{_ hints.description}</p>
+			</field-wrapper>
+
+			<div class="flex gap-2 mt-4">
+				<button type="submit" class="as-button-primary">{_ actions.save}</button>
+				<button id="btn-cancel" type="button" onclick="history.back()" class="as-button-secondary">{_ actions.cancel}</button>
+			</div>
+		</form>
+	</div>
+{/with}

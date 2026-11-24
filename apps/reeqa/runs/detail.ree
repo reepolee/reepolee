@@ -1,0 +1,56 @@
+{#layout("dashboard/layout")}
+{#with props}
+	<div class="w-full p-4 space-y-6">
+		<ree-breadcrumbs items="{= breadcrumb_items }"></ree-breadcrumbs>
+
+		{#if form_error}
+			<app-banner type="red">{= props.form_error }</app-banner>
+		{/if}
+
+		{#if run}
+			<header>
+				<div class="flex flex-wrap items-center gap-2">
+					<h1 class="text-xl font-bold">{= run.suite_name }</h1>
+					<span class="pill-layout text-xs font-bold {= run.status_class }">{= run.status_label }</span>
+				</div>
+				<code class="mt-2 block text-xs text-text-secondary">{= run.command_display }</code>
+				<div class="mt-1 text-sm font-semibold">{= run.project_name }</div>
+				<code class="mt-1 block break-all text-xs text-text-secondary">{= run.project_path }</code>
+				{#if run.status === 'running'}
+					<div class="mt-3 flex flex-wrap gap-2">
+						<confirm-dialog trigger-class="button primary text-xs" confirm-class="button danger" form-path="/runs/cancel" title="{_ actions.cancel_run}" trigger-text="{_ actions.cancel_run}" message="{_ confirm.cancel_run}" confirm-text="{_ actions.do_it}" cancel-text="{_ actions.cancel}" extra-field-name="run_id" extra-field-value="{= run.id }"></confirm-dialog>
+					</div>
+				{/if}
+			</header>
+
+			<section
+				class="grid gap-3"
+				style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr))"
+			>
+				<div class="rounded-md border border-border bg-surface-raised p-4">
+					<div class="text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ labels.project}</div>
+					<div class="mt-1 font-semibold">{= run.project_name }</div>
+				</div>
+				<div class="rounded-md border border-border bg-surface-raised p-4">
+					<div class="text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ labels.started}</div>
+					<div class="mt-1 font-semibold">{= run.started_display }</div>
+				</div>
+				<div class="rounded-md border border-border bg-surface-raised p-4">
+					<div class="text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ labels.duration}</div>
+					<div class="mt-1 font-semibold">{= run.duration_display }</div>
+				</div>
+				<div class="rounded-md border border-border bg-surface-raised p-4">
+					<div class="text-xs font-semibold uppercase tracking-wider text-text-secondary">{_ labels.exit_code}</div>
+					<div class="mt-1 font-semibold">{= run.exit_code ?? '-' }</div>
+				</div>
+			</section>
+
+			<section class="min-w-0 overflow-hidden rounded-md border border-border bg-surface-overlay text-white">
+				<div class="border-b border-neutral-700 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-neutral-300">{_ labels.output}</div>
+				<div class="max-h-[65vh] max-w-full overflow-auto whitespace-pre-wrap break-all p-4 font-mono text-xs">{= run.output || translations.ui.waiting_output }</div>
+			</section>
+		{/if}
+	</div>
+
+	<script src="/dialog-confirm.js?v={= version}"></script>
+{/with}

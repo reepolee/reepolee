@@ -1,0 +1,72 @@
+{
+	"actions": {
+		"abort_archive": "Cancel",
+		"abort_delete": "Cancel",
+		"abort_restore": "Cancel",
+		"archive": "Archive",
+		"bulk_action": "Archive selected images",
+		"confirm_archive": "Yes, archive",
+		"confirm_delete": "Yes, delete",
+		"confirm_restore": "Yes, restore",
+		"delete": "Delete this image permanently?",
+		"new_image": "New Image",
+		"restore": "Restore"
+	},
+	"counts": {
+		"archived": "Archived",
+		"live": "Active",
+		"total": "Total"
+	},
+	"labels": {
+		"description": "Description",
+		"file_size": "File Size",
+		"filename": "Filename",
+		"folder": "Folder",
+		"height": "Height",
+		"mime_type": "Mime Type",
+		"original_filename": "Original Filename",
+		"s3_key": "S3 Key",
+		"tags": "Tags",
+		"title": "Title",
+		"width": "Width"
+	},
+	"messages": {
+		"bulk_archive_no_ids": "No images selected.",
+		"bulk_archived": "No images archived|{count} record archived|{count} records archived|{count} records archived|{count} records archived",
+		"bulk_errors": "|{count} image failed|{count} images failed|{count} images failed|{count} images failed",
+		"record_archived": "Record archived",
+		"record_restored": "Record restored"
+	},
+	"nav": "Images",
+	"route_name": "images",
+	"scopes": {
+		"__all": "All",
+		"__archived": "Archived"
+	},
+	"search": {
+		"search_term": "Search images...",
+		"submit": "Search"
+	},
+	"selectors": {
+		"all": "All"
+	},
+	"ui": {
+		"edit_title": "Edit image",
+		"index_title": "Images",
+		"no_records": "No images found.",
+		"new_title": "New image",
+		"title": "Images"
+	},
+	"v_labels": {
+		"description": "Description",
+		"file_size": "File Size",
+		"filename": "Filename",
+		"folder": "Folder",
+		"height": "Height",
+		"mime_type": "MIME Type",
+		"original_filename": "Original Filename",
+		"tags": "Tags",
+		"title": "Title",
+		"width": "Width"
+	}
+}

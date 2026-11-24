@@ -1,0 +1,197 @@
+import { afterEach, describe, expect, test } from "bun:test";
+import { unlink } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+const env = await import("./env");
+
+function show_expected_error(...args: unknown[]): void {
+	const message = args.map(String).join(" ").replace(/\x1b\[[0-9;]*m/g, "");
+	console.log(`\x1b[33m${message}\x1b[0m`);
+}
+
+describe("sanitize_env_value", () => {
+	test("strips double quotes from ends", () => expect(env.sanitize_env_value("\"sqlite:app.db\"")).toBe("sqlite:app.db"));
+
+	test("strips single quotes from ends", () => expect(env.sanitize_env_value("'mysql://localhost'")).toBe("mysql://localhost"));
+
+	test("strips surrounding whitespace", () => expect(env.sanitize_env_value("  hello  ")).toBe("hello"));
+
+	test("strips mixed quotes and whitespace", () => expect(env.sanitize_env_value("  \"value\"  ")).toBe("value"));
+
+	test("returns unchanged if no quotes or whitespace", () => expect(env.sanitize_env_value("plain")).toBe("plain"));
+
+	test("strips only outer quotes, keeps inner quotes", () => expect(env.sanitize_env_value("\"it's ok\"")).toBe("it's ok"));
+
+	test("handles empty string", () => expect(env.sanitize_env_value("")).toBe(""));
+
+	test("handles only whitespace", () => expect(env.sanitize_env_value("   ")).toBe(""));
+
+	test("preserves internal whitespace", () => expect(env.sanitize_env_value("\" hello world \"")).toBe("hello world"));
+});
+
+describe("get_storage_mode", () => {
+	const original_storage = Bun.env.STORAGE;
+
+	afterEach(() => {
+		// Restore after each test
+		if (original_storage === undefined) {
+			delete Bun.env.STORAGE;
+		} else {
+			Bun.env.STORAGE = original_storage;
+		}
+	});
+
+	test("returns null when STORAGE not set", () => {
+		delete Bun.env.STORAGE;
+		expect(env.get_storage_mode()).toBeNull();
+	});
+
+	test("returns null for the N/A marker", () => {
+		Bun.env.STORAGE = "N/A";
+		expect(env.get_storage_mode()).toBeNull();
+	});
+
+	test("returns 'local' for 'local' value", () => {
+		Bun.env.STORAGE = "local";
+		expect(env.get_storage_mode()).toBe("local");
+	});
+
+	test("returns 's3' for 's3' value", () => {
+		Bun.env.STORAGE = "s3";
+		expect(env.get_storage_mode()).toBe("s3");
+	});
+
+	test("case insensitive - handles uppercase", () => {
+		Bun.env.STORAGE = "LOCAL";
+		expect(env.get_storage_mode()).toBe("local");
+	});
+
+	test("trims whitespace from value", () => {
+		Bun.env.STORAGE = "  s3  ";
+		expect(env.get_storage_mode()).toBe("s3");
+	});
+
+	test("fails loud for invalid value (process.exit)", () => {
+		Bun.env.STORAGE = "invalid";
+		const original_exit = process.exit;
+		const original_error = console.error;
+		(process as any).exit = ((code?: number) => { throw new Error(`process.exit(${code})`); }) as any;
+		console.error = show_expected_error as typeof console.error;
+
+		try {
+			expect(() => env.get_storage_mode()).toThrow("process.exit(1)");
+		} finally {
+			(process as any).exit = original_exit;
+			console.error = original_error;
+		}
+	});
+});
+
+describe("require_env", () => {
+	test("returns value when env var is set", () => {
+		Bun.env.TEST_VAR = "hello";
+		expect(env.require_env("TEST_VAR")).toBe("hello");
+	});
+
+	test("strips quotes from value", () => {
+		Bun.env.TEST_VAR = "\"quoted\"";
+		expect(env.require_env("TEST_VAR")).toBe("quoted");
+	});
+
+	test("fails loud when env var not set (process.exit)", () => {
+		delete Bun.env.TEST_VAR;
+		const original_exit = process.exit;
+		const original_error = console.error;
+		(process as any).exit = ((code?: number) => { throw new Error(`process.exit(${code})`); }) as any;
+		console.error = show_expected_error as typeof console.error;
+
+		try {
+			expect(() => env.require_env("TEST_VAR")).toThrow("process.exit(1)");
+		} finally {
+			(process as any).exit = original_exit;
+			console.error = original_error;
+		}
+	});
+});
+
+describe("connection string dev/prod split", () => {
+	const original_dev = Bun.env.DEV_CONNECTION_STRING;
+	const original_dev_username = Bun.env.DEV_DB_USERNAME;
+	const original_dev_password = Bun.env.DEV_DB_PASSWORD;
+
+	afterEach(() => {
+		if (original_dev === undefined) {
+			delete Bun.env.DEV_CONNECTION_STRING;
+		} else {
+			Bun.env.DEV_CONNECTION_STRING = original_dev;
+		}
+		if (original_dev_username === undefined) {
+			delete Bun.env.DEV_DB_USERNAME;
+		} else {
+			Bun.env.DEV_DB_USERNAME = original_dev_username;
+		}
+		if (original_dev_password === undefined) {
+			delete Bun.env.DEV_DB_PASSWORD;
+		} else {
+			Bun.env.DEV_DB_PASSWORD = original_dev_password;
+		}
+	});
+
+	test("resolves to DEV_CONNECTION_STRING without --prod", () => {
+		// The test runner is never started with --prod.
+		expect(env.CONNECTION_STRING_VAR).toBe("DEV_CONNECTION_STRING");
+		Bun.env.DEV_CONNECTION_STRING = "sqlite:dev-split.db";
+		expect(env.get_connection_string()).toBe("sqlite:dev-split.db");
+	});
+
+	test("builds a MySQL connection from endpoint and separate credentials", () => {
+		Bun.env.DEV_CONNECTION_STRING = "mysql://localhost/reepolee_dev";
+		Bun.env.DEV_DB_USERNAME = "login";
+		Bun.env.DEV_DB_PASSWORD = "password";
+		expect(env.get_connection_string()).toBe("mysql://login:password@localhost/reepolee_dev");
+	});
+
+	test("rejects MySQL credentials embedded in the endpoint", () => {
+		Bun.env.DEV_CONNECTION_STRING = "mysql://login:password@localhost/reepolee_dev";
+		const original_exit = process.exit;
+		const original_error = console.error;
+		(process as any).exit = ((code?: number) => { throw new Error(`process.exit(${code})`); }) as any;
+		console.error = show_expected_error as typeof console.error;
+
+		try {
+			expect(() => env.get_connection_string()).toThrow("process.exit(1)");
+		} finally {
+			process.exit = original_exit;
+			console.error = original_error;
+		}
+	});
+
+	// CONNECTION_STRING_VAR is resolved once from Bun.argv at module load, so
+	// --prod can only be exercised in a child process.
+	test("resolves to PROD_CONNECTION_STRING with --prod", async () => {
+		const env_module = Bun.fileURLToPath(new URL("./env.ts", import.meta.url));
+		const script_path = join(tmpdir(), `env-prod-split-${Bun.randomUUIDv7()}.ts`);
+		// `bun -e` swallows trailing flags, so --prod only reaches Bun.argv via a real file.
+		await Bun.write(script_path, `import { CONNECTION_STRING_VAR, get_connection_string } from ${JSON.stringify(env_module)};\nconsole.log(CONNECTION_STRING_VAR, get_connection_string());\n`);
+
+		try {
+			const proc = Bun.spawn(["bun", script_path, "--prod"], {
+				env: {
+					...Bun.env,
+					DEV_CONNECTION_STRING: "sqlite:dev-split.db",
+					PROD_CONNECTION_STRING: "sqlite:prod-split.db",
+					PROD_DB_USERNAME: "N/A",
+					PROD_DB_PASSWORD: "N/A",
+				},
+				stdout: "pipe",
+				stderr: "pipe",
+			});
+			const out = (await new Response(proc.stdout).text()).trim();
+			expect(await proc.exited).toBe(0);
+			expect(out).toBe("PROD_CONNECTION_STRING sqlite:prod-split.db");
+		} finally {
+			await unlink(script_path).catch(() => {});
+		}
+	});
+});

@@ -1,0 +1,9 @@
+[mcp_servers.reepolee]
+command = "bun"
+args = ["run", "scripts/mcp/start.ts"]
+cwd = "/Users/ales/code/labs/reepolee-dev"
+
+[mcp_servers.reepolee.env]
+MCP_STDIO = "TRUE"
+MCP_ENABLE_MUTATIONS = "TRUE"
+MCP_ENABLE_TEMPLATE_RENDER = "TRUE"

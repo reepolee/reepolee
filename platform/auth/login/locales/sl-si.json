@@ -1,0 +1,18 @@
+{
+	"actions": {
+		"submit": "Prijava"
+	},
+	"errors": {
+		"account_not_verified": "Vaš račun še ni potrjen.",
+		"invalid_username_or_password": "Napačno uporabniško ime ali geslo."
+	},
+	"labels": {
+		"email": "E-pošta",
+		"password": "Geslo",
+		"username": "Uporabniško ime (lahko je e-pošta)"
+	},
+	"route_name": "prijava",
+	"ui": {
+		"title": "Prijava"
+	}
+}
